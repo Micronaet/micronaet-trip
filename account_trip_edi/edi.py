@@ -87,12 +87,21 @@ class edi_company(orm.Model):
             return pickle.load(open(filename, "rb")) or []
         except: 
             return []
+
+
+    def _type_importation_selection(self, cr, uid, context=None):
+        ''' Empty without extra importation modules
+        '''
+        return []
             
     _columns = {
         'name': fields.char('Code', size=15, required=True),
         'partner_id': fields.many2one(
             'res.partner', 'Partner', required=False),
         'import':fields.boolean('Import'),    
+        'type_importation':fields.selection(
+            _type_importation_selection, 'Type of importation', 
+            required=True, select=True, readonly=False),
         
         # Folders:
         'trip_import_folder': fields.char(

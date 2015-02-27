@@ -34,7 +34,11 @@
                 <group colspan="4" col="6">
                     <field name="import" />
                     <field name="name" />
+                    <newline />
+                    
                     <field name="partner_id" />
+                    <field name="type_importation" />
+                    <newline />
 
 		            <field name="trip_import_folder" />
 		            <field name="trip_todo_file" />
@@ -51,6 +55,7 @@
             <tree string="EDI Company">
                 <field name="import" />
                 <field name="name" />
+                <field name="type_importation" />
                 <field name="partner_id" />
 	            <field name="trip_import_folder" />
 	            <field name="trip_todo_file" />

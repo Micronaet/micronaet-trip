@@ -132,7 +132,8 @@ class trip_import_edi_wizard(osv.osv_memory):
         # ---------------------------------------------------------------------
         #                      Different for company
         # ---------------------------------------------------------------------
-        edi_company_ids = edi_company_tool.search(cr, uid, [], context=context)
+        edi_company_ids = edi_company_tool.search(cr, uid, [
+            ('import', '=', True)], context=context)
         for company in edi_company_pool.browse(
                 cr, uid, edi_company_ids, context=context):        
     

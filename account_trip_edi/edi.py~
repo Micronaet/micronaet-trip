@@ -93,6 +93,9 @@ class edi_company(orm.Model):
         'partner_id': fields.many2one(
             'res.partner', 'Partner', required=False),
         'import':fields.boolean('Import'),    
+        'type_importation':fields.selection(
+            [], 'Type of importation', 
+            required=True, select=True, readonly=False),
         
         # Folders:
         'trip_import_folder': fields.char(
@@ -110,52 +113,4 @@ class edi_company(orm.Model):
     _defaults = {
         'import': lambda *x: False,
         }
-        
-# VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-# TO REMOVE: customized in edi.company ########################################       
-class res_company(osv.osv):
-    ''' Add extra parameters for importation
-    '''
-    _name = 'res.company'
-    _inherit = 'res.company'
-    
-    def get_trip_import_edi_folder(self, cr, uid, value='folder', context=None):
-        ''' Read parameter for default EDI folder (set up in company)
-            value: 'folder' (default) folder of EDI in file
-                   'file' for file used to pass forced list
-                   'delete' for folder used for deletion elements
-        '''
-        try:
-            company_ids = self.search(cr, uid, [], context=context)
-            company_proxy = self.browse(
-                cr, uid, company_ids, context=context)[0]
-            if value == 'folder':
-                trip_import_folder = eval(company_proxy.trip_import_folder)
-                return os.path.expanduser(os.path.join(*trip_import_folder))
-            elif value == 'file': 
-                trip_todo_file = eval(company_proxy.trip_todo_file)
-                return os.path.expanduser(os.path.join(*trip_todo_file))
-            else: # 'delete': 
-                trip_delete_folder = eval(company_proxy.trip_delete_folder)
-                return os.path.expanduser(os.path.join(*trip_delete_folder))                
-        except:
-            _logger.error(_("Error trying to read EDI folder"))
-        return False
-        
-    _columns = {        
-        'trip_import_folder': fields.char(
-            'Trip import folder', size=150, required=False, readonly=False, 
-            help="Tuple value, like: ('~', 'etl', 'edi')"),
-        'trip_delete_folder': fields.char(
-            'Trip delete folder', size=150, required=False, readonly=False, 
-            help="Tuple value, like: ('~', 'etl', 'edi', 'removed')"),
-        'trip_todo_file': fields.char(
-            'Trip TODO file', size=150, required=False, readonly=False, 
-            help="File export where indicate TODO element, used by import "
-                "file script for force some future importation order. "
-                "Write a tuple, like: ('~', 'etl', 'export', 'todo.txt')"),
-        }
-        
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# TO REMOVE: customized in edi.company        
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
