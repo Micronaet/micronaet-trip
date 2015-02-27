@@ -32,7 +32,7 @@ _logger = logging.getLogger(__name__)
 
 
 class edi_company(orm.Model):
-    ''' Manage more than one importation depend on company
+    '''
     '''
     
     _name = 'edi.company'
