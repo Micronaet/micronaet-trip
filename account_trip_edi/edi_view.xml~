@@ -32,9 +32,9 @@
         <field name="arch" type="xml">
             <form string="EDI Company" version="7.0">                
                 <group colspan="4" col="6">
+                    <field name="import" />
                     <field name="name" />
                     <field name="partner_id" />
-                    <newline />
 
 		            <field name="trip_import_folder" />
 		            <field name="trip_todo_file" />
@@ -49,6 +49,7 @@
         <field name="model">edi.company</field>
         <field name="arch" type="xml">
             <tree string="EDI Company">
+                <field name="import" />
                 <field name="name" />
                 <field name="partner_id" />
 	            <field name="trip_import_folder" />

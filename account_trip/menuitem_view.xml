@@ -19,6 +19,5 @@
                 <menuitem parent="menu_trip_configuration" id="menu_trip_configuration_vector" name="Vector" action="action_res_partner_vector" sequence="10" groups="group_trip_manager"/>
                 <menuitem parent="menu_trip_configuration" id="menu_trip_configuration_camion" name="Camion" action="action_trip_vector_camion" sequence="20" groups="group_trip_manager"/>
                 <menuitem parent="menu_trip_configuration" id="menu_trip_configuration_tour" name="Tour" action="action_trip_tour" sequence="30" groups="group_trip_manager"/>
-
    </data>
 </openerp>   

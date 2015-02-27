@@ -46,7 +46,9 @@ class trip_import_edi_wizard(osv.osv_memory):
         ''' Refresh button for load EDI file list in wizard
         '''
         
-        # Utility function:        
+        # ---------------------------------------------------------------------
+        #                        Utility function:        
+        # ---------------------------------------------------------------------
         def format_date(value):
             ''' EDI file date format YYYYMMDD
             '''
@@ -75,9 +77,10 @@ class trip_import_edi_wizard(osv.osv_memory):
                 "00" if file_in.startswith("ELIORD") else "10" # Millisecond
                 ) 
             
-        # Main code:
-        # TODO parametrize for 2 importation
-        company_pool = self.pool.get('res.company')
+        # ---------------------------------------------------------------------
+        #                  Main code (common part)
+        # ---------------------------------------------------------------------
+        edi_company_pool = self.pool.get('edi.company')
         partner_pool = self.pool.get('res.partner')
         line_pool = self.pool.get('trip.edi.line')
 
@@ -87,7 +90,6 @@ class trip_import_edi_wizard(osv.osv_memory):
             'anomaly': [],  # list order to delete without create (warning)
             }
             
-        forced_list = line_pool.load_forced(cr, uid, context=context)
         recursion = {}
         
         today = datetime.now()
@@ -117,7 +119,7 @@ class trip_import_edi_wizard(osv.osv_memory):
             'destination_site': 1189,     # site             
             }
 
-        # Delete all previous:
+        # Delete all previous: TODO >> force single company importation?
         line_ids = line_pool.search(cr, uid, [], context=context)
         try:
             line_pool.unlink(cr, uid, line_ids, context=context)
@@ -126,223 +128,239 @@ class trip_import_edi_wizard(osv.osv_memory):
         
         # Load destination dict:
         destination_not_found = []
-                
-        # Get folder path:
-        path_in = company_pool.get_trip_import_edi_folder(
-            cr, uid, context=context)
-            
-        if not path_in:
-            pass # TODO comunicate error
-            
-        file_list = []
-        try:
-            # Sort correctly the files:       
-            for file_in in [f for f in os.listdir(path_in) if os.path.isfile(os.path.join(path_in, f))]:            
-                # os.path.getctime(os.path.join(path_in, file_in)                
-                file_list.append((get_timestamp_from_file(file_in), file_in))
-            file_list.sort()
-            
-            # Print list of sorted files for logging the operation:
-            for ts, file_in in file_list:                
-                supplier_facility = ""
-                supplier_cost = ""
-                supplier_site = ""
 
-                # Open file for read informations:
-                fin = open(os.path.join(path_in, file_in), "r")
-                
-                # Type mode valutation:
-                if file_in in forced_list:         # Forced (pickle file)
-                    mode_type = 'forced'
-                elif file_in.startswith("ELIORD"): # Create file
-                    mode_type = 'create'
-                else:
-                    mode_type = 'delete'           # Update file
-                
-                html = """
-                    <style>
-                        .table_trip {
-                             border:1px 
-                             padding: 3px;
-                             solid black;
-                       
-                        .table_trip td {
-                             border:1px 
-                             solid black;
-                             padding: 3px;
-                             text-align: center;
-                        }
-                        .table_trip th {
-                             border:1px 
-                             solid black;
-                             padding: 3px;
-                             text-align: center;
-                             background-color: grey;
-                             color: white;
-                        }
-                    </style>
-                    """
-                start = True
+        # ---------------------------------------------------------------------
+        #                      Different for company
+        # ---------------------------------------------------------------------
+        edi_company_ids = edi_company_tool.search(cr, uid, [
+            ('import', '=', True)], context=context)
+        for company in edi_company_pool.browse(
+                cr, uid, edi_company_ids, context=context):        
+    
+            forced_list = edi_company_pool.load_forced(
+                cr, uid, company.id, context=context)
 
-                # TODO load elements in importing state (depend on date)
-                if mode_type == 'delete':
-                    # Read first line only
-                    line = fin.readline()
+            # Get folder path:
+            path_in = edi_company_pool.get_trip_import_edi_folder(
+                cr, uid, company.id, context=context)
+            
+            if not path_in:
+                pass # TODO comunicate error
+            
+            file_list = []
+            try:
+                # Sort correctly the files:       
+                for file_in in [f for f in os.listdir(path_in) if os.path.isfile(
+                        os.path.join(path_in, f))]:            
+                    # os.path.getctime(os.path.join(path_in, file_in)                
+                    file_list.append(
+                        (get_timestamp_from_file(file_in), file_in))
+                file_list.sort()
+                
+                # Print list of sorted files for logging the operation:
+                for ts, file_in in file_list:                
+                    supplier_facility = ""
+                    supplier_cost = ""
+                    supplier_site = ""
+
+                    # Open file for read informations:
+                    fin = open(os.path.join(path_in, file_in), "r")
                     
-                    # Read fields:
-                    number = format_string(
-                        line[trace['number']:trace['number'] + 9])
-                    date = format_date(
-                        line[trace['date']:trace['date'] + 8])
-                    deadline = format_date(
-                        line[trace['deadline']:trace['deadline'] + 8])
-                    if deadline < reference_date: # Next importation
-                        mode_type = 'importing'
+                    # TODO parametrize MODE TYPE: vvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+                    # Type mode valutation:
+                    if file_in in forced_list:         # Forced (pickle file)
+                        mode_type = 'forced'
+                    elif file_in.startswith("ELIORD"): # Create file
+                        mode_type = 'create'
+                    else:
+                        mode_type = 'delete'           # Update file
+                    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                    
+                    html = """
+                        <style>
+                            .table_trip {
+                                 border:1px 
+                                 padding: 3px;
+                                 solid black;
+                           
+                            .table_trip td {
+                                 border:1px 
+                                 solid black;
+                                 padding: 3px;
+                                 text-align: center;
+                            }
+                            .table_trip th {
+                                 border:1px 
+                                 solid black;
+                                 padding: 3px;
+                                 text-align: center;
+                                 background-color: grey;
+                                 color: white;
+                            }
+                        </style>
+                        """
+                    start = True
+
+                    # TODO load elements in importing state (depend on date)
+                    if mode_type == 'delete':
+                        # Read first line only
+                        line = fin.readline()
                         
-                    customer = False
-                    destination = False
-                    
-                else: # create                     
-                    for line in fin:
-                        if start: # header value (only one)
-                            start = False
-
-                            # Read fields
-                            date = format_date(
-                                line[
-                                    trace['date']:
-                                    trace['date'] + 8])
-                            deadline = format_date(
-                                line[
-                                    trace['deadline']:
-                                    trace['deadline'] + 8])
-                            number = format_string(
-                                line[
-                                    trace['number']:
-                                    trace['number'] + 9])
-                            customer = format_string(
-                                line[
-                                    trace['customer']:
-                                    trace['customer'] + 100])
+                        # Read fields:
+                        number = format_string(
+                            line[trace['number']:trace['number'] + 9])
+                        date = format_date(
+                            line[trace['date']:trace['date'] + 8])
+                        deadline = format_date(
+                            line[trace['deadline']:trace['deadline'] + 8])
+                        if deadline < reference_date: # Next importation
+                            mode_type = 'importing'
                             
-                            supplier_facility = format_string(line[
-                                    trace['destination_facility']:
-                                    trace['destination_facility'] + 35])
-                            supplier_cost = format_string(line[
-                                    trace['destination_cost']:
-                                    trace['destination_cost'] + 30])
-                            supplier_site = format_string(line[
-                                    trace['destination_site']:
-                                    trace['destination_site'] + 35])
-                                    
-                            destination = "[%s|%s|%s]" % ( 
-                                supplier_facility,
-                                supplier_cost,
-                                supplier_site, 
-                                )
-                                    
-                            html += "<p>"
-                            html += _("Date: %s<br/>") % date
-                            html += _("Deadline: %s<br/>") % deadline
-                            html += _("Destination: %s<br/>") % destination
-                            html += _("Customer ref.: %s<br/>") % customer
-                            html += "</p>"
-                            html += _(
-                                """<table class='table_trip'>
-                                   <tr>
-                                       <th>Code</th>
-                                       <th>Description</th>
-                                       <th>UM</th>
-                                       <th>Q.</th>
-                                       <th>Price</th>
-                                       <th>Total</th>
-                                   </tr>""")
-                        html += """
-                            <tr>
-                                 <td>%s</td>
-                                 <td>%s</td>
-                                 <td>%s</td>
-                                 <td>%s</td>
-                                 <td>%s</td>
-                                 <td>%s</td>
-                             </tr>""" % (
-                                 format_string(
-                                     line[
-                                         trace['detail_code']:
-                                         trace['detail_code'] + 35]),
-                                 format_string(
-                                     line[
-                                         trace['detail_description']:
-                                         trace['detail_description'] + 100]),
-                                 format_string(
-                                     line[
-                                         trace['detail_um']:
-                                         trace['detail_um'] + 3]),
-                                 format_string(
-                                     line[
-                                         trace['detail_quantity']:
-                                         trace['detail_quantity'] + 10]),
-                                 format_string(
-                                     line[
-                                         trace['detail_price']:
-                                         trace['detail_price'] + 10]),
-                                 format_string(
-                                     line[
-                                         trace['detail_total']:
-                                         trace['detail_total'] + 10]),
-                                 )
-                    html += "</table>"  # TODO if empty??
-                fin.close()
-                    
-                # Create file list
-                # TODO old code: Read from file
-                #timestamp = datetime.fromtimestamp(ts).strftime(
-                #        DEFAULT_SERVER_DATETIME_FORMAT + ".%f" )
+                        customer = False
+                        destination = False
+                        
+                    else: # create                     
+                        for line in fin:
+                            if start: # header value (only one)
+                                start = False
 
-                destination_id = partner_pool.search_supplier_destination(
-                    cr, uid, supplier_facility, 
-                    "%s%s" % (
-                        supplier_cost,
-                        supplier_site,
-                        ), context=context)
+                                # Read fields
+                                date = format_date(
+                                    line[
+                                        trace['date']:
+                                        trace['date'] + 8])
+                                deadline = format_date(
+                                    line[
+                                        trace['deadline']:
+                                        trace['deadline'] + 8])
+                                number = format_string(
+                                    line[
+                                        trace['number']:
+                                        trace['number'] + 9])
+                                customer = format_string(
+                                    line[
+                                        trace['customer']:
+                                        trace['customer'] + 100])
+                                
+                                supplier_facility = format_string(line[
+                                        trace['destination_facility']:
+                                        trace['destination_facility'] + 35])
+                                supplier_cost = format_string(line[
+                                        trace['destination_cost']:
+                                        trace['destination_cost'] + 30])
+                                supplier_site = format_string(line[
+                                        trace['destination_site']:
+                                        trace['destination_site'] + 35])
+                                        
+                                destination = "[%s|%s|%s]" % ( 
+                                    supplier_facility,
+                                    supplier_cost,
+                                    supplier_site, 
+                                    )
+                                
+                                # Create an HMTL element for preview file:        
+                                html += "<p>"
+                                html += _("Date: %s<br/>") % date
+                                html += _("Deadline: %s<br/>") % deadline
+                                html += _("Destination: %s<br/>") % destination
+                                html += _("Customer ref.: %s<br/>") % customer
+                                html += "</p>"
+                                html += _(
+                                    """<table class='table_trip'>
+                                       <tr>
+                                           <th>Code</th>
+                                           <th>Description</th>
+                                           <th>UM</th>
+                                           <th>Q.</th>
+                                           <th>Price</th>
+                                           <th>Total</th>
+                                       </tr>""")
+                            html += """
+                                <tr>
+                                     <td>%s</td>
+                                     <td>%s</td>
+                                     <td>%s</td>
+                                     <td>%s</td>
+                                     <td>%s</td>
+                                     <td>%s</td>
+                                 </tr>""" % (
+                                     format_string(
+                                         line[
+                                             trace['detail_code']:
+                                             trace['detail_code'] + 35]),
+                                     format_string(
+                                         line[
+                                             trace['detail_description']:
+                                             trace['detail_description'] + 100]),
+                                     format_string(
+                                         line[
+                                             trace['detail_um']:
+                                             trace['detail_um'] + 3]),
+                                     format_string(
+                                         line[
+                                             trace['detail_quantity']:
+                                             trace['detail_quantity'] + 10]),
+                                     format_string(
+                                         line[
+                                             trace['detail_price']:
+                                             trace['detail_price'] + 10]),
+                                     format_string(
+                                         line[
+                                             trace['detail_total']:
+                                             trace['detail_total'] + 10]),
+                                     )
+                        html += "</table>"  # TODO if empty??
+                    fin.close()
                         
-                if not destination_id and destination_id not in destination_not_found: 
-                    destination_not_found.append(destination)
-                        
-                line_id = line_pool.create(cr, uid, {
-                    'name': file_in,
-                    'timestamp': ts,
-                    'deadline': deadline,
-                    'date': date,
-                    'number': number,
-                    'customer': customer,
-                    'destination': destination,
-                    'destination_id': destination_id,
-                    'type': mode_type,
-                    'information': html,
-                    }, context=context)
-                    
-                if number not in recursion:
-                    recursion[number] = [1, [line_id]]
-                else:
-                    recursion[number][0] += 1
-                    recursion[number][1].append(line_id)
+                    # Create file list
+                    # TODO old code: Read from file
+                    #timestamp = datetime.fromtimestamp(ts).strftime(
+                    #        DEFAULT_SERVER_DATETIME_FORMAT + ".%f" )
 
-                if mode_type == 'create':
-                    order_info['create'][number] = line_id # last (for test delete)
-                elif mode_type == 'delete':
-                    if number in order_info['create']:                    
-                        order_info['deleting'].append(
-                            order_info['create'][number])
-                    else:    
-                        order_info['anomaly'].append(line_id)
+                    destination_id = partner_pool.search_supplier_destination(
+                        cr, uid, supplier_facility, 
+                        "%s%s" % (
+                            supplier_cost,
+                            supplier_site,
+                            ), context=context)
+                            
+                    if not destination_id and destination_id not in destination_not_found: 
+                        destination_not_found.append(destination)
+                            
+                    line_id = line_pool.create(cr, uid, {
+                        'name': file_in,
+                        'timestamp': ts,
+                        'deadline': deadline,
+                        'date': date,
+                        'number': number,
+                        'customer': customer,
+                        'destination': destination,
+                        'destination_id': destination_id,
+                        'type': mode_type,
+                        'information': html,
+                        }, context=context)
                         
-            if destination_not_found: 
-                _logger.warning(_('\n\nDestination not found: \n[%s]') % (
-                    destination_not_found, )  )
-        except:
-            _logger.error("Generic error: %s" % (sys.exc_info(), ))
-            
+                    if number not in recursion:
+                        recursion[number] = [1, [line_id]]
+                    else:
+                        recursion[number][0] += 1
+                        recursion[number][1].append(line_id)
+
+                    if mode_type == 'create':
+                        order_info['create'][number] = line_id # last (for test delete)
+                    elif mode_type == 'delete':
+                        if number in order_info['create']:                    
+                            order_info['deleting'].append(
+                                order_info['create'][number])
+                        else:    
+                            order_info['anomaly'].append(line_id)
+                            
+                if destination_not_found: 
+                    _logger.warning(_('\n\nDestination not found: \n[%s]') % (
+                        destination_not_found, )  )
+            except:
+                _logger.error("Generic error: %s" % (sys.exc_info(), ))
+                
 
         # Update recursion informations:
         for key in recursion:
@@ -388,33 +406,6 @@ class trip_import_edi_wizard(orm.Model):
     _name = 'trip.edi.line'
     _description = 'EDI import line'
     _order = 'timestamp'
-
-    # -----------------
-    # Utility function: 
-    # -----------------
-    def store_forced(self, cr, uid, forced_list, context=None):
-        ''' Load pickle file in a list that is returned
-        '''
-        try:
-            company_pool = self.pool.get('res.company')
-            filename = company_pool.get_trip_import_edi_folder(
-                cr, uid, value='file', context=context)
-
-            pickle.dump(forced_list, open(filename, "wb" ) )
-            return True
-        except:
-            return False    
-
-    def load_forced(self, cr, uid, context=None):
-        ''' Load list of forced from file
-        '''
-        try:
-            company_pool = self.pool.get('res.company')
-            filename = company_pool.get_trip_import_edi_folder(
-                cr, uid, value='file', context=context)
-            return pickle.load(open(filename, "rb")) or []
-        except: 
-            return []
 
     # -------------------
     # Override operation:
@@ -502,6 +493,7 @@ class trip_import_edi_wizard(orm.Model):
     def delete_order(self, cr, uid, ids, context=None):
         ''' Move order in delete folder
         '''
+        # TODO parametrize company_id
         try:
             company_pool = self.pool.get('res.company')
             origin_folder = company_pool.get_trip_import_edi_folder(

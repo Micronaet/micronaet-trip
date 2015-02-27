@@ -32,12 +32,15 @@ _logger = logging.getLogger(__name__)
 
 
 class edi_company(orm.Model):
-    '''
+    ''' Manage more than one importation depend on company
     '''
     
     _name = 'edi.company'
     _description = 'EDI Company'
     
+    # -------------------------------------------------------------------------
+    #                             Utility function
+    # -------------------------------------------------------------------------
     def get_trip_import_edi_folder(self, cr, uid, company_id, value='folder', 
             context=None):
         ''' Read parameter for default EDI folder (set up in company)
@@ -62,10 +65,36 @@ class edi_company(orm.Model):
             _logger.error(_("Error trying to read EDI folder"))
         return False
 
+    def store_forced(self, cr, uid, company_id, forced_list, context=None):
+        ''' Store passed forced list pickle in a file (for company_id passed) 
+        '''
+        try:
+            # Read EDI file for passed force list
+            filename = self.get_trip_import_edi_folder(
+                cr, uid, company_id, value='file', context=context)
+
+            pickle.dump(forced_list, open(filename, "wb" ) )
+            return True
+        except:
+            return False    
+
+    def load_forced(self, cr, uid, company_id, context=None):
+        ''' Load list of forced from file (for company_id passed)
+        '''
+        try:
+            filename = self.get_trip_import_edi_folder(
+                cr, uid, company_id, value='file', context=context)
+            return pickle.load(open(filename, "rb")) or []
+        except: 
+            return []
+            
     _columns = {
         'name': fields.char('Code', size=15, required=True),
         'partner_id': fields.many2one(
             'res.partner', 'Partner', required=False),
+        'import':fields.boolean('Import'),    
+        
+        # Folders:
         'trip_import_folder': fields.char(
             'Trip import folder', size=150, required=True,
             help="Tuple value, like: ('~', 'etl', 'edi')"),
@@ -77,6 +106,9 @@ class edi_company(orm.Model):
             help="File export where indicate TODO element, used by import "
                 "file script for force some future importation order. "
                 "Write a tuple, like: ('~', 'etl', 'export', 'todo.txt')"),
+        }
+    _defaults = {
+        'import': lambda *x: False,
         }
         
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV

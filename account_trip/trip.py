@@ -148,9 +148,12 @@ class trip_trip(orm.Model):
             res[item.id]['current_load'] = 0.0   # Total current (or prevision)
             res[item.id]['total_delivery'] = 0   # Total of delivery
             for order in item.order_ids:
-                res[item.id]['prevision_load'] += order.prevision_load
-                res[item.id]['current_load'] += order.current_load or order.prevision_load
-                res[item.id]['total_delivery'] += 1
+                res[item.id][
+                    'prevision_load'] += order.prevision_load
+                res[item.id][
+                    'current_load'] += order.current_load or order.prevision_load
+                res[item.id][
+                    'total_delivery'] += 1
         return res
         
     def _get_tour_code(self, cr, uid, ids, name, args, context=None):

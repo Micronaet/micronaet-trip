@@ -13,7 +13,7 @@
             <menuitem parent="menu_trip_root" id="menu_trip_order" name="Order" sequence="15"/>
                 <menuitem parent="menu_trip_order" id="menu_trip_order_prepare" name="Prepare order" action="action_trip_order_prepare" sequence="10" groups="group_trip_manager"/>
                 <menuitem parent="menu_trip_order" id="menu_trip_order_organize" name="Organize order" action="action_trip_order_organize" sequence="20" groups="group_trip_manager"/>
-                <menuitem parent="menu_trip_order" id="menu_trip_order" name="Order list" action="action_trip_order" sequence="30" />
+                <menuitem parent="menu_trip_order" id="menu_trip_order_list" name="Order list" action="action_trip_order" sequence="30" />
 
             <menuitem parent="menu_trip_root" id="menu_trip_configuration" name="Configuration" sequence="99" />
                 <menuitem parent="menu_trip_configuration" id="menu_trip_configuration_vector" name="Vector" action="action_res_partner_vector" sequence="10" groups="group_trip_manager"/>

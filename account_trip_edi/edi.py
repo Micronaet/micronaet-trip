@@ -38,6 +38,9 @@ class edi_company(orm.Model):
     _name = 'edi.company'
     _description = 'EDI Company'
     
+    # -------------------------------------------------------------------------
+    #                             Utility function
+    # -------------------------------------------------------------------------
     def get_trip_import_edi_folder(self, cr, uid, company_id, value='folder', 
             context=None):
         ''' Read parameter for default EDI folder (set up in company)
@@ -62,10 +65,36 @@ class edi_company(orm.Model):
             _logger.error(_("Error trying to read EDI folder"))
         return False
 
+    def store_forced(self, cr, uid, company_id, forced_list, context=None):
+        ''' Store passed forced list pickle in a file (for company_id passed) 
+        '''
+        try:
+            # Read EDI file for passed force list
+            filename = self.get_trip_import_edi_folder(
+                cr, uid, company_id, value='file', context=context)
+
+            pickle.dump(forced_list, open(filename, "wb" ) )
+            return True
+        except:
+            return False    
+
+    def load_forced(self, cr, uid, company_id, context=None):
+        ''' Load list of forced from file (for company_id passed)
+        '''
+        try:
+            filename = self.get_trip_import_edi_folder(
+                cr, uid, company_id, value='file', context=context)
+            return pickle.load(open(filename, "rb")) or []
+        except: 
+            return []
+            
     _columns = {
         'name': fields.char('Code', size=15, required=True),
         'partner_id': fields.many2one(
             'res.partner', 'Partner', required=False),
+        'import':fields.boolean('Import'),    
+        
+        # Folders:
         'trip_import_folder': fields.char(
             'Trip import folder', size=150, required=True,
             help="Tuple value, like: ('~', 'etl', 'edi')"),
@@ -78,52 +107,7 @@ class edi_company(orm.Model):
                 "file script for force some future importation order. "
                 "Write a tuple, like: ('~', 'etl', 'export', 'todo.txt')"),
         }
-        
-# VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-# TO REMOVE: customized in edi.company ########################################       
-class res_company(osv.osv):
-    ''' Add extra parameters for importation
-    '''
-    _name = 'res.company'
-    _inherit = 'res.company'
-    
-    def get_trip_import_edi_folder(self, cr, uid, value='folder', context=None):
-        ''' Read parameter for default EDI folder (set up in company)
-            value: 'folder' (default) folder of EDI in file
-                   'file' for file used to pass forced list
-                   'delete' for folder used for deletion elements
-        '''
-        try:
-            company_ids = self.search(cr, uid, [], context=context)
-            company_proxy = self.browse(
-                cr, uid, company_ids, context=context)[0]
-            if value == 'folder':
-                trip_import_folder = eval(company_proxy.trip_import_folder)
-                return os.path.expanduser(os.path.join(*trip_import_folder))
-            elif value == 'file': 
-                trip_todo_file = eval(company_proxy.trip_todo_file)
-                return os.path.expanduser(os.path.join(*trip_todo_file))
-            else: # 'delete': 
-                trip_delete_folder = eval(company_proxy.trip_delete_folder)
-                return os.path.expanduser(os.path.join(*trip_delete_folder))                
-        except:
-            _logger.error(_("Error trying to read EDI folder"))
-        return False
-        
-    _columns = {        
-        'trip_import_folder': fields.char(
-            'Trip import folder', size=150, required=False, readonly=False, 
-            help="Tuple value, like: ('~', 'etl', 'edi')"),
-        'trip_delete_folder': fields.char(
-            'Trip delete folder', size=150, required=False, readonly=False, 
-            help="Tuple value, like: ('~', 'etl', 'edi', 'removed')"),
-        'trip_todo_file': fields.char(
-            'Trip TODO file', size=150, required=False, readonly=False, 
-            help="File export where indicate TODO element, used by import "
-                "file script for force some future importation order. "
-                "Write a tuple, like: ('~', 'etl', 'export', 'todo.txt')"),
+    _defaults = {
+        'import': lambda *x: False,
         }
-        
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# TO REMOVE: customized in edi.company        
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
