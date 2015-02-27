@@ -49,8 +49,26 @@ class edi_company_c1(orm.Model):
     _description = 'EDI Company 1'
 
     # -------------------------------------------------------------------------    
-    #                       Abstract function
+    #                     Abstract function and property:
     # -------------------------------------------------------------------------    
+    trace = {
+        'number': (19, 28),
+        'date': (29, 37), # 8
+        'deadline': (45, 53), #8
+        'customer': (1545, 1645), # 100
+        'detail_code': (2356, 2391), # 35
+        'detail_description': (2531, 2631), # 100
+        'detail_um': (2641, 2644), # 3
+        'detail_quantity': (2631, 2641), # 10 
+        'detail_price': (2877, 2887), # 10 
+        'detail_total': (2907, 2917), # 10
+        
+        # Destination blocks:
+        'destination_facility': (871, 906), # 35 facility      
+        'destination_cost': (253, 283), # 30 cost
+        'destination_site': (1189, 1224), # 35 site             
+        }
+
     def get_timestamp_from_file(file_in):
         ''' Get timestamp value from file name
             File is: ELIORD20141103091707.ASC
@@ -68,4 +86,19 @@ class edi_company_c1(orm.Model):
             file_in[18:20],  # Second
             "00" if file_in.startswith("ELIORD") else "10" # Millisecond
             ) 
+            
+    def get_state_of_file(file_in, forced_list):
+        ''' Test state of file depend on name and forced presence
+        '''
+        if file_in in forced_list: # Forced (pickle file)
+            return 'forced'
+        elif file_in.startswith("ELIORD"): # Create file
+            return 'create'
+        else:
+            return 'delete' # Update file
+
+    def get_destination(*args):
+        ''' Mask for code destination '''
+        return "[%s|%s|%s]" % args
+            
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

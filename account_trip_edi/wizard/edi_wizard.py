@@ -101,25 +101,6 @@ class trip_import_edi_wizard(osv.osv_memory):
             reference_date = (today + timedelta(days=3)).strftime(
                 DEFAULT_SERVER_DATE_FORMAT)
         
-        # TODO parametrize
-        trace = {
-            'number': 19,
-            'date': 29,
-            'deadline': 45,
-            'customer': 1545,
-            'detail_code': 2356,
-            'detail_description': 2531,
-            'detail_um': 2641,
-            'detail_quantity': 2631,
-            'detail_price': 2877,
-            'detail_total': 2907,
-            
-            # Destination blocks:
-            'destination_facility': 871, # facility      
-            'destination_cost': 253,     # cost
-            'destination_site': 1189,     # site             
-            }
-
         # Delete all previous: TODO >> force single company importation?
         line_ids = line_pool.search(cr, uid, [], context=context)
         try:
@@ -137,7 +118,11 @@ class trip_import_edi_wizard(osv.osv_memory):
             ('import', '=', True)], context=context)
         for company in edi_company_pool.browse(
                 cr, uid, edi_company_ids, context=context):        
-    
+            # Load object for use the same function name where needed:
+            parametrized = self.pool.get(company.type_importation_id.object)
+            
+            trace = parametrized.trace
+            
             forced_list = edi_company_pool.load_forced(
                 cr, uid, company.id, context=context)
 
@@ -154,8 +139,10 @@ class trip_import_edi_wizard(osv.osv_memory):
                 for file_in in [f for f in os.listdir(path_in) if os.path.isfile(
                         os.path.join(path_in, f))]:            
                     # os.path.getctime(os.path.join(path_in, file_in)                
+                    
+                    # Get file list parametrized on company:
                     file_list.append(
-                        (get_timestamp_from_file(file_in), file_in))
+                        (parametrized.get_timestamp_from_file(file_in), file_in))
                 file_list.sort()
                 
                 # Print list of sorted files for logging the operation:
@@ -167,15 +154,9 @@ class trip_import_edi_wizard(osv.osv_memory):
                     # Open file for read informations:
                     fin = open(os.path.join(path_in, file_in), "r")
                     
-                    # TODO parametrize MODE TYPE: vvvvvvvvvvvvvvvvvvvvvvvvvvvvv
                     # Type mode valutation:
-                    if file_in in forced_list:         # Forced (pickle file)
-                        mode_type = 'forced'
-                    elif file_in.startswith("ELIORD"): # Create file
-                        mode_type = 'create'
-                    else:
-                        mode_type = 'delete'           # Update file
-                    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                    mode_type = parametrized.get_state_of_file(
+                        file_in, forced_list)
                     
                     html = """
                         <style>
@@ -209,11 +190,11 @@ class trip_import_edi_wizard(osv.osv_memory):
                         
                         # Read fields:
                         number = format_string(
-                            line[trace['number']:trace['number'] + 9])
+                            line[trace['number'][0]:trace['number'][1]])
                         date = format_date(
-                            line[trace['date']:trace['date'] + 8])
+                            line[trace['date'][0]:trace['date'][1]])
                         deadline = format_date(
-                            line[trace['deadline']:trace['deadline'] + 8])
+                            line[trace['deadline'][0]:trace['deadline'][1]])
                         if deadline < reference_date: # Next importation
                             mode_type = 'importing'
                             
@@ -228,36 +209,37 @@ class trip_import_edi_wizard(osv.osv_memory):
                                 # Read fields
                                 date = format_date(
                                     line[
-                                        trace['date']:
-                                        trace['date'] + 8])
+                                        trace['date'][0]:
+                                        trace['date'][1]])
                                 deadline = format_date(
                                     line[
-                                        trace['deadline']:
-                                        trace['deadline'] + 8])
+                                        trace['deadline'][0]:
+                                        trace['deadline'][1]])
                                 number = format_string(
                                     line[
-                                        trace['number']:
-                                        trace['number'] + 9])
+                                        trace['number'][0]:
+                                        trace['number'][1]])
                                 customer = format_string(
                                     line[
-                                        trace['customer']:
-                                        trace['customer'] + 100])
+                                        trace['customer'][0]:
+                                        trace['customer'][1]])
                                 
                                 supplier_facility = format_string(line[
-                                        trace['destination_facility']:
-                                        trace['destination_facility'] + 35])
+                                        trace['destination_facility'][0]:
+                                        trace['destination_facility'][1]])
                                 supplier_cost = format_string(line[
-                                        trace['destination_cost']:
-                                        trace['destination_cost'] + 30])
+                                        trace['destination_cost'][0]:
+                                        trace['destination_cost'][1]])
                                 supplier_site = format_string(line[
-                                        trace['destination_site']:
-                                        trace['destination_site'] + 35])
-                                        
-                                destination = "[%s|%s|%s]" % ( 
-                                    supplier_facility,
-                                    supplier_cost,
+                                        trace['destination_site'][0]:
+                                        trace['destination_site'][1]])
+                                 
+                                destination = parametrized.get_destination((
+                                    supplier_facility, 
+                                    supplier_cost, 
                                     supplier_site, 
-                                    )
+                                    ))
+
                                 
                                 # Create an HMTL element for preview file:        
                                 html += "<p>"
@@ -287,28 +269,28 @@ class trip_import_edi_wizard(osv.osv_memory):
                                  </tr>""" % (
                                      format_string(
                                          line[
-                                             trace['detail_code']:
-                                             trace['detail_code'] + 35]),
+                                             trace['detail_code'][0]:
+                                             trace['detail_code'][1]]),
                                      format_string(
                                          line[
-                                             trace['detail_description']:
-                                             trace['detail_description'] + 100]),
+                                             trace['detail_description'][0]:
+                                             trace['detail_description'][1]]),
                                      format_string(
                                          line[
-                                             trace['detail_um']:
-                                             trace['detail_um'] + 3]),
+                                             trace['detail_um'][0]:
+                                             trace['detail_um'][1]]),
                                      format_string(
                                          line[
-                                             trace['detail_quantity']:
-                                             trace['detail_quantity'] + 10]),
+                                             trace['detail_quantity'][0]:
+                                             trace['detail_quantity'][1]]),
                                      format_string(
                                          line[
-                                             trace['detail_price']:
-                                             trace['detail_price'] + 10]),
+                                             trace['detail_price'][0]:
+                                             trace['detail_price'][1]]),
                                      format_string(
                                          line[
-                                             trace['detail_total']:
-                                             trace['detail_total'] + 10]),
+                                             trace['detail_total'][0]:
+                                             trace['detail_total'][1]]),
                                      )
                         html += "</table>"  # TODO if empty??
                     fin.close()
@@ -317,7 +299,7 @@ class trip_import_edi_wizard(osv.osv_memory):
                     # TODO old code: Read from file
                     #timestamp = datetime.fromtimestamp(ts).strftime(
                     #        DEFAULT_SERVER_DATETIME_FORMAT + ".%f" )
-
+                    # TODO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ARRIVATO QUI CON LA CONVERSIONE:
                     destination_id = partner_pool.search_supplier_destination(
                         cr, uid, supplier_facility, 
                         "%s%s" % (

@@ -49,8 +49,26 @@ class edi_company_c2(orm.Model):
     _description = 'EDI Company 2'
 
     # -------------------------------------------------------------------------    
-    #                       Abstract function
+    #                     Abstract function and property:
     # -------------------------------------------------------------------------    
+    trace = {
+        'number': (19, 28),
+        'date': (29, 37), # 8
+        'deadline': (45, 53), #8
+        'customer': (1545, 1645), # 100
+        'detail_code': (2356, 2391), # 35
+        'detail_description': (2531, 2631), # 100
+        'detail_um': (2641, 2644), # 3
+        'detail_quantity': (2631, 2641), # 10 
+        'detail_price': (2877, 2887), # 10 
+        'detail_total': (2907, 2917), # 10
+        
+        # Destination blocks:
+        'destination_facility': (0, 0), # 35 facility  TODO: 1225 1260     
+        'destination_cost': (0, 0), # 30 cost
+        'destination_site': (1225, 1260), # 35 site             
+        }
+
     def get_timestamp_from_file(file_in):
         # TODO
         ''' Get timestamp value from file name
@@ -69,4 +87,16 @@ class edi_company_c2(orm.Model):
             file_in[18:20],  # Second
             "00" if file_in.startswith("ELIORD") else "10" # Millisecond
             ) 
+    def get_state_of_file(file_in, forced_list):
+        ''' Test state of file depend on name and forced presence
+        '''
+        if file_in in forced_list: # Forced (pickle file)
+            return 'forced'
+        else:    
+            return 'create'
+
+    def get_destination(*args):
+        ''' Mask for code destination (only the last: site is used)'''
+        return "[%s]" % args[2]
+            
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
