@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<openerp>
+  <data noupdate="0">
+    <record id="group_edi_manager" model="res.groups">
+        <field name="name">EDI Manager</field>
+        <field name="category_id" ref="account_trip.module_trip" />
+        <field name="comment">EDI Manager</field>
+    </record>
+
+    <record id="group_edi_operator" model="res.groups">
+        <field name="name">EDI Operator</field>
+        <field name="category_id" ref="account_trip.module_trip" />
+        <field name="comment">EDI Operator</field>
+    </record>
+
+    <record id="group_edi_admin" model="res.groups">
+        <field name="name">EDI Admin</field>
+        <field name="category_id" ref="account_trip.module_trip" />
+        <field name="comment">EDI Admin</field>
+    </record>
+
+ </data>
+</openerp>

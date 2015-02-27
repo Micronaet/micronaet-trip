@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!--MENUITEM-->
+        <menuitem id="menu_trip_root" name="Trip" sequence="2" groups="group_trip_manager,group_trip_operator"/>
+            <menuitem parent="menu_trip_root" id="menu_trip_tour" name="Trip" sequence="10"/>
+                <menuitem parent="menu_trip_tour" id="menu_trip_configuration_trip" name="Trip" action="action_trip_trip" sequence="10" groups="group_trip_manager"/>
+                    <menuitem parent="menu_trip_configuration_trip" id="menu_trip_configuration_trip_vector" name="Camion" action="action_trip_trip_vector" sequence="10" groups="group_trip_manager"/>
+                
+                <menuitem parent="menu_trip_tour" id="menu_trip_destination" name="Destination" action="action_res_partner_destination" sequence="20"  groups="group_trip_manager"/>
+                    <menuitem parent="menu_trip_destination" id="menu_trip_destination_all" name="All Destination" action="action_res_partner_destination_all" sequence="10"  groups="group_trip_manager"/>
+                    
+            <menuitem parent="menu_trip_root" id="menu_trip_order" name="Order" sequence="15"/>
+                <menuitem parent="menu_trip_order" id="menu_trip_order_prepare" name="Prepare order" action="action_trip_order_prepare" sequence="10" groups="group_trip_manager"/>
+                <menuitem parent="menu_trip_order" id="menu_trip_order_organize" name="Organize order" action="action_trip_order_organize" sequence="20" groups="group_trip_manager"/>
+                <menuitem parent="menu_trip_order" id="menu_trip_order_list" name="Order list" action="action_trip_order" sequence="30" />
+
+            <menuitem parent="menu_trip_root" id="menu_trip_configuration" name="Configuration" sequence="99" />
+                <menuitem parent="menu_trip_configuration" id="menu_trip_configuration_vector" name="Vector" action="action_res_partner_vector" sequence="10" groups="group_trip_manager"/>
+                <menuitem parent="menu_trip_configuration" id="menu_trip_configuration_camion" name="Camion" action="action_trip_vector_camion" sequence="20" groups="group_trip_manager"/>
+                <menuitem parent="menu_trip_configuration" id="menu_trip_configuration_tour" name="Tour" action="action_trip_tour" sequence="30" groups="group_trip_manager"/>
+
+   </data>
+</openerp>   

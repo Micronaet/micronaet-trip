@@ -1,0 +1,6 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_trip_trip_user","trip.trip","model_trip_trip","base.group_user",1,1,1,1
+"access_trip_tour_user","trip.tour","model_trip_tour","base.group_user",1,1,1,1
+"access_trip_order_user","trip.order","model_trip_order","base.group_user",1,1,1,1
+"access_trip_vector_camion_user","trip.vector.camion","model_trip_vector_camion","base.group_user",1,1,1,1
+

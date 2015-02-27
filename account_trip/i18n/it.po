@@ -1,0 +1,687 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* account_trip
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-12-23 10:47+0000\n"
+"PO-Revision-Date: 2014-12-23 11:58+0100\n"
+"Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+
+#. module: account_trip
+#: field:trip.trip,total_delivery:0
+msgid "Total delivery"
+msgstr "Totale consegna"
+
+#. module: account_trip
+#: model:ir.actions.act_window,name:account_trip.act_window_trip_trip_print_wizard_form
+msgid "Multi print"
+msgstr "Stampa multipla"
+
+#. module: account_trip
+#: selection:trip.trip.create.wizard,option:0
+msgid "Uppend"
+msgstr "Accoda"
+
+#. module: account_trip
+#: model:ir.actions.act_window,name:account_trip.action_res_partner_destination
+#: model:ir.actions.act_window,name:account_trip.action_res_partner_destination_all
+#: model:ir.ui.menu,name:account_trip.menu_trip_destination
+#: view:res.partner:0
+#: view:trip.order:0
+#: view:trip.tour:0
+msgid "Destination"
+msgstr "Destinazione"
+
+#. module: account_trip
+#: code:addons/account_trip/wizard/trip_wizard.py:138
+#, python-format
+msgid ""
+"\n"
+"                        <p>Order: %s [Date: %s]</p>\n"
+"                        <p>Load: Prevision %s Max %s  Current: %s</p>\n"
+"                        <table>\n"
+"                            <th>\n"
+"                                <td>Order</td>\n"
+"                                <td>Date</td>\n"
+"                                <td>Partner</td>\n"
+"                                <td>Destination</td>\n"
+"                            </th>\n"
+"                        </table>\n"
+"                        "
+msgstr ""
+"\n"
+"                        <p>Ordine: %s [Data: %s]</p>\n"
+"                        <p>Carico: Previsto %s Massimo %s  Attuale: %s</p>\n"
+"                        <table>\n"
+"                            <th>\n"
+"                                <td>Ordine</td>\n"
+"                                <td>Data</td>\n"
+"                                <td>Cliente</td>\n"
+"                                <td>Destinazione</td>\n"
+"                            </th>\n"
+"                        </table>\n"
+"                        "
+
+#. module: account_trip
+#: view:res.partner:0
+msgid "Order not present"
+msgstr "Ordine non presente"
+
+#. module: account_trip
+#: code:addons/account_trip/wizard/trip_wizard.py:134
+#, python-format
+msgid "<p>Trip found: %s</p>"
+msgstr "<p>Giro non trovato: %s</p>"
+
+#. module: account_trip
+#: view:trip.trip:0
+msgid "Extra info"
+msgstr "Info extra"
+
+#. module: account_trip
+#: model:ir.ui.menu,name:account_trip.menu_trip_order_list
+msgid "Order list"
+msgstr "Lista ordini"
+
+#. module: account_trip
+#: help:trip.order,error:0
+msgid "If present there's an error during importation!"
+msgstr "Se presente c'è un errore durante l'importazione!"
+
+#. module: account_trip
+#: model:ir.model,name:account_trip.model_trip_trip_multi_print_wizard
+msgid "trip.trip.multi.print.wizard"
+msgstr "trip.trip.multi.print.wizard"
+
+#. module: account_trip
+#: view:trip.order:0
+msgid "Total prevision"
+msgstr "Totale previsto"
+
+#. module: account_trip
+#: field:res.partner,is_vector:0
+msgid "Is vector"
+msgstr "E' vettore"
+
+#. module: account_trip
+#: view:trip.order:0
+msgid "Destination:"
+msgstr "Destinazione:"
+
+#. module: account_trip
+#: view:res.partner:0
+msgid "Set obsolete"
+msgstr "Imposta obsoleto"
+
+#. module: account_trip
+#: field:res.partner,trip_obsolete:0
+msgid "Trip obsolete"
+msgstr "Viaggio obsoleto"
+
+#. module: account_trip
+#: view:trip.tour:0
+msgid "Current trip"
+msgstr "Viaggio corrente"
+
+#. module: account_trip
+#: view:res.partner:0
+msgid "Set as not obsolete"
+msgstr "Imposta come non obsoleto"
+
+#. module: account_trip
+#: view:res.partner:0
+msgid "All tour"
+msgstr "Tutti i viaggi"
+
+#. module: account_trip
+#: model:ir.actions.act_window,name:account_trip.act_window_create_trip_wizard_form
+msgid "Create trip"
+msgstr "Crea viaggio"
+
+#. module: account_trip
+#: view:res.partner:0
+#: field:res.partner,tour1_id:0
+msgid "Tour 1"
+msgstr "Giro 1"
+
+#. module: account_trip
+#: model:ir.actions.act_window,name:account_trip.action_trip_tour
+#: model:ir.ui.menu,name:account_trip.menu_trip_configuration_tour
+#: view:trip.order:0
+#: field:trip.order,tour_id:0
+#: view:trip.tour:0
+#: view:trip.trip:0
+#: field:trip.trip,tour_id:0
+#: field:trip.trip.create.wizard,tour_id:0
+msgid "Tour"
+msgstr "Giri"
+
+#. module: account_trip
+#: field:trip.order,destination_id:0
+msgid "Destinazione"
+msgstr "Destinazione"
+
+#. module: account_trip
+#: view:trip.trip:0
+msgid "Search trip"
+msgstr "Ricerca viaggio"
+
+#. module: account_trip
+#: field:trip.order,sequence:0
+msgid "Position"
+msgstr "Posizione"
+
+#. module: account_trip
+#: code:addons/account_trip/trip.py:55
+#, python-format
+msgid "Tour code: %s"
+msgstr "Sigla giro: %s"
+
+#. module: account_trip
+#: view:trip.tour:0
+#: field:trip.tour,destination1_ids:0
+msgid "Destination 1"
+msgstr "Destinazione 1"
+
+#. module: account_trip
+#: view:trip.tour:0
+#: field:trip.tour,destination2_ids:0
+msgid "Destination 2"
+msgstr "Destinazione 2"
+
+#. module: account_trip
+#: field:trip.order,tour_code:0
+#: field:trip.trip,tour_code:0
+msgid "Tour code"
+msgstr "Sigla giro (prima lettera)"
+
+#. module: account_trip
+#: view:res.partner:0
+#: view:trip.order:0
+#: view:trip.trip:0
+#: view:trip.vector.camion:0
+msgid "Group By..."
+msgstr "Raggruppa per..."
+
+#. module: account_trip
+#: model:ir.actions.act_window,name:account_trip.action_trip_vector_camion
+#: model:ir.ui.menu,name:account_trip.menu_trip_configuration_camion
+#: model:ir.ui.menu,name:account_trip.menu_trip_configuration_trip_vector
+#: view:trip.trip:0
+#: field:trip.trip,camion_id:0
+#: view:trip.vector.camion:0
+msgid "Camion"
+msgstr "Camion"
+
+#. module: account_trip
+#: field:trip.order,time:0
+msgid "Request time"
+msgstr "Ora richiesta"
+
+#. module: account_trip
+#: model:ir.model,name:account_trip.model_res_partner
+#: view:res.partner:0
+#: view:trip.order:0
+msgid "Partner"
+msgstr "Partner"
+
+#. module: account_trip
+#: view:trip.order:0
+msgid "Total current"
+msgstr "Totale attuale"
+
+#. module: account_trip
+#: selection:trip.trip,state:0
+msgid "Confirmed"
+msgstr "Confermato"
+
+#. module: account_trip
+#: view:trip.trip.create.wizard:0
+msgid "Create"
+msgstr "Crea"
+
+#. module: account_trip
+#: view:trip.order:0
+msgid "Date:"
+msgstr "Date:"
+
+#. module: account_trip
+#: model:ir.actions.report.xml,name:account_trip.aeroo_trip_trip_report
+msgid "Trip report"
+msgstr "Stampa viaggio"
+
+#. module: account_trip
+#: model:ir.actions.act_window,name:account_trip.act_window_destination_list_for_check_form
+msgid "Destination analysis"
+msgstr "Analisi destinazioni"
+
+#. module: account_trip
+#: view:trip.trip.multi.print.wizard:0
+msgid "Print"
+msgstr "Stampa"
+
+#. module: account_trip
+#: view:trip.trip.create.wizard:0
+msgid "Trip status"
+msgstr "Stato viaggi"
+
+#. module: account_trip
+#: view:res.partner:0
+msgid "Set as obsolete"
+msgstr "Imposta obsoleto"
+
+#. module: account_trip
+#: code:addons/account_trip/trip.py:56
+#, python-format
+msgid "Automatic created"
+msgstr "Creato automaticamente"
+
+#. module: account_trip
+#: view:trip.tour:0
+msgid "Search tour"
+msgstr "Ricerca giri"
+
+#. module: account_trip
+#: model:ir.model,name:account_trip.model_trip_trip_detail
+msgid "Trip detail"
+msgstr "Dettaglio viaggio"
+
+#. module: account_trip
+#: field:trip.trip.create.wizard,option:0
+msgid "Option"
+msgstr "Opzione"
+
+#. module: account_trip
+#: field:trip.order,delivery_note:0
+msgid "Dest. note"
+msgstr "Dest. note"
+
+#. module: account_trip
+#: model:ir.ui.menu,name:account_trip.menu_trip_configuration
+msgid "Configuration"
+msgstr "Configurazione"
+
+#. module: account_trip
+#: view:trip.order:0
+msgid "Order (green=assigned, red=error, orange=no order tour)"
+msgstr "Ordine (verde=assegnato, rosso=errore, arancio=nessun giro)"
+
+#. module: account_trip
+#: help:trip.trip.create.wizard,status:0
+msgid "See the status of previous trip day"
+msgstr "Visualizza lo stato del precedente viaggio"
+
+#. module: account_trip
+#: view:res.partner:0
+msgid "Order present"
+msgstr "Ordine presente"
+
+#. module: account_trip
+#: view:res.partner:0
+#: view:trip.tour:0
+msgid "Not obsolete"
+msgstr "Non obsoleto"
+
+#. module: account_trip
+#: model:ir.actions.act_window,name:account_trip.action_res_partner_vector
+#: model:ir.ui.menu,name:account_trip.menu_trip_configuration_vector
+#: view:res.partner:0
+#: view:trip.vector.camion:0
+#: field:trip.vector.camion,vector_id:0
+msgid "Vector"
+msgstr "Vettore"
+
+#. module: account_trip
+#: model:ir.model,name:account_trip.model_trip_trip_create_wizard
+msgid "trip.trip.create.wizard"
+msgstr "trip.trip.create.wizard"
+
+#. module: account_trip
+#: model:ir.model,name:account_trip.model_trip_order
+msgid "Trip order"
+msgstr "Viaggio ordine"
+
+#. module: account_trip
+#: view:trip.order:0
+msgid "description:"
+msgstr "descrizione:"
+
+#. module: account_trip
+#: help:trip.order,tour_id:0
+msgid "Tour setted up for order (instead use destination)"
+msgstr "Giro impostato per gli ordini (invece di utilizzare la destinazione)"
+
+#. module: account_trip
+#: view:trip.order:0
+msgid "Current load:"
+msgstr "Carico attuale:"
+
+#. module: account_trip
+#: view:trip.trip.create.wizard:0
+#: view:trip.trip.multi.print.wizard:0
+msgid "Create MRP"
+msgstr "Crea viaggio"
+
+#. module: account_trip
+#: model:ir.model,name:account_trip.model_trip_tour
+msgid "Trip tour"
+msgstr "Giro viaggio"
+
+#. module: account_trip
+#: model:ir.module.category,description:account_trip.module_trip
+msgid "Account trip groups"
+msgstr "Gruppi gestione viaggi"
+
+#. module: account_trip
+#: view:trip.order:0
+msgid "Unlink order to trip"
+msgstr "Svincola l'ordine dal viaggio"
+
+#. module: account_trip
+#: field:res.partner,destination_order_ids:0
+msgid "Destination order"
+msgstr "Ordini destinazione"
+
+#. module: account_trip
+#: model:res.groups,comment:account_trip.group_trip_manager
+#: model:res.groups,name:account_trip.group_trip_manager
+msgid "Trip Manager"
+msgstr "Gestore viaggi"
+
+#. module: account_trip
+#: view:trip.order:0
+#: field:trip.order,note:0
+#: view:trip.tour:0
+#: field:trip.tour,note:0
+#: view:trip.trip:0
+#: field:trip.trip,note:0
+#: view:trip.vector.camion:0
+#: field:trip.vector.camion,note:0
+msgid "Note"
+msgstr "Note"
+
+#. module: account_trip
+#: field:res.partner,delivery_note:0
+#: field:res.partner,vector_note:0
+msgid "Delivery note"
+msgstr "Note consegna"
+
+#. module: account_trip
+#: view:trip.order:0
+msgid "Prevision load:"
+msgstr "Carico previsto:"
+
+#. module: account_trip
+#: selection:trip.trip,state:0
+msgid "Draft"
+msgstr "Bozza"
+
+#. module: account_trip
+#: model:res.groups,comment:account_trip.group_trip_operator
+#: model:res.groups,name:account_trip.group_trip_operator
+msgid "Trip Operator"
+msgstr "Operatore viaggi"
+
+#. module: account_trip
+#: field:trip.trip.multi.print.wizard,multi:0
+msgid "Number of copy"
+msgstr "Numero di copie"
+
+#. module: account_trip
+#: field:trip.trip.create.wizard,status:0
+msgid "Status"
+msgstr "Stato"
+
+#. module: account_trip
+#: view:trip.trip:0
+#: field:trip.trip,good_collection:0
+msgid "Good collection"
+msgstr "Ritiro merce"
+
+#. module: account_trip
+#: view:res.partner:0
+msgid "No parent"
+msgstr "No padre"
+
+#. module: account_trip
+#: field:trip.order,date:0
+#: view:trip.trip:0
+#: field:trip.trip,date:0
+#: field:trip.trip.create.wizard,date:0
+msgid "Date"
+msgstr "Data"
+
+#. module: account_trip
+#: field:trip.order,prevision_load:0
+#: field:trip.trip,prevision_load:0
+msgid "Prevision load"
+msgstr "Carico previsto"
+
+#. module: account_trip
+#: model:ir.ui.menu,name:account_trip.menu_trip_order_prepare
+msgid "Prepare order"
+msgstr "Prepara ordine"
+
+#. module: account_trip
+#: view:res.partner:0
+msgid "Has tour"
+msgstr "Ha il giro"
+
+#. module: account_trip
+#: model:ir.module.category,name:account_trip.module_trip
+msgid "Account Trip roles"
+msgstr "Ruoli gestioni viaggi"
+
+#. module: account_trip
+#: model:ir.model,name:account_trip.model_trip_vector_camion
+msgid "Trip vector camion"
+msgstr "Camion"
+
+#. module: account_trip
+#: view:trip.order:0
+msgid "Error"
+msgstr "Errore"
+
+#. module: account_trip
+#: model:ir.ui.menu,name:account_trip.menu_trip_destination_all
+msgid "All Destination"
+msgstr "Tutte le destinazioni"
+
+#. module: account_trip
+#: selection:trip.trip,state:0
+msgid "History"
+msgstr "Storico"
+
+#. module: account_trip
+#: field:trip.tour,name:0
+msgid "Code"
+msgstr "Codice"
+
+#. module: account_trip
+#: code:addons/account_trip/trip.py:124
+#, python-format
+msgid "%s (%s) [Prev. %s] [Curr. %s] "
+msgstr "%s (%s) [Prev. %s] [Corr. %s] "
+
+#. module: account_trip
+#: view:trip.order:0
+msgid "Customer:"
+msgstr "Cliente:"
+
+#. module: account_trip
+#: field:trip.trip,state:0
+msgid "State"
+msgstr "State"
+
+#. module: account_trip
+#: selection:trip.trip,state:0
+#: view:trip.trip.create.wizard:0
+#: view:trip.trip.multi.print.wizard:0
+msgid "Cancel"
+msgstr "Annulla"
+
+#. module: account_trip
+#: model:ir.ui.menu,name:account_trip.menu_trip_order_organize
+msgid "Organize order"
+msgstr "Organizza ordine"
+
+#. module: account_trip
+#: view:res.partner:0
+#: field:trip.order,city:0
+msgid "City"
+msgstr "Città"
+
+#. module: account_trip
+#: model:ir.actions.act_window,name:account_trip.action_trip_order_organize
+msgid "Order organize"
+msgstr "Organizza ordine"
+
+#. module: account_trip
+#: view:res.partner:0
+msgid "No tour"
+msgstr "No giro"
+
+#. module: account_trip
+#: code:addons/account_trip/trip.py:288
+#, python-format
+msgid "Partner not found: %s!\n"
+msgstr "Cliente non trovato: %s!\n"
+
+#. module: account_trip
+#: field:trip.order,description:0
+#: field:trip.tour,description:0
+#: field:trip.trip,description:0
+#: field:trip.vector.camion,name:0
+msgid "Description"
+msgstr "Descrizione"
+
+#. module: account_trip
+#: view:res.partner:0
+#: field:res.partner,tour2_id:0
+msgid "Tour 2"
+msgstr "Giro 2"
+
+#. module: account_trip
+#: field:trip.order,name:0
+msgid "Ref."
+msgstr "Rif."
+
+#. module: account_trip
+#: field:trip.order,partner_id:0
+msgid "Customer"
+msgstr "Cliente"
+
+#. module: account_trip
+#: field:trip.order,error:0
+msgid "Import error"
+msgstr "Errore importazione"
+
+#. module: account_trip
+#: code:addons/account_trip/trip.py:450
+#, python-format
+msgid " <Tour: %s %s>"
+msgstr " <Giro: %s %s>"
+
+#. module: account_trip
+#: code:addons/account_trip/wizard/trip_wizard.py:157
+#, python-format
+msgid ""
+"\n"
+"                    <th>\n"
+"                        <td>%s</td>\n"
+"                        <td>%s</td>\n"
+"                        <td>%s</td>\n"
+"                        <td>%s</td>\n"
+"                    </th>                    \n"
+"                    "
+msgstr ""
+"\n"
+"                    <th>\n"
+"                        <td>%s</td>\n"
+"                        <td>%s</td>\n"
+"                        <td>%s</td>\n"
+"                        <td>%s</td>\n"
+"                    </th>                    \n"
+"                    "
+
+#. module: account_trip
+#: code:addons/account_trip/trip.py:299
+#, python-format
+msgid "Destination not found: %s!\n"
+msgstr "Destinazione non trovata: %s!\n"
+
+#. module: account_trip
+#: field:trip.order,current_load:0
+#: field:trip.trip,current_load:0
+msgid "Current load"
+msgstr "Carico corrente"
+
+#. module: account_trip
+#: field:res.partner,active_order:0
+msgid "# Order"
+msgstr "# Ordini"
+
+#. module: account_trip
+#: model:ir.actions.act_window,name:account_trip.action_trip_order
+#: model:ir.actions.act_window,name:account_trip.action_trip_order_prepare
+#: model:ir.ui.menu,name:account_trip.menu_trip_order
+#: view:res.partner:0
+#: view:trip.order:0
+#: view:trip.trip:0
+#: field:trip.trip,order_ids:0
+#: view:trip.vector.camion:0
+msgid "Order"
+msgstr "Ordine"
+
+#. module: account_trip
+#: view:res.partner:0
+#: view:trip.tour:0
+#: field:trip.tour,obsolete:0
+msgid "Obsolete"
+msgstr "Obsoleto"
+
+#. module: account_trip
+#: model:ir.actions.act_window,name:account_trip.action_trip_trip
+#: model:ir.actions.act_window,name:account_trip.action_trip_trip_vector
+#: model:ir.model,name:account_trip.model_trip_trip
+#: model:ir.ui.menu,name:account_trip.menu_trip_configuration_trip
+#: model:ir.ui.menu,name:account_trip.menu_trip_root
+#: model:ir.ui.menu,name:account_trip.menu_trip_tour
+#: view:trip.order:0
+#: field:trip.order,trip_id:0
+#: view:trip.tour:0
+#: field:trip.tour,trip_ids:0
+#: view:trip.trip:0
+#: field:trip.trip.create.wizard,trip_id:0
+msgid "Trip"
+msgstr "Viaggi"
+
+#. module: account_trip
+#: selection:trip.trip.create.wizard,option:0
+msgid "Create / Override"
+msgstr "Crea / Sovrascrivi"
+
+#. module: account_trip
+#: view:res.partner:0
+msgid "Total"
+msgstr "Totale"
+
+#. module: account_trip
+#: field:res.partner,order_ids:0
+msgid "Orders"
+msgstr "Ordini"
+
+#. module: account_trip
+#: field:trip.trip,max_load:0
+#: field:trip.vector.camion,max_load:0
+msgid "Max load"
+msgstr "Carico massimo"
+

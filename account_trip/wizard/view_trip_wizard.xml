@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+       <!-- trip.trip.create.wizard -->
+       <record id="view_create_trip_wizard_form" model="ir.ui.view">
+            <field name="name">Create trip wizard</field>
+            <field name="model">trip.trip.create.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Create MRP" version="7.0">
+                   <header>
+                       <button string="Cancel" special="cancel" />
+                       <button name="action_create_trip" string="Create" type="object" icon="gtk-jump-to" class="oe_highlight" />
+                   </header>                   
+                   <sheet>
+                       <group colspan="4" col="4">
+                            <field name="date" />
+                            <field name="tour_id" on_change="onchange_trip_tour(tour_id)" />
+                            <field name="option" />
+                            <field name="trip_id" attrs="{'required': [('option', '=', 'uppend')]}"/>
+                            <newline/>
+                            
+                            <separator string="Trip status" colspan="4"/>
+                            <field name="status" colspan="4" nolabel="1" readonly="1" widget="html"/>                            
+                       </group>
+                   </sheet>
+                </form>
+            </field>
+      </record>
+
+    <act_window
+        id="act_window_create_trip_wizard_form"
+        name="Create trip"
+        view_mode="form"
+        target="new"
+        res_model="trip.trip.create.wizard"
+        key2="client_action_multi"
+        src_model="trip.order"/>
+    </data>
+</openerp>

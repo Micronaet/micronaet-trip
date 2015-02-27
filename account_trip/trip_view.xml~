@@ -1,0 +1,611 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+    <!--trip.vector.camion-->
+    <record model="ir.ui.view" id="view_trip_vector_camion_search">
+        <field name="name">trip.vector.camion.search</field>
+        <field name="model">trip.vector.camion</field>
+        <field name="arch" type="xml">
+            <search string="Order">
+               <field name="name" />
+               <field name="vector_id" />                                      
+               <separator/>
+               
+               <!--<filter name="no_tour" string="No tour" domain="[('tour1_id','=',False),('tour2_id','=',False)]"/>-->
+               <separator/>
+    
+                <group expand="1" string="Group By...">
+                    <filter name="group_vector" string="Vector" domain="[]" context="{'group_by':'vector_id'}"/>
+                </group>                   
+            </search>
+        </field>
+    </record>       
+
+    <record model="ir.ui.view" id="view_trip_vector_camion_tree">
+        <field name="name">trip.vector.camion.tree</field>
+        <field name="model">trip.vector.camion</field>
+        <field name="arch" type="xml">
+            <tree string="Camion">
+               <field name="name" />
+               <field name="vector_id" />   
+               <field name="max_load" /> 
+            </tree>
+        </field>
+    </record>    
+    
+    <record model="ir.ui.view" id="view_trip_vector_camion_form">
+        <field name="name">trip.vector.camion.form</field>
+        <field name="model">trip.vector.camion</field>
+        <field name="arch" type="xml">
+            <form string="Order" version="7.0">
+                <sheet>
+                   <group colspan="4" col="4">
+                       <field name="name" />
+                       <field name="vector_id" />   
+                       <field name="max_load" /> 
+                       <separator string="Note" colspan="4"/>
+                       <field name="note" colspan="4" nolabel="1"/>                       
+                   </group>    
+                </sheet>
+            </form>
+        </field>
+    </record>    
+
+    <record model="ir.actions.act_window" id="action_trip_vector_camion">
+        <field name="name">Camion</field>
+        <field name="res_model">trip.vector.camion</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="view_trip_vector_camion_tree"/>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+    </record>    
+    
+        <!--trip.order-->
+    <record model="ir.ui.view" id="view_trip_order_search">
+        <field name="name">trip.order.search</field>
+        <field name="model">trip.order</field>
+        <field name="arch" type="xml">
+            <search string="Order">
+               <field name="name" />
+               <field name="partner_id" />                                      
+               <field name="destination_id" />                                      
+               <field name="tour_code"/>
+               <field name="tour_id" />                                      
+               <field name="trip_id" />      
+                                               
+               <separator/>
+               
+               <!--<filter name="no_tour" string="No tour" domain="[('tour1_id','=',False),('tour2_id','=',False)]"/>-->
+               <separator/>
+    
+                <group expand="1" string="Group By...">
+                    <filter name="group_partner" string="Partner" domain="[]" context="{'group_by':'partner_id'}"/>
+                    <filter name="group_destination" string="Destination" domain="[]" context="{'group_by':'destination_id'}"/>
+                    <filter name="group_trip" string="Trip" domain="[]" context="{'group_by':'trip_id'}"/>
+                    <filter name="group_tour" string="Tour" domain="[]" context="{'group_by':'tour_id'}"/>
+                </group>                   
+            </search>
+        </field>
+    </record>       
+
+    <record model="ir.ui.view" id="view_trip_order_tree">
+        <field name="name">trip.order.tree</field>
+        <field name="model">trip.order</field>
+        <field name="arch" type="xml">
+            <tree string="Order (green=assigned, red=error, orange=no order tour)" colors="green:trip_id!=False;orange:tour_id==False;red:error!=False" editable="bottom">
+               <field name="sequence" invisible="not context.get('embedded',False)" />
+               <field name="name" readonly="1"/>
+               <!--<field name="description" />-->
+               <field name="partner_id" readonly="1" />   
+               <field name="destination_id" readonly="1" />
+               <field name="city" invisible="not context.get('embedded',False)"/> 
+               <field name="delivery_note" invisible="not context.get('embedded',False)"/> 
+               <field name="time" />
+               <field name="prevision_load" sum="Total prevision"/>
+               <field name="current_load" sum="Total current"/>
+               <field name="tour_id" readonly="1"/>                                      
+               <field name="error" /> 
+               <field name="tour_code" invisible="1"/>
+               <field name="trip_id" invisible="context.get('embedded',False)"/> 
+               <button name="unlink_order" icon="gtk-remove" type="object" help="Unlink order to trip" invisible="not context.get('embedded',False)"/>
+               <button name="%(action_trip_trip_change_wizard)d" type="action" string="Change trip" icon="terp-stock_effects-object-colorize" context="{'trip_id':trip_id}"/>               
+            </tree>
+        </field>
+    </record>    
+    
+    <record model="ir.ui.view" id="view_trip_order_form">
+        <field name="name">trip.order.form</field>
+        <field name="model">trip.order</field>
+        <field name="arch" type="xml">
+            <form string="Order" version="7.0">
+                <sheet>
+                   <group colspan="4" col="4">
+                       <field name="sequence" />
+                       <field name="name" readonly="1"/>
+                       <!--<field name="description" />-->
+                       <field name="partner_id" readonly="1"/>   
+                       <field name="destination_id" readonly="1"/>                  
+                       <field name="tour_id" readonly="1"/>                                      
+                       <field name="trip_id" />                                      
+                       <separator string="Note" colspan="4"/>
+                       <field name="note" colspan="4" nolabel="1"/>                       
+                       <separator string="Error" colspan="4" attrs="{'invisible':[('error','=',False)]}"/>
+                       <field name="error" colspan="4" nolabel="1" attrs="{'invisible':[('error','=',False)]}"/>
+                   </group>    
+                </sheet>
+            </form>
+        </field>
+    </record>    
+    <record id="view_trip_order_kanban" model="ir.ui.view">
+        <field name="name">trip.order.form</field>
+        <field name="model">trip.order</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="trip_id">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="current_load"/>
+                <field name="prevision_load"/>
+                <field name="description"/>
+                <field name="trip_id"/>
+                <field name="partner_id"/>
+                <field name="destination_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_vignette oe_semantic_html_override">
+                            <div class="oe_kanban_details">
+                                <h4>
+                                    <a type="open">
+                                        <field name="name"/>
+                                    </a>
+                                </h4>
+                                <!--<ul class="oe_dropdown_menu">
+                                    <t t-if="widget.view.is_action_enabled('edit')"><li><a type="edit">Edit...</a></li></t>
+                                    <t t-if="widget.view.is_action_enabled('delete')"><li><a type="delete">Delete</a></li></t>
+                                    <li><ul class="oe_kanban_colorpicker" data-field="color"/></li>
+                                <div name="tags" />
+                                </ul>-->
+                                <ul>
+                                    <!--<li>Customer: <field name="partner_id"></field></li>-->
+                                    <li>Destination: <field name="destination_id" /></li>
+                                    <li>City: <field name="city" /></li>
+                                    <li>Load >> curr.:<field name="current_load" /> prev.:<field name="prevision_load" /></li>
+                                    <li>Description: <field name="description" /></li>
+                                    <li>Delivery note: <field name="delivery_note" /> <field name="time"/></li>
+                                    <!--<li>Date: <field name="date"></field></li>-->
+                                </ul>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>    
+
+    <record model="ir.actions.act_window" id="action_trip_order">
+        <field name="name">Order</field>
+        <field name="res_model">trip.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree,kanban</field>
+        <field name="view_id" ref="view_trip_order_tree"/>
+        <field name="context">{'show_trip':True}</field>
+        <field name="domain">[]</field>
+    </record>
+    <record model="ir.actions.act_window" id="action_trip_order_prepare">
+        <field name="name">Order</field>
+        <field name="res_model">trip.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree,kanban</field>
+        <field name="view_id" ref="view_trip_order_tree"/>
+        <field name="context">{'search_default_group_tour':True,'show_trip':True}</field>
+        <field name="domain">[('trip_id', '=', False)]</field>
+    </record>
+    <record model="ir.actions.act_window" id="action_trip_order_organize">
+        <field name="name">Order organize</field>
+        <field name="res_model">trip.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,kanban</field>
+        <field name="view_id" ref="view_trip_order_kanban"/>
+        <field name="context">{'name_extra_info': True}</field>
+        <field name="domain">['|',('trip_id','=',False),('trip_id.date', '>=', current_date)]</field>
+    </record>
+    
+    <!--res.partner-->
+        <!--Inherit-->
+    <record model="ir.ui.view" id="view_res_partner_vector_form">
+        <field name="name">res.partner.vector.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">            
+	        <xpath expr="/form/sheet/notebook/page/group/group/field[@name='supplier']" position="after">
+                <field name="is_vector" />
+	            <group colspan="2" col="2" attrs="{'invisible': [('is_vector','=',False)]}">
+	                <separator string="Vector" colspan="2"/>
+	                <field name="vector_note" />	                
+	            </group>    
+	        </xpath>
+        </field>
+    </record> 
+    <record model="ir.ui.view" id="view_res_partner_vector_search">
+        <field name="name">res.partner.vector.search</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter" />
+        <field name="arch" type="xml">            
+           <filter name="supplier" position="after">
+               <filter name="is_vector" string="Vector" domain="[('is_vector','=',True)]"/>
+           </filter>
+        </field>
+    </record> 
+      
+        <!--Destinations:-->
+    <record id="view_res_partner_destination_search" model="ir.ui.view">
+        <field name="name">res_partner_destination</field>
+        <field name="model">res.partner</field>
+        <field name="priority" eval="20" />
+        <field name="arch" type="xml">
+            <search string="Destination">
+               <field name="name" />
+               <field name="parent_id" />                                      
+               <field name="delivery_note" />
+               <field name="tour1_id" />
+               <field name="tour2_id" />
+               <field name="tour1_id" string="All tour" filter_domain="['|',('tour1_id','=',self),('tour2_id','=',self)]" />
+               <separator/>
+
+               <!-- <filter name="no_order" string="No order" domain="[('active_order','=',0)]"/>
+               <filter name="has_order" string="Has order" domain="[('active_order','>',0)]"/>-->
+               <filter name="obsolete" string="Obsolete" domain="[('trip_obsolete','=',True)]"/>
+               <filter name="not_obsolete" string="Not obsolete" domain="[('trip_obsolete','=',False)]"/>
+               <separator/>
+               
+               <filter name="no_tour" string="No tour" domain="[('tour1_id','=',False),('tour2_id','=',False)]"/>
+               <filter name="has_tour" string="Has tour" domain="['|',('tour1_id','!=',False),('tour2_id','!=',False)]"/>
+               <separator/>
+ 
+               <!--<filter name="has_delivery_note" string="Has delivery note" domain="[('delivery_note','!=',False)]"/>
+               <filter name="has_delivery_note" string="Has no delivery note" domain="[('delivery_note','=',False)]"/>
+               <separator/>-->
+
+               <filter name="no_parent" string="No parent" domain="[('parent_id','=',False)]"/>
+               <separator/>
+               
+                <group expand="1" string="Group By...">
+                    <filter name="group_city" string="City" domain="[]" context="{'group_by':'city'}"/>
+                    <filter name="group_partner" string="Partner" domain="[]" context="{'group_by':'parent_id'}"/>
+                    <filter name="group_tour1" string="Tour 1" domain="[]" context="{'group_by':'tour1_id'}"/>
+                    <filter name="group_tour2" string="Tour 2" domain="[]" context="{'group_by':'tour2_id'}"/>
+                </group>                   
+            </search>
+        </field>
+    </record>       
+    <record model="ir.ui.view" id="view_res_partner_destination_tree">
+        <field name="name">res.partner.tree</field>
+        <field name="model">res.partner</field>
+        <field name="priority" eval="20" />
+        <field name="arch" type="xml">
+            <tree string="Destination" colors="grey:trip_obsolete==True">
+                <field name="trip_obsolete" invisible="1"/>
+                <field name="parent_id" />
+                <field name="name" />
+                <field name="sql_destination_code" />
+                <field name="street" />
+                <field name="city" />
+                <field name="tour1_id" />
+                <field name="tour2_id" />                
+                <field name="phone" />
+                <field name="delivery_note" />
+                <field name="active_order" sum="Total"/>
+                <button name="none" string="Order not present" type="workflow" attrs="{'invisible':[('active_order','>',0)]}" icon="gtk-no"/>
+                <button name="open_destination_order" string="Order present" type="object" attrs="{'invisible':[('active_order','=',0)]}" icon="gtk-yes"/>
+                <button name="set_obsolete" string="Set as obsolete" type="object" attrs="{'invisible':[('trip_obsolete','=',True)]}" icon="star-off"/>
+                <button name="unset_obsolete" string="Set as not obsolete" type="object" attrs="{'invisible':[('trip_obsolete','=',False)]}" icon="star-on"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_res_partner_destination_form">
+        <field name="name">res.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="priority" eval="20" />
+        <field name="arch" type="xml">
+            <form string="Destination" version="7.0">
+                <head>
+                    <button name="set_obsolete" string="Set obsolete" type="object" attrs="{'invisible':[('trip_obsolete','=',True)]}" icon="star-off"/>
+                    <button name="unset_obsolete" string="Set as not obsolete" type="object" attrs="{'invisible':[('trip_obsolete','=',False)]}" icon="star-on"/>                
+                </head>
+                <sheet>
+                    <group col="4" colspan="4">
+
+                        <field name="parent_id" />
+                        <field name="name" />
+
+                        <field name="street" />
+                        <field name="city" />
+
+                        <field name="tour1_id" />
+                        <field name="tour2_id" />
+
+                        <field name="sql_destination_code" />
+                        <field name="delivery_note" />
+
+                        <field name="phone" />
+                        <field name="trip_obsolete" />
+                        <notebook colspan="4">
+                            <page string="Order">
+                                <field name="destination_order_ids" colspan="4" nolabel="1" readonly="1"/>
+                            </page>
+                        </notebook>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_res_partner_destination">
+        <field name="name">Destination</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="view_res_partner_destination_tree"/>
+        <field name="context">{'search_view_ref':'account_trip.view_res_partner_destination_search', 'form_view_ref':'account_trip.view_res_partner_destination_form'}</field>
+        <field name="domain">[('is_address', '=', True),('trip_obsolete','=',False)]</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_res_partner_destination_all">
+        <field name="name">Destination</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="view_res_partner_destination_tree"/>
+        <field name="context">{'search_default_obsolete':True,'search_view_ref':'account_trip.view_res_partner_destination_search', 'form_view_ref':'account_trip.view_res_partner_destination_form'}</field>
+        <field name="domain">[('is_address', '=', True)]</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_res_partner_vector">
+        <field name="name">Vector</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="base.view_partner_tree"/>
+        <field name="context">{'search_default_is_vector':True}</field>
+        <field name="domain">[]</field>
+    </record>
+    
+    <!--trip.tour-->
+    <record id="view_trip_tour_search" model="ir.ui.view">
+        <field name="name">trip.tour.search</field>
+        <field name="model">trip.tour</field>
+        <field name="arch" type="xml">
+            <search string="Search tour">
+               <field name="name" />   
+               <field name="description" />   
+               <separator/>               
+
+               <filter name="is_obsolete" string="Obsolete" domain="[('obsolete','=',True)]"/>
+               <filter name="is_not_obsolete" string="Not obsolete" domain="[('obsolete','=',False)]"/>
+            </search>
+        </field>
+    </record>   
+    <record model="ir.ui.view" id="view_trip_tour_tree">
+        <field name="name">trip.tour.tree</field>
+        <field name="model">trip.tour</field>
+        <field name="arch" type="xml">
+            <tree string="Tour" colors="red:obsolete==True">
+                <field name="obsolete" />
+                <field name="name" />
+                <field name="description" />
+                <field name="note" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_trip_tour_form">
+        <field name="name">trip.tour.form</field>
+        <field name="model">trip.tour</field>
+        <field name="arch" type="xml">
+            <form string="Tour" version="7.0">
+                <sheet>
+                  <group colspan="4" col="4">
+                    <field name="name" />
+                    <field name="description" />
+                    <field name="obsolete" />
+                    <notebook colspan="4">
+                        <page string="Trip">
+                            <field name="trip_ids" string="Current trip" nolabel="1"> 
+                                <!--<tree string="Destination" editable="bottom">
+                                    <field name="name" readonly="1" />
+                                    <field name="sql_destination_code" readonly="1" />
+                                </tree>
+                                <form string="Destination" >
+                                    <field name="name" readonly="1" />
+                                    <field name="sql_destination_code" readonly="1" />
+                                </form>-->
+                            </field>
+                        </page>
+                        <page string="Destination 1">
+                            <field name="destination1_ids" nolabel="1"> 
+                                <tree string="Destination" editable="bottom">
+                                    <field name="name" readonly="1" />
+                                    <field name="sql_destination_code" readonly="1" />
+                                </tree>
+                                <form string="Destination" >
+                                    <field name="name" readonly="1" />
+                                    <field name="sql_destination_code" readonly="1" />
+                                </form>                                            
+                            </field>
+                        </page>
+                        <page string="Destination 2">
+                            <field name="destination2_ids" nolabel="1"> 
+                                <tree string="Destination" editable="bottom">
+                                    <field name="name" readonly="1" />
+                                    <field name="sql_destination_code" readonly="1" />
+                                </tree>
+                                <form string="Destination" >
+                                    <field name="name" readonly="1" />
+                                    <field name="sql_destination_code" readonly="1" />
+                                </form>                                            
+                            </field>
+                        </page>
+                        <page string="Note">
+                            <field name="note" nolabel="1" />
+                        </page>
+                    </notebook>
+                  </group>  
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="action_trip_tour">
+        <field name="name">Tour</field>
+        <field name="res_model">trip.tour</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="view_trip_tour_tree"/>
+        <field name="context">{'search_default_is_not_obsolete':True}</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <!--trip.trip-->
+    <record id="view_trip_trip_search" model="ir.ui.view">
+        <field name="name">trip.trip.search</field>
+        <field name="model">trip.trip</field>
+        <field name="arch" type="xml">
+            <search string="Search trip">
+               <field name="description" />   
+               <field name="tour_code"/>
+               <field name="tour_id" />   
+               <field name="camion_id" />   
+               <separator/>               
+                <group expand="1" string="Group By...">
+                    <filter name="group_vector" string="Camion" domain="[]" context="{'group_by':'camion_id'}"/>
+                    <filter name="group_tour" string="Tour" domain="[]" context="{'group_by':'tour_id'}"/>
+                    <filter name="group_date" string="Date" domain="[]" context="{'group_by':'date'}"/>
+                </group>                   
+            </search>
+        </field>
+    </record>   
+    
+    <record model="ir.ui.view" id="view_trip_trip_tree">
+        <field name="name">trip.trip.tree</field>
+        <field name="model">trip.trip</field>
+        <field name="arch" type="xml">
+            <tree string="Trip" >
+                <field name="date" />
+                <field name="description" />
+                <field name="tour_id" />
+                <field name="tour_code" invisible="1" />
+                <field name="camion_id" />
+
+                <field name="max_load" />
+                <field name="prevision_load" />
+                <field name="current_load" />
+                <field name="total_delivery" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_trip_trip_form">
+        <field name="name">trip.trip.form</field>
+        <field name="model">trip.trip</field>
+        <field name="arch" type="xml">
+            <form string="Trip" version="7.0">
+                <sheet>
+                  <group colspan="4" col="4">
+                    <field name="date" />
+                    <field name="tour_id" />
+
+                    <field name="description" />
+                    <field name="camion_id" on_change="onchange_camion_id(camion_id)" required="1"/>
+
+                    <field name="current_load" />
+                    <field name="prevision_load" />
+                    
+                    <field name="max_load" />
+                    <field name="total_delivery" />
+
+                    <notebook colspan="4">
+                        <page string="Order">
+                            <field name="order_ids" nolabel="1" context="{'embedded':True}" options="{'reload_on_button': true}"/>
+                        </page>
+                        <page string="Extra info">
+                            <group colspan="4" col="4">
+                                <separator string="Note" colspan="2" />
+                                <separator string="Good collection" colspan="2" />
+                                <field name="note" nolabel="1" colspan="2"/>
+                                <field name="good_collection" nolabel="1" colspan="2"/>
+                            </group>
+                        </page>
+                    </notebook>
+                  </group>  
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_trip_trip_calendar">
+        <field name="name">trip.trip.calendar</field>
+        <field name="model">trip.trip</field>
+        <field name="type">calendar</field>
+        <field name="priority" eval="10"/>
+        <field name="arch" type="xml">
+            <calendar color="tour_id" date_start="date" string="Trip">
+                <field name="tour_id"/>
+                <field name="camion_id"/>
+                <field name="description"/>
+            </calendar>
+        </field>
+    </record>    
+    <record model="ir.ui.view" id="view_trip_trip_vector_calendar">
+        <field name="name">trip.trip.calendar</field>
+        <field name="model">trip.trip</field>
+        <field name="type">calendar</field>
+        <field name="priority" eval="20"/>
+        <field name="arch" type="xml">
+            <calendar color="camion_id" date_start="date" string="Trip">
+                <field name="tour_id"/>
+                <field name="description"/>
+            </calendar>
+        </field>
+    </record>    
+    <record model="ir.actions.act_window" id="action_trip_trip">
+        <field name="name">Trip</field>
+        <field name="res_model">trip.trip</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree,calendar</field>
+        <field name="view_id" ref="view_trip_trip_tree"/>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+    </record>
+    <record model="ir.actions.act_window" id="action_trip_trip_vector">
+        <field name="name">Trip</field>
+        <field name="res_model">trip.trip</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree,calendar</field>
+        <field name="view_id" ref="view_trip_trip_vector_calendar"/>
+        <!--<field name="context">{'calendar_view_ref':'account_trip.view_trip_trip_vector_calendar'}</field>-->
+        <field name="domain">[]</field>
+    </record>
+    <!--<act_window
+        id="act_window_destination_list_for_check_form"
+        name="Destination analysis"
+        view_type="form"
+        view_mode='tree,form'
+        src_model="trip.trip"
+        res_model="res.partner"
+        key2="client_action_multi"
+        view_id="view_res_partner_destination_tree"
+        context="{}"/>-->
+        <!--domain="['|',('tour1_id','=',tour_id),('tour1_id','=',tour_id)]"-->
+
+    <act_window 
+        id="act_windows_view_trip_organize_trip"
+        name='Organize trip'
+        view_type='form'
+        view_mode='kanban,tree'
+        view_id='view_trip_order_kanban'
+        src_model='trip.trip'
+        res_model='trip.order'
+        key2="client_action_multi"
+        domain="[('trip_id', 'in', active_ids)]"
+        context="{'name_extra_info': True}"
+        />
+    </data>
+</openerp>   

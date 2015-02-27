@@ -1,0 +1,497 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# 	* account_trip_edi
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-12-16 10:23+0000\n"
+"PO-Revision-Date: 2014-12-16 11:27+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: Poedit 1.5.4\n"
+
+#. module: account_trip_edi
+#: help:res.company,trip_todo_file:0
+msgid ""
+"File export where indicate TODO element, used by import file script for "
+"force some future importation order. Write a tuple, like: ('~', 'etl', "
+"'export', 'todo.txt')"
+msgstr ""
+"File export where indicate TODO element, used by import file script for "
+"force some future importation order. Write a tuple, like: ('~', 'etl', "
+"'export', 'todo.txt')"
+
+#. module: account_trip_edi
+#: help:res.company,multi_year:0
+msgid ""
+"If checked the database name is parametrized with yearlike: DB name = "
+"\"example\", real DBs like: \"example2014, \"example2013, example2012 "
+"(depend on format)"
+msgstr ""
+"If checked the database name is parametrized with yearlike: DB name = "
+"\"example\", real DBs like: \"example2014, \"example2013, example2012 "
+"(depend on format)"
+
+#. module: account_trip_edi
+#: view:trip.edi.wizard:0
+msgid "Note:"
+msgstr "Note:"
+
+#. module: account_trip_edi
+#: model:res.groups,comment:account_trip_edi.group_edi_operator
+#: model:res.groups,name:account_trip_edi.group_edi_operator
+msgid "EDI Operator"
+msgstr "Operatore EDI"
+
+#. module: account_trip_edi
+#: field:res.partner,destination_order_waiting_ids:0
+msgid "Destination order wait"
+msgstr "Ordini per desintazione in attesa"
+
+#. module: account_trip_edi
+#: help:trip.edi.line,timestamp:0
+msgid "Arriving order"
+msgstr "Ordini in arrivo"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0 field:trip.edi.line,recursion:0
+msgid "Recursion"
+msgstr "Ricorsione"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "Create"
+msgstr "Crea"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "Destination"
+msgstr "Destinazione"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "Customer destination"
+msgstr "Destinazione cliente"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0 field:trip.edi.line,tour1_id:0
+msgid "Trip 1"
+msgstr "Viaggio 1"
+
+#. module: account_trip_edi
+#: view:res.partner:0
+msgid "Order not present"
+msgstr "Ordine non presente"
+
+#. module: account_trip_edi
+#: model:ir.model,name:account_trip_edi.model_trip_edi_line
+msgid "EDI import line"
+msgstr "EDI file da importare"
+
+#. module: account_trip_edi
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:247
+#, python-format
+msgid "Destination: %s<br/>"
+msgstr "Destinazione: %s<br/>"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "Details"
+msgstr "Dettagli"
+
+#. module: account_trip_edi
+#: help:res.company,trip_import_folder:0
+msgid "Tuple value, like: ('~', 'etl', 'edi')"
+msgstr "Valore tupla, come: ('~', 'etl', 'edi')"
+
+#. module: account_trip_edi
+#: model:ir.ui.menu,name:account_trip_edi.menu_trip_trip_wizard
+msgid "Refresh EDI order"
+msgstr "Ricarica ordini EDI"
+
+#. module: account_trip_edi
+#: model:ir.actions.act_window,name:account_trip_edi.action_trip_edi_line_view_list
+msgid "EDI order"
+msgstr "Ordini"
+
+#. module: account_trip_edi
+#: help:res.company,bottom_year:0
+msgid ""
+"Year value for start database SQL year in multi DBused also for analysis "
+"setup"
+msgstr ""
+"Anno da cui fare partire i database SQL sui sistemi multidatabase utilizzato "
+"per impostazione strumenti di analisi"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "Anomaly"
+msgstr "Anomalia"
+
+#. module: account_trip_edi
+#: field:res.partner,active_order_wait:0
+msgid "# Order wait"
+msgstr "# Ordini in attesa"
+
+#. module: account_trip_edi
+#: model:res.groups,comment:account_trip_edi.group_edi_manager
+#: model:res.groups,name:account_trip_edi.group_edi_manager
+msgid "EDI Manager"
+msgstr "Manager EDI "
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "To delete"
+msgstr "Da cancellare"
+
+#. module: account_trip_edi
+#: model:res.groups,comment:account_trip_edi.group_edi_admin
+#: model:res.groups,name:account_trip_edi.group_edi_admin
+msgid "EDI Admin"
+msgstr "EDI Admin"
+
+#. module: account_trip_edi
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:248
+#, python-format
+msgid "Customer ref.: %s<br/>"
+msgstr "Rif. Cliente: %s<br/>"
+
+#. module: account_trip_edi
+#: view:res.partner:0
+msgid "Order waiting"
+msgstr "Ordini in attesa"
+
+#. module: account_trip_edi
+#: help:res.company,trip_delete_folder:0
+msgid "Tuple value, like: ('~', 'etl', 'edi', 'removed')"
+msgstr "Valore tupla, tipo: ('~', 'etl', 'edi', 'removed')"
+
+#. module: account_trip_edi
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:245
+#, python-format
+msgid "Date: %s<br/>"
+msgstr "Data: %s<br/>"
+
+#. module: account_trip_edi
+#: selection:res.company,multi_year_format:0
+msgid "Database.Year(4)"
+msgstr "Database.Anno(4)"
+
+#. module: account_trip_edi
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:250
+#, python-format
+msgid ""
+"<table class='table_trip'>\n"
+"                                   <tr>\n"
+"                                       <th>Code</th>\n"
+"                                       <th>Description</th>\n"
+"                                       <th>UM</th>\n"
+"                                       <th>Q.</th>\n"
+"                                       <th>Price</th>\n"
+"                                       <th>Total</th>\n"
+"                                   </tr>"
+msgstr ""
+"<table class='table_trip'>\n"
+"                                   <tr>\n"
+"                                       <th>Codice</th>\n"
+"                                       <th>Descrizione</th>\n"
+"                                       <th>UM</th>\n"
+"                                       <th>Q.</th>\n"
+"                                       <th>Prezzo</th>\n"
+"                                       <th>Totale</th>\n"
+"                                   </tr>"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0 field:trip.edi.line,date:0
+msgid "Date"
+msgstr "Date"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "Unforce import order"
+msgstr "Non forzare importazione"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "Force import order"
+msgstr "Forza importazione"
+
+#. module: account_trip_edi
+#: model:ir.ui.menu,name:account_trip_edi.menu_trip_view
+msgid "View"
+msgstr "Viste"
+
+#. module: account_trip_edi
+#: field:res.company,trip_delete_folder:0
+msgid "Trip delete folder"
+msgstr "Cartella viaggi cancellati"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "Delete order"
+msgstr "Cancella ordine"
+
+#. module: account_trip_edi
+#: selection:res.company,multi_year_format:0
+msgid "Database.Year(2)"
+msgstr "Database.Anno(2)"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0 field:trip.edi.line,customer:0
+msgid "Customer"
+msgstr "Cliente"
+
+#. module: account_trip_edi
+#: code:addons/account_trip_edi/edi.py:60
+#, python-format
+msgid "Error trying to read EDI folder"
+msgstr "Errore cercando di leggere la cartella EDI"
+
+#. module: account_trip_edi
+#: model:ir.ui.menu,name:account_trip_edi.menu_trip_view_list
+msgid "All orders"
+msgstr "Tutti gli ordini"
+
+#. module: account_trip_edi
+#: selection:res.company,multi_year_format:0
+msgid "DatabaseYear(2)"
+msgstr "DatabaseAnno(2)"
+
+#. module: account_trip_edi
+#: model:ir.actions.act_window,name:account_trip_edi.action_trip_edi_line_view
+#: model:ir.actions.act_window,name:account_trip_edi.action_trip_edi_wizard_view
+#: view:trip.edi.line:0 view:trip.edi.wizard:0
+msgid "EDI waiting"
+msgstr "EDI in attesa"
+
+#. module: account_trip_edi
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:341
+#, python-format
+msgid ""
+"\n"
+"\n"
+"Destination not found: \n"
+"[%s]"
+msgstr ""
+"\n"
+"\n"
+"Destinazioni non trovate: \n"
+"[%s]"
+
+#. module: account_trip_edi
+#: field:res.company,no_year_current:0
+msgid "No year current"
+msgstr "Nessun anno corrente"
+
+#. module: account_trip_edi
+#: model:ir.ui.menu,name:account_trip_edi.menu_trip_view_recursion
+msgid "Recursion check"
+msgstr "Controllo duplicati"
+
+#. module: account_trip_edi
+#: model:ir.model,name:account_trip_edi.model_res_company
+msgid "Companies"
+msgstr "Aziende"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "All tour"
+msgstr "Tutti i giri"
+
+#. module: account_trip_edi
+#: view:trip.edi.wizard:0
+msgid "Refresh"
+msgstr "Ricarica"
+
+#. module: account_trip_edi
+#: field:trip.edi.line,destination:0
+msgid "Destination (customer)"
+msgstr "Destinazione (cliente)"
+
+#. module: account_trip_edi
+#: view:res.company:0
+msgid "Trip parameters"
+msgstr "Parametri viaggi"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "File EDI"
+msgstr "File EDI"
+
+#. module: account_trip_edi
+#: model:ir.actions.act_window,name:account_trip_edi.action_trip_edi_line_view_recursion
+msgid "EDI recursion check"
+msgstr "EDI controllo duplicati"
+
+#. module: account_trip_edi
+#: field:res.company,multi_year:0
+msgid "Multi year"
+msgstr "Multi anno"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0 field:trip.edi.line,tour2_id:0
+msgid "Trip 2"
+msgstr "Viaggio 2"
+
+#. module: account_trip_edi
+#: field:trip.edi.line,destination_id:0
+msgid "Destination (internal)"
+msgstr "Destinazione (interna)"
+
+#. module: account_trip_edi
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:513
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:524
+#, python-format
+msgid "Error"
+msgstr "Error"
+
+#. module: account_trip_edi
+#: field:res.company,trip_todo_file:0
+msgid "Trip TODO file"
+msgstr "Viaggi file forzati"
+
+#. module: account_trip_edi
+#: view:res.partner:0
+msgid "Order present"
+msgstr "Ordine presente"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "Delete"
+msgstr "Cancella"
+
+#. module: account_trip_edi
+#: model:ir.model,name:account_trip_edi.model_trip_edi_wizard
+msgid "EDI import wizard"
+msgstr "EDI wizard importazione"
+
+#. module: account_trip_edi
+#: field:res.company,multi_year_format:0 view:trip.edi.line:0
+msgid "Type"
+msgstr "Tipo"
+
+#. module: account_trip_edi
+#: field:res.company,bottom_year:0
+msgid "Bottom year"
+msgstr "Anno sotto"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "Force"
+msgstr "Forza"
+
+#. module: account_trip_edi
+#: field:res.company,trip_import_folder:0
+msgid "Trip import folder"
+msgstr "Viaggi cartella di importazione"
+
+#. module: account_trip_edi
+#: field:trip.edi.line,number:0
+msgid "Reference"
+msgstr "Riferimento"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "Group By..."
+msgstr "Raggruppa per..."
+
+#. module: account_trip_edi
+#: selection:res.company,multi_year_format:0
+msgid "Database_Year(2)"
+msgstr "Database_Anno(2)"
+
+#. module: account_trip_edi
+#: model:ir.ui.menu,name:account_trip_edi.menu_trip_trip
+msgid "EDI"
+msgstr "EDI"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "Number"
+msgstr "Numero"
+
+#. module: account_trip_edi
+#: selection:res.company,multi_year_format:0
+msgid "Database_Year(4)"
+msgstr "Database_Anno(4)"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "Trip not present"
+msgstr "Viaggio non presente"
+
+#. module: account_trip_edi
+#: help:res.company,no_year_current:0
+msgid "If checked current year use db name without year extension"
+msgstr ""
+"Se spuntato l'anno corrente utilizza il nome database come è stato indicato "
+"(senza estensione)"
+
+#. module: account_trip_edi
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:246
+#, python-format
+msgid "Deadline: %s<br/>"
+msgstr "Scadenza: %s<br/>"
+
+#. module: account_trip_edi
+#: model:ir.ui.menu,name:account_trip_edi.menu_trip_view_forceable
+msgid "Order forceable"
+msgstr "Ordini forzabili"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "Destination missing"
+msgstr "Destinazioni mancanti"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0 field:trip.edi.line,deadline:0
+msgid "Deadline"
+msgstr "Scadenza"
+
+#. module: account_trip_edi
+#: selection:res.company,multi_year_format:0
+msgid "DatabaseYear(4)"
+msgstr "DatabaseAnno(4)"
+
+#. module: account_trip_edi
+#: field:trip.edi.line,timestamp:0
+msgid "Timestamp"
+msgstr "Timestamp"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+msgid "Importing"
+msgstr "In importazione"
+
+#. module: account_trip_edi
+#: model:ir.model,name:account_trip_edi.model_res_partner
+msgid "Partner"
+msgstr "Partner"
+
+#. module: account_trip_edi
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:514
+#, python-format
+msgid "Set in Company view: origin and delete folder!"
+msgstr "Imposta nella vista azienda: cartella origine e cancellati"
+
+#. module: account_trip_edi
+#: view:res.partner:0
+msgid "Total"
+msgstr "Totale"
+
+#. module: account_trip_edi
+#: view:res.company:0
+msgid "Trip"
+msgstr "Viaggi"
+
+#. module: account_trip_edi
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:525
+#, python-format
+msgid "Error deleting file %s"
+msgstr "Errore cancellando il file %s"

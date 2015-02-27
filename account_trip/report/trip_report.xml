@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record id="aeroo_trip_trip_report" model="ir.actions.report.xml">
+            <field name="name">Trip report</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="model">trip.trip</field>
+            <field name="report_name">trip_trip_report</field>
+            <field name="report_type">aeroo</field>
+            <field name="in_format">oo-odt</field>
+            <field name="out_format" eval="ref('report_aeroo_ooo.report_mimetypes_pdf_odt')" />
+            <field name="parser_loc">account_trip/report/trip_parser.py</field>
+            <field name="report_rml">account_trip/report/trip.odt</field>
+            <field name="parser_state">loc</field>
+            <field name="tml_source">file</field>
+        </record>
+
+        <ir_set>
+            <field eval="'action'" name="key"/>
+            <field eval="'client_print_multi'" name="key2"/>
+            <field eval="['trip.trip']" name="models"/>
+            <field name="name">Trip report</field>
+            <field eval="'ir.actions.report.xml,'+str(trip_trip_report)" name="value"/>
+            <field eval="True" name="isobject"/>
+            <field eval="True" name="replace"/>
+        </ir_set>
+    </data>
+</openerp>
+

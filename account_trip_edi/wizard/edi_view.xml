@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+       <!-- trip.edi.wizard -->
+       <record id="trip_edi_wizard_view" model="ir.ui.view">
+            <field name="name">EDI waiting</field>
+            <field name="model">trip.edi.wizard</field>
+            <field name="arch" type="xml">
+                <form string="EDI waiting" version="7.0">
+                   <header>                       
+                       <button name="load_edi_list" string="Refresh" type="object" />
+                   </header>
+                   <sheet>
+                       <group colspan="4" col="4">
+                           <separator string="Note:" colspan="2"/>
+                       </group>
+                   </sheet>
+                </form>
+            </field>
+      </record>
+      <record model="ir.actions.act_window" id="action_trip_edi_wizard_view">
+          <field name="name">EDI waiting</field>
+          <field name="res_model">trip.edi.wizard</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">form</field>
+          <field name="target">new</field>
+          <field name="view_id" ref="trip_edi_wizard_view"/>
+      </record>
+        
+    <!--res.partner (inherit)-->
+    <record model="ir.ui.view" id="view_res_partner_destination_form">
+        <field name="name">res.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account_trip.view_res_partner_destination_form" />
+        <field name="arch" type="xml">
+            <xpath expr="/form/sheet/group/notebook/page" position="after">
+                <page string="Order waiting">
+                    <field name="destination_order_waiting_ids" colspan="4" nolabel="1" readonly="1"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+        
+    <record model="ir.ui.view" id="view_res_partner_destination_edi_tree">
+        <field name="name">res.partner.tree</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account_trip.view_res_partner_destination_tree" />
+        <field name="arch" type="xml">
+            <field name="active_order" position="after">
+               <field name="active_order_wait" sum="Total"/>
+            </field>    
+
+            <button name="none" position="replace">
+                <button name="none" string="Order not present" type="workflow" attrs="{'invisible':['|',('active_order','>',0),('active_order_wait','>',0)]}" icon="gtk-no"/>
+            </button>
+            <button name="open_destination_order" position="replace">
+                <button name="open_destination_order" string="Order present" type="object" attrs="{'invisible':[('active_order','=',0),('active_order_wait','=',0)]}" icon="gtk-yes"/>
+            </button>    
+        </field>
+    </record>
+            
+        <!--MENUITEM-->
+        <menuitem parent="menu_trip_trip" id="menu_trip_trip_wizard" name="Refresh EDI order" sequence="10" action="action_trip_edi_wizard_view"/>
+        <!--<menuitem parent="account_trip.menu_trip_trip" id="menu_trip_line" name="EDI line" sequence="20" action="action_trip_edi_line_view"/>-->
+        
+   </data>
+</openerp>   
