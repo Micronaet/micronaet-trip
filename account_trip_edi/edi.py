@@ -31,6 +31,20 @@ from openerp.tools.translate import _
 _logger = logging.getLogger(__name__)
 
 
+class edi_company_importation(orm.Model):
+    ''' This class elements are populated with extra modules:
+        account_trip_edi_c*
+    '''
+    
+    _name = 'edi.company.importation'
+    _description = 'EDI Company importation'
+    
+    _columns = {
+        'name': fields.char('Importation type', size=20, required=True),
+        'object': fields.char('Object', size=64, required=True),
+        'note': fields.char('Note'),
+        }
+
 class edi_company(orm.Model):
     ''' Manage more than one importation depend on company
     '''
@@ -88,7 +102,6 @@ class edi_company(orm.Model):
         except: 
             return []
 
-
     def _type_importation_selection(self, cr, uid, context=None):
         ''' Empty without extra importation modules
         '''
@@ -99,10 +112,9 @@ class edi_company(orm.Model):
         'partner_id': fields.many2one(
             'res.partner', 'Partner', required=False),
         'import':fields.boolean('Import'),    
-        'type_importation':fields.selection(
-            _type_importation_selection, 'Type of importation', 
-            required=True, select=True, readonly=False),
-        
+        'type_importation_id': fields.many2one(
+            'edi.company.importation', 'Importation type', required=True),
+            
         # Folders:
         'trip_import_folder': fields.char(
             'Trip import folder', size=150, required=True,

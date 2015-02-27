@@ -59,6 +59,7 @@ class trip_import_edi_wizard(osv.osv_memory):
             '''
             return value.strip()
         
+        # TODO mode in custom module for importation
         def get_timestamp_from_file(file_in):
             ''' Get timestamp value from file name
                 File is: ELIORD20141103091707.ASC

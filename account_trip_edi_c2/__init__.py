@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ###############################################################################
 #
 #    Copyright (C) 2001-2014 Micronaet SRL (<http://www.micronaet.it>).
@@ -17,31 +18,8 @@
 #
 ###############################################################################
 
-{
-    'name': 'Account trip - EDI order import procedure for Company 1',
-    'version': '0.1',
-    'category': '',
-    'description': """
-        Import function for load EDI files
-        this is a model of importation for Company 1
-        This type of module are linked to edi.company for parametrize
-        function for importation.
-        Import procedure is in account_trip_edi 
-        """,
-    'author': 'Micronaet S.r.l. - Nicola Riolini',
-    'website': 'http://www.micronaet.it',
-    'license': 'AGPL-3',
-    'depends': [
-        'base',
-        'account_trip_edi',
-        ],
-    'init_xml': [],
-    'demo': [],
-    'data': [
-        'security/ir.model.access.csv',
-        'data/edi_company_importation.xml'
-        ],
-    'active': False,
-    'installable': True,
-    'auto_install': False,
-    }
+import edi
+
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+

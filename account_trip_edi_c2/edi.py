@@ -40,18 +40,19 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
-class edi_company_c1(orm.Model):
-    ''' Add model for parametrize function for Company 1
+class edi_company_c2(orm.Model):
+    ''' Add model for parametrize function for Company 2
         Model has only function for a sort of abstract class
     '''
 
-    _name = 'edi.company.c1'
-    _description = 'EDI Company 1'
+    _name = 'edi.company.c2'
+    _description = 'EDI Company 2'
 
     # -------------------------------------------------------------------------    
     #                       Abstract function
     # -------------------------------------------------------------------------    
     def get_timestamp_from_file(file_in):
+        # TODO
         ''' Get timestamp value from file name
             File is: ELIORD20141103091707.ASC
                      ------YYYYMMGGhhmmss----

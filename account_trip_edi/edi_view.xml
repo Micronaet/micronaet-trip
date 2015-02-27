@@ -37,7 +37,7 @@
                     <newline />
                     
                     <field name="partner_id" />
-                    <field name="type_importation" />
+                    <field name="type_importation_id" />
                     <newline />
 
 		            <field name="trip_import_folder" />
@@ -55,7 +55,7 @@
             <tree string="EDI Company">
                 <field name="import" />
                 <field name="name" />
-                <field name="type_importation" />
+                <field name="type_importation_id" />
                 <field name="partner_id" />
 	            <field name="trip_import_folder" />
 	            <field name="trip_todo_file" />
