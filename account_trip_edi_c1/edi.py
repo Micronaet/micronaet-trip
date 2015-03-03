@@ -98,7 +98,21 @@ class edi_company_c1(orm.Model):
             return 'delete' # Update file
 
     def get_destination(*args):
-        ''' Mask for code destination '''
+        ''' Mask for code destination 
+            facility, cost, site, '''
         return "[%s|%s|%s]" % args
-            
+
+    def get_destination_id(self, supplier_facility, supplier_cost, 
+            supplier_site):
+        ''' Get 3 parameters for destination and return ID get from res.partner
+            generated during importation
+        '''
+        partner_pool = self.pool.get('res.partner')
+        destination_id = partner_pool.search_supplier_destination(
+            cr, uid, supplier_facility, 
+            "%s%s" % (
+                supplier_cost,
+                supplier_site,
+                ), context=context)
+                                
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

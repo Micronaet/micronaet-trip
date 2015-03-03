@@ -78,6 +78,11 @@ class edi_company_c2(orm.Model):
                 00 for create order ELIORD
                 10 for delete order ELICHG     
         '''
+        # TODO CHANGE
+        # os.path.getctime(os.path.join(path_in, file_in)                
+        #timestamp = datetime.fromtimestamp(ts).strftime(
+        #        DEFAULT_SERVER_DATETIME_FORMAT + ".%f" )
+        
         return "%s-%s-%s %s:%s:%s.%s" % (
             file_in[6:10],   # Year
             file_in[10:12],  # Month
@@ -90,13 +95,32 @@ class edi_company_c2(orm.Model):
     def get_state_of_file(file_in, forced_list):
         ''' Test state of file depend on name and forced presence
         '''
+        try:
+            type_file = file_in.split("_")[2]
+        except:
+            type_file = False # TODO lot error
+                
         if file_in in forced_list: # Forced (pickle file)
             return 'forced'
+        elif type_file == 'ORDCHG': # change (usually ORDERS)
+            return 'change'
+        elif not type_file : # change (usually ORDERS)
+            return 'anomaly'
         else:    
             return 'create'
 
     def get_destination(*args):
-        ''' Mask for code destination (only the last: site is used)'''
+        ''' Mask for code destination (only the last: site is used)
+            facility, cost, site, '''
         return "[%s]" % args[2]
+
+    def get_destination_id(self, supplier_facility, supplier_cost, 
+            supplier_site):
+        ''' Get 3 parameters for destination and return ID get from res.partner
+            generated during importation
+        '''
+        partner_pool = self.pool.get('res.partner')
+        destination_id = partner_pool.search_supplier_destination(
+            cr, uid, "", supplier_site, context=context)
             
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

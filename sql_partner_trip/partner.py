@@ -33,11 +33,11 @@ _logger = logging.getLogger(__name__)
 class res_partner(osv.osv):
     ''' Add extra info for trip (partner address)
     '''
-    _name = 'res.partner'
     _inherit = 'res.partner'
     
     # Utility for search
-    def search_supplier_destination(self, cr, uid, facility, code, context=None):
+    def search_supplier_destination(self, cr, uid, facility, code, 
+            context=None):
         ''' Search code in alternative code if more than one is present 
             search also facility
         '''
@@ -55,9 +55,10 @@ class res_partner(osv.osv):
                 if len(destination_ids) == 1:
                     return destination_ids[0]
                 elif len(destination_ids) == 0:
-                    _logger.error("Find no facility with more code [%s | %s]" % (    
-                        code,
-                        facility))
+                    _logger.error(
+                        "Find no facility with more code [%s | %s]" % (    
+                            code,
+                            facility))
                 else:
                     _logger.error("Find more than one (%s) [%s | %s]" % (    
                         len(destination_ids),

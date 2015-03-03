@@ -24,7 +24,8 @@ import logging
 import pickle
 from openerp.osv import osv, orm, fields
 from datetime import datetime, timedelta
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
+    DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare)
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 
@@ -36,6 +37,7 @@ class trip_import_edi_wizard(osv.osv_memory):
         TODO: now TS is get from file, before from OS datetime
              (leave the old code for backport)
     '''
+
     _name = 'trip.edi.wizard'
     _description = 'EDI import wizard'
 
@@ -59,25 +61,6 @@ class trip_import_edi_wizard(osv.osv_memory):
             '''
             return value.strip()
         
-        # TODO mode in custom module for importation
-        def get_timestamp_from_file(file_in):
-            ''' Get timestamp value from file name
-                File is: ELIORD20141103091707.ASC
-                         ------YYYYMMGGhhmmss----
-                Millisecond are 
-                    00 for create order ELIORD
-                    10 for delete order ELICHG     
-            '''
-            return "%s-%s-%s %s:%s:%s.%s" % (
-                file_in[6:10],   # Year
-                file_in[10:12],  # Month
-                file_in[12:14],  # Day
-                file_in[14:16],  # Hour
-                file_in[16:18],  # Minute
-                file_in[18:20],  # Second
-                "00" if file_in.startswith("ELIORD") else "10" # Millisecond
-                ) 
-            
         # ---------------------------------------------------------------------
         #                  Main code (common part)
         # ---------------------------------------------------------------------
@@ -93,6 +76,7 @@ class trip_import_edi_wizard(osv.osv_memory):
             
         recursion = {}
         
+        # Check period for importation (particular case)
         today = datetime.now()
         if today.weekday() in (3, 4, 5):
             reference_date = (today + timedelta(days=5)).strftime(
@@ -101,7 +85,9 @@ class trip_import_edi_wizard(osv.osv_memory):
             reference_date = (today + timedelta(days=3)).strftime(
                 DEFAULT_SERVER_DATE_FORMAT)
         
-        # Delete all previous: TODO >> force single company importation?
+        # Delete all previous: 
+        # TODO >> force single company importation?
+        # If we create a wizard for select only one company:
         line_ids = line_pool.search(cr, uid, [], context=context)
         try:
             line_pool.unlink(cr, uid, line_ids, context=context)
@@ -114,10 +100,13 @@ class trip_import_edi_wizard(osv.osv_memory):
         # ---------------------------------------------------------------------
         #                      Different for company
         # ---------------------------------------------------------------------
+        # Read company to import:
         edi_company_ids = edi_company_tool.search(cr, uid, [
             ('import', '=', True)], context=context)
+
         for company in edi_company_pool.browse(
-                cr, uid, edi_company_ids, context=context):        
+                cr, uid, edi_company_ids, context=context): 
+       
             # Load object for use the same function name where needed:
             parametrized = self.pool.get(company.type_importation_id.object)
             
@@ -136,17 +125,18 @@ class trip_import_edi_wizard(osv.osv_memory):
             file_list = []
             try:
                 # Sort correctly the files:       
-                for file_in in [f for f in os.listdir(path_in) if os.path.isfile(
-                        os.path.join(path_in, f))]:            
-                    # os.path.getctime(os.path.join(path_in, file_in)                
-                    
-                    # Get file list parametrized on company:
-                    file_list.append(
-                        (parametrized.get_timestamp_from_file(file_in), file_in))
+                for file_in in [
+                        f for f in os.listdir(path_in) if os.path.isfile(
+                            os.path.join(path_in, f))]:            
+                    file_list.append((
+                        parametrized.get_timestamp_from_file(file_in), 
+                        file_in,
+                        ))
                 file_list.sort()
                 
                 # Print list of sorted files for logging the operation:
-                for ts, file_in in file_list:                
+                for ts, file_in in file_list:  
+                    # Reset parameter for destination code:              
                     supplier_facility = ""
                     supplier_cost = ""
                     supplier_site = ""
@@ -185,7 +175,7 @@ class trip_import_edi_wizard(osv.osv_memory):
 
                     # TODO load elements in importing state (depend on date)
                     if mode_type == 'delete':
-                        # Read first line only
+                        # Short read (get info from 1st line only) 
                         line = fin.readline()
                         
                         # Read fields:
@@ -201,7 +191,7 @@ class trip_import_edi_wizard(osv.osv_memory):
                         customer = False
                         destination = False
                         
-                    else: # create                     
+                    else: # create   
                         for line in fin:
                             if start: # header value (only one)
                                 start = False
@@ -223,7 +213,8 @@ class trip_import_edi_wizard(osv.osv_memory):
                                     line[
                                         trace['customer'][0]:
                                         trace['customer'][1]])
-                                
+
+                                # Read all destination code (max 3 parts):                                
                                 supplier_facility = format_string(line[
                                         trace['destination_facility'][0]:
                                         trace['destination_facility'][1]])
@@ -233,13 +224,11 @@ class trip_import_edi_wizard(osv.osv_memory):
                                 supplier_site = format_string(line[
                                         trace['destination_site'][0]:
                                         trace['destination_site'][1]])
-                                 
                                 destination = parametrized.get_destination((
                                     supplier_facility, 
                                     supplier_cost, 
                                     supplier_site, 
                                     ))
-
                                 
                                 # Create an HMTL element for preview file:        
                                 html += "<p>"
@@ -299,13 +288,8 @@ class trip_import_edi_wizard(osv.osv_memory):
                     # TODO old code: Read from file
                     #timestamp = datetime.fromtimestamp(ts).strftime(
                     #        DEFAULT_SERVER_DATETIME_FORMAT + ".%f" )
-                    # TODO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ARRIVATO QUI CON LA CONVERSIONE:
-                    destination_id = partner_pool.search_supplier_destination(
-                        cr, uid, supplier_facility, 
-                        "%s%s" % (
-                            supplier_cost,
-                            supplier_site,
-                            ), context=context)
+                    destination_id = parametrize.get_destination_id(
+                        self, supplier_facility, supplier_cost, supplier_site)
                             
                     if not destination_id and destination_id not in destination_not_found: 
                         destination_not_found.append(destination)
@@ -527,6 +511,7 @@ class trip_import_edi_wizard(orm.Model):
             ('importing', 'To importing'),   # Next importation files
             ('anomaly', 'Delete (Anomaly)'), # Delete, not found create before
             ('create', 'Create'),            # Create
+            ('change', 'Change'),            # Change an order 
             ('deleting', 'To delete'),       # Create, but delete before
             ('forced', 'To force'),          # Force to load next importation
             ('delete', 'Delete')], 'Type', required=True), # To delete
