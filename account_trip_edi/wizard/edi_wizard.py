@@ -290,8 +290,10 @@ class trip_import_edi_wizard(osv.osv_memory):
                     #        DEFAULT_SERVER_DATETIME_FORMAT + ".%f" )
                     destination_id = parametrize.get_destination_id(
                         self, supplier_facility, supplier_cost, supplier_site)
-                            
-                    if not destination_id and destination_id not in destination_not_found: 
+                    
+                    # Remember destination not fount        
+                    if not destination_id and (
+                            destination_id not in destination_not_found): 
                         destination_not_found.append(destination)
                             
                     line_id = line_pool.create(cr, uid, {
@@ -307,14 +309,18 @@ class trip_import_edi_wizard(osv.osv_memory):
                         'information': html,
                         }, context=context)
                         
+                    # Create record for test recursions:    
                     if number not in recursion:
                         recursion[number] = [1, [line_id]]
                     else:
                         recursion[number][0] += 1
                         recursion[number][1].append(line_id)
 
+                    # TODO parametrize:
+                    # Particular case for create-delete-recreate management:
                     if mode_type == 'create':
-                        order_info['create'][number] = line_id # last (for test delete)
+                        # last (for test delete)
+                        order_info['create'][number] = line_id 
                     elif mode_type == 'delete':
                         if number in order_info['create']:                    
                             order_info['deleting'].append(
@@ -329,14 +335,15 @@ class trip_import_edi_wizard(osv.osv_memory):
                 _logger.error("Generic error: %s" % (sys.exc_info(), ))
                 
 
-        # Update recursion informations:
+        # Update recursion informations (write totals recursions):
         for key in recursion:
             total, record_ids = recursion[key]
             line_pool.write(cr, uid, record_ids, {
                 'recursion': total,
                 }, context=context)
         
-        # Update type informations:
+        # TODO parametrize:
+        # Update type informations (for create-delete-recreate management):
         for key in order_info:
             if key == 'deleting':
                 if order_info['deleting']:
@@ -403,7 +410,7 @@ class trip_import_edi_wizard(orm.Model):
                 # Save log of operation                         
             else:
                 try:
-                    ids.remove(item.id) # Remove others elements (nothing to do)
+                    ids.remove(item.id) # Remove other elements (nothing to do)
                 except:
                     pass # no error comunication    
 
@@ -450,12 +457,14 @@ class trip_import_edi_wizard(orm.Model):
     def force_import(self, cr, uid, ids, context=None):
         ''' Force importation of order (using pickle file)
         '''
-        return self.force_import_common(cr, uid, ids, force=True, context=context)
+        return self.force_import_common(
+            cr, uid, ids, force=True, context=context)
 
     def unforce_import(self, cr, uid, ids, context=None):
         ''' Unforce importation of order (using pickle file)
         '''
-        return self.force_import_common(cr, uid, ids, force=False, context=context)
+        return self.force_import_common(
+            cr, uid, ids, force=False, context=context)
 
     def delete_order(self, cr, uid, ids, context=None):
         ''' Move order in delete folder
@@ -525,13 +534,13 @@ class trip_import_edi_wizard(orm.Model):
 class res_partner(osv.osv):
     ''' Add extra info for calculate waiting order for destination
     '''
-    _name = 'res.partner'
     _inherit = 'res.partner'
     
     # ---------------
     # Field function:
     # ---------------
-    def _function_get_order_wait(self, cr, uid, ids, args=None, fields=None, context=None):
+    def _function_get_order_wait(self, cr, uid, ids, args=None, fields=None, 
+            context=None):
         ''' Return number of active order if is a destination
         '''
         res = {}
@@ -545,7 +554,8 @@ class res_partner(osv.osv):
     _columns = { 
         'destination_order_waiting_ids': fields.one2many(
             'trip.edi.line', 'destination_id', 'Destination order wait'),             
-        'active_order_wait': fields.function(_function_get_order_wait, method=True, 
+        'active_order_wait': fields.function(
+            _function_get_order_wait, method=True, 
             type='integer', string='# Order wait', store=False),            
         }    
 
