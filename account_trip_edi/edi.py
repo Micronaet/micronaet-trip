@@ -27,6 +27,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare)
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
+import pickle
 
 
 _logger = logging.getLogger(__name__)
@@ -68,14 +69,11 @@ class edi_company(orm.Model):
                 cr, uid, company_id, context=context)
                 
             if value == 'folder':
-                trip_import_folder = eval(company_proxy.trip_import_folder)
-                return os.path.expanduser(os.path.join(*trip_import_folder))
+                return os.path.expanduser(company_proxy.trip_import_folder)
             elif value == 'file': 
-                trip_todo_file = eval(company_proxy.trip_todo_file)
-                return os.path.expanduser(os.path.join(*trip_todo_file))
+                return os.path.expanduser(company_proxy.trip_todo_file)
             else: # 'delete': 
-                trip_delete_folder = eval(company_proxy.trip_delete_folder)
-                return os.path.expanduser(os.path.join(*trip_delete_folder))                
+                return os.path.expanduser(company_proxy.trip_delete_folder)                
         except:
             _logger.error(_("Error trying to read EDI folder"))
         return False

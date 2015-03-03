@@ -69,7 +69,7 @@ class edi_company_c2(orm.Model):
         'destination_site': (1225, 1260), # 35 site             
         }
 
-    def get_timestamp_from_file(file_in):
+    def get_timestamp_from_file(self, file_in):
         # TODO
         ''' Get timestamp value from file name
             File is: ELIORD20141103091707.ASC
@@ -92,7 +92,7 @@ class edi_company_c2(orm.Model):
             file_in[18:20],  # Second
             "00" if file_in.startswith("ELIORD") else "10" # Millisecond
             ) 
-    def get_state_of_file(file_in, forced_list):
+    def get_state_of_file(self, file_in, forced_list):
         ''' Test state of file depend on name and forced presence
         '''
         try:
@@ -109,7 +109,7 @@ class edi_company_c2(orm.Model):
         else:    
             return 'create'
 
-    def get_destination(*args):
+    def get_destination(self, *args):
         ''' Mask for code destination (only the last: site is used)
             facility, cost, site, '''
         return "[%s]" % args[2]

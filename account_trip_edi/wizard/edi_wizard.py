@@ -49,7 +49,7 @@ class trip_import_edi_wizard(osv.osv_memory):
         '''
         
         # ---------------------------------------------------------------------
-        #                        Utility function:        
+        #                        Common function:        
         # ---------------------------------------------------------------------
         def format_date(value):
             ''' EDI file date format YYYYMMDD
@@ -101,7 +101,7 @@ class trip_import_edi_wizard(osv.osv_memory):
         #                      Different for company
         # ---------------------------------------------------------------------
         # Read company to import:
-        edi_company_ids = edi_company_tool.search(cr, uid, [
+        edi_company_ids = edi_company_pool.search(cr, uid, [
             ('import', '=', True)], context=context)
 
         for company in edi_company_pool.browse(
@@ -128,11 +128,13 @@ class trip_import_edi_wizard(osv.osv_memory):
                 for file_in in [
                         f for f in os.listdir(path_in) if os.path.isfile(
                             os.path.join(path_in, f))]:            
+                    import pdb; pdb.set_trace()
                     file_list.append((
                         parametrized.get_timestamp_from_file(file_in), 
                         file_in,
                         ))
                 file_list.sort()
+                import pdb; pdb.set_trace()
                 
                 # Print list of sorted files for logging the operation:
                 for ts, file_in in file_list:  
