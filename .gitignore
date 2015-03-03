@@ -2,8 +2,7 @@
 __pycache__/
 *.py[cod]
 
-# Temp:
-*.py~
+# Temp file:
 *~
 
 # C extensions
