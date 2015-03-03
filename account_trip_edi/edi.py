@@ -33,7 +33,7 @@ import pickle
 _logger = logging.getLogger(__name__)
 
 # TEMP REMOVE vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-class res_company(osv.osv):
+"""class res_company(osv.osv):
     ''' Add extra parameters for importation
     '''
     _inherit = 'res.company'
@@ -50,7 +50,7 @@ class res_company(osv.osv):
             help="File export where indicate TODO element, used by import "
                 "file script for force some future importation order. "
                 "Write a tuple, like: ('~', 'etl', 'export', 'todo.txt')"),
-        }
+        }"""
         
 class edi_company_importation(orm.Model):
     ''' This class elements are populated with extra modules:
