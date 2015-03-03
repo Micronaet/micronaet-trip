@@ -56,10 +56,27 @@ class trip_import_edi_wizard(osv.osv_memory):
             '''
             return "%s-%s-%s" % (value[:4], value[4:6], value[6:8])
 
+        def ascii_check(value):
+            ''' Try to remove not ascii char (replaced with #)
+            ''' 
+            try:
+                value.decode("utf8") # test for raise error
+                return value
+            except:
+                # remove char not ascii
+                v = ""
+                for char in value:
+                    try:
+                        char.decode("utf8")
+                        v += char
+                    except:
+                        v += "#" # replaced
+                return v        
+            
         def format_string(value):
             ''' EDI file string 
             '''
-            return value.strip()
+            return value.strip()    
         
         # ---------------------------------------------------------------------
         #                  Main code (common part)
@@ -128,13 +145,11 @@ class trip_import_edi_wizard(osv.osv_memory):
                 for file_in in [
                         f for f in os.listdir(path_in) if os.path.isfile(
                             os.path.join(path_in, f))]:            
-                    import pdb; pdb.set_trace()
                     file_list.append((
-                        parametrized.get_timestamp_from_file(file_in), 
+                        parametrized.get_timestamp_from_file(file_in, path_in), 
                         file_in,
                         ))
                 file_list.sort()
-                import pdb; pdb.set_trace()
                 
                 # Print list of sorted files for logging the operation:
                 for ts, file_in in file_list:  
@@ -193,8 +208,9 @@ class trip_import_edi_wizard(osv.osv_memory):
                         customer = False
                         destination = False
                         
-                    else: # create   
+                    else: # create 
                         for line in fin:
+                            line = ascii_check(line)
                             if start: # header value (only one)
                                 start = False
 
@@ -226,11 +242,11 @@ class trip_import_edi_wizard(osv.osv_memory):
                                 supplier_site = format_string(line[
                                         trace['destination_site'][0]:
                                         trace['destination_site'][1]])
-                                destination = parametrized.get_destination((
+                                destination = parametrized.get_destination(
                                     supplier_facility, 
                                     supplier_cost, 
                                     supplier_site, 
-                                    ))
+                                    )
                                 
                                 # Create an HMTL element for preview file:        
                                 html += "<p>"
@@ -290,8 +306,9 @@ class trip_import_edi_wizard(osv.osv_memory):
                     # TODO old code: Read from file
                     #timestamp = datetime.fromtimestamp(ts).strftime(
                     #        DEFAULT_SERVER_DATETIME_FORMAT + ".%f" )
-                    destination_id = parametrize.get_destination_id(
-                        self, supplier_facility, supplier_cost, supplier_site)
+                    destination_id = parametrized.get_destination_id(
+                        cr, uid, supplier_facility, supplier_cost, 
+                        supplier_site)
                     
                     # Remember destination not fount        
                     if not destination_id and (
@@ -307,6 +324,7 @@ class trip_import_edi_wizard(osv.osv_memory):
                         'customer': customer,
                         'destination': destination,
                         'destination_id': destination_id,
+                        'company_id': company.id,
                         'type': mode_type,
                         'information': html,
                         }, context=context)
@@ -432,8 +450,13 @@ class trip_import_edi_wizard(orm.Model):
     def force_import_common(self, cr, uid, ids, force=True, context=None):
         ''' Common procedure for 2 botton for force and unforce
         '''
-        # Read transit file:
-        forced_list = self.load_forced(cr, uid, context=context)
+        # Read company elements:
+        line_proxy = self.browse(cr, uid, ids, context=context)[0] 
+        company_id = line_proxy.company_id.id
+        # Read transit file:        
+        edi_pool = self.pool.get("edi.company")
+        forced_list = edi_pool.load_forced(
+            cr, uid, company_id, context=context)
         
         # Save if not present:
         file_proxy = self.browse(cr, uid, ids, context=context)[0]
@@ -449,7 +472,8 @@ class trip_import_edi_wizard(orm.Model):
                 modified = True
             state = 'create'                
         if modified: # only if changed:
-            self.store_forced(cr, uid, forced_list, context=context)
+            edi_pool.store_forced(cr, uid, company_id, forced_list, 
+                context=context)
             
         # Set record to importing    
         self.write(cr, uid, ids, {

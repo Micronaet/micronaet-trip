@@ -66,10 +66,10 @@ class edi_company_c2(orm.Model):
         # Destination blocks:
         'destination_facility': (0, 0), # 35 facility  TODO: 1225 1260     
         'destination_cost': (0, 0), # 30 cost
-        'destination_site': (1225, 1260), # 35 site             
+        'destination_site': (1224, 1259), # 35 site             
         }
 
-    def get_timestamp_from_file(self, file_in):
+    def get_timestamp_from_file(self, file_in, path_in=None):
         # TODO
         ''' Get timestamp value from file name
             File is: ELIORD20141103091707.ASC
@@ -78,20 +78,10 @@ class edi_company_c2(orm.Model):
                 00 for create order ELIORD
                 10 for delete order ELICHG     
         '''
-        # TODO CHANGE
-        # os.path.getctime(os.path.join(path_in, file_in)                
-        #timestamp = datetime.fromtimestamp(ts).strftime(
-        #        DEFAULT_SERVER_DATETIME_FORMAT + ".%f" )
+        ts = os.path.getctime(os.path.join(path_in, file_in))
+        return datetime.fromtimestamp(ts).strftime(
+            DEFAULT_SERVER_DATETIME_FORMAT + ".%f" )
         
-        return "%s-%s-%s %s:%s:%s.%s" % (
-            file_in[6:10],   # Year
-            file_in[10:12],  # Month
-            file_in[12:14],  # Day
-            file_in[14:16],  # Hour
-            file_in[16:18],  # Minute
-            file_in[18:20],  # Second
-            "00" if file_in.startswith("ELIORD") else "10" # Millisecond
-            ) 
     def get_state_of_file(self, file_in, forced_list):
         ''' Test state of file depend on name and forced presence
         '''
@@ -109,18 +99,15 @@ class edi_company_c2(orm.Model):
         else:    
             return 'create'
 
-    def get_destination(self, *args):
-        ''' Mask for code destination (only the last: site is used)
-            facility, cost, site, '''
-        return "[%s]" % args[2]
+    def get_destination(self, facility, cost, site):
+        ''' Mask for code destination (only the last: site is used)'''
+        return "[%s]" % site
 
-    def get_destination_id(self, supplier_facility, supplier_cost, 
-            supplier_site):
+    def get_destination_id(self, cr, uid, facility, cost, site, context=None):
         ''' Get 3 parameters for destination and return ID get from res.partner
             generated during importation
         '''
-        partner_pool = self.pool.get('res.partner')
-        destination_id = partner_pool.search_supplier_destination(
-            cr, uid, "", supplier_site, context=context)
+        return self.pool.get('res.partner').search_supplier_destination(
+            cr, uid, "", site, context=context)
             
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

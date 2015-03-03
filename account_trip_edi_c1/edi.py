@@ -69,7 +69,7 @@ class edi_company_c1(orm.Model):
         'destination_site': (1189, 1224), # 35 site             
         }
 
-    def get_timestamp_from_file(self, file_in):
+    def get_timestamp_from_file(self, file_in, path=None):
         ''' Get timestamp value from file name
             File is: ELIORD20141103091707.ASC
                      ------YYYYMMGGhhmmss----
@@ -97,22 +97,16 @@ class edi_company_c1(orm.Model):
         else:
             return 'delete' # Update file
 
-    def get_destination(self, *args):
-        ''' Mask for code destination 
-            facility, cost, site, '''
-        return "[%s|%s|%s]" % args
+    def get_destination(self, facility, cost, site):
+        ''' Mask for code destination'''
+        return "[%s|%s|%s]" % (facility, cost, site)
 
-    def get_destination_id(self, supplier_facility, supplier_cost, 
-            supplier_site):
+    def get_destination_id(self, cr, uid, facility, cost, site, context=None):
         ''' Get 3 parameters for destination and return ID get from res.partner
             generated during importation
         '''
-        partner_pool = self.pool.get('res.partner')
-        destination_id = partner_pool.search_supplier_destination(
-            cr, uid, supplier_facility, 
-            "%s%s" % (
-                supplier_cost,
-                supplier_site,
-                ), context=context)
+        # The 3 part of destination, in importation, are stored in 2 fields
+        return self.pool.get('res.partner').search_supplier_destination(
+            cr, uid, facility, "%s%s" % (cost, site), context=context)
                                 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
