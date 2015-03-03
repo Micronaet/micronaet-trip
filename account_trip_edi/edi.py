@@ -32,7 +32,26 @@ import pickle
 
 _logger = logging.getLogger(__name__)
 
-
+# TEMP REMOVE vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+class res_company(osv.osv):
+    ''' Add extra parameters for importation
+    '''
+    _inherit = 'res.company'
+        
+    _columns = {
+        'trip_import_folder': fields.char(
+            'Trip import folder', size=150, required=False, readonly=False, 
+            help="Tuple value, like: ('~', 'etl', 'edi')"),
+        'trip_delete_folder': fields.char(
+            'Trip delete folder', size=150, required=False, readonly=False, 
+            help="Tuple value, like: ('~', 'etl', 'edi', 'removed')"),
+        'trip_todo_file': fields.char(
+            'Trip TODO file', size=150, required=False, readonly=False, 
+            help="File export where indicate TODO element, used by import "
+                "file script for force some future importation order. "
+                "Write a tuple, like: ('~', 'etl', 'export', 'todo.txt')"),
+        }
+        
 class edi_company_importation(orm.Model):
     ''' This class elements are populated with extra modules:
         account_trip_edi_c*
