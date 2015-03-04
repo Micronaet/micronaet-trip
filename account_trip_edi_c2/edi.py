@@ -67,6 +67,7 @@ class edi_company_c2(orm.Model):
         'destination_facility': (0, 0), # 35 facility  TODO: 1225 1260     
         'destination_cost': (0, 0), # 30 cost
         'destination_site': (1224, 1259), # 35 site             
+        'destination_description': (1259, 1359) # 100 description
         }
 
     def get_timestamp_from_file(self, file_in, path_in=None):

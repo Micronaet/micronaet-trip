@@ -242,6 +242,10 @@ class trip_import_edi_wizard(osv.osv_memory):
                                 supplier_site = format_string(line[
                                         trace['destination_site'][0]:
                                         trace['destination_site'][1]])
+                                destination_description = format_string(
+                                    line[
+                                        trace['destination_description'][0]:
+                                        trace['destination_description'][1]])
                                 destination = parametrized.get_destination(
                                     supplier_facility, 
                                     supplier_cost, 
@@ -324,6 +328,7 @@ class trip_import_edi_wizard(osv.osv_memory):
                         'customer': customer,
                         'destination': destination,
                         'destination_id': destination_id,
+                        'destination_description': destination_description,
                         'company_id': company.id,
                         'type': mode_type,
                         'information': html,
@@ -534,6 +539,8 @@ class trip_import_edi_wizard(orm.Model):
             'Destination (internal)', 
             readonly=True, domain=[('is_address', '=', True)],
             ondelete='set null'),
+        'destination_description': fields.char('Destination description', 
+            size=100, readonly=True),
         'tour1_id': fields.related('destination_id','tour1_id', 
             type='many2one', 
             relation='trip.tour', string='Trip 1', store=True),
