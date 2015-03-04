@@ -52,7 +52,7 @@ class edi_company_c2(orm.Model):
     #                     Abstract function and property:
     # -------------------------------------------------------------------------    
     trace = {
-        'number': (19, 28),
+        'number': (19, 29),
         'date': (29, 37), # 8
         'deadline': (45, 53), #8
         'customer': (1545, 1645), # 100
