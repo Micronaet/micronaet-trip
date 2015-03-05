@@ -500,17 +500,24 @@ class trip_import_edi_wizard(orm.Model):
     def delete_order(self, cr, uid, ids, context=None):
         ''' Move order in delete folder
         '''
-        # TODO parametrize company_id
         try:
-            company_pool = self.pool.get('res.company')
-            origin_folder = company_pool.get_trip_import_edi_folder(
-                    cr, uid, value='folder', context=context)
-            delete_folder = company_pool.get_trip_import_edi_folder(
-                    cr, uid, value='delete', context=context)
+            company_id = self.browse(
+                cr, uid, ids, context=context)[0].company_id.id
+            edi_pool = self.pool.get('edi.company')
+            origin_folder = edi_pool.get_trip_import_edi_folder(
+                    cr, uid, 
+                    company_id,
+                    value='folder',
+                    context=context)
+            delete_folder = edi_pool.get_trip_import_edi_folder(
+                    cr, uid, 
+                    company_id,
+                    value='delete', 
+                    context=context)
             if not all((origin_folder, delete_folder)):
                 raise osv.except_osv(
                     _("Error"), 
-                    _("Set in Company view: origin and delete folder!"))  
+                    _("Set in EDI Company view: origin and delete folder!"))  
 
             item_proxy = self.browse(cr, uid, ids, context=context)[0]
             os.rename(
