@@ -87,7 +87,7 @@ class edi_company_c2(orm.Model):
         ''' Test state of file depend on name and forced presence
         '''
         try:
-            type_file = file_in.split("_")[2]
+            type_file = file_in.split("_")[1]
         except:
             type_file = False # TODO lot error
                 
@@ -97,7 +97,7 @@ class edi_company_c2(orm.Model):
             return 'change'
         elif not type_file : # change (usually ORDERS)
             return 'anomaly'
-        else:    
+        else: # OR or ORDERS
             return 'create'
 
     def get_destination(self, facility, cost, site):
