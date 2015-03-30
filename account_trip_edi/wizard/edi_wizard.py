@@ -556,6 +556,11 @@ class trip_import_edi_wizard(orm.Model):
             relation='trip.tour', string='Trip 2', store=True),
         'information': fields.text('Information', 
             help='Short info about context of order (detail, destination'),
+        'priority': fields.selection([
+            ('low', 'Low'),
+            ('normal', 'Normal'),
+            ('urgent', 'Urgent'),
+            ], 'Priority'),
         'type': fields.selection([
             ('importing', 'To importing'),   # Next importation files
             ('anomaly', 'Delete (Anomaly)'), # Delete, not found create before
@@ -569,6 +574,7 @@ class trip_import_edi_wizard(orm.Model):
         
     _defaults = {
         'type': lambda *x: 'create',
+        'priority': lambda *x: 'normal',
         }
 
 class res_partner(osv.osv):
