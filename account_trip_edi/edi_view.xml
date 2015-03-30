@@ -100,6 +100,8 @@
                    <filter name="type_anomaly" string="Anomaly" domain="[('type','=','anomaly')]"/>
                    <separator/>
 
+                   <filter name="priority_high" string="Urgent" domain="[('priority','=','high')]"/>
+                   <separator/>
                    <filter name="recursion_test" string="Recursion" domain="[('recursion','>',1)]"/>                   
                    <filter name="destination_test" string="Destination missing" domain="[('type','=','create'),('destination_id','=',False)]"/>                   
                    <filter name="trip_test" string="Trip not present" domain="[('type','=','create'),('tour1_id','=',False),('tour2_id','=',False)]"/>                   
@@ -110,6 +112,7 @@
                         <filter name="group_deadline" string="Deadline" domain="[]" context="{'group_by':'deadline'}"/>
                         <filter name="group_number" string="Number" domain="[]" context="{'group_by':'number'}"/>
                         <filter name="group_type" string="Type" domain="[]" context="{'group_by':'type'}"/>
+                        <filter name="group_priority" string="Priority" domain="[]" context="{'group_by':'priority'}"/>
                         <filter name="group_customer" string="Customer" domain="[]" context="{'group_by':'customer'}"/>
                         <filter name="group_destination" string="Customer destination" domain="[]" context="{'group_by':'destination'}"/>
                         <filter name="group_destination_id" string="Destination" domain="[]" context="{'group_by':'destination_id'}"/>
@@ -138,6 +141,8 @@
                    <field name="tour1_id" />
                    <field name="tour2_id" />
                    <field name="type" />
+                   <field name="priority" invisible="1"/>
+                   <button name="action_null" string="Urg." type="object" icon="gtk-about" />
                    <field name="name" />                   
                    <button name="delete_order" type="object" string="Delete order" icon="gtk-delete" invisible="context.get('hide_delete',True)"/>
                    <button name="force_import" type="object" string="Force import order" icon="gtk-refresh" attrs="{'invisible':['|',('recursion','>',1),('type','!=','create')]}" />

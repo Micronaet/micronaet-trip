@@ -55,8 +55,7 @@ _logger = logging.getLogger(__name__)
 class edi_company_importation(orm.Model):
     ''' This class elements are populated with extra modules:
         account_trip_edi_c*
-    '''
-    
+    '''    
     _name = 'edi.company.importation'
     _description = 'EDI Company importation'
     
@@ -68,8 +67,7 @@ class edi_company_importation(orm.Model):
 
 class edi_company(orm.Model):
     ''' Manage more than one importation depend on company
-    '''
-    
+    '''    
     _name = 'edi.company'
     _description = 'EDI Company'
     

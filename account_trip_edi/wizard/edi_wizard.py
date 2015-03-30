@@ -332,6 +332,8 @@ class trip_import_edi_wizard(osv.osv_memory):
                         'company_id': company.id,
                         'type': mode_type,
                         'information': html,
+                        'priority': parametrized.get_priority(
+                            cr, uid, file_in),
                         }, context=context)
                         
                     # Create record for test recursions:    
@@ -451,6 +453,11 @@ class trip_import_edi_wizard(orm.Model):
     # -------------
     # Button event:
     # -------------
+    def action_null(self, cr, uid, ids, context=None):
+        ''' Do Nothing
+        '''
+        return True
+        
     # Utility (for button):
     def force_import_common(self, cr, uid, ids, force=True, context=None):
         ''' Common procedure for 2 botton for force and unforce
@@ -559,7 +566,7 @@ class trip_import_edi_wizard(orm.Model):
         'priority': fields.selection([
             ('low', 'Low'),
             ('normal', 'Normal'),
-            ('urgent', 'Urgent'),
+            ('high', 'High'),
             ], 'Priority'),
         'type': fields.selection([
             ('importing', 'To importing'),   # Next importation files
@@ -574,7 +581,6 @@ class trip_import_edi_wizard(orm.Model):
         
     _defaults = {
         'type': lambda *x: 'create',
-        'priority': lambda *x: 'normal',
         }
 
 class res_partner(osv.osv):

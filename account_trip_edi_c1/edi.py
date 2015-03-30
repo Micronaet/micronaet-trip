@@ -93,7 +93,7 @@ class edi_company_c1(orm.Model):
         '''
         if file_in in forced_list: # Forced (pickle file)
             return 'forced'
-        elif file_in.startswith("ELIORD"): # Create file
+        elif file_in.startswith("ELIORD") or file_in.startswith("ELIURG"): 
             return 'create'
         else:
             return 'delete' # Update file
@@ -109,5 +109,11 @@ class edi_company_c1(orm.Model):
         # The 3 part of destination, in importation, are stored in 2 fields
         return self.pool.get('res.partner').search_supplier_destination(
             cr, uid, facility, "%s%s" % (cost, site), context=context)
-                                
+            
+    def get_priority(self, cr, uid, file_in):
+        ''' Return priority value depend on file name
+        '''
+        if file_in.startwith('ELIURG'):
+            return 'high'
+        return 'normal'    
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

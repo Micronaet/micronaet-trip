@@ -110,5 +110,10 @@ class edi_company_c2(orm.Model):
         '''
         return self.pool.get('res.partner').search_supplier_destination(
             cr, uid, "", site, context=context)
+
+    def get_priority(self, cr, uid, file_in):
+        ''' Always normal (no priority management)
+        '''
+        return 'normal'    
             
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
