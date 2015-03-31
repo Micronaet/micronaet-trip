@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-03 17:12+0000\n"
-"PO-Revision-Date: 2015-03-03 18:18+0100\n"
+"POT-Creation-Date: 2015-03-31 12:38+0000\n"
+"PO-Revision-Date: 2015-03-31 14:41+0100\n"
 "Last-Translator: Nicola Riolini <nicola.riolini@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -89,7 +89,7 @@ msgid "Change"
 msgstr "Cambia"
 
 #. module: account_trip_edi
-#: code:addons/account_trip_edi/edi.py:78
+#: code:addons/account_trip_edi/edi.py:95
 #, python-format
 msgid "Error trying to read EDI folder"
 msgstr "Errore cercando di leggere la cartella EDI"
@@ -148,12 +148,6 @@ msgid "Partner"
 msgstr "Partner"
 
 #. module: account_trip_edi
-#: code:addons/account_trip_edi/wizard/edi_wizard.py:508
-#, python-format
-msgid "Set in Company view: origin and delete folder!"
-msgstr "Imposta nella vista azienda: cartella origine e cancellati"
-
-#. module: account_trip_edi
 #: view:trip.edi.line:0
 #: field:trip.edi.line,recursion:0
 msgid "Recursion"
@@ -171,7 +165,7 @@ msgid "EDI import line"
 msgstr "EDI file da importare"
 
 #. module: account_trip_edi
-#: code:addons/account_trip_edi/wizard/edi_wizard.py:255
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:259
 #, python-format
 msgid "Destination: %s<br/>"
 msgstr "Destinazione: %s<br/>"
@@ -193,7 +187,7 @@ msgid "Order waiting"
 msgstr "Ordini in attesa"
 
 #. module: account_trip_edi
-#: code:addons/account_trip_edi/wizard/edi_wizard.py:253
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:257
 #, python-format
 msgid "Date: %s<br/>"
 msgstr "Data: %s<br/>"
@@ -227,6 +221,11 @@ msgid "Destination (internal)"
 msgstr "Destinazione (interna)"
 
 #. module: account_trip_edi
+#: field:trip.edi.line,destination_description:0
+msgid "Destination description"
+msgstr "Descrizione destinazione"
+
+#. module: account_trip_edi
 #: field:edi.company,trip_todo_file:0
 msgid "Trip TODO file"
 msgstr "File TODO (ordini)"
@@ -253,7 +252,7 @@ msgid "Delete (Anomaly)"
 msgstr "Cancella (anomalia)"
 
 #. module: account_trip_edi
-#: code:addons/account_trip_edi/wizard/edi_wizard.py:254
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:258
 #, python-format
 msgid "Deadline: %s<br/>"
 msgstr "Scadenza: %s<br/>"
@@ -264,7 +263,12 @@ msgid "Trip not present"
 msgstr "Viaggio non presente"
 
 #. module: account_trip_edi
-#: code:addons/account_trip_edi/wizard/edi_wizard.py:258
+#: view:trip.edi.line:0
+msgid "Urgent"
+msgstr "Urgent"
+
+#. module: account_trip_edi
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:262
 #, python-format
 msgid ""
 "<table class='table_trip'>\n"
@@ -293,10 +297,10 @@ msgid "Importation note"
 msgstr "Note importazione"
 
 #. module: account_trip_edi
-#: code:addons/account_trip_edi/wizard/edi_wizard.py:519
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:527
 #, python-format
-msgid "Error deleting file %s"
-msgstr "Errore cancellando il file %s"
+msgid "Set in EDI Company view: origin and delete folder!"
+msgstr "Imposta nella vista azienda EDI : origine e cartella cancellati"
 
 #. module: account_trip_edi
 #: model:res.groups,comment:account_trip_edi.group_edi_operator
@@ -316,6 +320,11 @@ msgid "Note"
 msgstr "Note"
 
 #. module: account_trip_edi
+#: selection:trip.edi.line,priority:0
+msgid "Low"
+msgstr "Bassa"
+
+#. module: account_trip_edi
 #: field:edi.company,import:0
 msgid "Import"
 msgstr "Importa"
@@ -324,6 +333,11 @@ msgstr "Importa"
 #: help:edi.company,trip_import_folder:0
 msgid "Tuple value, like: ('~', 'etl', 'edi')"
 msgstr "Valore tupla, es.: ('~', 'etl', 'edi')"
+
+#. module: account_trip_edi
+#: selection:trip.edi.line,priority:0
+msgid "Normal"
+msgstr "Normale"
 
 #. module: account_trip_edi
 #: field:trip.edi.line,timestamp:0
@@ -337,7 +351,7 @@ msgid "EDI Admin"
 msgstr "EDI Admin"
 
 #. module: account_trip_edi
-#: code:addons/account_trip_edi/wizard/edi_wizard.py:256
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:260
 #, python-format
 msgid "Customer ref.: %s<br/>"
 msgstr "Rif. Cliente: %s<br/>"
@@ -356,10 +370,10 @@ msgstr "Controllo duplicati"
 #: view:trip.edi.line:0
 #: field:trip.edi.line,date:0
 msgid "Date"
-msgstr "Data"
+msgstr "Date"
 
 #. module: account_trip_edi
-#: code:addons/account_trip_edi/wizard/edi_wizard.py:352
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:359
 #, python-format
 msgid ""
 "\n"
@@ -378,11 +392,17 @@ msgid "Companies"
 msgstr "Aziende"
 
 #. module: account_trip_edi
-#: code:addons/account_trip_edi/wizard/edi_wizard.py:507
-#: code:addons/account_trip_edi/wizard/edi_wizard.py:518
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:526
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:537
 #, python-format
 msgid "Error"
 msgstr "Errore"
+
+#. module: account_trip_edi
+#: view:trip.edi.line:0
+#: field:trip.edi.line,priority:0
+msgid "Priority"
+msgstr "Priorità"
 
 #. module: account_trip_edi
 #: field:edi.company,name:0
@@ -494,6 +514,11 @@ msgid "View"
 msgstr "Vista"
 
 #. module: account_trip_edi
+#: selection:trip.edi.line,priority:0
+msgid "High"
+msgstr "Alta"
+
+#. module: account_trip_edi
 #: model:ir.ui.menu,name:account_trip_edi.menu_trip_view_forceable
 msgid "Order forceable"
 msgstr "Ordini forzabili"
@@ -502,6 +527,12 @@ msgstr "Ordini forzabili"
 #: view:trip.edi.line:0
 msgid "Destination missing"
 msgstr "Destinazioni mancanti"
+
+#. module: account_trip_edi
+#: code:addons/account_trip_edi/wizard/edi_wizard.py:538
+#, python-format
+msgid "Error deleting file %s"
+msgstr "Errore cancellando il file %s"
 
 #. module: account_trip_edi
 #: view:res.partner:0
