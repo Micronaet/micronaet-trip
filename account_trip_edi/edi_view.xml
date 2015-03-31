@@ -142,7 +142,7 @@
                    <field name="tour2_id" />
                    <field name="type" />
                    <field name="priority" invisible="1"/>
-                   <button name="action_null" string="Urg." type="object" icon="gtk-about" attrs="{'invisible': [('priority','!=','high')]}"/>
+                   <button name="action_null" string="Urgent" type="object" icon="gtk-about" attrs="{'invisible': [('priority','!=','high')]}"/>
                    <field name="name" />                   
                    <button name="delete_order" type="object" string="Delete order" icon="gtk-delete" invisible="context.get('hide_delete',True)"/>
                    <button name="force_import" type="object" string="Force import order" icon="gtk-refresh" attrs="{'invisible':['|',('recursion','>',1),('type','!=','create')]}" />
