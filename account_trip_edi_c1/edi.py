@@ -113,7 +113,7 @@ class edi_company_c1(orm.Model):
     def get_priority(self, cr, uid, file_in):
         ''' Return priority value depend on file name
         '''
-        if file_in.startwith('ELIURG'):
+        if file_in.startswith('ELIURG'):
             return 'high'
         return 'normal'    
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
