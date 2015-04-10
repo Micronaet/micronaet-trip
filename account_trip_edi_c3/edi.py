@@ -52,36 +52,34 @@ class edi_company_c3(orm.Model):
     #                     Abstract function and property:
     # -------------------------------------------------------------------------    
     trace = {
-        'number': (19, 29),
-        'date': (29, 37), # 8
-        'deadline': (45, 53), #8
-        'customer': (1545, 1645), # 100
-        'detail_code': (2356, 2391), # 35
-        'detail_description': (2531, 2631), # 100
-        'detail_um': (2641, 2644), # 3
-        'detail_quantity': (2631, 2641), # 10 
-        'detail_price': (2877, 2887), # 10 
-        'detail_total': (2907, 2917), # 10
+        'number': (15, 24),
+        'date': (0, 10), # 8
+        'deadline': (0, 10), #8   # TODO ???? not present!!!<<<<<<<<<<<<<<<<<<<
+        'customer': (0, 0), # TODO not present<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        'detail_code': (40, 56), # 35
+        'detail_description': (56, 96), # 100
+        'detail_um': (96, 99), # 3
+        'detail_quantity': (99, 108), # 10 
+        'detail_price': (108, 118), # 10 
+        'detail_total': (2907, 2917), # 10 TODO not present!!!
         
         # Destination blocks:
-        'destination_facility': (0, 0), # 35 facility  TODO: 1225 1260     
-        'destination_cost': (0, 0), # 30 cost
-        'destination_site': (1224, 1259), # 35 site             
-        'destination_description': (1259, 1359) # 100 description
+        'destination_facility': (0, 0), # 35 TODO not present!!
+        'destination_cost': (0, 0), # 30 TODO not present!!
+        'destination_site': (1224, 1259), # 35 TODO not present!!<<<<<<<<<<<<<<
+        'destination_description': (1259, 1359) # 100 TODO not present!!<<<<<<<
         }
 
     def get_timestamp_from_file(self, file_in, path_in=None):
         # TODO
         ''' Get timestamp value from file name
-            File is: ELIORD20141103091707.ASC
-                     ------YYYYMMGGhhmmss----
-            Millisecond are 
-                00 for create order ELIORD
-                10 for delete order ELICHG     
+            File is: 20151231_270.ASC
         '''
-        ts = os.path.getctime(os.path.join(path_in, file_in))
-        return datetime.fromtimestamp(ts).strftime(
-            DEFAULT_SERVER_DATETIME_FORMAT + ".%f" )
+        return "%s-%s-%s" % (
+            file_in[:4], 
+            file_in[4:6], 
+            file_in[6:8], 
+            )
         
     def get_state_of_file(self, file_in, forced_list):
         ''' Test state of file depend on name and forced presence
