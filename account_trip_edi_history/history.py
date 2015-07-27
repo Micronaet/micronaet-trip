@@ -33,12 +33,11 @@ import pickle
 
 _logger = logging.getLogger(__name__)
 
-class EdiHistoryConfiguration(orm.Model):
+class EdiHistoryConfiguration(osv.osv):
     ''' Manage path for all company EDI that has active routes
     '''
     _name = 'edi.history.configuration'
     _description = 'EDI history configuration'
-    _order = 'name'
     
     _columns = {
         'name': fields.many2one('edi.company.importation', 
@@ -46,6 +45,10 @@ class EdiHistoryConfiguration(orm.Model):
         'code': fields.related('name', 'code', 
             type='char', size=10, string='Code', store=True), 
         'active': fields.boolean('Active'),
+        'header': fields.integer('Header lines'),
+        'delimiter': fields.char('Delimiter'),     
+        'verbose': fields.integer('Verbose every', 
+            help='Log an import event every X lines (0 = nothing)'),     
         'history_path': fields.char('History path', size=100, 
             help='Path of history files, use also like: "~/company/history"'),
             
@@ -55,14 +58,22 @@ class EdiHistoryConfiguration(orm.Model):
         'invoice_file': fields.char('Invoice path', size=100, 
             help='Path of invoice file, use: "~/company/account/invoice.csv"'),
         }
+        
+    # TODO set unique key for name    
+    _defaults = {
+        'active': lambda *x: True,
+        'delimiter': lambda *x: ';',
+        'header': lambda *x: 0,        
+        'verbose': lambda *x: 100,    
+        }    
 
-class EdiHistoryCheck(orm.Model):
+class EdiHistoryCheck(osv.osv):
     ''' Manage path for all company EDI that has active routes
     '''
     
     _name = 'edi.history.check'
     _description = 'EDI history check'
-    _order = 'name'
+    _order ='name,line_in,line_out'
     
     # -------------------------------------------------------------------------
     #                             Scheduled action
@@ -78,7 +89,6 @@ class EdiHistoryCheck(orm.Model):
             context: parameter arguments passed
         '''
         # TODO code will be list if used in other company
-        import pdb; pdb.set_trace()
         config_pool = self.pool.get('edi.history.configuration')
         config_ids = config_pool.search(cr, uid, [
             ('code', '=', code)], context=context)
@@ -94,19 +104,19 @@ class EdiHistoryCheck(orm.Model):
         old_order = False
         for invoice in csv.reader(
                 open(input_invoice, 'rb'), 
-                delimiter=config_proxy.delimiter):
+                delimiter=str(config_proxy.delimiter)):
             i += 1
             if i <= 0:
                 _logger.info('Jump header lines')
                 continue
 
-             # Mapping fields:
-            doc_type = invoice[0]
-            number = invoice[1]
-            order_header = invoice[2]
-            article = invoice[3]
-            order_detail = invoice[4]
-            line = invoice[5]
+            # Mapping fields:
+            doc_type = invoice[0].strip()
+            number = invoice[1].strip()
+            order_header = invoice[2].strip()
+            article = invoice[3].strip()
+            order_detail = invoice[4].strip()
+            line = invoice[5].strip()
             
             if not order_header:
                 state = 'no_order' # and no history search
@@ -147,15 +157,13 @@ class EdiHistoryCheck(orm.Model):
             ('FT', 'Invoice'),
             ], 'Document type', help='Document out type'),
         'state': fields.selection([
-            ('ok', 'Correct'),
+            ('no_order', 'Order not present'),
+            ('order', 'Order dont\'t match'),
+            ('sequence', 'Sequence error'),
             ('only_in', 'Not imported'),
             ('only_out', 'Extra line'),
-            ('order', 'Order dont\'t match'),
-            ('no_order', 'Order not present'),
-            ('sequence', 'Sequence error'),
             ('article', 'Article error'),
+            ('ok', 'Correct'),
             ], 'State', help='Error state'),            
         }
-
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

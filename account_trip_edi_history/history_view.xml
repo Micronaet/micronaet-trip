@@ -13,6 +13,10 @@
                         <field name="code" readonly="1" />
                         <field name="history_path" />
                         <field name="invoice_file" />
+                        
+                        <field name="delimiter" />
+                        <field name="header" />
+                        <field name="verbose" />
                         <!--<field name="active" />
                         <field name="invoice_path" />-->
                     </group>
@@ -30,6 +34,9 @@
                 <field name="code" />
                 <field name="history_path" />
                 <field name="invoice_file" />
+                <field name="delimiter" />
+                <field name="header" />
+                <field name="verbose" />
             </tree>
         </field>
     </record>
