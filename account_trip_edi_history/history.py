@@ -73,7 +73,7 @@ class EdiHistoryCheck(osv.osv):
     
     _name = 'edi.history.check'
     _description = 'EDI history check'
-    _order ='name,line_in,line_out'
+    _order = 'sequence,name,line_in,line_out'
     
     # -------------------------------------------------------------------------
     #                             Scheduled action
@@ -162,11 +162,15 @@ class EdiHistoryCheck(osv.osv):
         # Read all lines and save only duplicated
         invoice_row = {}
         i = -config_proxy.header
+        sequence = 0
+        
         old_order = False
+        old_line = False
         for invoice in csv.reader(
                 open(input_invoice, 'rb'), 
                 delimiter=str(config_proxy.delimiter)):
             i += 1
+            sequence += 1
             if i <= 0:
                 _logger.info('Jump header lines')
                 continue
@@ -185,19 +189,24 @@ class EdiHistoryCheck(osv.osv):
                     order, history_files, order_files)
             
             date = {
+                'sequence': sequence, # import order
                 'name': order, # to search in history
                 'name_detail': order_detail,
-                'line_in': line, # TODO load from history
+                'line_in': False, # TODO load from history
                 'line_out': line,
-                'product_code_in': article, # TODO load from history
+                'product_code_in': False, # TODO load from history
                 'product_code_out': article,
                 'document_out': number,
                 'document_type': doc_type,
                 }
 
-            # -------------
-            # State manage:
-            # -------------
+            # -----------------------------------------------------------------
+            #                         State manage
+            # -----------------------------------------------------------------
+
+            # -----------
+            # Rapid case:
+            # -----------
             if not order:
                 date['state'] = 'no_order'
                 self.create(cr, uid, date, context=context)
@@ -207,6 +216,9 @@ class EdiHistoryCheck(osv.osv):
             else:
                 date['state'] = 'ok'
             
+            # ---------------
+            # Duplicated row:
+            # ---------------
             if order not in invoice_row:
                 invoice_row[order] = {}
             
@@ -215,7 +227,26 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
 
-            # Save article:
+            # --------------
+            # Sequence error
+            # --------------
+            if old_order == order:
+                if old_line and line < old_line:
+                    old_line = line
+                    date['state'] = 'sequence'
+                    self.create(cr, uid, date, context=context)
+                    continue                    
+                else:
+                    old_line = line
+            else:
+                # If change order reset line:
+                old_order = order
+                old_line = line # first line of order
+
+
+            # ------------
+            # Save article
+            # ------------
             invoice_row[order][line] = (
                 self.create(cr, uid, date, context=context),
                 article, 
@@ -224,6 +255,7 @@ class EdiHistoryCheck(osv.osv):
         return True
     
     _columns = {
+        'sequence': fields.integer('Sequence'),
         'name': fields.char('Order name', size=25, 
             help='Order ID of company'),
         'name_detail': fields.char('Order detail', size=25, 
