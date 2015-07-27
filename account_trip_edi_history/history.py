@@ -99,15 +99,15 @@ class EdiHistoryCheck(osv.osv):
             '''
             if order not in order_record:
                 order_record[order] = {}
-                
+
             for filename in history_filename.get(order, []):
                 # Read all files and update dict with row record:
                 f = open(filename)
                 for row in f:
                     file_type = row[10:16] # ORDERS or ORDCHG
                     update_type = row[16:19] # 003 ann, 001 mod. q.
-                    line = row[2337:2342] # 5
-                    article = row[2357:2368] # 11
+                    line = row[2336:2341] # 5
+                    article = row[2356:2367].strip() # 11
  
                     if file_type == 'ORDERS':
                         line_type = 'original'
@@ -191,7 +191,6 @@ class EdiHistoryCheck(osv.osv):
             line = invoice[5].strip()
             
             # Load order if not present in database:
-            import pdb; pdb.set_trace()
             if order not in order_record:
                 load_order_from_history(
                     order, history_filename, order_record, order_in_check)
@@ -200,7 +199,7 @@ class EdiHistoryCheck(osv.osv):
                 'sequence': sequence, # import sequence (for read line error)
                 'name': order, # to search in history
                 'name_detail': order_detail,
-                'line_in': False, # TODO load from history
+                'line_in': line, # TODO load from history (always match)
                 'line_out': line,
                 'product_code_in': False, # TODO load from history
                 'product_code_out': article,
@@ -252,17 +251,22 @@ class EdiHistoryCheck(osv.osv):
             # ----------------
             # History analysis
             # ----------------
-            # Line not present: unmanaged (if removed, line_type = cancel) 
+            # Line not present: unmanaged (if removed, line_type = cancel)
             if line not in order_record[order]: # (article, line_type)
                 date['state'] = 'unmanaged'
+                
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
 
             # key: order-line now exist so remove for order_in test:
-            order_in_check.remove((order, line))
+            try:
+                order_in_check.remove((order, line))
+            except:
+                pass # no problem on error
             
             # Test article is the same:
-            if order_record[order][line][0] != article:
+            date['product_code_in'] = order_record[order][line][0]
+            if order_record[order][line][0] != article[:11]:
                 date['state'] = 'article'
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
