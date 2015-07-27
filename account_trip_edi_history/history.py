@@ -88,12 +88,14 @@ class EdiHistoryCheck(osv.osv):
         '''
         # TODO code will be list if used in other company
         
-        def load_order_from_history(order, history_filename, order_record):
+        def load_order_from_history(order, history_filename, order_record, 
+                order_in_check):
             ''' Function that load all files and create a dictionary with row
                 key
                 order: order code origin
                 history_filename: database of filename (list for every order)
                 order_record: dict with order line imported from history files
+                order_in_check: list of all record (for set order_in attribute=
             '''
             if order not in order_record:
                 order_record[order] = {}
@@ -119,6 +121,8 @@ class EdiHistoryCheck(osv.osv):
                                 'Update code not found: %s' % update_type)
                             line_type = 'error'                    
                     order_record[order][line] = (article, line_type)
+                    order_in_check.append((order, line)) # add key for test
+                    
             return
 
         # -----------------------------
@@ -146,6 +150,7 @@ class EdiHistoryCheck(osv.osv):
         # Save in dict for future access
         history_filename = {} # list of file (key=order, value=filename)
         order_record = {} # record in file (key=order, value {row: (art, state)}
+        order_in_check = []
         for root, directories, files in os.walk(input_folder):
             for filename in files:                
                 filepath = os.path.join(root, filename)
@@ -188,7 +193,8 @@ class EdiHistoryCheck(osv.osv):
             # Load order if not present in database:
             import pdb; pdb.set_trace()
             if order not in order_record:
-                load_order_from_history(order, history_filename, order_record)
+                load_order_from_history(
+                    order, history_filename, order_record, order_in_check)
             
             date = {
                 'sequence': sequence, # import sequence (for read line error)
@@ -252,6 +258,9 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
 
+            # key: order-line now exist so remove for order_in test:
+            order_in_check.remove((order, line))
+            
             # Test article is the same:
             if order_record[order][line][0] != article:
                 date['state'] = 'article'
@@ -264,7 +273,11 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
             
-            # TODO write only_in for remain lines not tested
+            # Write only_in for remain lines not tested
+            for (order, line) in order_in_check:
+                # Create record with left values:
+                # TODO 
+                pass
             
             # ------------
             # Save article
