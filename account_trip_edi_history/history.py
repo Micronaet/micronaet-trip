@@ -84,19 +84,21 @@ class EdiHistoryCheck(osv.osv):
             self: instance object
             cr: cursor for database
             uid: user ID
-            code: edi.company.importation for force 
-            delimiter
             context: parameter arguments passed
         '''
         # TODO code will be list if used in other company
         
-        def load_order_from_history(order, history_list, order_files):
+        def load_order_from_history(order, history_filename, order_record):
             ''' Function that load all files and create a dictionary with row
                 key
+                order: order code origin
+                history_filename: database of filename (list for every order)
+                order_record: dict with order line imported from history files
             '''
-            if order not in order_files:
-                order_files[order] = {}
-            for filename in history_list.get(order, []):
+            if order not in order_record:
+                order_record[order] = {}
+                
+            for filename in history_filename.get(order, []):
                 # Read all files and update dict with row record:
                 f = open(filename)
                 for row in f:
@@ -116,9 +118,9 @@ class EdiHistoryCheck(osv.osv):
                             _logger.error(
                                 'Update code not found: %s' % update_type)
                             line_type = 'error'                    
-                    order_files[order][line] = (article, line_type)
+                    order_record[order][line] = (article, line_type)
             return
-            
+
         # -----------------------------
         # Get configuration parameters:
         # -----------------------------
@@ -142,8 +144,8 @@ class EdiHistoryCheck(osv.osv):
         # Read files history:
         # -------------------
         # Save in dict for future access
-        history_files = {} # list of file (key=order, value=filename)
-        order_files = {} # record in file (key=order, value {row: (art, state)}
+        history_filename = {} # list of file (key=order, value=filename)
+        order_record = {} # record in file (key=order, value {row: (art, state)}
         for root, directories, files in os.walk(input_folder):
             for filename in files:                
                 filepath = os.path.join(root, filename)
@@ -151,10 +153,10 @@ class EdiHistoryCheck(osv.osv):
                 line = f.read()
                 f.close()
                 order = line[19:29]
-                if order not in history_files:
-                    history_files[order] = []
+                if order not in history_filename:
+                    history_filename[order] = []
                 #os.path.getmtime(filepath)
-                history_files[order].append(filepath)
+                history_filename[order].append(filepath)
 
         # ---------------------
         # Start import invoice:
@@ -184,12 +186,12 @@ class EdiHistoryCheck(osv.osv):
             line = invoice[5].strip()
             
             # Load order if not present in database:
-            if order not in order_files:
-                load_order_from_history(
-                    order, history_files, order_files)
+            import pdb; pdb.set_trace()
+            if order not in order_record:
+                load_order_from_history(order, history_filename, order_record)
             
             date = {
-                'sequence': sequence, # import order
+                'sequence': sequence, # import sequence (for read line error)
                 'name': order, # to search in history
                 'name_detail': order_detail,
                 'line_in': False, # TODO load from history
@@ -203,7 +205,6 @@ class EdiHistoryCheck(osv.osv):
             # -----------------------------------------------------------------
             #                         State manage
             # -----------------------------------------------------------------
-
             # -----------
             # Rapid case:
             # -----------
@@ -220,8 +221,7 @@ class EdiHistoryCheck(osv.osv):
             # Duplicated row:
             # ---------------
             if order not in invoice_row:
-                invoice_row[order] = {}
-            
+                invoice_row[order] = {}            
             if line in invoice_row[order]:
                 date['state'] = 'duplicated'
                 self.create(cr, uid, date, context=context)
@@ -235,7 +235,7 @@ class EdiHistoryCheck(osv.osv):
                     old_line = line
                     date['state'] = 'sequence'
                     self.create(cr, uid, date, context=context)
-                    continue                    
+                    continue
                 else:
                     old_line = line
             else:
@@ -243,7 +243,29 @@ class EdiHistoryCheck(osv.osv):
                 old_order = order
                 old_line = line # first line of order
 
+            # ----------------
+            # History analysis
+            # ----------------
+            # Line not present: unmanaged (if removed, line_type = cancel) 
+            if line not in order_record[order]: # (article, line_type)
+                date['state'] = 'unmanaged'
+                self.create(cr, uid, date, context=context)
+                continue # Jump line
 
+            # Test article is the same:
+            if order_record[order][line][0] != article:
+                date['state'] = 'article'
+                self.create(cr, uid, date, context=context)
+                continue # Jump line
+                
+            # Test line removed in order
+            if order_record[order][line][1] == 'cancel':
+                date['state'] = 'only_out'
+                self.create(cr, uid, date, context=context)
+                continue # Jump line
+            
+            # TODO write only_in for remain lines not tested
+            
             # ------------
             # Save article
             # ------------
@@ -274,13 +296,19 @@ class EdiHistoryCheck(osv.osv):
             ('FT', 'Invoice'),
             ], 'Document type', help='Document out type'),
         'state': fields.selection([
+            # First control, readind account file:
             ('no_order', 'Order not present'),
             ('order', 'Order dont\'t match'),
             ('sequence', 'Sequence error'),
             ('duplicated', 'Row duplicated'),
+            
+            # Control reading history:
             ('only_in', 'Not imported'),
             ('only_out', 'Extra line'),
             ('article', 'Article error'),
+            ('unmanaged', 'Error unmanaged'),
+            
+            # If all correct:
             ('ok', 'Correct'),
             ], 'State', help='Error state'),            
         }
