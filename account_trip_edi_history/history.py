@@ -118,6 +118,7 @@ class EdiHistoryCheck(osv.osv):
                             line_type = 'error'                    
                     order_files[order][line] = (article, line_type)
             return
+            
         # -----------------------------
         # Get configuration parameters:
         # -----------------------------
@@ -130,6 +131,12 @@ class EdiHistoryCheck(osv.osv):
             cr, uid, config_ids, context=context)[0]
         input_folder = config_proxy.history_path
         input_invoice = config_proxy.invoice_file
+
+        # ---------------
+        # Clean database:
+        # ---------------
+        remove_ids = self.search(cr, uid, [], context=context)
+        self.unlink(cr, uid, remove_ids, context=context)
 
         # -------------------
         # Read files history:
@@ -186,26 +193,26 @@ class EdiHistoryCheck(osv.osv):
                 'product_code_out': article,
                 'document_out': number,
                 'document_type': doc_type,
-                'state': state,                
                 }
 
+            # -------------
+            # State manage:
+            # -------------
             if not order:
-                state = 'no_order' # and no history search
-                date['state'] = 'duplicated'
+                date['state'] = 'no_order'
                 self.create(cr, uid, date, context=context)
                 continue
             elif order != order_detail:
-                state = 'order' # difference between line and header
+                date['state'] = 'order'
             else:
-                state = 'ok'
+                date['state'] = 'ok'
             
             if order not in invoice_row:
                 invoice_row[order] = {}
             
             if line in invoice_row[order]:
                 date['state'] = 'duplicated'
-                _logger.error('Line duplicated: %s-%s' % (order, line))
-                # ID non saved (raise only diplication)
+                self.create(cr, uid, date, context=context)
                 continue # Jump line
 
             # Save article:
