@@ -50,6 +50,33 @@
     </record>
 
     <!-- edi.history.check -->
+    <record model="ir.ui.view" id="view_edi_history_check_search">
+        <field name="name">edi.history.check.search</field>
+        <field name="model">edi.history.check</field>
+        <field name="arch" type="xml">
+           <search string="EDI check search">
+                <field name="name" />
+                <field name="name_detail" />
+                <field name="line_in" />
+                <field name="line_out" />
+                <field name="product_code_in" />
+                <field name="product_code_out" />
+                <field name="document_out" />
+                <field name="document_type" />
+                <field name="state" />
+
+                <filter name="state" string="With error" domain="[('state','!=','ok')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                    <filter name="group_name" string="Order" context="{'group_by': 'name'}"/>
+                    <filter name="group_document" string="Document" context="{'group_by': 'document_type'}"/>
+                    <filter name="group_product_code_in" string="Product in" context="{'group_by': 'product_code_in'}"/>
+                    <filter name="group_product_code_out" string="Product in" context="{'group_by': 'product_code_out'}"/>
+                    <filter name="group_document_out" string="Document" context="{'group_by': 'document_out'}"/>
+                </group>                
+           </search>
+        </field>
+    </record>
     <record model="ir.ui.view" id="view_edi_history_check_form">
         <field name="name">edi.history.check.form</field>
         <field name="model">edi.history.check</field>
@@ -100,6 +127,8 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="view_edi_history_check_tree"/>
+        <field name="search_view_id" ref="view_edi_history_check_search"/>
+        
         <field name="context">{}</field>
         <field name="domain">[]</field>
     </record>
