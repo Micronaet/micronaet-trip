@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+    <!-- edi.history.configuration -->
+    <record model="ir.ui.view" id="view_edi_history_configuration_form">
+        <field name="name">edi.history.configuration.form</field>
+        <field name="model">edi.history.configuration</field>
+        <field name="arch" type="xml">
+            <form string="EDI invoce check config." version="7.0">        
+                <sheet>
+                    <group col="4" colspan="4">
+                        <field name="name" />
+                        <field name="code" readonly="1" />
+                        <field name="history_path" />
+                        <field name="invoice_file" />
+                        <!--<field name="active" />
+                        <field name="invoice_path" />-->
+                    </group>
+                </sheet>        
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_edi_history_configuration_tree">
+        <field name="name">edi.history.configuration.tree</field>
+        <field name="model">edi.history.configuration</field>
+        <field name="arch" type="xml">
+            <tree string="EDI invoce check config.">        
+                <field name="name" />
+                <field name="code" />
+                <field name="history_path" />
+                <field name="invoice_file" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_edi_history_configuration">
+        <field name="name">EDI invoice check config.</field>
+        <field name="res_model">edi.history.configuration</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_edi_history_configuration_tree"/>
+    </record>
+
+    <!-- edi.history.check -->
+    <record model="ir.ui.view" id="view_edi_history_check_form">
+        <field name="name">edi.history.check.form</field>
+        <field name="model">edi.history.check</field>
+        <field name="arch" type="xml">
+            <form string="EDI invoce check" version="7.0">        
+                <sheet>
+                    <group col="4" colspan="4">
+                        <field name="name" />
+                        <field name="name_detail" />
+                        <field name="line_in" />
+                        <field name="line_out" />
+                        <field name="product_code_in" />
+                        <field name="product_code_out" />
+                        <field name="document_out" />
+                        <field name="document_type" />
+                        <field name="state" />
+                    </group>
+                </sheet>        
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_edi_history_check_tree">
+        <field name="name">edi.history.check.tree</field>
+        <field name="model">edi.history.check</field>
+        <field name="arch" type="xml">
+            <tree string="EDI invoce check" colors="blue:state!='ok'">
+                <field name="name" />
+                <field name="name_detail" />
+
+                <field name="document_type" />
+                <field name="document_out" />
+
+                <field name="product_code_in" />
+                <field name="product_code_out" />
+
+                <field name="line_in" />
+                <field name="line_out" />
+
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_edi_history_check">
+        <field name="name">EDI invoice check</field>
+        <field name="res_model">edi.history.check</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_edi_history_check_tree"/>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+    </record>
+    
+    <menuitem 
+        parent="account_trip.menu_trip_root" 
+        id="menu_edi_check_root" 
+        name="EDI check"
+        sequence="40"
+        />
+        <menuitem 
+            parent="menu_edi_check_root" 
+            id="menu_edi_history_check" 
+            action="action_edi_history_check"
+            name="Invoice check"
+            sequence="10"
+            />
+
+        <menuitem 
+            parent="menu_edi_check_root" 
+            id="menu_edi_history_configuration" 
+            action="action_edi_history_configuration"
+            name="Invoice check configuration"
+            sequence="90"
+            />
+
+    </data>
+</openerp>   

@@ -61,6 +61,7 @@ class edi_company_importation(orm.Model):
     
     _columns = {
         'name': fields.char('Importation type', size=20, required=True),
+        'code': fields.char('Code', size=10),
         'object': fields.char('Object', size=64, required=True),
         'note': fields.char('Note'),
         }
@@ -122,7 +123,7 @@ class edi_company(orm.Model):
         ''' Empty without extra importation modules
         '''
         return []
-            
+
     _columns = {
         'name': fields.char('Code', size=15, required=True),
         'partner_id': fields.many2one(
