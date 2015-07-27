@@ -89,17 +89,71 @@ class EdiHistoryCheck(osv.osv):
             context: parameter arguments passed
         '''
         # TODO code will be list if used in other company
+        
+        def load_order_from_history(order, history_list, order_files):
+            ''' Function that load all files and create a dictionary with row
+                key
+            '''
+            if order not in order_files:
+                order_files[order] = {}
+            for filename in history_list.get(order, []):
+                # Read all files and update dict with row record:
+                f = open(filename)
+                for row in f:
+                    file_type = row[10:16] # ORDERS or ORDCHG
+                    update_type = row[16:19] # 003 ann, 001 mod. q.
+                    line = row[2337:2342] # 5
+                    article = row[2357:2368] # 11
+ 
+                    if file_type == 'ORDERS':
+                        line_type = 'original'
+                    else: # ORDCHG
+                        if update_type == '001':
+                            line_type = 'update' 
+                        elif update_type == '003':    
+                            line_type = 'cancel'
+                        else: # operation non in list
+                            _logger.error(
+                                'Update code not found: %s' % update_type)
+                            line_type = 'error'                    
+                    order_files[order][line] = (article, line_type)
+            return
+        # -----------------------------
+        # Get configuration parameters:
+        # -----------------------------
         config_pool = self.pool.get('edi.history.configuration')
         config_ids = config_pool.search(cr, uid, [
             ('code', '=', code)], context=context)
         if not config_ids:    
             return False
-        
         config_proxy = config_pool.browse(
             cr, uid, config_ids, context=context)[0]
         input_folder = config_proxy.history_path
         input_invoice = config_proxy.invoice_file
-        
+
+        # -------------------
+        # Read files history:
+        # -------------------
+        # Save in dict for future access
+        history_files = {} # list of file (key=order, value=filename)
+        order_files = {} # record in file (key=order, value {row: (art, state)}
+        for root, directories, files in os.walk(input_folder):
+            for filename in files:                
+                filepath = os.path.join(root, filename)
+                f = open(filepath, 'rb')
+                line = f.read()
+                f.close()
+                order = line[19:29]
+                if order not in history_files:
+                    history_files[order] = []
+                #os.path.getmtime(filepath)
+                history_files[order].append(filepath)
+
+        # ---------------------
+        # Start import invoice:
+        # ---------------------
+        # Read all lines and save only duplicated
+        invoice_row = {}
         i = -config_proxy.header
         old_order = False
         for invoice in csv.reader(
@@ -113,20 +167,18 @@ class EdiHistoryCheck(osv.osv):
             # Mapping fields:
             doc_type = invoice[0].strip()
             number = invoice[1].strip()
-            order_header = invoice[2].strip()
+            order = invoice[2].strip() # header
             article = invoice[3].strip()
             order_detail = invoice[4].strip()
             line = invoice[5].strip()
             
-            if not order_header:
-                state = 'no_order' # and no history search
-            elif order_header != order_detail:
-                state = 'order' # difference between line and header
-            else:
-                state = 'ok'
+            # Load order if not present in database:
+            if order not in order_files:
+                load_order_from_history(
+                    order, history_files, order_files)
             
-            self.create(cr, uid, {
-                'name': order_header, # to search in history
+            date = {
+                'name': order, # to search in history
                 'name_detail': order_detail,
                 'line_in': line, # TODO load from history
                 'line_out': line,
@@ -135,7 +187,33 @@ class EdiHistoryCheck(osv.osv):
                 'document_out': number,
                 'document_type': doc_type,
                 'state': state,                
-                }, context=context)
+                }
+
+            if not order:
+                state = 'no_order' # and no history search
+                date['state'] = 'duplicated'
+                self.create(cr, uid, date, context=context)
+                continue
+            elif order != order_detail:
+                state = 'order' # difference between line and header
+            else:
+                state = 'ok'
+            
+            if order not in invoice_row:
+                invoice_row[order] = {}
+            
+            if line in invoice_row[order]:
+                date['state'] = 'duplicated'
+                _logger.error('Line duplicated: %s-%s' % (order, line))
+                # ID non saved (raise only diplication)
+                continue # Jump line
+
+            # Save article:
+            invoice_row[order][line] = (
+                self.create(cr, uid, date, context=context),
+                article, 
+                ) # ID, Article
+
         return True
     
     _columns = {
@@ -160,6 +238,7 @@ class EdiHistoryCheck(osv.osv):
             ('no_order', 'Order not present'),
             ('order', 'Order dont\'t match'),
             ('sequence', 'Sequence error'),
+            ('duplicated', 'Row duplicated'),
             ('only_in', 'Not imported'),
             ('only_out', 'Extra line'),
             ('article', 'Article error'),

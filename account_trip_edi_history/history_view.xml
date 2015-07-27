@@ -71,7 +71,7 @@
                     <filter name="group_name" string="Order" context="{'group_by': 'name'}"/>
                     <filter name="group_document" string="Document" context="{'group_by': 'document_type'}"/>
                     <filter name="group_product_code_in" string="Product in" context="{'group_by': 'product_code_in'}"/>
-                    <filter name="group_product_code_out" string="Product in" context="{'group_by': 'product_code_out'}"/>
+                    <filter name="group_product_code_out" string="Product out" context="{'group_by': 'product_code_out'}"/>
                     <filter name="group_document_out" string="Document" context="{'group_by': 'document_out'}"/>
                 </group>                
            </search>
