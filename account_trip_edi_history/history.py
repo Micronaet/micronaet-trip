@@ -189,6 +189,9 @@ class EdiHistoryCheck(osv.osv):
             article = invoice[3].strip()
             order_detail = invoice[4].strip()
             line = invoice[5].strip()
+            # TODO quantity = invoice[6].strip()
+            # TODO price = invoice[7].strip()
+            # TODO check alias article for get correct element
             
             # Load order if not present in database:
             if order not in order_record:
@@ -219,6 +222,8 @@ class EdiHistoryCheck(osv.osv):
                 continue
             elif order != order_detail:
                 date['state'] = 'order'
+                self.create(cr, uid, date, context=context)
+                continue
             else:
                 date['state'] = 'ok'
             
@@ -323,6 +328,7 @@ class EdiHistoryCheck(osv.osv):
             ('only_in', 'Not imported'),
             ('only_out', 'Extra line'),
             ('article', 'Article error'),
+            # TODO quantity
             ('unmanaged', 'Error unmanaged'),
             
             # If all correct:
