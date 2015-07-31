@@ -123,7 +123,8 @@ class EdiHistoryCheck(osv.osv):
                             _logger.error(
                                 'Update code not found: %s' % update_type)
                             line_type = 'error'                    
-                    order_record[order][line_in] = (article, line_type)
+                    order_record[order][line_in] = (
+                        article, line_type, quantity, price)
                     order_in_check.append((order, line_in)) # add key for test                    
             return
 
@@ -204,7 +205,7 @@ class EdiHistoryCheck(osv.osv):
                 'sequence': sequence, # import sequence (for read line error)
                 'name': order, # to search in history
                 'name_detail': order_detail,
-                'line_in': line_out, # TODO load from history (always match)
+                'line_in': False, # TODO write when read
                 'line_out': line_out,
                 'quantity_in': False,
                 'quantity_out': quantity,
@@ -236,7 +237,6 @@ class EdiHistoryCheck(osv.osv):
             # ---------------
             # Duplicated row:
             # ---------------
-            import pdb; pdb.set_trace()
             if order not in invoice_row:
                 invoice_row[order] = {}    
                         
@@ -264,10 +264,9 @@ class EdiHistoryCheck(osv.osv):
             # ----------------
             # History analysis
             # ----------------
-            # Line not present: unmanaged (if removed, line_type = cancel)
+            # Line not present: unmanaged? (if removed, line_type = cancel)
             if line_out not in order_record[order]: # (article, line_type)
-                date['state'] = 'unmanaged'
-                
+                date['state'] = 'only_out' # not presen in order (ex unmanaged)
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
 
@@ -284,9 +283,23 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
                 
+            # Test quantity is the same:
+            date['quantity_in'] = order_record[order][line_out][2] # 3 element
+            if order_record[order][line_out][2] != quantity:
+                date['state'] = 'quantity'
+                self.create(cr, uid, date, context=context)
+                continue # Jump line
+
+            # Test price is the same:
+            date['price_in'] = order_record[order][line_out][3] # 4 element
+            if order_record[order][line_out][2] != price:
+                date['state'] = 'price'
+                self.create(cr, uid, date, context=context)
+                continue # Jump line
+
             # Test line removed in order
             if order_record[order][line_out][1] == 'cancel':
-                date['state'] = 'only_out'
+                date['state'] = 'only_out' # present but deleted in order
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
             
@@ -299,6 +312,7 @@ class EdiHistoryCheck(osv.osv):
             # ------------
             # Save article
             # ------------
+            date[line_in] = line_out # TODO check after all: write line in, now are equals!
             invoice_row[order][line_out] = (
                 self.create(cr, uid, date, context=context),
                 article, 
