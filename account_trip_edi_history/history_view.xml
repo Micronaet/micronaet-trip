@@ -93,6 +93,7 @@
                         <field name="document_out" />
                         <field name="document_type" />
                         <field name="state" />
+                        <field name="order_error" invisible="1"/>
                     </group>
                 </sheet>        
             </form>
@@ -103,7 +104,9 @@
         <field name="name">edi.history.check.tree</field>
         <field name="model">edi.history.check</field>
         <field name="arch" type="xml">
-            <tree string="EDI invoce check" colors="blue:state!='ok'">
+            <tree string="EDI invoce check" colors="blue:state!='ok'"><!--TODO assign color for error_order-->
+                <field name="order_error" invisible="1"/>
+
                 <field name="name" />
                 <field name="name_detail" />
 

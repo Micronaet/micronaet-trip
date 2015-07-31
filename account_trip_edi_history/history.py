@@ -300,6 +300,9 @@ class EdiHistoryCheck(osv.osv):
     
     _columns = {
         'sequence': fields.integer('Sequence'),
+        'order_error': fields.boolean('Order error', 
+            help='As if the line is correct in order there\'s almost one line'
+                'with error'),
         'name': fields.char('Order name', size=25, 
             help='Order ID of company'),
         'name_detail': fields.char('Order detail', size=25, 
@@ -320,7 +323,7 @@ class EdiHistoryCheck(osv.osv):
         'state': fields.selection([
             # First control, readind account file:
             ('no_order', 'Order not present'),
-            ('order', 'Order dont\'t match'),
+            ('order', 'Order doesn\'t match'),
             ('sequence', 'Sequence error'),
             ('duplicated', 'Row duplicated'),
             
@@ -328,7 +331,8 @@ class EdiHistoryCheck(osv.osv):
             ('only_in', 'Not imported'),
             ('only_out', 'Extra line'),
             ('article', 'Article error'),
-            # TODO quantity
+            ('quantity', 'Quantity error'), # TODO Manage
+            ('price', 'Price error'), # TODO 
             ('unmanaged', 'Error unmanaged'),
             
             # If all correct:
