@@ -109,6 +109,8 @@ class EdiHistoryCheck(osv.osv):
                     update_type = row[16:19] # 003 ann, 001 mod. q.
                     line = row[2336:2341] # 5
                     article = row[2356:2367].strip() # 11
+                    quantity = row[2632:2642].strip()
+                    price = row[].strip()
  
                     if file_type == 'ORDERS':
                         line_type = 'original'
@@ -147,7 +149,7 @@ class EdiHistoryCheck(osv.osv):
         # -------------------
         # Read files history:
         # -------------------
-        # Save in dict for future access
+        # Save in dict for future access (that parse whole order and modify)
         history_filename = {} # list of file (key=order, value=filename)
         order_record = {} # record in file (k order, v {row: (art, state)}
         order_in_check = []
@@ -159,8 +161,8 @@ class EdiHistoryCheck(osv.osv):
                 f.close()
                 order = line[19:29]
                 if order not in history_filename:
-                    history_filename[order] = []
-                #os.path.getmtime(filepath)
+                    history_filename[order] = [] # Create empty list
+                #os.path.getmtime(filepath) # TODO for evaluation order prior.
                 history_filename[order].append(filepath)
 
         # ---------------------
@@ -204,7 +206,11 @@ class EdiHistoryCheck(osv.osv):
                 'name_detail': order_detail,
                 'line_in': line, # TODO load from history (always match)
                 'line_out': line,
-                'product_code_in': False, # TODO load from history
+                'quantity_in': False,
+                'quantity_out': quantity,
+                'price_in': False,
+                'price_out': price,                
+                'product_code_in': False,
                 'product_code_out': article,
                 'document_out': number,
                 'document_type': doc_type,
@@ -307,10 +313,10 @@ class EdiHistoryCheck(osv.osv):
             help='Order ID of company'),
         'name_detail': fields.char('Order detail', size=25, 
             help='Order ID in accounting detail'),
-        'price_in': fields.float('Price in', digits=(16, 2))), 
-        'price_out': fields.float('Price out', digits=(16, 2))), 
-        'quantity_in': fields.float('Quantity in', digits=(16, 2))), 
-        'quantity_out': fields.float('Quantity in', digits=(16, 2))), 
+        'price_in': fields.float('Price in', digits=(16, 2)), 
+        'price_out': fields.float('Price out', digits=(16, 2)), 
+        'quantity_in': fields.float('Quantity in', digits=(16, 2)), 
+        'quantity_out': fields.float('Quantity in', digits=(16, 2)), 
         'line_in': fields.char('Line in', size=5, help='Order line'),
         'line_in': fields.char('Line in', size=5, help='Order line'),
         'line_out': fields.char('Line out', size=5, 
