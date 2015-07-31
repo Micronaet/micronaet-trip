@@ -238,7 +238,8 @@ class EdiHistoryCheck(osv.osv):
             # ---------------
             import pdb; pdb.set_trace()
             if order not in invoice_row:
-                invoice_row[order] = {}            
+                invoice_row[order] = {}    
+                        
             if line_out in invoice_row[order]:
                 date['state'] = 'duplicated'
                 self.create(cr, uid, date, context=context)
@@ -290,15 +291,14 @@ class EdiHistoryCheck(osv.osv):
                 continue # Jump line
             
             # Write only_in for remain lines not tested
-            for (order, line_out) in order_in_check:
-                # Create record with left values:
-                # TODO 
-                pass
+            #for (order, line_out) in order_in_check:
+            #    # Create record with left values:
+            #    # TODO 
+            #    pass
             
             # ------------
             # Save article
             # ------------
-            import pdb; pdb.set_trace()
             invoice_row[order][line_out] = (
                 self.create(cr, uid, date, context=context),
                 article, 
