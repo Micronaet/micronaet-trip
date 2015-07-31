@@ -191,8 +191,8 @@ class EdiHistoryCheck(osv.osv):
             article = invoice[3].strip()
             order_detail = invoice[4].strip()
             line = invoice[5].strip()            
-            quantity = float(invoice[6].strip().replace(',', '.'))
-            price = float(invoice[7].strip().replace(',', '.'))
+            quantity = float(invoice[6].strip().replace(',', '.') or '0')
+            price = float(invoice[7].strip().replace(',', '.') or '0')
             # TODO check alias article for get correct element
             
             # Load order if not present in database:
@@ -302,31 +302,28 @@ class EdiHistoryCheck(osv.osv):
                 article, 
                 ) # ID, Article
 
-            import pdb; pdb.set_trace()
-            # -------------------------------------------
-            # Update field for show all order with errors
-            # -------------------------------------------
-
-            # NOTE: Splitted in two, maybe for precedence problems
-            # Line with problems
-            line_ko_ids = self.search(cr, uid, [
-                ('state', '!=', 'ok'),
-                ], context=context)
-                
-            # Order code list:    
-            order_ko_list = [
-                item.name for item in self.browse(
-                    cr, uid, line_ko_ids, context=context)]
+        # -------------------------------------------
+        # Update field for show all order with errors
+        # -------------------------------------------
+        # NOTE: Splitted in two, maybe for precedence problems
+        _logger.info('Mark order with problem:')
+        # Line with problems
+        line_ko_ids = self.search(cr, uid, [
+            ('state', '!=', 'ok'), ], context=context)
             
-            # All order lines:    
-            order_ko_ids = self.search(cr, uid, [
-                ('name', 'in', order_ko_list),
-                ], context=context)
-            
-            # Update filed for search whole order:    
-            self.write(cr, uid, order_ko_ids, {
-                'order_error': True
-                }, context=context)    
+        # Order code list:    
+        order_ko_list = [
+            item.name for item in self.browse(
+                cr, uid, line_ko_ids, context=context)]
+        
+        # All order lines:    
+        order_ko_ids = self.search(cr, uid, [
+            ('name', 'in', order_ko_list), ], context=context)
+        
+        # Update filed for search whole order:    
+        self.write(cr, uid, order_ko_ids, {
+            'order_error': True
+            }, context=context)
 
         return True
     
