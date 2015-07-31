@@ -110,7 +110,7 @@ class EdiHistoryCheck(osv.osv):
                     line = row[2336:2341] # 5
                     article = row[2356:2367].strip() # 11
                     quantity = row[2632:2642].strip()
-                    price = row[].strip()
+                    price = row[2965:2995].strip()
  
                     if file_type == 'ORDERS':
                         line_type = 'original'
@@ -231,7 +231,7 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context)
                 continue
             else:
-                date['state'] = 'ok'
+                date['state'] = 'ok' # temporary OK after account check
             
             # ---------------
             # Duplicated row:
@@ -301,6 +301,32 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context),
                 article, 
                 ) # ID, Article
+
+            import pdb; pdb.set_trace()
+            # -------------------------------------------
+            # Update field for show all order with errors
+            # -------------------------------------------
+
+            # NOTE: Splitted in two, maybe for precedence problems
+            # Line with problems
+            line_ko_ids = self.search(cr, uid, [
+                ('state', '!=', 'ok'),
+                ], context=context)
+                
+            # Order code list:    
+            order_ko_list = [
+                item.name for item in self.browse(
+                    cr, uid, line_ko_ids, context=context)]
+            
+            # All order lines:    
+            order_ko_ids = self.search(cr, uid, [
+                ('name', 'in', order_ko_list),
+                ], context=context)
+            
+            # Update filed for search whole order:    
+            self.write(cr, uid, order_ko_ids, {
+                'order_error': True
+                }, context=context)    
 
         return True
     

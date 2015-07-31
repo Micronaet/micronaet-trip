@@ -69,7 +69,10 @@
                 <field name="document_type" />
                 <field name="state" />
 
+                <filter name="order_error" string="Order error" domain="[('order_error','=',True)]" />
+                <filter name="order_error_grouped" string="Check order error" domain="[('order_error','=',True)]" context="{'group_by': 'name'}" />
                 <filter name="state" string="With error" domain="[('state','!=','ok')]"/>
+
                 <group expand="0" string="Group By">
                     <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
                     <filter name="group_name" string="Order" context="{'group_by': 'name'}"/>
@@ -152,7 +155,7 @@
         <field name="view_id" ref="view_edi_history_check_tree"/>
         <field name="search_view_id" ref="view_edi_history_check_search"/>
         
-        <field name="context">{}</field>
+        <field name="context">{'search_default_order_error_grouped': True}</field>
         <field name="domain">[]</field>
     </record>
     
