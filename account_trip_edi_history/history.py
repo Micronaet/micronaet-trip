@@ -109,8 +109,8 @@ class EdiHistoryCheck(osv.osv):
                     update_type = row[16:19] # 003 ann, 001 mod. q.
                     line_in = row[2336:2341] # 5
                     article = row[2356:2367].strip() # 11
-                    quantity = row[2632:2642].strip()
-                    price = row[2965:2995].strip()
+                    quantity = float(row[2631:2641].strip() or '0')
+                    price = float(row[2964:2994].strip() or '0')
  
                     if file_type == 'ORDERS':
                         line_type = 'original'
@@ -140,6 +140,10 @@ class EdiHistoryCheck(osv.osv):
             cr, uid, config_ids, context=context)[0]
         input_folder = config_proxy.history_path # history order
         input_invoice = config_proxy.invoice_file # account invoice
+        
+        # Precision for price / quantiyi evaluation
+        price_prec = 0.01 
+        quant_prec = 0.01
 
         # ---------------
         # Clean database:
@@ -285,14 +289,14 @@ class EdiHistoryCheck(osv.osv):
                 
             # Test quantity is the same:
             date['quantity_in'] = order_record[order][line_out][2] # 3 element
-            if order_record[order][line_out][2] != quantity:
+            if abs(date['quantity_in'] - quantity) > quant_prec:
                 date['state'] = 'quantity'
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
 
             # Test price is the same:
             date['price_in'] = order_record[order][line_out][3] # 4 element
-            if order_record[order][line_out][2] != price:
+            if abs(date['price_in'] - price) > price_prec:
                 date['state'] = 'price'
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
