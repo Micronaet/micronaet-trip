@@ -92,10 +92,11 @@ class EdiHistoryCheck(osv.osv):
                 order_in_check):
             ''' Function that load all files and create a dictionary with row
                 key
+                
                 order: order code origin
                 history_filename: database of filename (list for every order)
                 order_record: dict with order line imported from history files
-                order_in_check: list of all record (for set order_in attribute=
+                order_in_check: list of all record (for set order_in attribute)
             '''
             if order not in order_record:
                 order_record[order] = {}
@@ -121,8 +122,7 @@ class EdiHistoryCheck(osv.osv):
                                 'Update code not found: %s' % update_type)
                             line_type = 'error'                    
                     order_record[order][line] = (article, line_type)
-                    order_in_check.append((order, line)) # add key for test
-                    
+                    order_in_check.append((order, line)) # add key for test                    
             return
 
         # -----------------------------
@@ -135,8 +135,8 @@ class EdiHistoryCheck(osv.osv):
             return False
         config_proxy = config_pool.browse(
             cr, uid, config_ids, context=context)[0]
-        input_folder = config_proxy.history_path
-        input_invoice = config_proxy.invoice_file
+        input_folder = config_proxy.history_path # history order
+        input_invoice = config_proxy.invoice_file # account invoice
 
         # ---------------
         # Clean database:
@@ -149,7 +149,7 @@ class EdiHistoryCheck(osv.osv):
         # -------------------
         # Save in dict for future access
         history_filename = {} # list of file (key=order, value=filename)
-        order_record = {} # record in file (key=order, value {row: (art, state)}
+        order_record = {} # record in file (k order, v {row: (art, state)}
         order_in_check = []
         for root, directories, files in os.walk(input_folder):
             for filename in files:                
@@ -188,9 +188,9 @@ class EdiHistoryCheck(osv.osv):
             order = invoice[2].strip() # header
             article = invoice[3].strip()
             order_detail = invoice[4].strip()
-            line = invoice[5].strip()
-            # TODO quantity = invoice[6].strip()
-            # TODO price = invoice[7].strip()
+            line = invoice[5].strip()            
+            quantity = float(invoice[6].strip().replace(',', '.'))
+            price = float(invoice[7].strip().replace(',', '.'))
             # TODO check alias article for get correct element
             
             # Load order if not present in database:
@@ -317,6 +317,7 @@ class EdiHistoryCheck(osv.osv):
         'document_out': fields.char('Document out', size=20, 
             help='Number of document, delivery or invoice, out'),
         'document_type': fields.selection([
+            ('OC', 'Order'),
             ('BC', 'Document of transport'),
             ('FT', 'Invoice'),
             ], 'Document type', help='Document out type'),
