@@ -70,16 +70,16 @@
                 <field name="state" />
 
                 <filter name="order_error" string="Order error" domain="[('order_error','=',True)]" />
-                <filter name="order_error_grouped" string="Check order error" domain="[('order_error','=',True)]" context="{'group_by': 'name'}" />
+                <filter name="order_error_grouped" string="Check order error" domain="[('order_error','=',True)]" context="{'group_by': ('document_type', 'name')}" />
                 <filter name="state" string="With error" domain="[('state','!=','ok')]"/>
 
                 <group expand="0" string="Group By">
                     <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
                     <filter name="group_name" string="Order" context="{'group_by': 'name'}"/>
-                    <filter name="group_document" string="Document" context="{'group_by': 'document_type'}"/>
+                    <filter name="group_document" string="Document type" context="{'group_by': 'document_type'}"/>
                     <filter name="group_product_code_in" string="Product in" context="{'group_by': 'product_code_in'}"/>
                     <filter name="group_product_code_out" string="Product out" context="{'group_by': 'product_code_out'}"/>
-                    <filter name="group_document_out" string="Document" context="{'group_by': 'document_out'}"/>
+                    <filter name="group_document_out" string="Document number" context="{'group_by': 'document_out'}"/>
                 </group>                
            </search>
         </field>
