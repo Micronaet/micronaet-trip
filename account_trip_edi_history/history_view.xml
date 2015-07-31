@@ -61,6 +61,10 @@
                 <field name="line_out" />
                 <field name="product_code_in" />
                 <field name="product_code_out" />
+                <field name="price_in" />
+                <field name="price_out" />
+                <field name="quantity_in" />
+                <field name="quantity_out" />
                 <field name="document_out" />
                 <field name="document_type" />
                 <field name="state" />
@@ -86,12 +90,22 @@
                     <group col="4" colspan="4">
                         <field name="name" />
                         <field name="name_detail" />
+                        
                         <field name="line_in" />
                         <field name="line_out" />
+                        
                         <field name="product_code_in" />
                         <field name="product_code_out" />
+                        
                         <field name="document_out" />
                         <field name="document_type" />
+
+                        <field name="price_in" />
+                        <field name="price_out" />
+
+                        <field name="quantity_in" />
+                        <field name="quantity_out" />
+                        
                         <field name="state" />
                         <field name="order_error" invisible="1"/>
                     </group>
@@ -118,6 +132,12 @@
 
                 <field name="line_in" />
                 <field name="line_out" />
+
+                <field name="price_in" />
+                <field name="price_out" />
+
+                <field name="quantity_in" />
+                <field name="quantity_out" />
 
                 <field name="state" />
             </tree>
