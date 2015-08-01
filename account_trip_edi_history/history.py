@@ -173,14 +173,14 @@ class EdiHistoryCheck(osv.osv):
                              border: 1px solid black;
                              padding: 3px;
                              text-align: center;
-                             background-color: lightred;
+                             background-color: AntiqueWhite;
                              text-decoration: line-through;
                              }                             
                         .table_bf_upd td {
                              border: 1px solid black;
                              padding: 3px;
                              text-align: center;
-                             background-color: lightblue;
+                             background-color: Gainsboro;
                              }                             
                         .table_bf th {
                              border: 1px solid black;
