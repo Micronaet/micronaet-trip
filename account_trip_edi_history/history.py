@@ -142,7 +142,7 @@ class EdiHistoryCheck(osv.osv):
         input_invoice = config_proxy.invoice_file # account invoice
         
         # Precision for price / quantiyi evaluation
-        price_prec = 0.01 
+        price_prec = 0.01 # TODO put in configuration?
         quant_prec = 0.01
 
         # ---------------
@@ -180,6 +180,7 @@ class EdiHistoryCheck(osv.osv):
         
         old_order = False
         old_line = False
+        # TODO problem with order (not sorted with invoice/ddt)
         for invoice in csv.reader(
                 open(input_invoice, 'rb'), 
                 delimiter=str(config_proxy.delimiter)):
@@ -193,6 +194,7 @@ class EdiHistoryCheck(osv.osv):
             doc_type = invoice[0].strip()
             number = invoice[1].strip()
             order = invoice[2].strip() # header
+            #if order == '
             article = invoice[3].strip()
             order_detail = invoice[4].strip()
             line_out = invoice[5].strip()            
@@ -316,7 +318,7 @@ class EdiHistoryCheck(osv.osv):
             # ------------
             # Save article
             # ------------
-            date[line_in] = line_out # TODO check after all: write line in, now are equals!
+            date['line_in'] = line_out # TODO check after all: write line in, now are equals!
             invoice_row[order][line_out] = (
                 self.create(cr, uid, date, context=context),
                 article, 
@@ -349,25 +351,27 @@ class EdiHistoryCheck(osv.osv):
     
     _columns = {
         'sequence': fields.integer('Sequence'),
-        'order_error': fields.boolean('Order error', 
-            help='As if the line is correct in order there\'s almost one line'
-                'with error'),
+
         'name': fields.char('Order name', size=25, 
             help='Order ID of company'),
         'name_detail': fields.char('Order detail', size=25, 
             help='Order ID in accounting detail'),
+
         'price_in': fields.float('Price in', digits=(16, 2)), 
         'price_out': fields.float('Price out', digits=(16, 2)), 
+
         'quantity_in': fields.float('Quantity in', digits=(16, 2)), 
-        'quantity_out': fields.float('Quantity in', digits=(16, 2)), 
-        'line_in': fields.char('Line in', size=5, help='Order line'),
+        'quantity_out': fields.float('Quantity out', digits=(16, 2)), 
+
         'line_in': fields.char('Line in', size=5, help='Order line'),
         'line_out': fields.char('Line out', size=5, 
             help='Delivery of invoice line'),
+
         'product_code_in': fields.char('Product in', size=18, 
             help='Order product in'),
         'product_code_out': fields.char('Product out', size=18, 
             help='Invoice or delivery product out'),
+
         'document_out': fields.char('Document out', size=20,
             help='Number of document, delivery or invoice, out'),
         'document_type': fields.selection([
@@ -375,6 +379,11 @@ class EdiHistoryCheck(osv.osv):
             ('BC', 'Document of transport'),
             ('FT', 'Invoice'),
             ], 'Document type', help='Document out type'),
+
+        'order_error': fields.boolean('Order error', 
+            help='As if the line is correct in order there\'s almost one line'
+                'with error'),
+
         'state': fields.selection([
             # First control, readind account file:
             ('no_order', 'Order not present'),
