@@ -285,6 +285,7 @@ class EdiHistoryCheck(osv.osv):
             # Test article is the same:
             date['product_code_in'] = order_record[order][line_out][0]
             if order_record[order][line_out][0] != article[:11]:
+                date['line_in'] = line_out
                 date['state'] = 'article'
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
@@ -292,6 +293,7 @@ class EdiHistoryCheck(osv.osv):
             # Test quantity is the same:
             date['quantity_in'] = order_record[order][line_out][2] # 3 element
             if abs(date['quantity_in'] - quantity) > quant_prec:
+                date['line_in'] = line_out
                 date['state'] = 'quantity'
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
@@ -299,6 +301,7 @@ class EdiHistoryCheck(osv.osv):
             # Test price is the same:
             date['price_in'] = order_record[order][line_out][3] # 4 element
             if abs(date['price_in'] - price) > price_prec:
+                date['line_in'] = line_out
                 date['state'] = 'price'
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
