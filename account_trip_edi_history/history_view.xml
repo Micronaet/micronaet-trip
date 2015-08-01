@@ -9,6 +9,11 @@
            <search string="EDI order search">
                 <field name="name" />
                 <field name="note" />
+                <filter name="original" string="Original" domain="[('modified','=',False)]"/>
+                <filter name="modified" string="Modified" domain="[('modified','=',True)]"/>
+                <group expand="0" string="Group By...">
+                    <filter name="group_modified" string="Modified" context="{'group_by': 'modified'}"/>
+                </group>    
            </search>
         </field>
     </record>

@@ -43,7 +43,12 @@ class EdiHistoryOrder(osv.osv):
     _columns = {
         'name': fields.char('Order #', size=30, required=True),
         'note': fields.text('Result'), # HTML format
+        'modified': fields.boolean('Modified')
         }
+    
+    _defaults = {
+        'modified': lambda *x: False,
+        }    
         
 
 class EdiHistoryConfiguration(osv.osv):
@@ -114,6 +119,7 @@ class EdiHistoryCheck(osv.osv):
                 order_in_check: list of all record (for set order_in attribute)
             '''
             to_save = False
+            modified = False
             if order not in order_record:
                 order_record[order] = {}
                 to_save = True # After all write order for history in OpenERP
@@ -134,6 +140,7 @@ class EdiHistoryCheck(osv.osv):
                     if file_type == 'ORDERS':
                         line_type = 'original'
                     else: # ORDCHG
+                        modified = True
                         if update_type == '001':
                             line_type = 'update' 
                         elif update_type == '003':    
@@ -150,25 +157,67 @@ class EdiHistoryCheck(osv.osv):
                     order_in_check.append((order, line_in)) # add key for test  
                     
             # Save file for create a HTML order more readable:                          
-            if to_save:
-                order_html = _('''<table>
-                    <tr>
-                        <td>Line</td><td>Article</td><td>Quant.</td>
-                        <td>Price</td><td>File</td><td>Create</td><td>Mod.</td>
-                    </tr>''')
+            if to_save and order: # jump empty
+                order_html = _('''
+                    <style>
+                        .deleted {
+                             text-decoration: line-through;
+                             }
+                             
+                        .table_bf {
+                             border:1px 
+                             padding: 3px;
+                             solid black;
+                             }
+                             
+                        .table_bf td {
+                             border:1px 
+                             solid black;
+                             padding: 3px;
+                             text-align: center;
+                             }
+                        .table_bf_wo td {
+                             border:1px 
+                             solid black;
+                             padding: 3px;
+                             background-color: "#FF9999";
+                             text-align: center;
+                             text-decoration: line-through;
+                             }
+                             
+                        .table_bf th {
+                             border:1px 
+                             solid black;
+                             padding: 3px;
+                             text-align: center;
+                             background-color: grey;
+                             color: white;
+                             }
+                    </style>
+
+                    <table class='table_bf'>
+                        <tr class='table_bf'>
+                            <th>Line</th><th>Article</th><th>Quant.</th>
+                            <th>Price</th><th>File</th><th>Create</th>
+                            <th>Mod.</th>
+                        </tr>''')
                 
                 for line_in in sorted(order_record[order].keys()):
                     order_html += '''
-                        <tr>
-                            <td>%s</td><td>%s</td><td>%s</td><td>%s</td>
-                            <td>%s</td>><td>%s</td>><td>%s</td>
+                        <tr %s>
+                            <td>%s</td><td>%s</td><td>%s</td>
+                            <td class='{text-align: right;}'>%s</td>
+                            <td class='{text-align: right;}'>%s</td>
+                            <td>%s</td><td>%s</td>
                         </tr>
                         ''' % (
+                            'class="table_bf_wo"' \
+                               if order_record[order][line_in][1] == 'cancel' \
+                               else '',
                             line_in,
                             order_record[order][line_in][0],
 
-                            # line_type (TODO use for raise line with class)
-                            #order_record[order][line_in][1],
+                            #,
                             
                             order_record[order][line_in][2],
                             order_record[order][line_in][3],
@@ -185,13 +234,14 @@ class EdiHistoryCheck(osv.osv):
                     order_id = order_ids[0]    
                     order_pool.write(cr, uid, order_id, {
                         'note': order_html,
+                        'modified': modified,
                         }, context=context)    
                 else:
                     order_id = order_pool.create(cr, uid, {
                         'name': order,
+                        'modified': modified,
                         'note': order_html,
                         }, context=context)    
-                    
                          
             return # TODO order_id?
 
