@@ -160,34 +160,24 @@ class EdiHistoryCheck(osv.osv):
             if to_save and order: # jump empty
                 order_html = _('''
                     <style>
-                        .deleted {
-                             text-decoration: line-through;
-                             }
-                             
                         .table_bf {
-                             border:1px 
+                             border: 1px solid black;
                              padding: 3px;
-                             solid black;
-                             }
-                             
+                             }                             
                         .table_bf td {
-                             border:1px 
-                             solid black;
+                             border: 1px solid black;
                              padding: 3px;
                              text-align: center;
                              }
                         .table_bf_wo td {
-                             border:1px 
-                             solid black;
+                             border: 1px solid black;
                              padding: 3px;
-                             background-color: "#FF9999";
                              text-align: center;
+                             background-color: red;
                              text-decoration: line-through;
-                             }
-                             
+                             }                             
                         .table_bf th {
-                             border:1px 
-                             solid black;
+                             border: 1px solid black;
                              padding: 3px;
                              text-align: center;
                              background-color: grey;
@@ -213,17 +203,14 @@ class EdiHistoryCheck(osv.osv):
                         ''' % (
                             'class="table_bf_wo"' \
                                if order_record[order][line_in][1] == 'cancel' \
-                               else '',
-                            line_in,
-                            order_record[order][line_in][0],
-
-                            #,
-                            
-                            order_record[order][line_in][2],
-                            order_record[order][line_in][3],
-                            order_record[order][line_in][4],
-                            order_record[order][line_in][5],
-                            order_record[order][line_in][6],
+                               else '', # Cancel state
+                            line_in, # Row
+                            order_record[order][line_in][0], # Article
+                            order_record[order][line_in][2], # Quant.
+                            order_record[order][line_in][3], # Price
+                            order_record[order][line_in][4], # Filename
+                            order_record[order][line_in][5], # Create date
+                            order_record[order][line_in][6], # Modifty date
                             )
                 order_html += '</table>'    
                             
