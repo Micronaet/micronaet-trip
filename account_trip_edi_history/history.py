@@ -93,6 +93,7 @@ class EdiHistoryCheck(osv.osv):
     _description = 'EDI history check'
     _order = 'sequence,name,line_in,line_out'
     
+
     # -------------------------------------------------------------------------
     #                             Scheduled action
     # -------------------------------------------------------------------------
@@ -105,7 +106,30 @@ class EdiHistoryCheck(osv.osv):
             context: parameter arguments passed
         '''
         # TODO code will be list if used in other company
-        
+
+        # ---------------------------------------------------------------------
+        #                            Utility function
+        # ---------------------------------------------------------------------
+        def get_in_sequence(filelist):
+            ''' Internal utility for sort list get priority to orders and
+                then to ordchg after to normal order
+            '''
+            # TODO add some controls (need to be right)
+            # Split in 2 list the element depend on type:
+            if len(filelist) in (0, 1): # 0 raise error?
+                return filelist
+                
+            import pdb; pdb.set_trace()        
+            orders = sorted([
+                filename for filename in filelist if 'ORDERS' in filename])
+                
+            ordchg = sorted([
+                filename for filename in filelist if 'ORDCHG' in filename])
+            
+            # order and merge as is:    
+            orders.extend(ordchg)
+            return orders
+            
         def load_order_from_history(order, history_filename, order_record, 
                 order_in_check):
             ''' Function that load all files and create a dictionary with row
@@ -119,21 +143,6 @@ class EdiHistoryCheck(osv.osv):
                 order_in_check: list of all record (for set order_in attribute)
             '''     
             # Function utility:
-            def get_in_sequence(filelist):
-                ''' Internal utility for sort list get priority to orders and
-                    then to ordchg after to normal order
-                '''
-                # TODO add some controls (need to be right)
-                
-                # Split in 2 list the element depend on type:
-                orders = sorted([
-                    filename for filename in filelist if 'ORDERS' in filename])
-                    
-                ordchg = sorted([
-                    filename for filename in filelist if 'ORDCHG' in filename])
-                    
-                # order and merge as is:    
-                return orders.extend(ordchg)
                 
             to_save = False
             modified = False
@@ -145,7 +154,9 @@ class EdiHistoryCheck(osv.osv):
                 order_record[order] = {}
                 to_save = True # After all write order for history in OpenERP
 
-            for filename in get_in_sequence(history_filename.get(order, [])):
+            order_history_filename = get_in_sequence(
+                history_filename.get(order, []))
+            for filename in order_history_filename:
                 # Read all files and update dict with row record:
                 f = open(filename)
                 m_time = time.ctime(os.path.getmtime(filename))
@@ -157,7 +168,7 @@ class EdiHistoryCheck(osv.osv):
                     article = row[2356:2367].strip() # 11
                     quantity = float(row[2631:2641].strip() or '0')
                     price = float(row[2964:2994].strip() or '0')
- 
+
                     if file_type == 'ORDERS':
                         line_type = 'original'
                     else: # ORDCHG
@@ -264,10 +275,13 @@ class EdiHistoryCheck(osv.osv):
                         }, context=context)    
                          
             return # TODO order_id?
-
-        # -----------------------------
-        # Get configuration parameters:
-        # -----------------------------
+            
+        # ---------------------------------------------------------------------
+        #        Start procedure and get configuration parameters
+        # ---------------------------------------------------------------------
+        _logger.info('Start import history order for check')
+        
+        # Read configuration record:
         config_pool = self.pool.get('edi.history.configuration')
         config_ids = config_pool.search(cr, uid, [
             ('code', '=', code)], context=context)
@@ -301,7 +315,11 @@ class EdiHistoryCheck(osv.osv):
                 f = open(filepath, 'rb')
                 line_in = f.read()
                 f.close()
-                order = line_in[19:29]
+                order = line_in[19:29].strip()
+                if not order:
+                    _logger.error(
+                        'Found order without name (jump): %s' % filename)
+                    continue
                 if order not in history_filename:
                     history_filename[order] = [] # Create empty list
                 #os.path.getmtime(filepath) # TODO for evaluation order prior.
