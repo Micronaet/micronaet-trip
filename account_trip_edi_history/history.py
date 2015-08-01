@@ -115,14 +115,17 @@ class EdiHistoryCheck(osv.osv):
                 then to ordchg after to normal order
             '''
             # TODO add some controls (need to be right)
+            
             # Split in 2 list the element depend on type:
             if len(filelist) in (0, 1): # 0 raise error?
                 return filelist
                 
-            import pdb; pdb.set_trace()        
             orders = sorted([
                 filename for filename in filelist if 'ORDERS' in filename])
-                
+            if len(orders) > 1:
+                _logger.error('More than one ORDERS file %s' % orders )    
+                # TODO what to do now?
+
             ordchg = sorted([
                 filename for filename in filelist if 'ORDCHG' in filename])
             
