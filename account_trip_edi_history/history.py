@@ -22,6 +22,7 @@ import sys
 import netsvc
 import logging
 import csv
+import time
 from openerp.osv import osv, orm, fields
 from datetime import datetime, timedelta
 from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
@@ -32,6 +33,18 @@ import pickle
 
 
 _logger = logging.getLogger(__name__)
+
+class EdiHistoryOrder(osv.osv):
+    ''' EDI original order (result of creation and change recurred)
+    '''
+    _name = 'edi.history.order'
+    _description = 'EDI history order'
+    
+    _columns = {
+        'name': fields.char('Order #', size=30, required=True),
+        'note': fields.text('Result'), # HTML format
+        }
+        
 
 class EdiHistoryConfiguration(osv.osv):
     ''' Manage path for all company EDI that has active routes
@@ -92,18 +105,24 @@ class EdiHistoryCheck(osv.osv):
                 order_in_check):
             ''' Function that load all files and create a dictionary with row
                 key
+                The function also save in database the order for a readable 
+                check in.
                 
                 order: order code origin
                 history_filename: database of filename (list for every order)
                 order_record: dict with order line imported from history files
                 order_in_check: list of all record (for set order_in attribute)
             '''
+            to_save = False
             if order not in order_record:
                 order_record[order] = {}
+                to_save = True # After all write order for history in OpenERP
 
             for filename in history_filename.get(order, []):
                 # Read all files and update dict with row record:
                 f = open(filename)
+                m_time = time.ctime(os.path.getmtime(filename))
+                c_time = time.ctime(os.path.getctime(filename))
                 for row in f:
                     file_type = row[10:16] # ORDERS or ORDCHG
                     update_type = row[16:19] # 003 ann, 001 mod. q.
@@ -124,9 +143,55 @@ class EdiHistoryCheck(osv.osv):
                                 'Update code not found: %s' % update_type)
                             line_type = 'error'                    
                     order_record[order][line_in] = (
-                        article, line_type, quantity, price)
-                    order_in_check.append((order, line_in)) # add key for test                    
-            return
+                        # For check with account information:
+                        article, line_type, quantity, price, 
+                        # For history record file in database:
+                        filename, c_time, m_time)
+                    order_in_check.append((order, line_in)) # add key for test  
+                    
+            # Save file for create a HTML order more readable:                          
+            if to_save:
+                order_html = _('''<table>
+                    <tr>
+                        <td>Line</td><td>Article</td><td>Quant.</td>
+                        <td>Price</td><td>File</td><td>Create</td><td>Mod.</td>
+                    </tr>''')
+                
+                for line_in in order_record[order]:
+                    order_html += '''
+                        <tr>
+                            <td>%s</td><td>%s</td><td>%s</td><td>%s</td>
+                            <td>%s</td>
+                        </tr>
+                        ''' % (
+                            line_in,
+                            order_record[order][line_in][0],
+                            # line_type (TODO class?)[1]
+                            order_record[order][line_in][2],
+                            order_record[order][line_in][3],
+                            order_record[order][line_in][4],
+                            order_record[order][line_in][5],
+                            order_record[order][line_in][6],
+                            )
+
+                order_html += '</table>'    
+                            
+                order_pool = self.pool.get('edi.history.order')
+                order_ids = order_pool.search(cr, uid, [
+                    ('name', '=', order)], context=context)
+                if order_ids: 
+                    order_id = order_ids[0]    
+                    order_pool.write(cr, uid, order_id, {
+                        'note': order_html,
+                        }, context=context)    
+                else:
+                    order_id = order_pool.create(cr, uid, {
+                        'name': order,
+                        'note': order_html,
+                        }, context=context)    
+                    
+                         
+            return # TODO order_id?
 
         # -----------------------------
         # Get configuration parameters:
@@ -194,7 +259,8 @@ class EdiHistoryCheck(osv.osv):
             doc_type = invoice[0].strip()
             number = invoice[1].strip()
             order = invoice[2].strip() # header
-            #if order == '
+            if order == '4506019878':
+                import pdb; pdb.set_trace()
             article = invoice[3].strip()
             order_detail = invoice[4].strip()
             line_out = invoice[5].strip()            
