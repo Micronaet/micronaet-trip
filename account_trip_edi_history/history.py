@@ -386,9 +386,15 @@ class EdiHistoryCheck(osv.osv):
             # ----------------
             # History analysis
             # ----------------
-            # Line not present: unmanaged? (if removed, line_type = cancel)
+            # Wron line (not present in order)
             if line_out not in order_record[order]: # (article, line_type)
-                date['state'] = 'only_out' # not presen in order (ex unmanaged)
+                date['state'] = 'wrong_line' # not presen in order
+                self.create(cr, uid, date, context=context)
+                continue # Jump line
+
+            # Line removed (present in order but cancelled
+            if order_record[order][line_out][1] == 'cancel':
+                date['state'] = 'only_out' # present but deleted in order
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
 
@@ -419,12 +425,6 @@ class EdiHistoryCheck(osv.osv):
             if abs(date['price_in'] - price) > price_prec:
                 date['line_in'] = line_out
                 date['state'] = 'price'
-                self.create(cr, uid, date, context=context)
-                continue # Jump line
-
-            # Test line removed in order
-            if order_record[order][line_out][1] == 'cancel':
-                date['state'] = 'only_out' # present but deleted in order
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
             
@@ -511,8 +511,9 @@ class EdiHistoryCheck(osv.osv):
             ('duplicated', 'Row duplicated'),
             
             # Control reading history:
-            ('only_in', 'Not imported'),
-            ('only_out', 'Extra line'),
+            ('only_in', 'Not imported'), # not present in accounting
+            ('only_out', 'Extra line'), # only out (order was cancel)
+            ('wrong_line', 'Wrong line'), # not present in order
             ('article', 'Article error'),
             ('quantity', 'Quantity error'), # TODO Manage
             ('price', 'Price error'), # TODO 
