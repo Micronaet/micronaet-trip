@@ -117,14 +117,35 @@ class EdiHistoryCheck(osv.osv):
                 history_filename: database of filename (list for every order)
                 order_record: dict with order line imported from history files
                 order_in_check: list of all record (for set order_in attribute)
-            '''
+            '''     
+            # Function utility:
+            def get_in_sequence(filelist):
+                ''' Internal utility for sort list get priority to orders and
+                    then to ordchg after to normal order
+                '''
+                # TODO add some controls (need to be right)
+                
+                # Split in 2 list the element depend on type:
+                orders = sorted([
+                    filename for filename in filelist if 'ORDERS' in filename])
+                    
+                ordchg = sorted([
+                    filename for filename in filelist if 'ORDCHG' in filename])
+                    
+                # order and merge as is:    
+                return orders.extend(ordchg)
+                
             to_save = False
             modified = False
+
+            if order == '4506021944': 
+                import pdb; pdb.set_trace()
+
             if order not in order_record:
                 order_record[order] = {}
                 to_save = True # After all write order for history in OpenERP
 
-            for filename in history_filename.get(order, []):
+            for filename in get_in_sequence(history_filename.get(order, [])):
                 # Read all files and update dict with row record:
                 f = open(filename)
                 m_time = time.ctime(os.path.getmtime(filename))
@@ -205,8 +226,7 @@ class EdiHistoryCheck(osv.osv):
                     elif order_record[order][line_in][1] == 'update':
                         row_class = 'class="table_bf_upd"'
                     else:
-                        row_class = ''
-    
+                        row_class = ''    
                     
                     order_html += '''
                         <tr %s>
@@ -400,10 +420,10 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
 
-           # Note: Here we write wrong sequence, before valuated, if present:
-           if wrong_sequence:
-               self.create(cr, uid, date, context=context)
-               continue
+            # Note: Here we write wrong sequence, before valuated, if present:
+            if wrong_sequence:
+                self.create(cr, uid, date, context=context)
+                continue
 
 
             # key: order-line now exist so remove for order_in test:
