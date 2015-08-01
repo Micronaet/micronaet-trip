@@ -43,7 +43,8 @@ class EdiHistoryOrder(osv.osv):
     _columns = {
         'name': fields.char('Order #', size=30, required=True),
         'note': fields.text('Result'), # HTML format
-        'modified': fields.boolean('Modified')
+        'modified': fields.boolean('Modified'),
+        'file': fields.text('File', help='File list for check the order'), 
         }
     
     _defaults = {
@@ -149,9 +150,6 @@ class EdiHistoryCheck(osv.osv):
                 
             to_save = False
             modified = False
-
-            if order == '4506021944': 
-                import pdb; pdb.set_trace()
 
             if order not in order_record:
                 order_record[order] = {}
@@ -264,17 +262,21 @@ class EdiHistoryCheck(osv.osv):
                 order_pool = self.pool.get('edi.history.order')
                 order_ids = order_pool.search(cr, uid, [
                     ('name', '=', order)], context=context)
+                file = ("%s" % (order_history_filename, )).replace(
+                    '[', '').replace(']', '').replace(',', '\n')
                 if order_ids: 
                     order_id = order_ids[0]    
                     order_pool.write(cr, uid, order_id, {
                         'note': order_html,
                         'modified': modified,
+                        'file': file, 
                         }, context=context)    
                 else:
                     order_id = order_pool.create(cr, uid, {
                         'name': order,
                         'modified': modified,
                         'note': order_html,
+                        'file': file,
                         }, context=context)    
                          
             return # TODO order_id?

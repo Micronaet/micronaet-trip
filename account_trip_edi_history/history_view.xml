@@ -9,6 +9,7 @@
            <search string="EDI order search">
                 <field name="name" />
                 <field name="note" />
+                <field name="file" />
                 <filter name="original" string="Original" domain="[('modified','=',False)]"/>
                 <filter name="modified" string="Modified" domain="[('modified','=',True)]"/>
                 <group expand="0" string="Group By...">
@@ -25,6 +26,7 @@
                 <sheet>
                     <group col="4" colspan="4">
                         <field name="name" readonly="1" />
+                        <field name="file" />
                         <field name="modified" readonly="1" />
                         <newline/>
                         <separator string="Original order" colspan="4"/>
@@ -42,6 +44,7 @@
             <tree string="EDI invoce order" colors="red:modified==True">
                 <field name="modified" />
                 <field name="name" />
+                <field name="file" />
             </tree>
         </field>
     </record>
