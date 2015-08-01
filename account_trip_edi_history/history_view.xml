@@ -1,6 +1,53 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+    <!-- edi.history.order -->
+    <record model="ir.ui.view" id="view_edi_history_order_search">
+        <field name="name">edi.history.order.search</field>
+        <field name="model">edi.history.order</field>
+        <field name="arch" type="xml">
+           <search string="EDI order search">
+                <field name="name" />
+                <field name="note" />
+           </search>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_edi_history_order_form">
+        <field name="name">edi.history.order.form</field>
+        <field name="model">edi.history.order</field>
+        <field name="arch" type="xml">
+            <form string="EDI invoce order" version="7.0">        
+                <sheet>
+                    <group col="4" colspan="4">
+                        <field name="name" readonly="1" />
+                        <newline/>
+                        <separator string="Original order" colspan="4"/>
+                        <field name="note" readonly="1" colspan="4" nolabel="1" widget="html"/>
+                    </group>
+                </sheet>        
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_edi_history_order_tree">
+        <field name="name">edi.history.order.tree</field>
+        <field name="model">edi.history.order</field>
+        <field name="arch" type="xml">
+            <tree string="EDI invoce order">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_edi_history_order">
+        <field name="name">EDI invoice order</field>
+        <field name="res_model">edi.history.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_edi_history_order_tree"/>
+        <field name="search_view_id" ref="view_edi_history_order_search"/>
+    </record>
+
     <!-- edi.history.configuration -->
     <record model="ir.ui.view" id="view_edi_history_configuration_form">
         <field name="name">edi.history.configuration.form</field>
@@ -175,11 +222,20 @@
 
         <menuitem 
             parent="menu_edi_check_root" 
+            id="menu_edi_history_order" 
+            action="action_edi_history_order"
+            name="Original order"
+            sequence="80"
+            />
+
+        <menuitem 
+            parent="menu_edi_check_root" 
             id="menu_edi_history_configuration" 
             action="action_edi_history_configuration"
             name="Invoice check configuration"
             sequence="90"
             />
+
 
     </data>
 </openerp>   

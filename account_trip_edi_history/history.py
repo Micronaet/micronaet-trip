@@ -161,19 +161,21 @@ class EdiHistoryCheck(osv.osv):
                     order_html += '''
                         <tr>
                             <td>%s</td><td>%s</td><td>%s</td><td>%s</td>
-                            <td>%s</td>
+                            <td>%s</td>><td>%s</td>><td>%s</td>
                         </tr>
                         ''' % (
                             line_in,
                             order_record[order][line_in][0],
-                            # line_type (TODO class?)[1]
+
+                            # line_type (TODO use for raise line with class)
+                            #order_record[order][line_in][1],
+                            
                             order_record[order][line_in][2],
                             order_record[order][line_in][3],
                             order_record[order][line_in][4],
                             order_record[order][line_in][5],
                             order_record[order][line_in][6],
                             )
-
                 order_html += '</table>'    
                             
                 order_pool = self.pool.get('edi.history.order')
