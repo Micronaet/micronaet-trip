@@ -173,8 +173,14 @@ class EdiHistoryCheck(osv.osv):
                              border: 1px solid black;
                              padding: 3px;
                              text-align: center;
-                             background-color: red;
+                             background-color: lightred;
                              text-decoration: line-through;
+                             }                             
+                        .table_bf_upd td {
+                             border: 1px solid black;
+                             padding: 3px;
+                             text-align: center;
+                             background-color: lightblue;
                              }                             
                         .table_bf th {
                              border: 1px solid black;
@@ -193,6 +199,15 @@ class EdiHistoryCheck(osv.osv):
                         </tr>''')
                 
                 for line_in in sorted(order_record[order].keys()):
+                    # Chose color line with class:
+                    if order_record[order][line_in][1] == 'cancel':
+                        row_class = 'class="table_bf_wo"'
+                    elif order_record[order][line_in][1] == 'update':
+                        row_class = 'class="table_bf_upd"'
+                    else:
+                        row_class = ''
+    
+                    
                     order_html += '''
                         <tr %s>
                             <td>%s</td><td>%s</td><td>%s</td>
@@ -201,9 +216,7 @@ class EdiHistoryCheck(osv.osv):
                             <td>%s</td><td>%s</td>
                         </tr>
                         ''' % (
-                            'class="table_bf_wo"' \
-                               if order_record[order][line_in][1] == 'cancel' \
-                               else '', # Cancel state
+                            row_class, # Cancel state
                             line_in, # Row
                             order_record[order][line_in][0], # Article
                             order_record[order][line_in][2], # Quant.
