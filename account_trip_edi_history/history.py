@@ -157,7 +157,7 @@ class EdiHistoryCheck(osv.osv):
                         <td>Price</td><td>File</td><td>Create</td><td>Mod.</td>
                     </tr>''')
                 
-                for line_in in order_record[order]:
+                for line_in in sorted(order_record[order].keys()):
                     order_html += '''
                         <tr>
                             <td>%s</td><td>%s</td><td>%s</td><td>%s</td>
@@ -261,8 +261,6 @@ class EdiHistoryCheck(osv.osv):
             doc_type = invoice[0].strip()
             number = invoice[1].strip()
             order = invoice[2].strip() # header
-            if order == '4506019878':
-                import pdb; pdb.set_trace()
             article = invoice[3].strip()
             order_detail = invoice[4].strip()
             line_out = invoice[5].strip()            
