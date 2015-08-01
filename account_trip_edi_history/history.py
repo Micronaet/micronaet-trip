@@ -339,12 +339,9 @@ class EdiHistoryCheck(osv.osv):
                 'document_type': doc_type,
                 }
 
-            # =================================================================
-            #                         STATE MANAGE
-            # =================================================================
-            # -----------------
-            # Speed check case:
-            # -----------------
+            # -------------------------------
+            # STATE MANAGE: Speed check case:
+            # -------------------------------
             if not order:
                 date['state'] = 'no_order'
                 self.create(cr, uid, date, context=context)
@@ -356,9 +353,9 @@ class EdiHistoryCheck(osv.osv):
             else:
                 date['state'] = 'ok' # temporary OK after account check
             
-            # ---------------
-            # Duplicated row:
-            # ---------------
+            # -----------------------------
+            # STATE MANAGE: Duplicated row:
+            # -----------------------------
             if order not in invoice_row:
                 invoice_row[order] = {}    
                         
@@ -367,15 +364,18 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
 
-            # --------------
-            # Sequence error
-            # --------------
+            # -----------------------------
+            # STATE MANAGE: Sequence error:
+            # -----------------------------
+            wrong_sequence = False
+            # Note: sequence is evaluated here for old counter but, if present,
+            # Write operation is done after wrong_line & only out, this because
+            # are more important than sequence error
             if old_order == order:
                 if old_line and line_out < old_line:
                     old_line = line_out
                     date['state'] = 'sequence'
-                    self.create(cr, uid, date, context=context)
-                    continue
+                    wrong_sequence = True 
                 else:
                     old_line = line_out
             else:
@@ -383,20 +383,28 @@ class EdiHistoryCheck(osv.osv):
                 old_order = order
                 old_line = line_out # first line of order
 
-            # ----------------
-            # History analysis
-            # ----------------
-            # Wron line (not present in order)
+            # ---------------------------------------------------
+            # HISTORY ANALYSIS: Wrong line (not present in order)
+            # ---------------------------------------------------
+            # NOTE: More important than sequence!!
             if line_out not in order_record[order]: # (article, line_type)
                 date['state'] = 'wrong_line' # not presen in order
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
 
-            # Line removed (present in order but cancelled
+            # ---------------------------------------------------------------
+            # HISTORY ANALYSIS: Line removed (present in order but cancelled)
+            # ---------------------------------------------------------------
             if order_record[order][line_out][1] == 'cancel':
                 date['state'] = 'only_out' # present but deleted in order
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
+
+           # Note: Here we write wrong sequence, before valuated, if present:
+           if wrong_sequence:
+               self.create(cr, uid, date, context=context)
+               continue
+
 
             # key: order-line now exist so remove for order_in test:
             try:
@@ -404,7 +412,9 @@ class EdiHistoryCheck(osv.osv):
             except:
                 pass # no problem on error
             
-            # Test article is the same:
+            # ------------------------------------------
+            # HISTORY ANALYSIS: Test article is the same
+            # ------------------------------------------
             date['product_code_in'] = order_record[order][line_out][0]
             if order_record[order][line_out][0] != article[:11]:
                 date['line_in'] = line_out
@@ -412,7 +422,9 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
                 
-            # Test quantity is the same:
+            # -------------------------------------------
+            # HISTORY ANALYSIS: Test quantity is the same
+            # -------------------------------------------
             date['quantity_in'] = order_record[order][line_out][2] # 3 element
             if abs(date['quantity_in'] - quantity) > quant_prec:
                 date['line_in'] = line_out
@@ -420,7 +432,9 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
 
-            # Test price is the same:
+            # ----------------------------------------
+            # HISTORY ANALYSIS: Test price is the same
+            # ----------------------------------------
             date['price_in'] = order_record[order][line_out][3] # 4 element
             if abs(date['price_in'] - price) > price_prec:
                 date['line_in'] = line_out
@@ -434,9 +448,9 @@ class EdiHistoryCheck(osv.osv):
             #    # TODO 
             #    pass
             
-            # ------------
-            # Save article
-            # ------------
+            # ----------------------------
+            # CORRECT RECORD: Save article
+            # ----------------------------
             date['line_in'] = line_out # TODO check after all: write line in, now are equals!
             invoice_row[order][line_out] = (
                 self.create(cr, uid, date, context=context),

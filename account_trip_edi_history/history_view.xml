@@ -25,6 +25,7 @@
                 <sheet>
                     <group col="4" colspan="4">
                         <field name="name" readonly="1" />
+                        <field name="modified" readonly="1" />
                         <newline/>
                         <separator string="Original order" colspan="4"/>
                         <field name="note" readonly="1" colspan="4" nolabel="1" widget="html"/>
@@ -38,7 +39,8 @@
         <field name="name">edi.history.order.tree</field>
         <field name="model">edi.history.order</field>
         <field name="arch" type="xml">
-            <tree string="EDI invoce order">
+            <tree string="EDI invoce order" colors="red:modified==True">
+                <field name="modified" />
                 <field name="name" />
             </tree>
         </field>
