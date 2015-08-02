@@ -92,7 +92,7 @@ class EdiHistoryCheck(osv.osv):
     
     _name = 'edi.history.check'
     _description = 'EDI history check'
-    _order = 'sequence,name,line_in,line_out'
+    _order = 'name,sequence,line_out,line_in'
     
 
     # -------------------------------------------------------------------------
@@ -403,9 +403,17 @@ class EdiHistoryCheck(osv.osv):
                 invoice_row[order] = {}    
                         
             if line_out in invoice_row[order]:
+                # if duplicated was yet removed from order_in_check
                 date['state'] = 'duplicated'
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
+
+            # Except from duplicated (that is yet removed) remove here from
+            # Check "only_in" list:
+            try: # key: order-line now exist so remove for order_in test:
+                order_in_check.remove((order, line_out)) # errr if not present
+            except:
+                pass # no problem on error
 
             # -----------------------------
             # STATE MANAGE: Sequence error:
@@ -448,13 +456,6 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context)
                 continue
 
-
-            # key: order-line now exist so remove for order_in test:
-            try:
-                order_in_check.remove((order, line_out))
-            except:
-                pass # no problem on error
-            
             # ------------------------------------------
             # HISTORY ANALYSIS: Test article is the same
             # ------------------------------------------
@@ -485,12 +486,6 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
             
-            # Write only_in for remain lines not tested
-            #for (order, line_out) in order_in_check:
-            #    # Create record with left values:
-            #    # TODO 
-            #    pass
-            
             # ----------------------------
             # CORRECT RECORD: Save article
             # ----------------------------
@@ -499,12 +494,42 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context),
                 article, 
                 ) # ID, Article
+        
+        # Write line present in IN and not in OUT:
+        for (order, line_in) in order_in_check:
+            # Note: before mark order evaluation
+            # Create line for order in without order ouf fileds:
+            if order not in order_record:
+                _logger.error(
+                    'Order %s with in line not found not present!' % order)
+                continue    
+
+            order_in = order_record[order] # yet loaded master loop        
+            date = {
+                'sequence': 0, # first line not prest in order out
+                'name': order,
+                'name_detail': False,
+                'line_in': line_in, # Use line_out
+                'line_out': False,
+                'quantity_in': order_in[line_in][2],
+                'quantity_out': False,
+                'price_in': order_in[line_in][3],
+                'price_out': False,                
+                'product_code_in': order_in[line_in][0],
+                'product_code_out': False,
+                'document_out': False,
+                'document_type': False,
+                'state': 'only_in',
+                }
+            self.create(cr, uid, date, context=context),
 
         # -------------------------------------------
         # Update field for show all order with errors
         # -------------------------------------------
+        # Mark all order as error where there's almost one line (after all!)
+        
         # NOTE: Splitted in two, maybe for precedence problems
-        _logger.info('Mark order with problem:')
+        _logger.info('Mark all order if has line problem:')
         # Line with problems
         line_ko_ids = self.search(cr, uid, [
             ('state', '!=', 'ok'), ], context=context)
