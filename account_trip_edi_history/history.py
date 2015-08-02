@@ -447,6 +447,10 @@ class EdiHistoryCheck(osv.osv):
             # HISTORY ANALYSIS: Line removed (present in order but cancelled)
             # ---------------------------------------------------------------
             if order_record[order][line_out][1] == 'cancel':
+                try: # key: order-line now exist so remove for order_in test:
+                    order_in_check.remove((order, line_out)) # cancel case!
+                except:
+                    pass # no problem on error
                 date['state'] = 'only_out' # present but deleted in order
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
