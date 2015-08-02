@@ -521,7 +521,8 @@ class EdiHistoryCheck(osv.osv):
                 'document_type': False,
                 'state': 'only_in',
                 }
-            self.create(cr, uid, date, context=context),
+            self.create(cr, uid, date, context=context)
+            _logger.warning('Order with only_in case: %s' % order)
 
         # -------------------------------------------
         # Update field for show all order with errors
