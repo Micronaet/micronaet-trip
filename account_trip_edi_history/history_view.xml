@@ -155,7 +155,7 @@
                     <filter name="group_product_parent_in" string="Parent product in" context="{'group_by': 'product_parent_in'}"/>
                     <filter name="group_product_parent_out" string="Parent product out" context="{'group_by': 'product_parent_out'}"/>
                     <filter name="group_document_out" string="Document number" context="{'group_by': 'document_out'}"/>
-                </group>                
+                </group>
            </search>
         </field>
     </record>

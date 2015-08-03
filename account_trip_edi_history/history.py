@@ -110,7 +110,7 @@ class EdiHistoryCheck(osv.osv):
             'view_type': 'form',
             'view_mode': 'tree,form',
             #'res_id': context.get('active_id', False),
-            'context': {},
+            'context': {'search_default_order_state_urgent_grouped': False},
             'domain': [('name', '=', order_proxy.name)], 
             }
 
@@ -130,7 +130,7 @@ class EdiHistoryCheck(osv.osv):
                 'view_type': 'form',
                 'view_mode': 'form',
                 'res_id': order_ids[0],
-                'context': {},
+                'context': {'search_default_order_state_urgent_grouped': False},
                 'domain': [('name', '=', order_ids[0])], 
                 }
         else:
@@ -140,6 +140,7 @@ class EdiHistoryCheck(osv.osv):
                 'target': 'new',
                 'view_type': 'form',
                 'view_mode': 'tree,form',
+                'context': {'search_default_order_state_urgent_grouped': False},
                 #'res_id': context.get('active_id', False),
                 }
         
