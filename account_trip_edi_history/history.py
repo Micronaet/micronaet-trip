@@ -434,6 +434,8 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
 
+            order_out_check.append((order, line_out)) # used for check dupl.
+
             # -----------------------------
             # STATE MANAGE: Sequence error:
             # -----------------------------
@@ -513,19 +515,18 @@ class EdiHistoryCheck(osv.osv):
             # ----------------------------
             # Note: line_in now are equals to line_out!
             date['line_in'] = line_out # must to be here (after all)
-            order_out_check.append((order, line_out)) # check duplication # TODO correct here??????????
             self.create(cr, uid, date, context=context)
         
         # Write line present in IN and not in OUT:
+        # Note: must be before mark order evaluation!
         for (order, line_in) in order_in_check:
-            # Note: before mark order evaluation
-            # Create line for order in without order ouf fileds:
             if order not in order_record:
                 _logger.error(
                     'Order %s with in line not found not present!' % order)
                 continue    
 
             order_in = order_record[order] # yet loaded master loop        
+            # Create line for order in without order out fields:
             date = {
                 'sequence': 0, # first line not prest in order out
                 'name': order,
@@ -551,22 +552,20 @@ class EdiHistoryCheck(osv.osv):
         # Mark all order as error where there's almost one line (after all!)
         
         # NOTE: Splitted in two, maybe for precedence problems
-        _logger.info('Mark all order if has line problem:')
-        # Line with problems
-        line_ko_ids = self.search(cr, uid, [
-            ('state', '!=', 'ok'), ], context=context)
-            
-        # Order code list:    
-        order_ko_list = [
+        _logger.info('Mark all order error if has line problem:')
+                
+        line_ko_ids = self.search(cr, uid, [ # Line with problems
+            ('state', '!=', 'ok'), ], context=context)            
+        
+        order_ko_list = [ # Order code list:    
             item.name for item in self.browse(
                 cr, uid, line_ko_ids, context=context)]
-        
-        # All order lines:    
-        order_ko_ids = self.search(cr, uid, [
+                
+        order_ko_ids = self.search(cr, uid, [ # All order lines:    
             ('name', 'in', order_ko_list), ], context=context)
         
-        # Update filed for search whole order:    
-        self.write(cr, uid, order_ko_ids, {
+        
+        self.write(cr, uid, order_ko_ids, { # Upd. field for search whole order
             'order_error': True
             }, context=context)
 
