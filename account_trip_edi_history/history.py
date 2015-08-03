@@ -111,7 +111,7 @@ class EdiHistoryCheck(osv.osv):
         # ---------------------------------------------------------------------
         #                            Utility function
         # ---------------------------------------------------------------------
-        def get_in_sequence(filelist):
+        def sort_sequence(filelist):
             ''' Internal utility for sort list get priority to orders and
                 then to ordchg after to normal order
             '''
@@ -155,9 +155,9 @@ class EdiHistoryCheck(osv.osv):
                 order_record[order] = {}
                 to_save = True # After all write order for history in OpenERP
 
-            order_history_filename = get_in_sequence(
+            sort_history_filename = sort_sequence(
                 history_filename.get(order, []))
-            for filename in order_history_filename:
+            for filename in sort_history_filename:
                 # Read all files and update dict with row record:
                 f = open(filename)
                 m_time = time.ctime(os.path.getmtime(filename))
@@ -253,7 +253,8 @@ class EdiHistoryCheck(osv.osv):
                             order_record[order][line_in][0], # Article
                             order_record[order][line_in][2], # Quant.
                             order_record[order][line_in][3], # Price
-                            order_record[order][line_in][4], # Filename
+                            # Filename (base name extract from full path:
+                            os.path.basename(order_record[order][line_in][4]),                             
                             order_record[order][line_in][5], # Create date
                             order_record[order][line_in][6], # Modifty date
                             )
@@ -262,21 +263,24 @@ class EdiHistoryCheck(osv.osv):
                 order_pool = self.pool.get('edi.history.order')
                 order_ids = order_pool.search(cr, uid, [
                     ('name', '=', order)], context=context)
-                file = ("%s" % (order_history_filename, )).replace(
-                    '[', '').replace(']', '').replace(',', '\n')
+                # Create file list:
+                file_list = ""
+                for f in sort_history_filename:
+                    file_list += "%s\n" % os.path.basename(f)
+                        
                 if order_ids: 
                     order_id = order_ids[0]    
                     order_pool.write(cr, uid, order_id, {
                         'note': order_html,
                         'modified': modified,
-                        'file': file, 
+                        'file': file_list, 
                         }, context=context)    
                 else:
                     order_id = order_pool.create(cr, uid, {
                         'name': order,
                         'modified': modified,
                         'note': order_html,
-                        'file': file,
+                        'file': file_list,
                         }, context=context)    
                          
             return # TODO order_id?
@@ -447,10 +451,10 @@ class EdiHistoryCheck(osv.osv):
             # HISTORY ANALYSIS: Line removed (present in order but cancelled)
             # ---------------------------------------------------------------
             if order_record[order][line_out][1] == 'cancel':
-                try: # key: order-line now exist so remove for order_in test:
-                    order_in_check.remove((order, line_out)) # cancel case!
-                except:
-                    pass # no problem on error
+                #try: # key: order-line now exist so remove for order_in test:
+                #    order_in_check.remove((order, line_out)) # cancel case!
+                #except:
+                #    pass # no problem on error
                 date['state'] = 'only_out' # present but deleted in order
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
