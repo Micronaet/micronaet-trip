@@ -112,6 +112,15 @@ class EdiHistoryCheck(osv.osv):
         # ---------------------------------------------------------------------
         #                            Utility function
         # ---------------------------------------------------------------------
+        def remove_from_list(order_in_check, order, line):
+            ''' Remove without error
+            '''
+            try: 
+                order_in_check.remove((order, line_out)) # error if not present
+            except:
+                pass # no problem on error
+            return
+            
         def sort_sequence(filelist):
             ''' Internal utility for sort list get priority to orders and
                 then to ordchg after to normal order
@@ -186,9 +195,12 @@ class EdiHistoryCheck(osv.osv):
                     order_record[order][line_in] = (
                         # For check with account information:
                         article, line_type, quantity, price, 
+                        
                         # For history record file in database:
                         filename, c_time, m_time)
-                    order_in_check.append((order, line_in)) # add key for test  
+                        
+                    order_in_check.append(
+                        (order, line_in)) # add key for test A - B 
                     
             # Save file for create a HTML order more readable:                          
             if to_save and order: # jump empty
@@ -274,7 +286,7 @@ class EdiHistoryCheck(osv.osv):
                         'note': order_html,
                         'modified': modified,
                         'file': file_list, 
-                        'total': len(file_list),
+                        'total': len(sort_history_filename),
                         }, context=context)    
                 else:
                     order_id = order_pool.create(cr, uid, {
@@ -282,7 +294,7 @@ class EdiHistoryCheck(osv.osv):
                         'modified': modified,
                         'note': order_html,
                         'file': file_list,
-                        'total': len(file_list),
+                        'total': len(sort_history_filename),
                         }, context=context)    
                          
             return # TODO order_id?
@@ -416,10 +428,7 @@ class EdiHistoryCheck(osv.osv):
 
             # Except from duplicated (that is yet removed) remove here from
             # Check "only_in" list:
-            try: # key: order-line now exist so remove for order_in test:
-                order_in_check.remove((order, line_out)) # errr if not present
-            except:
-                pass # no problem on error
+            remove_from_list(order_in_check, order, line)
 
             # -----------------------------
             # STATE MANAGE: Sequence error:
@@ -453,10 +462,6 @@ class EdiHistoryCheck(osv.osv):
             # HISTORY ANALYSIS: Line removed (present in order but cancelled)
             # ---------------------------------------------------------------
             if order_record[order][line_out][1] == 'cancel':
-                #try: # key: order-line now exist so remove for order_in test:
-                #    order_in_check.remove((order, line_out)) # cancel case!
-                #except:
-                #    pass # no problem on error
                 date['state'] = 'only_out' # present but deleted in order
                 self.create(cr, uid, date, context=context)
                 continue # Jump line

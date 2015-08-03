@@ -42,7 +42,7 @@
         <field name="name">edi.history.order.tree</field>
         <field name="model">edi.history.order</field>
         <field name="arch" type="xml">
-            <tree string="EDI invoce order" colors="red:modified==True">
+            <tree string="EDI invoce order" colors="red:total==0;blue:modified==True">
                 <field name="modified" />
                 <field name="name" />
                 <field name="file" />
