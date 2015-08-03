@@ -186,6 +186,9 @@
                         
                         <field name="state" />
                         <field name="order_error" invisible="1"/>
+
+                        <button name="get_order_in" string="Order in" type="object" icon="STOCK_GOTO_FIRST" />
+                        <button name="get_order_out" string="Document out" type="object" icon="STOCK_GOTO_LAST"/>
                     </group>
                 </sheet>        
             </form>
@@ -221,8 +224,8 @@
                 <field name="price_out" />
 
                 <field name="state" />
-                <button name="get_order_in" string="Order in" type="object" />
-                <button name="get_order_out" string="Document out" type="object" />
+                <button name="get_order_in" string="Order in" type="object" icon="STOCK_GOTO_FIRST" />
+                <button name="get_order_out" string="Document out" type="object" icon="STOCK_GOTO_LAST"/>
             </tree>
         </field>
     </record>
@@ -233,11 +236,33 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="view_edi_history_check_tree"/>
-        <field name="search_view_id" ref="view_edi_history_check_search"/>
-        
+        <field name="search_view_id" ref="view_edi_history_check_search"/>        
         <field name="context">{'search_default_order_state_urgent_grouped': True}</field>
         <field name="domain">[]</field>
     </record>
+
+    <!--Extra view for search-->
+    <record model="ir.actions.act_window" id="action_edi_history_check_order_error">
+        <field name="name">Order with error</field>
+        <field name="res_model">edi.history.check</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_edi_history_check_tree"/>
+        <field name="search_view_id" ref="view_edi_history_check_search"/>        
+        <field name="context">{'search_default_order_error_grouped': True}</field>
+        <field name="domain">[]</field>
+    </record>
+    <record model="ir.actions.act_window" id="action_edi_history_check_state_error">
+        <field name="name">Order with error</field>
+        <field name="res_model">edi.history.check</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_edi_history_check_tree"/>
+        <field name="search_view_id" ref="view_edi_history_check_search"/>        
+        <field name="context">{'search_default_order_state_grouped': True}</field>
+        <field name="domain">[]</field>
+    </record>
+
 
     <menuitem 
         parent="account_trip.menu_trip_root" 
@@ -245,6 +270,7 @@
         name="EDI check"
         sequence="40"
         />
+        
         <menuitem 
             parent="menu_edi_check_root" 
             id="menu_edi_history_check" 
@@ -252,6 +278,20 @@
             name="Invoice check"
             sequence="10"
             />
+            <menuitem 
+                parent="menu_edi_history_check" 
+                id="menu_edi_history_check_order_error" 
+                action="action_edi_history_check_state_error"
+                name="Order with error"
+                sequence="10"
+                />
+            <menuitem 
+                parent="menu_edi_history_check" 
+                id="menu_edi_history_check_state_error_all" 
+                action="action_edi_history_check_order_error"
+                name="Order with error"
+                sequence="20"
+                />
 
         <menuitem 
             parent="menu_edi_check_root" 

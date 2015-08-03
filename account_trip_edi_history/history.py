@@ -102,11 +102,13 @@ class EdiHistoryCheck(osv.osv):
     def get_order_out(self, cr, uid, ids, context=None):
         ''' Open view for see all order OUT
         '''
+        
         return True
 
     def get_order_in(self, cr, uid, ids, context=None):
         ''' Open view for see all order IN
         '''
+        
         return True
         
     # -------------------------------------------------------------------------
