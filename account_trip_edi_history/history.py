@@ -99,7 +99,16 @@ class EdiHistoryCheck(osv.osv):
     _description = 'EDI history check'
     _order = 'name,sequence,line_out,line_in'
     
+    def get_order_out(self, cr, uid, ids, context=None):
+        ''' Open view for see all order OUT
+        '''
+        return True
 
+    def get_order_in(self, cr, uid, ids, context=None):
+        ''' Open view for see all order IN
+        '''
+        return True
+        
     # -------------------------------------------------------------------------
     #                             Scheduled action
     # -------------------------------------------------------------------------

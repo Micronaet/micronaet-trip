@@ -221,6 +221,8 @@
                 <field name="price_out" />
 
                 <field name="state" />
+                <button name="get_order_in" string="Order in" type="object" />
+                <button name="get_order_out" string="Document out" type="object" />
             </tree>
         </field>
     </record>
@@ -236,7 +238,7 @@
         <field name="context">{'search_default_order_state_urgent_grouped': True}</field>
         <field name="domain">[]</field>
     </record>
-    
+
     <menuitem 
         parent="account_trip.menu_trip_root" 
         id="menu_edi_check_root" 
