@@ -1,0 +1,428 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# 	* account_trip_edi_history
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-08-03 07:49+0000\n"
+"PO-Revision-Date: 2015-08-03 10:09+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: account_trip_edi_history
+#: selection:edi.history.check,state:0
+msgid "Price error"
+msgstr "Errore prezzo"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0 field:edi.history.check,product_code_in:0
+msgid "Product in"
+msgstr "Prodotto IN"
+
+#. module: account_trip_edi_history
+#: help:edi.history.configuration,verbose:0
+msgid "Log an import event every X lines (0 = nothing)"
+msgstr "Messaggio di log importazione ogni X record (0 = nessuno)"
+
+#. module: account_trip_edi_history
+#: field:edi.history.configuration,invoice_file:0
+#: field:edi.history.configuration,invoice_path:0
+msgid "Invoice path"
+msgstr "Path fatture (o file)"
+
+#. module: account_trip_edi_history
+#: selection:edi.history.check,state:0
+msgid "Row duplicated"
+msgstr "Riga duplicata"
+
+#. module: account_trip_edi_history
+#: help:edi.history.check,line_out:0
+msgid "Delivery of invoice line"
+msgstr "Consegna di riga fattura"
+
+#. module: account_trip_edi_history
+#: selection:edi.history.check,state:0
+msgid "Order not present"
+msgstr "Ordine non presente"
+
+#. module: account_trip_edi_history
+#: model:ir.actions.act_window,name:account_trip_edi_history.action_edi_history_check
+msgid "EDI invoice check"
+msgstr "EDI controllo fatture"
+
+#. module: account_trip_edi_history
+#: view:edi.history.order:0
+msgid "Group By..."
+msgstr "Raggruppa per..."
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0 field:edi.history.check,state:0
+msgid "State"
+msgstr "Stato"
+
+#. module: account_trip_edi_history
+#: help:edi.history.order,file:0
+msgid "File list for check the order"
+msgstr "Lista file per controllo ordine"
+
+#. module: account_trip_edi_history
+#: help:edi.history.configuration,invoice_file:0
+msgid "Path of invoice file, use: \"~/company/account/invoice.csv\""
+msgstr "Percorso file fatture, usa: \"~/company/account/invoice.csv\""
+
+#. module: account_trip_edi_history
+#: model:ir.model,name:account_trip_edi_history.model_edi_history_configuration
+msgid "EDI history configuration"
+msgstr "EDI configurazione controlli"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0 field:edi.history.check,document_type:0
+msgid "Document type"
+msgstr "Tipo documento"
+
+#. module: account_trip_edi_history
+#: selection:edi.history.check,state:0
+msgid "Correct"
+msgstr "Corretta"
+
+#. module: account_trip_edi_history
+#: field:edi.history.check,name_detail:0
+msgid "Order detail"
+msgstr "Dettaglio ordine"
+
+#. module: account_trip_edi_history
+#: view:edi.history.configuration:0
+msgid "EDI invoce check config."
+msgstr "EDI configurazione contr. fatture"
+
+#. module: account_trip_edi_history
+#: field:edi.history.check,name:0
+msgid "Order name"
+msgstr "Numero ordine"
+
+#. module: account_trip_edi_history
+#: selection:edi.history.check,state:0
+msgid "Not imported"
+msgstr "Non importato"
+
+#. module: account_trip_edi_history
+#: help:edi.history.check,name_detail:0
+msgid "Order ID in accounting detail"
+msgstr "ID ordine nel dettaglio "
+
+#. module: account_trip_edi_history
+#: field:edi.history.order,name:0
+msgid "Order #"
+msgstr "Ordine #"
+
+#. module: account_trip_edi_history
+#: help:edi.history.configuration,history_path:0
+#: help:edi.history.configuration,invoice_path:0
+msgid "Path of history files, use also like: \"~/company/history\""
+msgstr "Path file storici, usa ad esempio: \"~/company/history\""
+
+#. module: account_trip_edi_history
+#: field:edi.history.check,sequence:0
+msgid "Sequence"
+msgstr "Sequenza"
+
+#. module: account_trip_edi_history
+#: field:edi.history.check,price_in:0
+msgid "Price in"
+msgstr "Prezzo IN"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0
+msgid "Line error"
+msgstr "Riga errata"
+
+#. module: account_trip_edi_history
+#: help:edi.history.check,order_error:0
+msgid "As if the line is correct in order there's almost one linewith error"
+msgstr ""
+"Siccome la linea è corretta nell'ordine deve esserci per forza almeno una "
+"riga errata nell'ordine"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0
+msgid "Group By"
+msgstr "Raggruppa per..."
+
+#. module: account_trip_edi_history
+#: selection:edi.history.check,state:0
+msgid "Sequence error"
+msgstr "Errore sequenza"
+
+#. module: account_trip_edi_history
+#: help:edi.history.check,document_type:0
+msgid "Document out type"
+msgstr "Tipo documento OUT"
+
+#. module: account_trip_edi_history
+#: help:edi.history.check,state:0
+msgid "Error state"
+msgstr "Stato errore"
+
+#. module: account_trip_edi_history
+#: model:ir.model,name:account_trip_edi_history.model_edi_history_order
+msgid "EDI history order"
+msgstr "EDI ordini storici"
+
+#. module: account_trip_edi_history
+#: field:edi.history.configuration,active:0
+msgid "Active"
+msgstr "Attivo"
+
+#. module: account_trip_edi_history
+#: selection:edi.history.check,state:0
+msgid "Error unmanaged"
+msgstr "Errore non gestito"
+
+#. module: account_trip_edi_history
+#: field:edi.history.configuration,price_precision:0
+msgid "Price precision"
+msgstr "Prezzo precisione"
+
+#. module: account_trip_edi_history
+#: field:edi.history.order,note:0
+msgid "Result"
+msgstr "Risultato"
+
+#. module: account_trip_edi_history
+#: selection:edi.history.check,document_type:0
+msgid "Document of transport"
+msgstr "DDT"
+
+#. module: account_trip_edi_history
+#: selection:edi.history.check,document_type:0
+msgid "Invoice"
+msgstr "Fattura"
+
+#. module: account_trip_edi_history
+#: field:edi.history.configuration,verbose:0
+msgid "Verbose every"
+msgstr "Verboso ogni"
+
+#. module: account_trip_edi_history
+#: view:edi.history.order:0
+msgid "EDI invoce order"
+msgstr "EDI ordini fatturati"
+
+#. module: account_trip_edi_history
+#: model:ir.ui.menu,name:account_trip_edi_history.menu_edi_check_root
+msgid "EDI check"
+msgstr "EDI controllo"
+
+#. module: account_trip_edi_history
+#: view:edi.history.order:0
+#: model:ir.ui.menu,name:account_trip_edi_history.menu_edi_history_order
+msgid "Original order"
+msgstr "Ordine originale"
+
+#. module: account_trip_edi_history
+#: model:ir.actions.act_window,name:account_trip_edi_history.action_edi_history_configuration
+msgid "EDI invoice check config."
+msgstr "EDI config. controllo fatture "
+
+#. module: account_trip_edi_history
+#: view:edi.history.order:0 field:edi.history.order,modified:0
+msgid "Modified"
+msgstr "Modificato"
+
+#. module: account_trip_edi_history
+#: selection:edi.history.check,state:0
+msgid "Order doesn't match"
+msgstr "Ordine non combacia"
+
+#. module: account_trip_edi_history
+#: field:edi.history.configuration,delimiter:0
+msgid "Delimiter"
+msgstr "Delimitatore"
+
+#. module: account_trip_edi_history
+#: field:edi.history.configuration,code:0
+msgid "Code"
+msgstr "Codice"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0
+msgid "EDI check search"
+msgstr "EDI ricerca elementi"
+
+#. module: account_trip_edi_history
+#: help:edi.history.check,line_in:0
+msgid "Order line"
+msgstr "Righe ordine"
+
+#. module: account_trip_edi_history
+#: help:edi.history.check,name:0
+msgid "Order ID of company"
+msgstr "ID ordini della società"
+
+#. module: account_trip_edi_history
+#: field:edi.history.configuration,history_path:0
+msgid "History path"
+msgstr "Percorso storico"
+
+#. module: account_trip_edi_history
+#: help:edi.history.order,total:0
+msgid "Total of file for this order"
+msgstr "Totale file per questo ordine"
+
+#. module: account_trip_edi_history
+#: model:ir.ui.menu,name:account_trip_edi_history.menu_edi_history_configuration
+msgid "Invoice check configuration"
+msgstr "Configurazione controllo fatture"
+
+#. module: account_trip_edi_history
+#: field:edi.history.check,price_out:0
+msgid "Price out"
+msgstr "Prezzo OUT"
+
+#. module: account_trip_edi_history
+#: selection:edi.history.check,state:0
+msgid "Quantity error"
+msgstr "Errore quantità"
+
+#. module: account_trip_edi_history
+#: field:edi.history.check,line_in:0
+msgid "Line in"
+msgstr "Riga IN"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0 selection:edi.history.check,document_type:0
+msgid "Order"
+msgstr "Ordine"
+
+#. module: account_trip_edi_history
+#: field:edi.history.configuration,name:0
+msgid "EDI company"
+msgstr "EDI società"
+
+#. module: account_trip_edi_history
+#: selection:edi.history.check,state:0
+msgid "Wrong line"
+msgstr "Riga errata"
+
+#. module: account_trip_edi_history
+#: model:ir.actions.act_window,name:account_trip_edi_history.action_edi_history_order
+msgid "EDI invoice order"
+msgstr "EDI ordini fatturati"
+
+#. module: account_trip_edi_history
+#: help:edi.history.check,product_code_in:0
+msgid "Order product in"
+msgstr "Prodotto IN"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0
+msgid "Check order error"
+msgstr "Controlla errore ordine"
+
+#. module: account_trip_edi_history
+#: view:edi.history.order:0
+msgid "EDI order search"
+msgstr "EDI ricerca ordini"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0 field:edi.history.check,product_code_out:0
+msgid "Product out"
+msgstr "Prodotto OUT"
+
+#. module: account_trip_edi_history
+#: view:edi.history.order:0
+msgid "Original"
+msgstr "Originale"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0 field:edi.history.check,order_error:0
+msgid "Order error"
+msgstr "Errore ordine"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0
+msgid "EDI invoce check"
+msgstr "EDI controllo fatture"
+
+#. module: account_trip_edi_history
+#: model:ir.model,name:account_trip_edi_history.model_edi_history_check
+msgid "EDI history check"
+msgstr "EDI controllo storico"
+
+#. module: account_trip_edi_history
+#: selection:edi.history.check,state:0
+msgid "Extra line"
+msgstr "Riga extra"
+
+#. module: account_trip_edi_history
+#: field:edi.history.check,quantity_out:0
+msgid "Quantity out"
+msgstr "Quantità OUT"
+
+#. module: account_trip_edi_history
+#: field:edi.history.configuration,quantity_precision:0
+msgid "Quantity precision"
+msgstr "Precisione quantità"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0
+msgid "Document number"
+msgstr "Numero documento"
+
+#. module: account_trip_edi_history
+#: field:edi.history.configuration,header:0
+msgid "Header lines"
+msgstr "Righe testata"
+
+#. module: account_trip_edi_history
+#: field:edi.history.check,document_out:0
+msgid "Document out"
+msgstr "Num. doc. OUT"
+
+#. module: account_trip_edi_history
+#: model:ir.ui.menu,name:account_trip_edi_history.menu_edi_history_check
+msgid "Invoice check"
+msgstr "Controllo fatture"
+
+#. module: account_trip_edi_history
+#: selection:edi.history.check,state:0
+msgid "Article error"
+msgstr "Errore articolo"
+
+#. module: account_trip_edi_history
+#: field:edi.history.order,file:0
+msgid "File"
+msgstr "File"
+
+#. module: account_trip_edi_history
+#: field:edi.history.check,quantity_in:0
+msgid "Quantity in"
+msgstr "Quantità IN"
+
+#. module: account_trip_edi_history
+#: field:edi.history.order,total:0
+msgid "Total"
+msgstr "Totale"
+
+#. module: account_trip_edi_history
+#: help:edi.history.check,product_code_out:0
+msgid "Invoice or delivery product out"
+msgstr "Prodotto OUT"
+
+#. module: account_trip_edi_history
+#: field:edi.history.check,line_out:0
+msgid "Line out"
+msgstr "Riga OUT"
+
+#. module: account_trip_edi_history
+#: help:edi.history.check,document_out:0
+msgid "Number of document, delivery or invoice, out"
+msgstr "Numero documento, consegna o fattura, OUT"
