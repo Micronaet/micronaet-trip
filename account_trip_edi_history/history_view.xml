@@ -69,13 +69,19 @@
                 <sheet>
                     <group col="4" colspan="4">
                         <field name="name" />
-                        <field name="code" readonly="1" />
+                        <field name="code" /> <!--readonly="1" -->
+
+                        <field name="quantity_precision" />
+                        <field name="price_precision" />
+
                         <field name="history_path" />
                         <field name="invoice_file" />
                         
                         <field name="delimiter" />
                         <field name="header" />
+
                         <field name="verbose" />
+
                         <!--<field name="active" />
                         <field name="invoice_path" />-->
                     </group>
@@ -96,6 +102,8 @@
                 <field name="delimiter" />
                 <field name="header" />
                 <field name="verbose" />
+                <field name="quantity_precision" />
+                <field name="price_precision" />
             </tree>
         </field>
     </record>

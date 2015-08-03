@@ -77,6 +77,8 @@ class EdiHistoryConfiguration(osv.osv):
             help='Path of history files, use also like: "~/company/history"'),
         'invoice_file': fields.char('Invoice path', size=100, 
             help='Path of invoice file, use: "~/company/account/invoice.csv"'),
+        'quantity_precision': fields.float('Quantity precision', digits=(16, 2)),     
+        'price_precision': fields.float('Price precision', digits=(16, 2)),     
         }
         
     # TODO set unique key for name    
@@ -85,6 +87,8 @@ class EdiHistoryConfiguration(osv.osv):
         'delimiter': lambda *x: ';',
         'header': lambda *x: 0,        
         'verbose': lambda *x: 100,    
+        'quantity_precision': lambda *x: 0.01,    
+        'price_precision': lambda *x: 0.01,    
         }    
 
 class EdiHistoryCheck(osv.osv):
@@ -304,7 +308,9 @@ class EdiHistoryCheck(osv.osv):
         # ---------------------------------------------------------------------
         _logger.info('Start import history order for check')
         
+        # --------------------------
         # Read configuration record:
+        # --------------------------
         config_pool = self.pool.get('edi.history.configuration')
         config_ids = config_pool.search(cr, uid, [
             ('code', '=', code)], context=context)
@@ -315,9 +321,9 @@ class EdiHistoryCheck(osv.osv):
         input_folder = config_proxy.history_path # history order
         input_invoice = config_proxy.invoice_file # account invoice
         
-        # Precision for price / quantiyi evaluation
-        price_prec = 0.01 # TODO put in configuration?
-        quant_prec = 0.01
+        # Precision for price / quantity evaluation
+        quant_prec = config_proxy.quantity_precition
+        price_prec = config_proxy.price_precition
 
         # ---------------
         # Clean database:
