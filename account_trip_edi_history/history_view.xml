@@ -144,7 +144,7 @@
                 <filter name="order_error_grouped" string="Check order error" domain="[('order_error','=',True)]" context="{'group_by': 'name'}" />
 
                 <filter name="order_state_grouped" string="Check state" domain="[('order_error','=',True)]" context="{'group_by': 'state'}" />
-                <filter name="order_state_urgent_grouped" string="Check state urgent" domain="[('order_error','=',True),('state','in',('no_order','order','wrong_line','article'))]" context="{'group_by': 'state'}" />
+                <filter name="order_state_urgent_grouped" string="Check state urgent" domain="[('order_error','=',True),('state','in',('no_order','order','wrong_line','article','duplicated'))]" context="{'group_by': 'state'}" />
 
                 <group expand="0" string="Group By">
                     <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
@@ -224,13 +224,8 @@
                 <field name="price_out" />
 
                 <field name="state" />
-<<<<<<< HEAD
                 <button name="get_order_in" string="Order in" type="object" icon="STOCK_GOTO_FIRST" /> <!--STOCK_JUSTIFY_FILL-->
                 <button name="get_order_out" string="Document out" type="object" icon="STOCK_GOTO_LAST"/><!--STOCK_SAVE-->
-=======
-                <button name="get_order_in" string="Order in" type="object" />
-                <button name="get_order_out" string="Document out" type="object" />
->>>>>>> f51751280b7d31628415a9b88839e8f8ada8f403
             </tree>
         </field>
     </record>
@@ -246,8 +241,6 @@
         <field name="domain">[]</field>
     </record>
 
-<<<<<<< HEAD
-    <!--Extra view for search-->
     <record model="ir.actions.act_window" id="action_edi_history_check_order_error">
         <field name="name">Order with error</field>
         <field name="res_model">edi.history.check</field>
@@ -269,9 +262,6 @@
         <field name="domain">[]</field>
     </record>
 
-
-=======
->>>>>>> f51751280b7d31628415a9b88839e8f8ada8f403
     <menuitem 
         parent="account_trip.menu_trip_root" 
         id="menu_edi_check_root" 
