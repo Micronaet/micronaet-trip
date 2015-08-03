@@ -326,8 +326,8 @@ class EdiHistoryCheck(osv.osv):
         input_invoice = config_proxy.invoice_file # account invoice
         
         # Precision for price / quantity evaluation
-        quant_prec = config_proxy.quantity_precition
-        price_prec = config_proxy.price_precition
+        quant_prec = config_proxy.quantity_precision
+        price_prec = config_proxy.price_precision
 
         # ---------------
         # Clean database:
@@ -362,7 +362,7 @@ class EdiHistoryCheck(osv.osv):
         # Start import invoice:
         # ---------------------
         # Read all lines and save only duplicated
-        order_out_check = {} # List of order-row for check duplication
+        order_out_check = [] # List of order-row for check duplication
         i = -config_proxy.header
         sequence = 0
         
@@ -464,8 +464,8 @@ class EdiHistoryCheck(osv.osv):
                 continue # Jump line
 
 
-            # Remove here line for only_in test
-            remove_from_list(order_in_check, order, line) 
+            # Remove here line for only_in test (so out removed from in)
+            remove_from_list(order_in_check, order, line_out) 
             
             # ---------------------------------------------------------------
             # HISTORY ANALYSIS: Line removed (present in order but cancelled)
