@@ -99,10 +99,36 @@ class EdiHistoryCheck(osv.osv):
     _description = 'EDI history check'
     _order = 'name,sequence,line_out,line_in'
     
-    def get_order_out(self, cr, uid, ids, context=None):
+    # ----------------------------
+    # Button and utility function:
+    # ----------------------------
+    def button_header_out(self, cr, uid, ids, context=None):
+        return self.get_order_out(cr, uid, ids, 'header', context=context)
+
+    def button_detail_out(self, cr, uid, ids, context=None):
+        return self.get_order_out(cr, uid, ids, 'detail', context=context)
+                
+    def button_document_out(self, cr, uid, ids, context=None):
+        return self.get_order_in(cr, uid, ids, 'account', context=context)
+
+    def get_order_out(self, cr, uid, ids, button_mode='header', context=None):
         ''' Open view for see all order OUT
+            button_mode for choose the type of filter: 
+                'header', 'detail', 'account'
         '''
+        if context is None:
+            context = {}
+
         order_proxy = self.browse(cr, uid, ids, context=context)[0]
+        
+        button_mode = context.get('button_mode', 'header')
+        if button_mode == 'header':
+            domain = [('name', '=', order_proxy.name)]
+        elif button_mode == 'detail':   
+            domain = [('name', '=', order_proxy.name_detail)]
+        else:    
+            domain = [('document_out', '=', order_proxy.document_out)]
+
         return {
             'res_model': 'edi.history.check',
             'type': 'ir.actions.act_window',
@@ -111,17 +137,36 @@ class EdiHistoryCheck(osv.osv):
             'view_mode': 'tree,form',
             #'res_id': context.get('active_id', False),
             'context': {'search_default_order_state_urgent_grouped': False},
-            'domain': [('name', '=', order_proxy.name)], 
+            'domain': domain, 
             }
 
-    def get_order_in(self, cr, uid, ids, context=None):
+    def button_header_in(self, cr, uid, ids, context=None):
+        return self.get_order_in(cr, uid, ids, 'header', context=context)
+
+    def button_detail_in(self, cr, uid, ids, context=None):
+        return self.get_order_in(cr, uid, ids, 'detail', context=context)
+
+        
+    def get_order_in(self, cr, uid, ids, button_mode='header', context=None):
         ''' Open view for see all order IN
+            context for pass button_mode: 'header' (def.), 'detail'
         '''
+        if context is None:
+            context = {}
+
+        # Search header or detail order code
         order_proxy = self.browse(cr, uid, ids, context=context)[0]
-        name = order_proxy.name
         order_pool = self.pool.get('edi.history.order')
-        order_ids = order_pool.search(cr, uid, [
-            ('name', '=', name)], context=context)
+        
+        button_mode = context.get('button_mode', 'header')
+        if button_mode == 'header':
+            order = _('Order header IN: %s') % order_proxy.name
+            domain = [('name', '=', order_proxy.name)]
+        else:
+            order = _('Order detail IN: %s') % order_proxy.name_detail
+            domain = [('name_detail', '=', order_proxy.name_detail)]
+
+        order_ids = order_pool.search(cr, uid, domain, context=context)
         if order_ids:            
             return {
                 'res_model': 'edi.history.order',
@@ -130,19 +175,15 @@ class EdiHistoryCheck(osv.osv):
                 'view_type': 'form',
                 'view_mode': 'form',
                 'res_id': order_ids[0],
-                'context': {'search_default_order_state_urgent_grouped': False},
+                'context': {
+                    'search_default_order_state_urgent_grouped': False},
                 'domain': [('name', '=', order_ids[0])], 
                 }
-        else:
-            return {
-                'res_model': 'edi.history.order',
-                'type': 'ir.actions.act_window',
-                'target': 'new',
-                'view_type': 'form',
-                'view_mode': 'tree,form',
-                'context': {'search_default_order_state_urgent_grouped': False},
-                #'res_id': context.get('active_id', False),
-                }
+
+        raise osv.except_osv(
+            _('Error!'), 
+            _('Order not found in archive: %s' % order),
+            )
         
     # -------------------------------------------------------------------------
     #                             Scheduled action
