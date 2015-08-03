@@ -172,8 +172,8 @@
                         <newline/>
 
                         <field name="name_detail" />
-                        <button name="button_detail_in" string="Order IN (detail)" type="object" icon="STOCK_GOTO_FIRST" attrs="{'invisible':[('name_detail','=',False)]}"/>
-                        <button name="button_detail_out" string="Document OUT (detail)" type="object" icon="STOCK_GOTO_LAST" attrs="{'invisible':[('name_detail','=',False)]}" />
+                        <button name="button_detail_in" string="Order IN (detail)" type="object" icon="STOCK_GOTO_FIRST" attrs="{'invisible':[('name_detail','=','')]}"/>
+                        <button name="button_detail_out" string="Document OUT (detail)" type="object" icon="STOCK_GOTO_LAST" attrs="{'invisible':[('name_detail','=','')]}" />
                         <newline/>
                         
                         <field name="line_in" />
@@ -217,8 +217,8 @@
                 <button name="button_header_out" string="Document OUT (header)" type="object" icon="STOCK_GOTO_LAST" attrs="{'invisible':[('name','=','NOT FOUND!')]}" />
 
                 <field name="name_detail" />
-                <button name="button_detail_in" string="Order IN (detail)" type="object" icon="STOCK_GOTO_FIRST" attrs="{'invisible':[('name_detail','=',False)]}"/>
-                <button name="button_detail_out" string="Document OUT (detail)" type="object" icon="STOCK_GOTO_LAST" attrs="{'invisible':[('name_detail','=',False)]}"/>
+                <button name="button_detail_in" string="Order IN (detail)" type="object" icon="STOCK_GOTO_FIRST" attrs="{'invisible':[('name_detail','=','')]}"/>
+                <button name="button_detail_out" string="Document OUT (detail)" type="object" icon="STOCK_GOTO_LAST" attrs="{'invisible':[('name_detail','=','')]}"/>
 
                 <field name="document_type" />
                 <button name="button_document_out" string="Doc. acc. OUT" type="object" icon="STOCK_GOTO_LAST" attrs="{'invisible':[('document_out','=',False)]}"/>

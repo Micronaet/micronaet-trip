@@ -109,25 +109,26 @@ class EdiHistoryCheck(osv.osv):
         return self.get_order_out(cr, uid, ids, 'detail', context=context)
                 
     def button_document_out(self, cr, uid, ids, context=None):
-        return self.get_order_in(cr, uid, ids, 'account', context=context)
+        return self.get_order_out(cr, uid, ids, 'account', context=context)
 
     def get_order_out(self, cr, uid, ids, button_mode='header', context=None):
         ''' Open view for see all order OUT
             button_mode for choose the type of filter: 
                 'header', 'detail', 'account'
         '''
-        if context is None:
-            context = {}
-
         order_proxy = self.browse(cr, uid, ids, context=context)[0]
         
-        button_mode = context.get('button_mode', 'header')
         if button_mode == 'header':
             domain = [('name', '=', order_proxy.name)]
         elif button_mode == 'detail':   
             domain = [('name', '=', order_proxy.name_detail)]
-        else:    
+        elif button_mode == 'account':
             domain = [('document_out', '=', order_proxy.document_out)]
+        else:
+            raise osv.except_osv(
+                _('Error!'), 
+                _('Buttot filter not found!'),
+                )
 
         return {
             'res_model': 'edi.history.check',
@@ -151,20 +152,16 @@ class EdiHistoryCheck(osv.osv):
         ''' Open view for see all order IN
             context for pass button_mode: 'header' (def.), 'detail'
         '''
-        if context is None:
-            context = {}
-
         # Search header or detail order code
         order_proxy = self.browse(cr, uid, ids, context=context)[0]
         order_pool = self.pool.get('edi.history.order')
         
-        button_mode = context.get('button_mode', 'header')
         if button_mode == 'header':
             order = _('Order header IN: %s') % order_proxy.name
             domain = [('name', '=', order_proxy.name)]
         else:
             order = _('Order detail IN: %s') % order_proxy.name_detail
-            domain = [('name_detail', '=', order_proxy.name_detail)]
+            domain = [('name', '=', order_proxy.name_detail)]
 
         order_ids = order_pool.search(cr, uid, domain, context=context)
         if order_ids:            
