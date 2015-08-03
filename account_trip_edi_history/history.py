@@ -416,6 +416,7 @@ class EdiHistoryCheck(osv.osv):
             # -------------------------------
             if not order:
                 date['state'] = 'no_order'
+                date['order'] = _('NON TROVATO!')
                 self.create(cr, uid, date, context=context)
                 continue
             elif order != order_detail:
@@ -519,6 +520,7 @@ class EdiHistoryCheck(osv.osv):
         
         # Write line present in IN and not in OUT:
         # Note: must be before mark order evaluation!
+        order_yet_found = []
         for (order, line_in) in order_in_check:
             if order not in order_record:
                 _logger.error(
@@ -544,7 +546,9 @@ class EdiHistoryCheck(osv.osv):
                 'state': 'only_in',
                 }
             self.create(cr, uid, date, context=context)
-            _logger.warning('Order with only_in case: %s' % order)
+            if order not in order_yey_found: # write only once
+                _logger.warning('Order with only_in case: %s' % order)
+                order_yet_found.append(order)
 
         # -------------------------------------------
         # Update field for show all order with errors
@@ -563,7 +567,6 @@ class EdiHistoryCheck(osv.osv):
                 
         order_ko_ids = self.search(cr, uid, [ # All order lines:    
             ('name', 'in', order_ko_list), ], context=context)
-        
         
         self.write(cr, uid, order_ko_ids, { # Upd. field for search whole order
             'order_error': True
