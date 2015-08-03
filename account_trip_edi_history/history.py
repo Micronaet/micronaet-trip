@@ -362,7 +362,7 @@ class EdiHistoryCheck(osv.osv):
         # Start import invoice:
         # ---------------------
         # Read all lines and save only duplicated
-        account_line_out = {} # List of order-row for check duplication
+        order_out_check = {} # List of order-row for check duplication
         i = -config_proxy.header
         sequence = 0
         
@@ -428,10 +428,7 @@ class EdiHistoryCheck(osv.osv):
             # -----------------------------
             # STATE MANAGE: Duplicated row:
             # -----------------------------
-            if order not in account_line_out:
-                account_line_out[order] = []    
-                        
-            if line_out in account_line_out[order]:
+            if (order, line_out) in order_out_check:
                 # if duplicated was yet removed from order_in_check
                 date['state'] = 'duplicated'
                 self.create(cr, uid, date, context=context)
@@ -516,7 +513,7 @@ class EdiHistoryCheck(osv.osv):
             # ----------------------------
             # Note: line_in now are equals to line_out!
             date['line_in'] = line_out # must to be here (after all)
-            account_line_out[order].append(line_out) # check duplication # TODO correct here??????????
+            order_out_check.append((order, line_out)) # check duplication # TODO correct here??????????
             self.create(cr, uid, date, context=context)
         
         # Write line present in IN and not in OUT:
