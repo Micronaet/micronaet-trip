@@ -311,13 +311,17 @@ class EdiHistoryCheck(osv.osv):
         # --------------------------
         # Read configuration record:
         # --------------------------
+        # Read record for code passed in scheduling:
         config_pool = self.pool.get('edi.history.configuration')
         config_ids = config_pool.search(cr, uid, [
             ('code', '=', code)], context=context)
         if not config_ids:    
+            _logger.error('Code %s not found in configuration file!' % code)
             return False
         config_proxy = config_pool.browse(
             cr, uid, config_ids, context=context)[0]
+            
+        # Folder path:    
         input_folder = config_proxy.history_path # history order
         input_invoice = config_proxy.invoice_file # account invoice
         
@@ -358,12 +362,13 @@ class EdiHistoryCheck(osv.osv):
         # Start import invoice:
         # ---------------------
         # Read all lines and save only duplicated
-        invoice_row = {} # List of order-row for check duplication
+        account_line_out = {} # List of order-row for check duplication
         i = -config_proxy.header
         sequence = 0
         
         old_order = False
         old_line = False
+        
         # TODO problem with order (not sorted with invoice/ddt)
         for invoice in csv.reader(
                 open(input_invoice, 'rb'), 
@@ -391,10 +396,10 @@ class EdiHistoryCheck(osv.osv):
                     order, history_filename, order_record, order_in_check)
             
             date = {
-                'sequence': sequence, # import sequence (for read line error)
+                'sequence': sequence, # for sort as account (check seq. err.)
                 'name': order, # to search in history
                 'name_detail': order_detail,
-                'line_in': False, # TODO write when read
+                'line_in': False,
                 'line_out': line_out,
                 'quantity_in': False,
                 'quantity_out': quantity,
@@ -423,35 +428,30 @@ class EdiHistoryCheck(osv.osv):
             # -----------------------------
             # STATE MANAGE: Duplicated row:
             # -----------------------------
-            if order not in invoice_row:
-                invoice_row[order] = {}    
+            if order not in account_line_out:
+                account_line_out[order] = []    
                         
-            if line_out in invoice_row[order]:
+            if line_out in account_line_out[order]:
                 # if duplicated was yet removed from order_in_check
                 date['state'] = 'duplicated'
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
 
-            # Except from duplicated (that is yet removed) remove here from
-            # Check "only_in" list:
-            remove_from_list(order_in_check, order, line)
-
             # -----------------------------
             # STATE MANAGE: Sequence error:
             # -----------------------------
             wrong_sequence = False
-            # Note: sequence is evaluated here for old counter but, if present,
-            # Write operation is done after wrong_line & only out, this because
-            # are more important than sequence error
+            # Note: sequence is evaluated here for "old" counter but,
+            # if present, the write operation is done after wrong_line & only 
+            # out, this because are more important than sequence error
             if old_order == order:
                 if old_line and line_out < old_line:
                     old_line = line_out
                     date['state'] = 'sequence'
                     wrong_sequence = True 
                 else:
-                    old_line = line_out
-            else:
-                # If change order reset line:
+                    old_line = line_out # No error, save this as old
+            else: # If change order reset line:
                 old_order = order
                 old_line = line_out # first line of order
 
@@ -464,11 +464,15 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
 
+
+            # Remove here line for only_in test
+            remove_from_list(order_in_check, order, line) 
+            
             # ---------------------------------------------------------------
             # HISTORY ANALYSIS: Line removed (present in order but cancelled)
             # ---------------------------------------------------------------
             if order_record[order][line_out][1] == 'cancel':
-                date['state'] = 'only_out' # present but deleted in order
+                date['state'] = 'only_out' # present but deleted in order                
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
 
@@ -510,11 +514,10 @@ class EdiHistoryCheck(osv.osv):
             # ----------------------------
             # CORRECT RECORD: Save article
             # ----------------------------
-            date['line_in'] = line_out # TODO check after all: write line in, now are equals!
-            invoice_row[order][line_out] = (
-                self.create(cr, uid, date, context=context),
-                article, 
-                ) # ID, Article
+            # Note: line_in now are equals to line_out!
+            date['line_in'] = line_out # must to be here (after all)
+            account_line_out[order].append(line_out) # check duplication # TODO correct here??????????
+            self.create(cr, uid, date, context=context)
         
         # Write line present in IN and not in OUT:
         for (order, line_in) in order_in_check:
