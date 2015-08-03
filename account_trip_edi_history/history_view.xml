@@ -224,8 +224,8 @@
                 <field name="price_out" />
 
                 <field name="state" />
-                <button name="get_order_in" string="Order in" type="object" icon="STOCK_GOTO_FIRST" />
-                <button name="get_order_out" string="Document out" type="object" icon="STOCK_GOTO_LAST"/>
+                <button name="get_order_in" string="Order in" type="object" icon="STOCK_GOTO_FIRST" /> <!--STOCK_JUSTIFY_FILL-->
+                <button name="get_order_out" string="Document out" type="object" icon="STOCK_GOTO_LAST"/><!--STOCK_SAVE-->
             </tree>
         </field>
     </record>
@@ -282,7 +282,7 @@
                 parent="menu_edi_history_check" 
                 id="menu_edi_history_check_order_error" 
                 action="action_edi_history_check_state_error"
-                name="Order with error"
+                name="Error state (all)"
                 sequence="10"
                 />
             <menuitem 

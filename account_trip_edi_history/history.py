@@ -102,14 +102,35 @@ class EdiHistoryCheck(osv.osv):
     def get_order_out(self, cr, uid, ids, context=None):
         ''' Open view for see all order OUT
         '''
-        
-        return True
+        order_proxy = self.browse(cr, uid, ids, context=context)[0]
+        return {
+            'res_model': 'edi.history.check',
+            'type': 'ir.actions.act_window',
+            #'target': 'new',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            #'res_id': context.get('active_id', False),
+            'context': {},
+            'domain': [('name','=',order_proxy.name)], 
+            }
 
     def get_order_in(self, cr, uid, ids, context=None):
         ''' Open view for see all order IN
         '''
+        order_proxy = self.browse(cr, uid, ids, context=context)[0]
+        order_pool = self.pool.get('edi.history.order')
+        #order_pool.search(cr, uid, 
         
-        return True
+        return {
+            'res_model': 'edi.history.order',
+            'type': 'ir.actions.act_window',
+            #'target': 'new',
+            'view_type': 'form',
+            'view_mode': 'form,tree',
+            #'res_id': context.get('active_id', False),
+            'context': {},
+            'domain': [('name','=',order_proxy.name)], 
+            }
         
     # -------------------------------------------------------------------------
     #                             Scheduled action
