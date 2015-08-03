@@ -405,7 +405,9 @@ class EdiHistoryCheck(osv.osv):
                 'price_in': False,
                 'price_out': price,                
                 'product_code_in': False,
+                'product_parent_in': False,
                 'product_code_out': article,
+                'product_parent_out': article[:3],
                 'document_out': number,
                 'document_type': doc_type,
                 }
@@ -539,7 +541,9 @@ class EdiHistoryCheck(osv.osv):
                 'price_in': order_in[line_in][3],
                 'price_out': False,                
                 'product_code_in': order_in[line_in][0],
+                'product_parent_in': order_in[line_in][0][:3],
                 'product_code_out': False,
+                'product_parent_out': False,
                 'document_out': False,
                 'document_type': False,
                 'state': 'only_in',
@@ -597,6 +601,12 @@ class EdiHistoryCheck(osv.osv):
             help='Order product in'),
         'product_code_out': fields.char('Product out', size=18, 
             help='Invoice or delivery product out'),
+            
+        # 3 char of product    
+        'product_parent_in': fields.char('Product parent in', size=3, 
+            help='Order product parent out (first 3 char)'),
+        'product_parent_out': fields.char('Product parent out', size=3, 
+            help='Order product parent in (first 3 char)'),
 
         'document_out': fields.char('Document out', size=20,
             help='Number of document, delivery or invoice, out'),

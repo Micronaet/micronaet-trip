@@ -128,6 +128,8 @@
                 <field name="line_out" />
                 <field name="product_code_in" />
                 <field name="product_code_out" />
+                <field name="product_parent_in" />
+                <field name="product_parent_out" />
                 <field name="quantity_in" />
                 <field name="quantity_out" />
                 <field name="price_in" />
@@ -136,9 +138,13 @@
                 <field name="document_type" />
                 <field name="state" />
 
-                <filter name="state" string="Line error" domain="[('state','!=','ok')]"/>
+                <filter name="state" string="Line error" domain="[('state','not in',('ok','quantity'))]"/>
+
                 <filter name="order_error" string="Order error" domain="[('order_error','=',True)]" />
-                <filter name="order_error_grouped" string="Check order error" domain="[('order_error','=',True)]" context="{'group_by': ('name')}" />
+                <filter name="order_error_grouped" string="Check order error" domain="[('order_error','=',True)]" context="{'group_by': 'name'}" />
+
+                <filter name="order_state_grouped" string="Check state" domain="[('order_error','=',True)]" context="{'group_by': 'state'}" />
+                <filter name="order_state_urgent_grouped" string="Check state urgent" domain="[('order_error','=',True),('state','in',('no_order','order','wrong_line','article'))]" context="{'group_by': 'state'}" />
 
                 <group expand="0" string="Group By">
                     <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
@@ -146,6 +152,8 @@
                     <filter name="group_document" string="Document type" context="{'group_by': 'document_type'}"/>
                     <filter name="group_product_code_in" string="Product in" context="{'group_by': 'product_code_in'}"/>
                     <filter name="group_product_code_out" string="Product out" context="{'group_by': 'product_code_out'}"/>
+                    <filter name="group_product_parent_in" string="Parent product in" context="{'group_by': 'product_parent_in'}"/>
+                    <filter name="group_product_parent_out" string="Parent product out" context="{'group_by': 'product_parent_out'}"/>
                     <filter name="group_document_out" string="Document number" context="{'group_by': 'document_out'}"/>
                 </group>                
            </search>
@@ -197,6 +205,9 @@
                 <field name="document_type" />
                 <field name="document_out" />
 
+                <field name="product_parent_in" invisible="1"/>
+                <field name="product_parent_out" invisible="1" />
+
                 <field name="product_code_in" />
                 <field name="product_code_out" />
 
@@ -222,7 +233,7 @@
         <field name="view_id" ref="view_edi_history_check_tree"/>
         <field name="search_view_id" ref="view_edi_history_check_search"/>
         
-        <field name="context">{'search_default_order_error_grouped': True}</field>
+        <field name="context">{'search_default_order_state_urgent_grouped': True}</field>
         <field name="domain">[]</field>
     </record>
     
