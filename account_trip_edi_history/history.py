@@ -345,9 +345,9 @@ class EdiHistoryCheck(osv.osv):
             for filename in files:                
                 filepath = os.path.join(root, filename)
                 f = open(filepath, 'rb')
-                line_in = f.read()
+                row = f.read()
                 f.close()
-                order = line_in[19:29].strip()
+                order = row[19:29].strip()
                 if not order:
                     _logger.error(
                         'Found order without name (jump): %s' % filename)
@@ -357,7 +357,6 @@ class EdiHistoryCheck(osv.osv):
                 #os.path.getmtime(filepath) # TODO for evaluation order prior.
                 history_filename[order].append(filepath)
 
-        import pdb; pdb.set_trace()
         # ---------------------
         # Start import invoice:
         # ---------------------

@@ -188,7 +188,7 @@
         <field name="name">edi.history.check.tree</field>
         <field name="model">edi.history.check</field>
         <field name="arch" type="xml">
-            <tree string="EDI invoce check" colors="blue:state!='ok'"><!--TODO assign color for error_order-->
+            <tree string="EDI invoce check" colors="red:state in ('only_in', 'only_out');brown:state in ('article', 'quantity', 'price');blue:state!='ok'"><!--TODO assign color for error_order-->
                 <field name="order_error" invisible="1"/>
 
                 <field name="name" />
