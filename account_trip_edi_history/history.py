@@ -160,14 +160,12 @@ class EdiHistoryCheck(osv.osv):
                 order_record: dict with order line imported from history files
                 order_in_check: list of all record (for set order_in attribute)
             '''     
-            # Function utility:
-                
-            to_save = False
-            modified = False
+            
+            if order in order_record: # pass only the first time
+                return 
 
-            if order not in order_record:
-                order_record[order] = {}
-                to_save = True # After all write order for history in OpenERP
+            modified = False            
+            order_record[order] = {}
 
             sort_history_filename = sort_sequence(
                 history_filename.get(order, []))
@@ -202,12 +200,13 @@ class EdiHistoryCheck(osv.osv):
                         
                         # For history record file in database:
                         filename, c_time, m_time)
-                        
-                    order_in_check.append(
-                        (order, line_in)) # add key for test A - B 
+                    
+                    if (order, line_in) not in order_in_check: # for modify!
+                        order_in_check.append(
+                            (order, line_in)) # add key for test A - B 
                     
             # Save file for create a HTML order more readable:                          
-            if to_save and order: # jump empty
+            if order: # jump empty
                 order_html = _('''
                     <style>
                         .table_bf {
@@ -358,6 +357,7 @@ class EdiHistoryCheck(osv.osv):
                 #os.path.getmtime(filepath) # TODO for evaluation order prior.
                 history_filename[order].append(filepath)
 
+        import pdb; pdb.set_trace()
         # ---------------------
         # Start import invoice:
         # ---------------------
@@ -415,7 +415,7 @@ class EdiHistoryCheck(osv.osv):
             # STATE MANAGE: Speed check case:
             # -------------------------------
             if not order:
-                date['name'] = _('NON TROVATO!')
+                date['name'] = _('NOT FOUND!')
                 date['state'] = 'no_order'
                 self.create(cr, uid, date, context=context)
                 continue
