@@ -45,6 +45,7 @@ class EdiHistoryOrder(osv.osv):
         'note': fields.text('Result'), # HTML format
         'modified': fields.boolean('Modified'),
         'file': fields.text('File', help='File list for check the order'), 
+        'total': fields.integer('Total', help='Total of file for this order'), 
         }
     
     _defaults = {
@@ -267,13 +268,13 @@ class EdiHistoryCheck(osv.osv):
                 file_list = ""
                 for f in sort_history_filename:
                     file_list += "%s\n" % os.path.basename(f)
-                        
                 if order_ids: 
                     order_id = order_ids[0]    
                     order_pool.write(cr, uid, order_id, {
                         'note': order_html,
                         'modified': modified,
                         'file': file_list, 
+                        'total': len(file_list),
                         }, context=context)    
                 else:
                     order_id = order_pool.create(cr, uid, {
@@ -281,6 +282,7 @@ class EdiHistoryCheck(osv.osv):
                         'modified': modified,
                         'note': order_html,
                         'file': file_list,
+                        'total': len(file_list),
                         }, context=context)    
                          
             return # TODO order_id?

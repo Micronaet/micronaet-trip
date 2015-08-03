@@ -10,6 +10,7 @@
                 <field name="name" />
                 <field name="note" />
                 <field name="file" />
+                <field name="total" />
                 <filter name="original" string="Original" domain="[('modified','=',False)]"/>
                 <filter name="modified" string="Modified" domain="[('modified','=',True)]"/>
                 <group expand="0" string="Group By...">
@@ -26,9 +27,9 @@
                 <sheet>
                     <group col="4" colspan="4">
                         <field name="name" readonly="1" />
-                        <field name="file" />
+                        <field name="file" readonly="1" />
+                        <field name="total" readonly="1" />
                         <field name="modified" readonly="1" />
-                        <newline/>
                         <separator string="Original order" colspan="4"/>
                         <field name="note" readonly="1" colspan="4" nolabel="1" widget="html"/>
                     </group>
@@ -45,6 +46,7 @@
                 <field name="modified" />
                 <field name="name" />
                 <field name="file" />
+                <field name="total" />
             </tree>
         </field>
     </record>
