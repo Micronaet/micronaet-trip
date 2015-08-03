@@ -558,8 +558,10 @@ class EdiHistoryCheck(osv.osv):
         _logger.info('Mark all order error if has line problem:')
                 
         line_ko_ids = self.search(cr, uid, [ # Line with problems
-            ('state', '!=', 'ok'), ], context=context)            
-        
+            ('state', '!=', 'ok'), # OK
+            ('state', '!=', 'quantity'), # No order error if quantity
+            ], context=context)            
+
         order_ko_list = [ # Order code list:    
             item.name for item in self.browse(
                 cr, uid, line_ko_ids, context=context)]
