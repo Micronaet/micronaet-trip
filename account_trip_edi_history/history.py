@@ -106,31 +106,42 @@ class EdiHistoryCheck(osv.osv):
         return {
             'res_model': 'edi.history.check',
             'type': 'ir.actions.act_window',
-            #'target': 'new',
+            'target': 'new',
             'view_type': 'form',
             'view_mode': 'tree,form',
             #'res_id': context.get('active_id', False),
             'context': {},
-            'domain': [('name','=',order_proxy.name)], 
+            'domain': [('name', '=', order_proxy.name)], 
             }
 
     def get_order_in(self, cr, uid, ids, context=None):
         ''' Open view for see all order IN
         '''
         order_proxy = self.browse(cr, uid, ids, context=context)[0]
+        name = order_proxy.name
         order_pool = self.pool.get('edi.history.order')
-        #order_pool.search(cr, uid, 
-        
-        return {
-            'res_model': 'edi.history.order',
-            'type': 'ir.actions.act_window',
-            #'target': 'new',
-            'view_type': 'form',
-            'view_mode': 'form,tree',
-            #'res_id': context.get('active_id', False),
-            'context': {},
-            'domain': [('name','=',order_proxy.name)], 
-            }
+        order_ids = order_pool.search(cr, uid, [
+            ('name', '=', name)], context=context)
+        if order_ids:            
+            return {
+                'res_model': 'edi.history.order',
+                'type': 'ir.actions.act_window',
+                'target': 'new',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_id': order_ids[0],
+                'context': {},
+                'domain': [('name', '=', order_ids[0])], 
+                }
+        else:
+            return {
+                'res_model': 'edi.history.order',
+                'type': 'ir.actions.act_window',
+                'target': 'new',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                #'res_id': context.get('active_id', False),
+                }
         
     # -------------------------------------------------------------------------
     #                             Scheduled action
@@ -633,7 +644,7 @@ class EdiHistoryCheck(osv.osv):
             help='Order product in'),
         'product_code_out': fields.char('Product out', size=18, 
             help='Invoice or delivery product out'),
-            
+
         # 3 char of product    
         'product_parent_in': fields.char('Product parent in', size=3, 
             help='Order product parent out (first 3 char)'),
