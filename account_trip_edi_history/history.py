@@ -415,8 +415,8 @@ class EdiHistoryCheck(osv.osv):
             # STATE MANAGE: Speed check case:
             # -------------------------------
             if not order:
+                date['name'] = _('NON TROVATO!')
                 date['state'] = 'no_order'
-                date['order'] = _('NON TROVATO!')
                 self.create(cr, uid, date, context=context)
                 continue
             elif order != order_detail:
@@ -546,7 +546,7 @@ class EdiHistoryCheck(osv.osv):
                 'state': 'only_in',
                 }
             self.create(cr, uid, date, context=context)
-            if order not in order_yey_found: # write only once
+            if order not in order_yet_found: # write only once
                 _logger.warning('Order with only_in case: %s' % order)
                 order_yet_found.append(order)
 
