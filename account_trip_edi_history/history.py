@@ -470,7 +470,7 @@ class EdiHistoryCheck(osv.osv):
 
             # Mapping fields:
             doc_type = invoice[0].strip()
-            number = invoice[1].strip()
+            document_out = invoice[1].strip()
             order = invoice[2].strip() # header
             article = invoice[3].strip()
             order_detail = invoice[4].strip()
@@ -493,7 +493,7 @@ class EdiHistoryCheck(osv.osv):
                 'product_parent_in': False,
                 'product_code_out': article,
                 'product_parent_out': article[:3],
-                'document_out': number,
+                'document_out': document_out,
                 'document_type': doc_type,
                 }
 
@@ -539,7 +539,8 @@ class EdiHistoryCheck(osv.osv):
             # Note: sequence is evaluated here for "old" counter but,
             # if present, the write operation is done after wrong_line & only 
             # out, this because are more important than sequence error
-            if old_order == order:
+            if old_order == (order, document_out):
+                # NOTE: Break the sequence with order and invoice!!!
                 if old_line and line_out < old_line:
                     old_line = line_out
                     date['state'] = 'sequence'
@@ -547,7 +548,7 @@ class EdiHistoryCheck(osv.osv):
                 else:
                     old_line = line_out # No error, save this as old
             else: # If change order reset line:
-                old_order = order
+                old_order = (order, document_out)
                 old_line = line_out # first line of order
 
             # ---------------------------------------------------
