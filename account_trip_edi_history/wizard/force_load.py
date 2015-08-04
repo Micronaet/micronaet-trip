@@ -45,8 +45,30 @@ class edi_history_check_load_wizard(osv.osv_memory):
     def edi_check_load(self, cr, uid, ids, context=None):
         ''' Call function passing scheduled parameters
         '''
+        cron_pool = self.pool.get('ir.cron')
+        cron_ids = cron_pool.search(cr, uid, [
+            '|', # NOTE: this if for open disabled operation!!
+            ('active','=',True),
+            ('active','=',False),
+            ('model', '=', 'edi.history.check')], context=context)
+        if not cron_ids:
+            _logger.error('Scheduled not found: reload EDI: %s "%s"' % (
+                cron_proxy.function, cron_proxy.args))
+         
+        cron_proxy = cron_pool.browse(cr, uid, cron_ids, context=context)[0]
+        _logger.info('Run reload EDI from cron: %s "%s"' % (
+            cron_proxy.function, cron_proxy.args)
+        )
+        cron_pool._callback(
+            cr,
+            cron_proxy.user_id.id, 
+            'edi.history.check', 
+            cron_proxy.function, 
+            cron_proxy.args, 
+            cron_proxy.id
+            )
         return True
-
+        
     _columns = {
         'note': fields.text('Importation note'),
         }
