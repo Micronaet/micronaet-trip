@@ -9,7 +9,6 @@
            <search string="EDI product parent search">
                 <field name="name" />
                 <field name="code" />
-                <field name="total" />
                 <group expand="0" string="Group By...">
                     <filter name="group_quantity" string="Quantity tolerance" context="{'group_by': 'quantity_tolerance'}"/>
                     <filter name="group_price" string="Price tolerance" context="{'group_by': 'price_tolerance'}"/>
@@ -374,7 +373,6 @@
         <menuitem 
             parent="menu_edi_check_root" 
             id="menu_edi_history_configuration" 
-            action="action_edi_history_configuration"
             name="Configuration"
             sequence="90"
             />
@@ -389,8 +387,8 @@
 
             <menuitem 
                 parent="menu_edi_history_configuration" 
-                id="menu_edi_history_configuration" 
-                action="action_edi_history_configuration_setup"
+                id="menu_edi_history_configuration_setup" 
+                action="action_edi_history_configuration"
                 name="Invoice check configuration"
                 sequence="20"
                 />

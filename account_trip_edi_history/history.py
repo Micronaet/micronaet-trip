@@ -227,6 +227,17 @@ class EdiHistoryCheck(osv.osv):
         # ---------------------------------------------------------------------
         #                            Utility function
         # ---------------------------------------------------------------------
+        def update_dict_with_parent_product(parent_product, parent_code):
+            ''' Search parent code in dict if not present create and update
+                dictionary (used this for external search)
+            '''
+            if parent_code not in parent_product:
+                parent_product[parent_code] =parent_pool.create(cr, uid, {
+                    'code': parent_code,
+                    'name': _('Product parent code %s') % parent_code,
+                    }, context=context)
+            return        
+            
         def remove_from_list(order_in_check, order, line):
             ''' Remove without error
             '''
@@ -468,6 +479,15 @@ class EdiHistoryCheck(osv.osv):
                 #os.path.getmtime(filepath) # TODO for evaluation order prior.
                 history_filename[order].append(filepath)
 
+        # -------------------------
+        # Load parent product code:
+        # -------------------------
+        parent_product = {}
+        parent_pool = self.pool.get('edi.product.parent')
+        parent_ids = parent_pool.search(cr, uid, [], context=context)
+        for c in parent_pool.browse(cr, uid, parent_ids, context=context):
+            parent_product[c.code] = c.id
+        
         # ---------------------
         # Start import invoice:
         # ---------------------
@@ -500,6 +520,8 @@ class EdiHistoryCheck(osv.osv):
             price = float(invoice[7].strip().replace(',', '.') or '0')
             # TODO check alias article for get correct element
             
+            update_dict_with_parent_product(parent_product, article[:3])
+            
             date = {
                 'sequence': sequence, # for sort as account (check seq. err.)
                 'name': order, # to search in history
@@ -514,6 +536,8 @@ class EdiHistoryCheck(osv.osv):
                 'product_parent_in': False,
                 'product_code_out': article,
                 'product_parent_out': article[:3],
+                'parent_out_id': parent_product.get(article[:3], False),
+                'parent_in_id': False,
                 'document_out': document_out,
                 'document_type': doc_type,
                 }
@@ -602,6 +626,11 @@ class EdiHistoryCheck(osv.osv):
             # HISTORY ANALYSIS: Test article is the same
             # ------------------------------------------
             date['product_code_in'] = order_record[order][line_out][0]
+            update_dict_with_parent_product(
+                parent_product, order_record[order][line_out][0][:3])
+            date['parent_in_id': parent_product.get(
+                order_record[order][line_out][0][:3], False),
+                
             if order_record[order][line_out][0] != article[:11]:
                 date['line_in'] = line_out
                 date['state'] = 'article'
@@ -646,6 +675,11 @@ class EdiHistoryCheck(osv.osv):
 
             order_in = order_record[order] # yet loaded master loop        
             # Create line for order in without order out fields:
+
+            # TODO put in function:
+            update_dict_with_parent_product(
+                parent_product, order_in[line_in][0][:3])
+
             date = {
                 'sequence': 0, # first line not prest in order out
                 'name': order,
@@ -656,13 +690,19 @@ class EdiHistoryCheck(osv.osv):
                 'quantity_out': False,
                 'price_in': order_in[line_in][3],
                 'price_out': False,                
-                'product_code_in': order_in[line_in][0],
-                'product_parent_in': order_in[line_in][0][:3],
-                'product_code_out': False,
-                'product_parent_out': False,
                 'document_out': False,
                 'document_type': False,
                 'state': 'only_in',
+                
+                # Product and parent:
+                'product_code_in': order_in[line_in][0],
+                'product_parent_in': order_in[line_in][0][:3], # TODO remove
+                'parent_in_id': parent_product.get(
+                    order_in[line_in][0][:3], False),
+                
+                'product_code_out': False,
+                'product_parent_out': False, # TODO remove
+                'parent_out_id': False,
                 }
             self.create(cr, uid, date, context=context)
             if order not in order_yet_found: # write only once
@@ -719,10 +759,16 @@ class EdiHistoryCheck(osv.osv):
             help='Invoice or delivery product out'),
 
         # 3 char of product    
+        # TODO remove after m2o fields vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
         'product_parent_in': fields.char('Product parent in', size=3, 
             help='Order product parent out (first 3 char)'),
         'product_parent_out': fields.char('Product parent out', size=3, 
             help='Order product parent in (first 3 char)'),
+        # TODO replace ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^    
+        'parent_in_id': fields.many2one('edi.product.parent', 'Parent IN', 
+            help='Parent ID code (order in product)'),
+        'parent_out_id': fields.many2one('edi.product.parent', 'Parent OUT', 
+            help='Parent ID code (document out accounting product)'),
 
         'document_out': fields.char('Document out', size=20,
             help='Number of document, delivery or invoice, out'),
