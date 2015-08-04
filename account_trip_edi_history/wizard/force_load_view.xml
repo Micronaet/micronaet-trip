@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+       <!-- edi.history.check.load.wizard -->
+       <record id="trip_force_load_view" model="ir.ui.view">
+            <field name="name">EDI check reload</field>
+            <field name="model">edi.history.check.load.wizard</field>
+            <field name="arch" type="xml">
+                <form string="EDI waiting" version="7.0">
+                   <header>                       
+                       <button name="edi_check_load" string="Load data" type="object" />
+                   </header>
+                   <sheet>
+                       <group colspan="4" col="4">
+                           <separator string="Note:" colspan="2" widget="html"/>
+                       </group>
+                   </sheet>
+                </form>
+            </field>
+      </record>
+      
+      <record model="ir.actions.act_window" id="action_trip_force_load">
+          <field name="name">EDI waiting</field>
+          <field name="res_model">edi.history.check.load.wizard</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">form</field>
+          <field name="target">new</field>
+          <field name="view_id" ref="trip_force_load_view"/>
+      </record>
+        
+        <!--MENUITEM-->        
+        <menuitem 
+            parent="menu_edi_check_root" 
+            id="menu_trip_force_load_wzard" 
+            name="Reload EDI data" 
+            sequence="80" 
+            action="action_trip_force_load"            
+            />
+        
+   </data>
+</openerp>   

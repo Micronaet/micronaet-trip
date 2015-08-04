@@ -38,6 +38,7 @@
     'data': [
         'security/ir.model.access.csv',
         'history_view.xml',
+        'wizard/force_load_view.xml',
         'scheduler.xml',
         ],
     'active': False,
