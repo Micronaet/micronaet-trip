@@ -102,6 +102,7 @@ class EdiHistoryCheck(osv.osv):
     # ----------------------------
     # Button and utility function:
     # ----------------------------
+    # Button OUT block:
     def button_header_out(self, cr, uid, ids, context=None):
         return self.get_order_out(cr, uid, ids, 'header', context=context)
 
@@ -130,6 +131,7 @@ class EdiHistoryCheck(osv.osv):
                 _('Buttot filter not found!'),
                 )
 
+        'context'['search_default_order_state_urgent_grouped'] = False
         return {
             'res_model': 'edi.history.check',
             'type': 'ir.actions.act_window',
@@ -137,10 +139,10 @@ class EdiHistoryCheck(osv.osv):
             'view_type': 'form',
             'view_mode': 'tree,form',
             #'res_id': context.get('active_id', False),
-            'context': {'search_default_order_state_urgent_grouped': False},
             'domain': domain, 
             }
 
+    # Button IN block:
     def button_header_in(self, cr, uid, ids, context=None):
         return self.get_order_in(cr, uid, ids, 'header', context=context)
 
