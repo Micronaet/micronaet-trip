@@ -140,8 +140,11 @@
 
                 <filter name="state" string="Line error" domain="[('state','not in',('ok','quantity'))]"/>
 
+                <filter name="use_detail_order" string="Forced detail on header" domain="[('use_detail_order','=',True)]"/>
+
                 <filter name="order_error" string="Order error" domain="[('order_error','=',True)]" />
                 <filter name="order_error_grouped" string="Check order error" domain="[('order_error','=',True)]" context="{'group_by': 'name'}" />
+
 
                 <filter name="order_state_grouped" string="Check state" domain="[('order_error','=',True)]" context="{'group_by': 'state'}" />
                 <filter name="order_state_urgent_grouped" string="Check state urgent" domain="[('order_error','=',True),('state','in',('no_order','order','wrong_line','article','duplicated'))]" context="{'group_by': 'state'}" />
@@ -211,7 +214,8 @@
         <field name="arch" type="xml">
             <tree string="EDI invoce check" colors="red:state in ('only_in', 'only_out');brown:state in ('article', 'quantity', 'price');blue:state!='ok'"><!--TODO assign color for error_order-->
                 <field name="order_error" invisible="1"/>
-
+                <field name="use_detail_order" invisible="1" />
+                <button name="dummy_button" string="Use order detail" type="object" attrs="{'invisible':[('use_detail_order','=',False)]}" icon="STOCK_ABOUT" />
                 <field name="name" />
                 <button name="button_header_in" string="Order IN (header)" type="object" icon="STOCK_GOTO_FIRST" attrs="{'invisible':[('name','=','NOT FOUND!')]}"/>
                 <button name="button_header_out" string="Document OUT (header)" type="object" icon="STOCK_GOTO_LAST" attrs="{'invisible':[('name','=','NOT FOUND!')]}" />

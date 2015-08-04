@@ -102,6 +102,11 @@ class EdiHistoryCheck(osv.osv):
     # ----------------------------
     # Button and utility function:
     # ----------------------------
+    def dummy_button(self, cr, uid, ids, context=None):
+        ''' Button does nothing
+        '''
+        return True
+
     # Button OUT block:
     def button_header_out(self, cr, uid, ids, context=None):
         return self.get_order_out(cr, uid, ids, 'header', context=context)
@@ -474,11 +479,6 @@ class EdiHistoryCheck(osv.osv):
             price = float(invoice[7].strip().replace(',', '.') or '0')
             # TODO check alias article for get correct element
             
-            # Load order if not present in database:
-            if order not in order_record:
-                load_order_from_history(
-                    order, history_filename, order_record, order_in_check)
-            
             date = {
                 'sequence': sequence, # for sort as account (check seq. err.)
                 'name': order, # to search in history
@@ -501,16 +501,25 @@ class EdiHistoryCheck(osv.osv):
             # STATE MANAGE: Speed check case:
             # -------------------------------
             if not order:
-                date['name'] = _('NOT FOUND!')
-                date['state'] = 'no_order'
-                self.create(cr, uid, date, context=context)
-                continue
+                if not order_detail:
+                    date['name'] = _('NOT FOUND!')
+                    date['state'] = 'no_order'
+                    self.create(cr, uid, date, context=context)
+                    continue
+                date['use_detail_order'] = True
+                order = order_detail                    
+                date['name'] = order
             elif order != order_detail:
                 date['state'] = 'order'
                 self.create(cr, uid, date, context=context)
                 continue
             else:
                 date['state'] = 'ok' # temporary OK after account check
+
+            # Load order if not present in database:
+            if order not in order_record:
+                load_order_from_history(
+                    order, history_filename, order_record, order_in_check)
             
             # -----------------------------
             # STATE MANAGE: Duplicated row:
@@ -704,10 +713,13 @@ class EdiHistoryCheck(osv.osv):
         'order_error': fields.boolean('Order error', 
             help='As if the line is correct in order there\'s almost one line'
                 'with error'),
+        'use_detail_order': fields.boolean('Use detail order', 
+            help='This line don''t have order so used detail'),
 
         'state': fields.selection([
             # First control, readind account file:
             ('no_order', 'Order not present'),
+            #('forced_order', 'Forced order header'),
             ('order', 'Order doesn\'t match'),
             ('sequence', 'Sequence error'),
             ('duplicated', 'Row duplicated'),
