@@ -131,7 +131,7 @@ class EdiHistoryCheck(osv.osv):
                 _('Buttot filter not found!'),
                 )
 
-        'context'['search_default_order_state_urgent_grouped'] = False
+        context['search_default_order_state_urgent_grouped'] = False
         return {
             'res_model': 'edi.history.check',
             'type': 'ir.actions.act_window',
