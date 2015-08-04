@@ -628,8 +628,8 @@ class EdiHistoryCheck(osv.osv):
             date['product_code_in'] = order_record[order][line_out][0]
             update_dict_with_parent_product(
                 parent_product, order_record[order][line_out][0][:3])
-            date['parent_in_id': parent_product.get(
-                order_record[order][line_out][0][:3], False),
+            date['parent_in_id'] = parent_product.get(
+                order_record[order][line_out][0][:3], False)
                 
             if order_record[order][line_out][0] != article[:11]:
                 date['line_in'] = line_out
@@ -765,6 +765,7 @@ class EdiHistoryCheck(osv.osv):
         'product_parent_out': fields.char('Product parent out', size=3, 
             help='Order product parent in (first 3 char)'),
         # TODO replace ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^    
+        
         'parent_in_id': fields.many2one('edi.product.parent', 'Parent IN', 
             help='Parent ID code (order in product)'),
         'parent_out_id': fields.many2one('edi.product.parent', 'Parent OUT', 

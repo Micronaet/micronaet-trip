@@ -182,8 +182,15 @@
                 <field name="line_out" />
                 <field name="product_code_in" />
                 <field name="product_code_out" />
-                <field name="product_parent_in" />
-                <field name="product_parent_out" />
+
+                <!--TODO remove-->
+                <!--<field name="product_parent_in" />
+                <field name="product_parent_out" />-->
+
+                <!--TODO replace-->
+                <field name="parent_in_id" />
+                <field name="parent_out_id" />
+
                 <field name="price_in" />
                 <field name="price_out" />
                 <field name="quantity_in" />
@@ -209,8 +216,15 @@
                     <filter name="group_document" string="Document type" context="{'group_by': 'document_type'}"/>
                     <filter name="group_product_code_in" string="Product in" context="{'group_by': 'product_code_in'}"/>
                     <filter name="group_product_code_out" string="Product out" context="{'group_by': 'product_code_out'}"/>
-                    <filter name="group_product_parent_in" string="Parent product in" context="{'group_by': 'product_parent_in'}"/>
-                    <filter name="group_product_parent_out" string="Parent product out" context="{'group_by': 'product_parent_out'}"/>
+
+                    <!--TODO remove-->
+                    <!--<filter name="group_product_parent_in" string="Parent product in" context="{'group_by': 'product_parent_in'}"/>
+                    <filter name="group_product_parent_out" string="Parent product out" context="{'group_by': 'product_parent_out'}"/>-->
+ 
+                    <!--TODO replace-->
+                    <filter name="group_parent_in_id" string="Parent product in" context="{'group_by': 'parent_in_id'}"/>
+                    <filter name="group_parent_out_id" string="Parent product out" context="{'group_by': 'parent_out_id'}"/>
+
                     <filter name="group_document_out" string="Document number" context="{'group_by': 'document_out'}"/>
                 </group>
            </search>
