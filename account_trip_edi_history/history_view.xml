@@ -130,10 +130,10 @@
                 <field name="product_code_out" />
                 <field name="product_parent_in" />
                 <field name="product_parent_out" />
-                <field name="quantity_in" />
-                <field name="quantity_out" />
                 <field name="price_in" />
                 <field name="price_out" />
+                <field name="quantity_in" />
+                <field name="quantity_out" />
                 <field name="document_out" />
                 <field name="document_type" />
                 <field name="state" />
@@ -191,13 +191,12 @@
                         <field name="document_type" />
                         <newline />
                         
+                        <field name="price_in" />
+                        <field name="price_out" />
+                        <newline />
 
                         <field name="quantity_in" />
                         <field name="quantity_out" />
-                        <newline />
-
-                        <field name="price_in" />
-                        <field name="price_out" />
                         <newline />
                         
                         <field name="state" />
@@ -237,11 +236,11 @@
                 <field name="line_in" />
                 <field name="line_out" />
 
-                <field name="quantity_in" />
-                <field name="quantity_out" />
-
                 <field name="price_in" />
                 <field name="price_out" />
+
+                <field name="quantity_in" />
+                <field name="quantity_out" />
 
                 <field name="state" />
             </tree>
