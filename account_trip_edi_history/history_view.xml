@@ -1,6 +1,61 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+    <!-- edi.product.parent -->
+    <record model="ir.ui.view" id="view_edi_product_parent_search">
+        <field name="name">edi.product.parent.search</field>
+        <field name="model">edi.product.parent</field>
+        <field name="arch" type="xml">
+           <search string="EDI product parent search">
+                <field name="name" />
+                <field name="code" />
+                <field name="total" />
+                <group expand="0" string="Group By...">
+                    <filter name="group_quantity" string="Quantity tolerance" context="{'group_by': 'quantity_tolerance'}"/>
+                    <filter name="group_price" string="Price tolerance" context="{'group_by': 'price_tolerance'}"/>
+                </group>    
+           </search>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_edi_product_parent_form">
+        <field name="name">edi.product.parent.form</field>
+        <field name="model">edi.product.parent</field>
+        <field name="arch" type="xml">
+            <form string="EDI product parent" version="7.0">        
+                <sheet>
+                    <group col="4" colspan="4">
+                        <field name="name" />
+                        <field name="code" readonly="1" />
+                        <field name="price_tolerance" />
+                        <field name="quantity_tolerance" />
+                        <separator string="Note" colspan="4"/>
+                        <field name="note" readonly="1" colspan="4" nolabel="1" />
+                    </group>
+                </sheet>        
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_edi_product_parent_tree">
+        <field name="name">edi.product.parent.tree</field>
+        <field name="model">edi.product.parent</field>
+        <field name="arch" type="xml">
+            <tree string="EDI product parent">
+                <field name="name" />
+                <field name="code" />
+                <field name="price_tolerance" />
+                <field name="quantity_tolerance" />
+            </tree>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_edi_product_parent">
+        <field name="name">EDI product parent</field>
+        <field name="res_model">edi.product.parent</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_edi_product_parent_tree"/>
+        <field name="search_view_id" ref="view_edi_product_parent_search"/>
+    </record>
+
     <!-- edi.history.order -->
     <record model="ir.ui.view" id="view_edi_history_order_search">
         <field name="name">edi.history.order.search</field>
@@ -320,9 +375,25 @@
             parent="menu_edi_check_root" 
             id="menu_edi_history_configuration" 
             action="action_edi_history_configuration"
-            name="Invoice check configuration"
+            name="Configuration"
             sequence="90"
             />
+
+            <menuitem 
+                parent="menu_edi_history_configuration" 
+                id="menu_edi_product_parent" 
+                action="action_edi_product_parent"
+                name="Product parent"
+                sequence="10"
+                />
+
+            <menuitem 
+                parent="menu_edi_history_configuration" 
+                id="menu_edi_history_configuration" 
+                action="action_edi_history_configuration_setup"
+                name="Invoice check configuration"
+                sequence="20"
+                />
 
 
     </data>

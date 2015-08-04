@@ -43,8 +43,17 @@ class EdiProductParent(osv.osv):
     _columns = {
         'name': fields.char('Description', size=30, required=True),
         'code': fields.char('Code', size=3, required=True),
+        'price_tolerance': fields.float(
+            'Price tolerance', digits=(16, 2)), 
+        'quantity_tolerance': fields.float(
+            'Quantity tolerance', digits=(16, 2)), 
         'note': fields.text('Note'),
         }
+    
+    _defaults = {
+        'quantity_tolerance': lambda *x: 5.0,
+        'price_tolerance': lambda *x: 5.0,
+        }    
 
 class EdiHistoryOrder(osv.osv):
     ''' EDI original order (result of creation and change recurred)
