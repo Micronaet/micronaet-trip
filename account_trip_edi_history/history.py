@@ -34,6 +34,18 @@ import pickle
 
 _logger = logging.getLogger(__name__)
 
+class EdiProductParent(osv.osv):
+    ''' EDI parent code for product imported
+    '''
+    _name = 'edi.product.parent'
+    _description = 'EDI parent code'
+    
+    _columns = {
+        'name': fields.char('Description', size=30, required=True),
+        'code': fields.char('Code', size=3, required=True),
+        'note': fields.text('Note'),
+        }
+
 class EdiHistoryOrder(osv.osv):
     ''' EDI original order (result of creation and change recurred)
     '''

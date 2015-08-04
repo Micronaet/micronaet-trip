@@ -2,4 +2,5 @@
 "access_edi_history_configuration_user","edi.history.configuration","model_edi_history_configuration","base.group_user",1,1,1,1
 "access_edi_history_check_user","edi.history.check","model_edi_history_check","base.group_user",1,1,1,1
 "access_edi_history_order_user","edi.history.order","model_edi_history_order","base.group_user",1,1,1,1
+"access_edi_product_parent_user","edi.product.parent","model_edi_product_parent","base.group_user",1,1,1,1
 
