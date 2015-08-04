@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-03 13:58+0000\n"
-"PO-Revision-Date: 2015-08-03 16:01+0100\n"
+"POT-Creation-Date: 2015-08-04 06:57+0000\n"
+"PO-Revision-Date: 2015-08-04 08:59+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,15 +18,25 @@ msgstr ""
 "X-Generator: Poedit 1.6.10\n"
 
 #. module: account_trip_edi_history
+#: view:edi.history.check.load.wizard:0
+msgid "Note:"
+msgstr "Note:"
+
+#. module: account_trip_edi_history
 #: view:edi.history.check:0
 msgid "Check state"
 msgstr "Controllo stato"
 
 #. module: account_trip_edi_history
+#: view:edi.history.check:0
+msgid "Order IN (header)"
+msgstr "Ordine IN (testata)"
+
+#. module: account_trip_edi_history
 #: field:edi.history.configuration,invoice_file:0
 #: field:edi.history.configuration,invoice_path:0
 msgid "Invoice path"
-msgstr "Percorso fatture (o file)"
+msgstr "Path fatture (o file)"
 
 #. module: account_trip_edi_history
 #: help:edi.history.check,product_parent_in:0
@@ -37,6 +47,11 @@ msgstr "Codice padre (3 caratteri)"
 #: selection:edi.history.check,state:0
 msgid "Order not present"
 msgstr "Ordine non presente"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0
+msgid "Document OUT (detail)"
+msgstr "Documento OUT (dettaglio)"
 
 #. module: account_trip_edi_history
 #: view:edi.history.order:0
@@ -54,11 +69,31 @@ msgid "EDI invoce check config."
 msgstr "EDI configurazione contr. fatture"
 
 #. module: account_trip_edi_history
+#: view:edi.history.check:0
+msgid "Document OUT (header)"
+msgstr "Documento OUT (testata)"
+
+#. module: account_trip_edi_history
+#: field:edi.history.check.load.wizard,note:0
+msgid "Importation note"
+msgstr "Importation note"
+
+#. module: account_trip_edi_history
 #: help:edi.history.check,order_error:0
 msgid "As if the line is correct in order there's almost one linewith error"
 msgstr ""
 "Siccome la linea è corretta nell'ordine deve esserci per forza almeno una "
 "riga errata nell'ordine"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0
+msgid "Order IN (detail)"
+msgstr "Ordine IN (dettaglio)"
+
+#. module: account_trip_edi_history
+#: model:ir.ui.menu,name:account_trip_edi_history.menu_trip_force_load_wzard
+msgid "Reload EDI data"
+msgstr "Reload EDI data"
 
 #. module: account_trip_edi_history
 #: view:edi.history.order:0
@@ -81,6 +116,11 @@ msgid "Row duplicated"
 msgstr "Riga duplicata"
 
 #. module: account_trip_edi_history
+#: model:ir.ui.menu,name:account_trip_edi_history.menu_edi_history_check_order_error
+msgid "Error state (all)"
+msgstr "Errore diviso x stato (tutti)"
+
+#. module: account_trip_edi_history
 #: selection:edi.history.check,state:0
 msgid "Quantity error"
 msgstr "Errore quantità"
@@ -96,7 +136,7 @@ msgid "Line error"
 msgstr "Riga errata"
 
 #. module: account_trip_edi_history
-#: view:edi.history.check:0 field:edi.history.check,document_out:0
+#: field:edi.history.check,document_out:0
 msgid "Document out"
 msgstr "Num. doc. OUT"
 
@@ -113,7 +153,6 @@ msgstr "Precisione quantità"
 #. module: account_trip_edi_history
 #: model:ir.actions.act_window,name:account_trip_edi_history.action_edi_history_check_order_error
 #: model:ir.actions.act_window,name:account_trip_edi_history.action_edi_history_check_state_error
-#: model:ir.ui.menu,name:account_trip_edi_history.menu_edi_history_check_order_error
 #: model:ir.ui.menu,name:account_trip_edi_history.menu_edi_history_check_state_error_all
 msgid "Order with error"
 msgstr "Ordini con errori"
@@ -157,6 +196,11 @@ msgstr "ID ordine nel dettaglio "
 #: field:edi.history.check,price_in:0
 msgid "Price in"
 msgstr "Prezzo IN"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check.load.wizard:0
+msgid "Load data"
+msgstr "Load data"
 
 #. module: account_trip_edi_history
 #: help:edi.history.check,document_out:0
@@ -252,6 +296,11 @@ msgstr "Codice padre IN (3 caratteri)"
 #: help:edi.history.configuration,invoice_file:0
 msgid "Path of invoice file, use: \"~/company/account/invoice.csv\""
 msgstr "Percorso file fatture, usa: \"~/company/account/invoice.csv\""
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0
+msgid "Doc. acc. OUT"
+msgstr "Doc. acc. OUT"
 
 #. module: account_trip_edi_history
 #: help:edi.history.check,name:0
@@ -370,11 +419,6 @@ msgid "Line out"
 msgstr "Riga OUT"
 
 #. module: account_trip_edi_history
-#: view:edi.history.check:0
-msgid "Order in"
-msgstr "Ordine IN"
-
-#. module: account_trip_edi_history
 #: help:edi.history.order,file:0
 msgid "File list for check the order"
 msgstr "Lista file per controllo ordine"
@@ -400,6 +444,11 @@ msgid "Wrong line"
 msgstr "Riga errata"
 
 #. module: account_trip_edi_history
+#: model:ir.model,name:account_trip_edi_history.model_edi_history_check_load_wizard
+msgid "EDI check reload data"
+msgstr "EDI ricarica dati"
+
+#. module: account_trip_edi_history
 #: help:edi.history.configuration,history_path:0
 #: help:edi.history.configuration,invoice_path:0
 msgid "Path of history files, use also like: \"~/company/history\""
@@ -419,6 +468,12 @@ msgstr "Errore sequenza"
 #: help:edi.history.check,document_type:0
 msgid "Document out type"
 msgstr "Tipo documento OUT"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check.load.wizard:0
+#: model:ir.actions.act_window,name:account_trip_edi_history.action_trip_force_load
+msgid "EDI waiting"
+msgstr "EDI in attesa"
 
 #. module: account_trip_edi_history
 #: field:edi.history.configuration,delimiter:0
