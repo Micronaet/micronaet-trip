@@ -587,16 +587,6 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
                 
-            # -------------------------------------------
-            # HISTORY ANALYSIS: Test quantity is the same
-            # -------------------------------------------
-            date['quantity_in'] = order_record[order][line_out][2] # 3 element
-            if abs(date['quantity_in'] - quantity) > quant_prec:
-                date['line_in'] = line_out
-                date['state'] = 'quantity'
-                self.create(cr, uid, date, context=context)
-                continue # Jump line
-
             # ----------------------------------------
             # HISTORY ANALYSIS: Test price is the same
             # ----------------------------------------
@@ -607,6 +597,16 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
             
+            # -------------------------------------------
+            # HISTORY ANALYSIS: Test quantity is the same
+            # -------------------------------------------
+            date['quantity_in'] = order_record[order][line_out][2] # 3 element
+            if abs(date['quantity_in'] - quantity) > quant_prec:
+                date['line_in'] = line_out
+                date['state'] = 'quantity'
+                self.create(cr, uid, date, context=context)
+                continue # Jump line
+
             # ----------------------------
             # CORRECT RECORD: Save article
             # ----------------------------
