@@ -139,6 +139,7 @@ class EdiHistoryCheck(osv.osv):
             'view_type': 'form',
             'view_mode': 'tree,form',
             #'res_id': context.get('active_id', False),
+            'context': None,
             'domain': domain, 
             }
 
