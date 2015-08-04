@@ -513,8 +513,8 @@ class EdiHistoryCheck(osv.osv):
                 date['state'] = 'order'
                 self.create(cr, uid, date, context=context)
                 continue
-            else:
-                date['state'] = 'ok' # temporary OK after account check
+
+            date['state'] = 'ok' # temporary OK after account check
 
             # Load order if not present in database:
             if order not in order_record:
