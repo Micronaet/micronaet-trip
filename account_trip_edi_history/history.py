@@ -48,6 +48,9 @@ class EdiProductParent(osv.osv):
         'quantity_tolerance': fields.float(
             'Quantity tolerance', digits=(16, 2)), 
         'note': fields.text('Note'),
+        # TODO
+        #'no_control':fields.boolean('No control', 
+        #    help='No control on price and quantity'),
         }
     
     _defaults = {
