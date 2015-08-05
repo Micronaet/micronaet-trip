@@ -547,10 +547,15 @@ class EdiHistoryCheck(osv.osv):
                 'name_detail': order_detail,
                 'line_in': False,
                 'line_out': line_out,
+                
                 'quantity_in': False,
                 'quantity_out': quantity,
+                'over_quantity': False,
+
                 'price_in': False,
                 'price_out': price,                
+                'over_price': False,
+
                 'document_out': document_out,
                 'document_type': doc_type,
 
@@ -660,6 +665,22 @@ class EdiHistoryCheck(osv.osv):
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
                 
+                
+            # ------------------------------------------------
+            # HISTORY ANALYSIS: Warning test for q. and price:
+            # ------------------------------------------------
+            # Quantity in % of tolerance
+            quantity_tolerance = parent_product.get(
+                order_record[order][line_out][0][:3], (False, 0.0, 0.0))[1]
+            if 100.0 * abs(date['price_in'] - price) > quantity_tolerance:
+                data['over_quantity'] = True
+
+            # Price in % of tolerance
+            price_tolerance = parent_product.get(
+                order_record[order][line_out][0][:3], (False, 0.0, 0.0))[2]
+            if 100.0 * abs(date['price_in'] - price) > price_tolerance:
+                data['over_price'] = True
+            
             # ----------------------------------------
             # HISTORY ANALYSIS: Test price is the same
             # ----------------------------------------
