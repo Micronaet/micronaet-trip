@@ -670,12 +670,11 @@ class EdiHistoryCheck(osv.osv):
             # ------------------------------------------------
             # HISTORY ANALYSIS: Warning test for q. and price:
             # ------------------------------------------------
-            import pdb; pdb.set_trace()
             # Price in % of tolerance
             data['price_in'] = order_record[order][line_out][3] # 4 element
             price_tolerance = parent_product.get(
                 order_record[order][line_out][0][:3], (False, 0.0, 0.0))[2]
-            if 100.0 / data['price_in'] * abs(
+            if data['price_in'] and 100.0 / data['price_in'] * abs(
                     data['price_in'] - price) > price_tolerance:
                 data['over_price'] = True
 
@@ -683,7 +682,7 @@ class EdiHistoryCheck(osv.osv):
             data['quantity_in'] = order_record[order][line_out][2] # 3 element
             quantity_tolerance = parent_product.get(
                 order_record[order][line_out][0][:3], (False, 0.0, 0.0))[1]
-            if 100.0 / data['quantity_in'] * abs(
+            if data['quantity_in'] and 100.0 / data['quantity_in'] * abs(
                     data['quantity_in'] - quantity) > quantity_tolerance:
                 data['over_quantity'] = True
             
