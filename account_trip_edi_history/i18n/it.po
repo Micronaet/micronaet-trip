@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-04 06:57+0000\n"
-"PO-Revision-Date: 2015-08-04 08:59+0100\n"
+"POT-Creation-Date: 2015-08-05 06:50+0000\n"
+"PO-Revision-Date: 2015-08-05 09:00+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -39,11 +39,6 @@ msgid "Invoice path"
 msgstr "Path fatture (o file)"
 
 #. module: account_trip_edi_history
-#: help:edi.history.check,product_parent_in:0
-msgid "Order product parent out (first 3 char)"
-msgstr "Codice padre (3 caratteri)"
-
-#. module: account_trip_edi_history
 #: selection:edi.history.check,state:0
 msgid "Order not present"
 msgstr "Ordine non presente"
@@ -54,7 +49,7 @@ msgid "Document OUT (detail)"
 msgstr "Documento OUT (dettaglio)"
 
 #. module: account_trip_edi_history
-#: view:edi.history.order:0
+#: view:edi.history.order:0 view:edi.product.parent:0
 msgid "Group By..."
 msgstr "Raggruppa per..."
 
@@ -70,13 +65,23 @@ msgstr "EDI configurazione contr. fatture"
 
 #. module: account_trip_edi_history
 #: view:edi.history.check:0
+msgid "Use order detail"
+msgstr "Use order detail"
+
+#. module: account_trip_edi_history
+#: model:ir.ui.menu,name:account_trip_edi_history.menu_edi_history_check_warning_price
+msgid "Warning on price"
+msgstr "Controllo prezzi"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0
 msgid "Document OUT (header)"
 msgstr "Documento OUT (testata)"
 
 #. module: account_trip_edi_history
 #: field:edi.history.check.load.wizard,note:0
 msgid "Importation note"
-msgstr "Importation note"
+msgstr "Note importazioni"
 
 #. module: account_trip_edi_history
 #: help:edi.history.check,order_error:0
@@ -91,14 +96,29 @@ msgid "Order IN (detail)"
 msgstr "Ordine IN (dettaglio)"
 
 #. module: account_trip_edi_history
+#: field:edi.history.check,use_detail_order:0
+msgid "Use detail order"
+msgstr "Usa dettaglio ordine"
+
+#. module: account_trip_edi_history
 #: model:ir.ui.menu,name:account_trip_edi_history.menu_trip_force_load_wzard
 msgid "Reload EDI data"
-msgstr "Reload EDI data"
+msgstr "Ricarica dati EDI"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0
+msgid "Forced detail on header"
+msgstr "Forza dettaglio su intestazione"
 
 #. module: account_trip_edi_history
 #: view:edi.history.order:0
 msgid "EDI invoce order"
 msgstr "EDI ordini fatturati"
+
+#. module: account_trip_edi_history
+#: model:ir.actions.act_window,name:account_trip_edi_history.action_edi_history_check_order_warning_quantity
+msgid "Order warning quantity"
+msgstr "Warning quantità ordine"
 
 #. module: account_trip_edi_history
 #: selection:edi.history.check,state:0
@@ -129,6 +149,12 @@ msgstr "Errore quantità"
 #: view:edi.history.check:0
 msgid "Parent product out"
 msgstr "Codice padre OUT"
+
+#. module: account_trip_edi_history
+#: view:edi.product.parent:0
+#: model:ir.actions.act_window,name:account_trip_edi_history.action_edi_product_parent
+msgid "EDI product parent"
+msgstr "EDI codice padre"
 
 #. module: account_trip_edi_history
 #: view:edi.history.check:0
@@ -200,7 +226,7 @@ msgstr "Prezzo IN"
 #. module: account_trip_edi_history
 #: view:edi.history.check.load.wizard:0
 msgid "Load data"
-msgstr "Load data"
+msgstr "Carica dati"
 
 #. module: account_trip_edi_history
 #: help:edi.history.check,document_out:0
@@ -223,9 +249,19 @@ msgid "Error unmanaged"
 msgstr "Errore non gestito"
 
 #. module: account_trip_edi_history
+#: model:ir.ui.menu,name:account_trip_edi_history.menu_edi_history_configuration_root
+msgid "Configuration"
+msgstr "Configurazione"
+
+#. module: account_trip_edi_history
+#: model:ir.model,name:account_trip_edi_history.model_edi_product_parent
+msgid "EDI parent code"
+msgstr "EDI codice padre"
+
+#. module: account_trip_edi_history
 #: field:edi.history.configuration,verbose:0
 msgid "Verbose every"
-msgstr "Verboso ogni"
+msgstr "Evendo di log ogni"
 
 #. module: account_trip_edi_history
 #: model:ir.model,name:account_trip_edi_history.model_edi_history_order
@@ -246,11 +282,6 @@ msgstr "EDI ricerca elementi"
 #: field:edi.history.order,name:0
 msgid "Order #"
 msgstr "Ordine #"
-
-#. module: account_trip_edi_history
-#: field:edi.history.check,product_parent_in:0
-msgid "Product parent in"
-msgstr "Codice padre IN"
 
 #. module: account_trip_edi_history
 #: view:edi.history.check:0
@@ -278,19 +309,19 @@ msgid "Log an import event every X lines (0 = nothing)"
 msgstr "Messaggio di log importazione ogni X record (0 = nessuno)"
 
 #. module: account_trip_edi_history
-#: field:edi.history.check,product_parent_out:0
-msgid "Product parent out"
-msgstr "Codice padre OUT"
-
-#. module: account_trip_edi_history
 #: help:edi.history.check,line_out:0
 msgid "Delivery of invoice line"
 msgstr "Consegna di riga fattura"
 
 #. module: account_trip_edi_history
-#: help:edi.history.check,product_parent_out:0
-msgid "Order product parent in (first 3 char)"
-msgstr "Codice padre IN (3 caratteri)"
+#: view:edi.product.parent:0 field:edi.product.parent,note:0
+msgid "Note"
+msgstr "Note"
+
+#. module: account_trip_edi_history
+#: view:edi.product.parent:0
+msgid "EDI product parent search"
+msgstr "EDI ricerca codice padre"
 
 #. module: account_trip_edi_history
 #: help:edi.history.configuration,invoice_file:0
@@ -306,6 +337,16 @@ msgstr "Doc. acc. OUT"
 #: help:edi.history.check,name:0
 msgid "Order ID of company"
 msgstr "ID ordini della società"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0 field:edi.history.check,over_price:0
+msgid "Over price"
+msgstr "Prezzo fuori tolleranza"
+
+#. module: account_trip_edi_history
+#: view:edi.history.check:0 field:edi.history.check,over_quantity:0
+msgid "Over quantity"
+msgstr "Quantità fuori tolleranza"
 
 #. module: account_trip_edi_history
 #: help:edi.history.check,state:0
@@ -359,12 +400,17 @@ msgid "Original"
 msgstr "Originale"
 
 #. module: account_trip_edi_history
+#: help:edi.history.check,parent_in_id:0
+msgid "Parent ID code (order in product)"
+msgstr "Codice padre (prodotto ordinato)"
+
+#. module: account_trip_edi_history
 #: model:ir.actions.act_window,name:account_trip_edi_history.action_edi_history_order
 msgid "EDI invoice order"
 msgstr "EDI ordini fatturati"
 
 #. module: account_trip_edi_history
-#: field:edi.history.configuration,code:0
+#: field:edi.history.configuration,code:0 field:edi.product.parent,code:0
 msgid "Code"
 msgstr "Codice"
 
@@ -392,6 +438,11 @@ msgstr "EDI controllo storico"
 #: help:edi.history.check,product_code_out:0
 msgid "Invoice or delivery product out"
 msgstr "Prodotto OUT"
+
+#. module: account_trip_edi_history
+#: view:edi.product.parent:0 field:edi.product.parent,quantity_tolerance:0
+msgid "Quantity tolerance"
+msgstr "Tolleranza quantità"
 
 #. module: account_trip_edi_history
 #: model:ir.ui.menu,name:account_trip_edi_history.menu_edi_history_check
@@ -424,6 +475,11 @@ msgid "File list for check the order"
 msgstr "Lista file per controllo ordine"
 
 #. module: account_trip_edi_history
+#: field:edi.history.check,parent_in_id:0
+msgid "Parent IN"
+msgstr "Parent IN"
+
+#. module: account_trip_edi_history
 #: selection:edi.history.check,state:0
 msgid "Correct"
 msgstr "Corretta"
@@ -434,14 +490,19 @@ msgid "Order detail"
 msgstr "Dettaglio ordine"
 
 #. module: account_trip_edi_history
+#: model:ir.ui.menu,name:account_trip_edi_history.menu_edi_history_check_warning_quantity
+msgid "Warning on quantity"
+msgstr "Warning quantità"
+
+#. module: account_trip_edi_history
 #: field:edi.history.check,name:0
 msgid "Order name"
 msgstr "Numero ordine"
 
 #. module: account_trip_edi_history
-#: selection:edi.history.check,state:0
-msgid "Wrong line"
-msgstr "Riga errata"
+#: field:edi.product.parent,name:0
+msgid "Description"
+msgstr "Descrizione"
 
 #. module: account_trip_edi_history
 #: model:ir.model,name:account_trip_edi_history.model_edi_history_check_load_wizard
@@ -460,6 +521,11 @@ msgid "EDI history configuration"
 msgstr "EDI configurazione controlli"
 
 #. module: account_trip_edi_history
+#: model:ir.actions.act_window,name:account_trip_edi_history.action_edi_history_check_order_warning_price
+msgid "Order warning price"
+msgstr "Warning prezzo ordine"
+
+#. module: account_trip_edi_history
 #: selection:edi.history.check,state:0
 msgid "Sequence error"
 msgstr "Errore sequenza"
@@ -468,6 +534,16 @@ msgstr "Errore sequenza"
 #: help:edi.history.check,document_type:0
 msgid "Document out type"
 msgstr "Tipo documento OUT"
+
+#. module: account_trip_edi_history
+#: help:edi.history.check,use_detail_order:0
+msgid "This line dont have order so used detail"
+msgstr "Questa riga non ha l'ordine in testa, usato il dettaglio"
+
+#. module: account_trip_edi_history
+#: field:edi.history.check,parent_out_id:0
+msgid "Parent OUT"
+msgstr "Codice padre OUT"
 
 #. module: account_trip_edi_history
 #: view:edi.history.check.load.wizard:0
@@ -479,6 +555,21 @@ msgstr "EDI in attesa"
 #: field:edi.history.configuration,delimiter:0
 msgid "Delimiter"
 msgstr "Delimitatore"
+
+#. module: account_trip_edi_history
+#: model:ir.ui.menu,name:account_trip_edi_history.menu_edi_history_check_warning
+msgid "Warning check detail"
+msgstr "Warning controllo dettagli"
+
+#. module: account_trip_edi_history
+#: help:edi.history.check,parent_out_id:0
+msgid "Parent ID code (document out accounting product)"
+msgstr "Codice padre (prodotto fatturato)"
+
+#. module: account_trip_edi_history
+#: model:ir.ui.menu,name:account_trip_edi_history.menu_edi_product_parent
+msgid "Product parent"
+msgstr "Codice padre"
 
 #. module: account_trip_edi_history
 #: help:edi.history.check,line_in:0
@@ -496,7 +587,12 @@ msgid "EDI company"
 msgstr "EDI società"
 
 #. module: account_trip_edi_history
-#: model:ir.ui.menu,name:account_trip_edi_history.menu_edi_history_configuration
+#: selection:edi.history.check,state:0
+msgid "Wrong line"
+msgstr "Riga errata"
+
+#. module: account_trip_edi_history
+#: model:ir.ui.menu,name:account_trip_edi_history.menu_edi_history_configuration_setup
 msgid "Invoice check configuration"
 msgstr "Configurazione controllo fatture"
 
@@ -514,6 +610,11 @@ msgstr "Prodotto IN"
 #: help:edi.history.check,product_code_in:0
 msgid "Order product in"
 msgstr "Prodotto IN"
+
+#. module: account_trip_edi_history
+#: view:edi.product.parent:0 field:edi.product.parent,price_tolerance:0
+msgid "Price tolerance"
+msgstr "Tolleranza prezzo"
 
 #. module: account_trip_edi_history
 #: view:edi.history.check:0
