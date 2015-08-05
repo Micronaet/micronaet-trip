@@ -542,7 +542,7 @@ class EdiHistoryCheck(osv.osv):
             update_dict_with_parent_product(self, cr, uid, 
                 parent_product, article[:3], context=context)
             
-            date = {
+            data = {
                 'sequence': sequence, # for sort as account (check seq. err.)
                 'name': order, # to search in history
                 'name_detail': order_detail,
@@ -575,19 +575,19 @@ class EdiHistoryCheck(osv.osv):
             # -------------------------------
             if not order:
                 if not order_detail:
-                    date['name'] = _('NOT FOUND!')
-                    date['state'] = 'no_order'
-                    self.create(cr, uid, date, context=context)
+                    data['name'] = _('NOT FOUND!')
+                    data['state'] = 'no_order'
+                    self.create(cr, uid, data, context=context)
                     continue
-                date['use_detail_order'] = True
+                data['use_detail_order'] = True
                 order = order_detail                    
-                date['name'] = order
+                data['name'] = order
             elif order != order_detail:
-                date['state'] = 'order'
-                self.create(cr, uid, date, context=context)
+                data['state'] = 'order'
+                self.create(cr, uid, data, context=context)
                 continue
 
-            date['state'] = 'ok' # temporary OK after account check
+            data['state'] = 'ok' # temporary OK after account check
 
             # Load order if not present in database:
             if order not in order_record:
@@ -599,8 +599,8 @@ class EdiHistoryCheck(osv.osv):
             # -----------------------------
             if (order, line_out) in order_out_check:
                 # if duplicated was yet removed from order_in_check
-                date['state'] = 'duplicated'
-                self.create(cr, uid, date, context=context)
+                data['state'] = 'duplicated'
+                self.create(cr, uid, data, context=context)
                 continue # Jump line
 
             order_out_check.append((order, line_out)) # used for check dupl.
@@ -616,7 +616,7 @@ class EdiHistoryCheck(osv.osv):
                 # NOTE: Break the sequence with order and invoice!!!
                 if old_line and line_out < old_line:
                     old_line = line_out
-                    date['state'] = 'sequence'
+                    data['state'] = 'sequence'
                     wrong_sequence = True 
                 else:
                     old_line = line_out # No error, save this as old
@@ -629,8 +629,8 @@ class EdiHistoryCheck(osv.osv):
             # ---------------------------------------------------
             # NOTE: More important than sequence!!
             if line_out not in order_record[order]: # (article, line_type)
-                date['state'] = 'wrong_line' # not presen in order
-                self.create(cr, uid, date, context=context)
+                data['state'] = 'wrong_line' # not presen in order
+                self.create(cr, uid, data, context=context)
                 continue # Jump line
 
 
@@ -641,29 +641,29 @@ class EdiHistoryCheck(osv.osv):
             # HISTORY ANALYSIS: Line removed (present in order but cancelled)
             # ---------------------------------------------------------------
             if order_record[order][line_out][1] == 'cancel':
-                date['state'] = 'only_out' # present but deleted in order                
-                self.create(cr, uid, date, context=context)
+                data['state'] = 'only_out' # present but deleted in order                
+                self.create(cr, uid, data, context=context)
                 continue # Jump line
 
             # Note: Here we write wrong sequence, before valuated, if present:
             if wrong_sequence:
-                self.create(cr, uid, date, context=context)
+                self.create(cr, uid, data, context=context)
                 continue
 
             # ------------------------------------------
             # HISTORY ANALYSIS: Test article is the same
             # ------------------------------------------
-            date['product_code_in'] = order_record[order][line_out][0]
+            data['product_code_in'] = order_record[order][line_out][0]
             update_dict_with_parent_product(self, cr, uid, 
                 parent_product, order_record[order][line_out][0][:3], 
                 context=context)
-            date['parent_in_id'] = parent_product.get(
+            data['parent_in_id'] = parent_product.get(
                 order_record[order][line_out][0][:3], (False, 0.0, 0.0))[0]
                 
             if order_record[order][line_out][0] != article[:11]:
-                date['line_in'] = line_out
-                date['state'] = 'article'
-                self.create(cr, uid, date, context=context)
+                data['line_in'] = line_out
+                data['state'] = 'article'
+                self.create(cr, uid, data, context=context)
                 continue # Jump line
                 
                 
@@ -672,46 +672,46 @@ class EdiHistoryCheck(osv.osv):
             # ------------------------------------------------
             import pdb; pdb.set_trace()
             # Price in % of tolerance
-            date['price_in'] = order_record[order][line_out][3] # 4 element
+            data['price_in'] = order_record[order][line_out][3] # 4 element
             price_tolerance = parent_product.get(
                 order_record[order][line_out][0][:3], (False, 0.0, 0.0))[2]
-            if 100.0 / date['price_in'] * abs(
-                    date['price_in'] - price) > price_tolerance:
+            if 100.0 / data['price_in'] * abs(
+                    data['price_in'] - price) > price_tolerance:
                 data['over_price'] = True
 
             # Quantity in % of tolerance
-            date['quantity_in'] = order_record[order][line_out][2] # 3 element
+            data['quantity_in'] = order_record[order][line_out][2] # 3 element
             quantity_tolerance = parent_product.get(
                 order_record[order][line_out][0][:3], (False, 0.0, 0.0))[1]
-            if 100.0 / date['quantity_in'] * abs(
-                    date['quantity_in'] - quantity) > quantity_tolerance:
+            if 100.0 / data['quantity_in'] * abs(
+                    data['quantity_in'] - quantity) > quantity_tolerance:
                 data['over_quantity'] = True
             
             # ----------------------------------------
             # HISTORY ANALYSIS: Test price is the same
             # ----------------------------------------
-            if abs(date['price_in'] - price) > price_prec:
-                date['line_in'] = line_out
-                date['quantity_in'] = False # raise price error, q restore 0.0
-                date['state'] = 'price'
-                self.create(cr, uid, date, context=context)
+            if abs(data['price_in'] - price) > price_prec:
+                data['line_in'] = line_out
+                data['quantity_in'] = False # raise price error, q restore 0.0
+                data['state'] = 'price'
+                self.create(cr, uid, data, context=context)
                 continue # Jump line
             
             # -------------------------------------------
             # HISTORY ANALYSIS: Test quantity is the same
             # -------------------------------------------
-            if abs(date['quantity_in'] - quantity) > quant_prec:
-                date['line_in'] = line_out
-                date['state'] = 'quantity'
-                self.create(cr, uid, date, context=context)
+            if abs(data['quantity_in'] - quantity) > quant_prec:
+                data['line_in'] = line_out
+                data['state'] = 'quantity'
+                self.create(cr, uid, data, context=context)
                 continue # Jump line
 
             # ----------------------------
             # CORRECT RECORD: Save article
             # ----------------------------
             # Note: line_in now are equals to line_out!
-            date['line_in'] = line_out # must to be here (after all)
-            self.create(cr, uid, date, context=context)
+            data['line_in'] = line_out # must to be here (after all)
+            self.create(cr, uid, data, context=context)
         
         # Write line present in IN and not in OUT:
         # Note: must be before mark order evaluation!
@@ -729,7 +729,7 @@ class EdiHistoryCheck(osv.osv):
             update_dict_with_parent_product(self, cr, uid, 
                 parent_product, order_in[line_in][0][:3], context=context)
 
-            date = {
+            data = {
                 'sequence': 0, # first line not prest in order out
                 'name': order,
                 'name_detail': False,
@@ -753,7 +753,7 @@ class EdiHistoryCheck(osv.osv):
                 'parent_out_id': False,
                 #'product_parent_out': False, # TODO remove
                 }
-            self.create(cr, uid, date, context=context)
+            self.create(cr, uid, data, context=context)
             if order not in order_yet_found: # write only once
                 _logger.warning('Order with only_in case: %s' % order)
                 order_yet_found.append(order)
