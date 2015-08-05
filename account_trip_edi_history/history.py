@@ -504,7 +504,8 @@ class EdiHistoryCheck(osv.osv):
         parent_pool = self.pool.get('edi.product.parent')
         parent_ids = parent_pool.search(cr, uid, [], context=context)
         for c in parent_pool.browse(cr, uid, parent_ids, context=context):
-            parent_product[c.code] = c.id
+            parent_product[c.code] = (
+                c.id, c.quantity_tolerance, c.price_tolerance)
         
         # ---------------------
         # Start import invoice:
@@ -669,24 +670,29 @@ class EdiHistoryCheck(osv.osv):
             # ------------------------------------------------
             # HISTORY ANALYSIS: Warning test for q. and price:
             # ------------------------------------------------
-            # Quantity in % of tolerance
-            quantity_tolerance = parent_product.get(
-                order_record[order][line_out][0][:3], (False, 0.0, 0.0))[1]
-            if 100.0 * abs(date['price_in'] - price) > quantity_tolerance:
-                data['over_quantity'] = True
-
+            import pdb; pdb.set_trace()
             # Price in % of tolerance
+            date['price_in'] = order_record[order][line_out][3] # 4 element
             price_tolerance = parent_product.get(
                 order_record[order][line_out][0][:3], (False, 0.0, 0.0))[2]
-            if 100.0 * abs(date['price_in'] - price) > price_tolerance:
+            if 100.0 / date['price_in'] * abs(
+                    date['price_in'] - price) > price_tolerance:
                 data['over_price'] = True
+
+            # Quantity in % of tolerance
+            date['quantity_in'] = order_record[order][line_out][2] # 3 element
+            quantity_tolerance = parent_product.get(
+                order_record[order][line_out][0][:3], (False, 0.0, 0.0))[1]
+            if 100.0 / date['quantity_in'] * abs(
+                    date['quantity_in'] - quantity) > quantity_tolerance:
+                data['over_quantity'] = True
             
             # ----------------------------------------
             # HISTORY ANALYSIS: Test price is the same
             # ----------------------------------------
-            date['price_in'] = order_record[order][line_out][3] # 4 element
             if abs(date['price_in'] - price) > price_prec:
                 date['line_in'] = line_out
+                date['quantity_in'] = False # raise price error, q restore 0.0
                 date['state'] = 'price'
                 self.create(cr, uid, date, context=context)
                 continue # Jump line
@@ -694,7 +700,6 @@ class EdiHistoryCheck(osv.osv):
             # -------------------------------------------
             # HISTORY ANALYSIS: Test quantity is the same
             # -------------------------------------------
-            date['quantity_in'] = order_record[order][line_out][2] # 3 element
             if abs(date['quantity_in'] - quantity) > quant_prec:
                 date['line_in'] = line_out
                 date['state'] = 'quantity'

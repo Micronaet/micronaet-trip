@@ -254,6 +254,10 @@
                         <field name="product_code_in" />
                         <field name="product_code_out" />
                         <newline />
+
+                        <field name="parent_in_id" />
+                        <field name="parent_out_id" />
+                        <newline />
                         
                         <field name="document_out" />
                         <field name="document_type" />
@@ -295,8 +299,11 @@
                 <button name="button_document_out" string="Doc. acc. OUT" type="object" icon="STOCK_GOTO_LAST" attrs="{'invisible':[('document_out','=',False)]}"/>
                 <field name="document_out" />
 
-                <field name="product_parent_in" invisible="1"/>
-                <field name="product_parent_out" invisible="1" />
+                <!--<field name="product_parent_in" invisible="1"/>
+                <field name="product_parent_out" invisible="1" />-->
+                
+                <field name="parent_in_id" invisible="1"/>
+                <field name="parent_out_id" invisible="1"/>
 
                 <field name="product_code_in" />
                 <field name="product_code_out" />
