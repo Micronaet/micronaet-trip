@@ -538,7 +538,8 @@ class EdiHistoryCheck(osv.osv):
             price = float(invoice[7].strip().replace(',', '.') or '0')
             # TODO check alias article for get correct element
             
-            update_dict_with_parent_product(parent_product, article[:3])
+            update_dict_with_parent_product(self, cr, uid, 
+                parent_product, article[:3], context=context)
             
             date = {
                 'sequence': sequence, # for sort as account (check seq. err.)
@@ -558,7 +559,8 @@ class EdiHistoryCheck(osv.osv):
                 #'product_parent_in': False,
 
                 'product_code_out': article,
-                'parent_out_id': parent_product.get(article[:3], False),
+                'parent_out_id': parent_product.get(article[:3], (
+                    False, 0.0, 0.0))[0],
                 #'product_parent_out': article[:3],
                 }
 
@@ -646,10 +648,11 @@ class EdiHistoryCheck(osv.osv):
             # HISTORY ANALYSIS: Test article is the same
             # ------------------------------------------
             date['product_code_in'] = order_record[order][line_out][0]
-            update_dict_with_parent_product(
-                parent_product, order_record[order][line_out][0][:3])
+            update_dict_with_parent_product(self, cr, uid, 
+                parent_product, order_record[order][line_out][0][:3], 
+                context=context)
             date['parent_in_id'] = parent_product.get(
-                order_record[order][line_out][0][:3], False)
+                order_record[order][line_out][0][:3], (False, 0.0, 0.0))[0]
                 
             if order_record[order][line_out][0] != article[:11]:
                 date['line_in'] = line_out
@@ -697,8 +700,8 @@ class EdiHistoryCheck(osv.osv):
             # Create line for order in without order out fields:
 
             # TODO put in function:
-            update_dict_with_parent_product(
-                parent_product, order_in[line_in][0][:3])
+            update_dict_with_parent_product(self, cr, uid, 
+                parent_product, order_in[line_in][0][:3], context=context)
 
             date = {
                 'sequence': 0, # first line not prest in order out
@@ -717,7 +720,7 @@ class EdiHistoryCheck(osv.osv):
                 # Product and parent:
                 'product_code_in': order_in[line_in][0],
                 'parent_in_id': parent_product.get(
-                    order_in[line_in][0][:3], False),
+                    order_in[line_in][0][:3], (False, 0.0, 0.0))[0],
                 #'product_parent_in': order_in[line_in][0][:3], # TODO remove
                 
                 'product_code_out': False,
