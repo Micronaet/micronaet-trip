@@ -691,7 +691,7 @@ class EdiHistoryCheck(osv.osv):
             # ----------------------------------------
             if abs(data['price_in'] - price) > price_prec:
                 data['line_in'] = line_out
-                data['quantity_in'] = False # raise price error, q restore 0.0
+                #data['quantity_in'] = False # raise price error, q restore 0.0
                 data['state'] = 'price'
                 self.create(cr, uid, data, context=context)
                 continue # Jump line
@@ -808,14 +808,6 @@ class EdiHistoryCheck(osv.osv):
         'product_code_out': fields.char('Product out', size=18, 
             help='Invoice or delivery product out'),
 
-        # 3 char of product    
-        # TODO remove after m2o fields vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-        #'product_parent_in': fields.char('Product parent in', size=3, 
-        #    help='Order product parent out (first 3 char)'),
-        #'product_parent_out': fields.char('Product parent out', size=3, 
-        #    help='Order product parent in (first 3 char)'),
-        # TODO replace ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^    
-        
         'parent_in_id': fields.many2one('edi.product.parent', 'Parent IN', 
             help='Parent ID code (order in product)'),
         'parent_out_id': fields.many2one('edi.product.parent', 'Parent OUT', 
@@ -838,7 +830,6 @@ class EdiHistoryCheck(osv.osv):
         'state': fields.selection([
             # First control, readind account file:
             ('no_order', 'Order not present'),
-            #('forced_order', 'Forced order header'),
             ('order', 'Order doesn\'t match'),
             ('sequence', 'Sequence error'),
             ('duplicated', 'Row duplicated'),

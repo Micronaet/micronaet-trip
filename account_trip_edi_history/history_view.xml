@@ -203,9 +203,11 @@
 
                 <filter name="use_detail_order" string="Forced detail on header" domain="[('use_detail_order','=',True)]"/>
 
+                <filter name="over_quantity" string="Over quantity" domain="[('over_quantity','=',True)]" />
+                <filter name="over_price" string="Over price" domain="[('over_price','=',True)]" />
+
                 <filter name="order_error" string="Order error" domain="[('order_error','=',True)]" />
                 <filter name="order_error_grouped" string="Check order error" domain="[('order_error','=',True)]" context="{'group_by': 'name'}" />
-
 
                 <filter name="order_state_grouped" string="Check state" domain="[('order_error','=',True)]" context="{'group_by': 'state'}" />
                 <filter name="order_state_urgent_grouped" string="Check state urgent" domain="[('order_error','=',True),('state','in',('no_order','order','wrong_line','article','duplicated'))]" context="{'group_by': 'state'}" />
@@ -352,6 +354,26 @@
         <field name="search_view_id" ref="view_edi_history_check_search"/>        
         <field name="context">{'search_default_order_state_grouped': True}</field>
         <field name="domain">[]</field>
+    </record>                                 
+    <record model="ir.actions.act_window" id="action_edi_history_check_order_warning_quantity">
+        <field name="name">Order warning quantity</field>
+        <field name="res_model">edi.history.check</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_edi_history_check_tree"/>
+        <field name="search_view_id" ref="view_edi_history_check_search"/>        
+        <field name="context">{'search_default_over_quantity': True}</field>
+        <field name="domain">[]</field>
+    </record>                                 
+    <record model="ir.actions.act_window" id="action_edi_history_check_order_warning_price">
+        <field name="name">Order warning price</field>
+        <field name="res_model">edi.history.check</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_edi_history_check_tree"/>
+        <field name="search_view_id" ref="view_edi_history_check_search"/>        
+        <field name="context">{'search_default_over_price': True}</field>
+        <field name="domain">[]</field>
     </record>
 
     <menuitem 
@@ -361,7 +383,7 @@
         sequence="40"
         />
 
-        <menuitem 
+        <menuitem
             parent="menu_edi_check_root" 
             id="menu_edi_history_check" 
             action="action_edi_history_check"
@@ -383,6 +405,28 @@
                 sequence="20"
                 />
 
+        <menuitem
+            parent="menu_edi_check_root" 
+            id="menu_edi_history_check_warning" 
+            name="Warning check detail"
+            sequence="15"
+            />
+            <menuitem 
+                parent="menu_edi_history_check_warning" 
+                id="menu_edi_history_check_warning_price" 
+                action="action_edi_history_check_order_warning_price"
+                name="Warning on price"
+                sequence="10"
+                />
+            <menuitem 
+                parent="menu_edi_history_check_warning" 
+                id="menu_edi_history_check_warning_quantity" 
+                action="action_edi_history_check_order_warning_quantity"
+                name="Warning on quantity"
+                sequence="20"
+                />
+
+
         <menuitem 
             parent="menu_edi_check_root" 
             id="menu_edi_history_order" 
@@ -393,13 +437,13 @@
 
         <menuitem 
             parent="menu_edi_check_root" 
-            id="menu_edi_history_configuration" 
+            id="menu_edi_history_configuration_root" 
             name="Configuration"
             sequence="90"
             />
 
             <menuitem 
-                parent="menu_edi_history_configuration" 
+                parent="menu_edi_history_configuration_root" 
                 id="menu_edi_product_parent" 
                 action="action_edi_product_parent"
                 name="Product parent"
@@ -407,7 +451,7 @@
                 />
 
             <menuitem 
-                parent="menu_edi_history_configuration" 
+                parent="menu_edi_history_configuration_root" 
                 id="menu_edi_history_configuration_setup" 
                 action="action_edi_history_configuration"
                 name="Invoice check configuration"
