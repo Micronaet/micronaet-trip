@@ -54,20 +54,20 @@ class edi_company_c3(orm.Model):
     trace = {
         'number': (15, 24),
         'date': (0, 10), # 8
-        'deadline': (0, 10), #8   # TODO ???? not present!!!<<<<<<<<<<<<<<<<<<<
-        'customer': (0, 0), # TODO not present<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        'deadline': (0, 10), #8
+        'customer': (0, 0), 
         'detail_code': (40, 56), # 35
         'detail_description': (56, 96), # 100
         'detail_um': (96, 99), # 3
         'detail_quantity': (99, 108), # 10 
         'detail_price': (108, 118), # 10 
-        'detail_total': (2907, 2917), # 10 TODO not present!!!
+        'detail_total': (2907, 2917), 
         
         # Destination blocks:
-        'destination_facility': (0, 0), # 35 TODO not present!!
-        'destination_cost': (0, 0), # 30 TODO not present!!
-        'destination_site': (1224, 1259), # 35 TODO not present!!<<<<<<<<<<<<<<
-        'destination_description': (1259, 1359) # 100 TODO not present!!<<<<<<<
+        'destination_facility': (0, 0), # 35 
+        'destination_cost': (0, 0), # 30 
+        'destination_site': (1224, 1259), # 35 
+        'destination_description': (1259, 1359) # 100 
         }
 
     def get_timestamp_from_file(self, file_in, path_in=None):
