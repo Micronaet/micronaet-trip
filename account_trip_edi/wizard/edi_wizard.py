@@ -187,7 +187,7 @@ class trip_import_edi_wizard(osv.osv_memory):
                             }
                         </style>
                         """
-                        
+
                     start = True # not structured (read header only first line)
                     # TODO load elements in importing state (depend on date)
                     if mode_type == 'delete':
@@ -338,7 +338,7 @@ class trip_import_edi_wizard(osv.osv_memory):
                                                <th>Price</th>
                                                <th>Total</th>
                                            </tr>""")
-                                           
+
                             # -------------------------------------------------
                             #                      DETAILS:
                             # -------------------------------------------------
@@ -384,7 +384,7 @@ class trip_import_edi_wizard(osv.osv_memory):
                                          )
                         html += "</table>"  # TODO if empty??                        
                     fin.close()
-                        
+
                     # Create file list
                     # TODO old code: Read from file
                     #timestamp = datetime.fromtimestamp(ts).strftime(
