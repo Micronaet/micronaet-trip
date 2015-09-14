@@ -86,7 +86,6 @@ class res_partner(osv.osv):
             # -----------------------------
             # Destination code importation:
             # -----------------------------
-            import pdb; pdb.set_trace()
             _logger.info('Start import SQL: destination code')
             cursor = sql_pool.get_destination_code(
                 cr, uid, prefix=company_proxy.sql_destination_from_code, 
