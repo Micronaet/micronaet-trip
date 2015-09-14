@@ -113,5 +113,26 @@ class edi_company_c4(orm.Model):
         ''' Always normal (no priority management)
         '''
         return 'normal'    
+
+    # Format:
+    def format_int(value):
+        ''' EDI integer format
+        '''
+        return value
+
+    def format_float(value, decimal=3, with_separator=False, separator='.'):
+        ''' EDI float format
+        '''
+        return value
+
+    def format_date(value):
+        ''' EDI file date format YYYYMMDD
+        '''
+        return "%s-%s-%s" % (value[:4], value[4:6], value[6:8])
+
+    def format_string(value):
+        ''' EDI file string 
+        '''
+        return value.strip()
             
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -50,11 +50,6 @@ class trip_import_edi_wizard(osv.osv_memory):
         # ---------------------------------------------------------------------
         #                        Common function:        
         # ---------------------------------------------------------------------
-        def format_date(value):
-            ''' EDI file date format YYYYMMDD
-            '''
-            return "%s-%s-%s" % (value[:4], value[4:6], value[6:8])
-
         def ascii_check(value):
             ''' Try to remove not ascii char (replaced with #)
             ''' 
@@ -72,11 +67,6 @@ class trip_import_edi_wizard(osv.osv_memory):
                         v += "#" # replaced
                 return v        
             
-        def format_string(value):
-            ''' EDI file string 
-            '''
-            return value.strip()    
-        
         # ---------------------------------------------------------------------
         #                  Main code (common part)
         # ---------------------------------------------------------------------
@@ -206,11 +196,11 @@ class trip_import_edi_wizard(osv.osv_memory):
                         
                         # TODO check structured type! (for now not important)
                         # Read fields:
-                        number = format_string(
+                        number = parametrized.format_string(
                             line[trace['number'][0]:trace['number'][1]])
-                        date = format_date(
+                        date = parametrized.format_date(
                             line[trace['date'][0]:trace['date'][1]])
-                        deadline = format_date(
+                        deadline = parametrized.format_date(
                             line[trace['deadline'][0]:trace['deadline'][1]])
                         if deadline < reference_date: # Next importation
                             mode_type = 'importing'
@@ -244,22 +234,22 @@ class trip_import_edi_wizard(osv.osv_memory):
                                           </tr>""")
 
                                 if structured['date'] == line_type:
-                                    date = format_date(
+                                    date = parametrized.format_date(
                                         line[
                                             trace['date'][0]:
                                             trace['date'][1]])
                                 if structured['deadline'] == line_type:
-                                    deadline = format_date(
+                                    deadline = parametrized.format_date(
                                         line[
                                             trace['deadline'][0]:
                                             trace['deadline'][1]])                                    
                                 if structured['number'] == line_type:
-                                    number = format_string(
+                                    number = parametrized.format_string(
                                         line[
                                             trace['number'][0]:
                                             trace['number'][1]])
                                 if structured['customer'] == line_type:
-                                    customer = format_string(
+                                    customer = parametrized.format_string(
                                         line[
                                             trace['customer'][0]:
                                             trace['customer'][1]])
@@ -269,16 +259,16 @@ class trip_import_edi_wizard(osv.osv_memory):
                                 # NOTE: All 3 parts stay on same line (for now)
                                 if structured[
                                         'destination_facility'] == line_type:
-                                    supplier_facility = format_string(line[
+                                    supplier_facility = parametrized.format_string(line[
                                         trace['destination_facility'][0]:
                                         trace['destination_facility'][1]])
-                                    supplier_cost = format_string(line[
+                                    supplier_cost = parametrized.format_string(line[
                                         trace['destination_cost'][0]:
                                         trace['destination_cost'][1]])
-                                    supplier_site = format_string(line[
+                                    supplier_site = parametrized.format_string(line[
                                         trace['destination_site'][0]:
                                         trace['destination_site'][1]])
-                                    destination_description = format_string(line[
+                                    destination_description = parametrized.format_string(line[
                                         trace['destination_description'][0]:
                                         trace['destination_description'][1]])
                                     destination = parametrized.get_destination(
@@ -295,34 +285,34 @@ class trip_import_edi_wizard(osv.osv_memory):
                                     start = False
 
                                     # Read fields
-                                    date = format_date(
+                                    date = parametrized.format_date(
                                         line[
                                             trace['date'][0]:
                                             trace['date'][1]])
-                                    deadline = format_date(
+                                    deadline = parametrized.format_date(
                                         line[
                                             trace['deadline'][0]:
                                             trace['deadline'][1]])
-                                    number = format_string(
+                                    number = parametrized.format_string(
                                         line[
                                             trace['number'][0]:
                                             trace['number'][1]])
-                                    customer = format_string(
+                                    customer = parametrized.format_string(
                                         line[
                                             trace['customer'][0]:
                                             trace['customer'][1]])
 
                                     # Read all destination code (max 3 parts):                                
-                                    supplier_facility = format_string(line[
+                                    supplier_facility = parametrized.format_string(line[
                                         trace['destination_facility'][0]:
                                         trace['destination_facility'][1]])
-                                    supplier_cost = format_string(line[
+                                    supplier_cost = parametrized.format_string(line[
                                         trace['destination_cost'][0]:
                                         trace['destination_cost'][1]])
-                                    supplier_site = format_string(line[
+                                    supplier_site = parametrized.format_string(line[
                                         trace['destination_site'][0]:
                                         trace['destination_site'][1]])
-                                    destination_description = format_string(line[
+                                    destination_description = parametrized.format_string(line[
                                         trace['destination_description'][0]:
                                         trace['destination_description'][1]])
                                     destination = parametrized.get_destination(
@@ -364,30 +354,30 @@ class trip_import_edi_wizard(osv.osv_memory):
                                          <td>%s</td>
                                          <td>%s</td>
                                      </tr>""" % (
-                                         format_string(
+                                         parametrized.format_string(
                                              line[
                                                  trace['detail_code'][0]:
                                                  trace['detail_code'][1]]),
-                                         format_string(
+                                         parametrized.format_string(
                                              line[
                                                  trace[
                                                      'detail_description'][0]:
                                                  trace[
                                                      'detail_description'][1]]
                                                      ),
-                                         format_string(
+                                         parametrized.format_string(
                                              line[
                                                  trace['detail_um'][0]:
                                                  trace['detail_um'][1]]),
-                                         format_string(
+                                         parametrized.format_string(
                                              line[
                                                  trace['detail_quantity'][0]:
                                                  trace['detail_quantity'][1]]),
-                                         format_string(
+                                         parametrized.format_string(
                                              line[
                                                  trace['detail_price'][0]:
                                                  trace['detail_price'][1]]),
-                                         format_string(
+                                         parametrized.format_string(
                                              line[
                                                  trace['detail_total'][0]:
                                                  trace['detail_total'][1]]),
