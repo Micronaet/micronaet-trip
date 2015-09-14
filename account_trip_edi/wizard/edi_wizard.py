@@ -47,7 +47,7 @@ class trip_import_edi_wizard(osv.osv_memory):
     def load_edi_list(self, cr, uid, ids, context=None):
         ''' Refresh button for load EDI file list in wizard
         '''
-        
+        import pdb; pdb.set_trace()
         # ---------------------------------------------------------------------
         #                        Common function:        
         # ---------------------------------------------------------------------
@@ -127,7 +127,12 @@ class trip_import_edi_wizard(osv.osv_memory):
             # Load object for use the same function name where needed:
             parametrized = self.pool.get(company.type_importation_id.object)
             
+            # Normal trace:
             trace = parametrized.trace
+            
+            # Structured trace:
+            structured = parametrized.structured
+            start_structure = parametrized.start_structure or 0
             
             forced_list = edi_company_pool.load_forced(
                 cr, uid, company.id, context=context)
@@ -188,13 +193,15 @@ class trip_import_edi_wizard(osv.osv_memory):
                             }
                         </style>
                         """
-                    start = True
+                        
+                    start = True # not structured (read header only first line)
 
                     # TODO load elements in importing state (depend on date)
                     if mode_type == 'delete':
                         # Short read (get info from 1st line only) 
                         line = fin.readline()
                         
+                        # TODO check structured type!
                         # Read fields:
                         number = format_string(
                             line[trace['number'][0]:trace['number'][1]])
@@ -210,100 +217,179 @@ class trip_import_edi_wizard(osv.osv_memory):
                         
                     else: # create 
                         for line in fin:
-                            line = ascii_check(line)
-                            if start: # header value (only one)
-                                start = False
+                            # -------------------------------------------------
+                            #                       HEADER
+                            # -------------------------------------------------
+                            line_type = line[0: start_structure] # for struct.
+                            if structured:
+                                # ---------------------------------------------
+                                #                 STRUCTURED
+                                # ---------------------------------------------                            
+                                if start: # Part only one:
+                                    start = False
+                                    # TODO Extra html header not present here!!
+                                    # Only HTML header for structure
+                                    html += _(
+                                       """<table class='table_trip'>
+                                          <tr>
+                                              <th>Code</th>
+                                              <th>Description</th>
+                                              <th>UM</th>
+                                              <th>Q.</th>
+                                              <th>Price</th>
+                                              <th>Total</th>
+                                          </tr>""")
 
-                                # Read fields
-                                date = format_date(
-                                    line[
-                                        trace['date'][0]:
-                                        trace['date'][1]])
-                                deadline = format_date(
-                                    line[
-                                        trace['deadline'][0]:
-                                        trace['deadline'][1]])
-                                number = format_string(
-                                    line[
-                                        trace['number'][0]:
-                                        trace['number'][1]])
-                                customer = format_string(
-                                    line[
-                                        trace['customer'][0]:
-                                        trace['customer'][1]])
-
-                                # Read all destination code (max 3 parts):                                
-                                supplier_facility = format_string(line[
+                                if structured['date'] == line_type:
+                                    date = format_date(
+                                        line[
+                                            trace['date'][0]:
+                                            trace['date'][1]])
+                                if structured['deadline'] == line_type:
+                                    deadline = format_date(
+                                        line[
+                                            trace['deadline'][0]:
+                                            trace['deadline'][1]])                                    
+                                if structured['number'] == line_type:
+                                    number = format_string(
+                                        line[
+                                            trace['number'][0]:
+                                            trace['number'][1]])
+                                if structured['customer'] == line_type:
+                                    customer = format_string(
+                                        line[
+                                            trace['customer'][0]:
+                                            trace['customer'][1]])
+                                        
+                                            
+                                # Read all destination code (max 3 parts):
+                                # NOTE: All 3 parts stay on same line (for now)
+                                if structured[
+                                        'destination_facility'] == line_type:
+                                    supplier_facility = format_string(line[
                                         trace['destination_facility'][0]:
                                         trace['destination_facility'][1]])
-                                supplier_cost = format_string(line[
+                                    supplier_cost = format_string(line[
                                         trace['destination_cost'][0]:
                                         trace['destination_cost'][1]])
-                                supplier_site = format_string(line[
+                                    supplier_site = format_string(line[
                                         trace['destination_site'][0]:
                                         trace['destination_site'][1]])
-                                destination_description = format_string(
-                                    line[
+                                    destination_description = format_string(line[
                                         trace['destination_description'][0]:
                                         trace['destination_description'][1]])
-                                destination = parametrized.get_destination(
-                                    supplier_facility, 
-                                    supplier_cost, 
-                                    supplier_site, 
-                                    )
+                                    destination = parametrized.get_destination(
+                                        supplier_facility, 
+                                        supplier_cost, 
+                                        supplier_site, 
+                                        )
+                            
+                            else:
+                                # ---------------------------------------------
+                                #            NOT STRUCTURED HEADER
+                                # ---------------------------------------------
+                                if start: # header value (only one)
+                                    start = False
+
+                                    # Read fields
+                                    date = format_date(
+                                        line[
+                                            trace['date'][0]:
+                                            trace['date'][1]])
+                                    deadline = format_date(
+                                        line[
+                                            trace['deadline'][0]:
+                                            trace['deadline'][1]])
+                                    number = format_string(
+                                        line[
+                                            trace['number'][0]:
+                                            trace['number'][1]])
+                                    customer = format_string(
+                                        line[
+                                            trace['customer'][0]:
+                                            trace['customer'][1]])
+
+                                    # Read all destination code (max 3 parts):                                
+                                    supplier_facility = format_string(line[
+                                        trace['destination_facility'][0]:
+                                        trace['destination_facility'][1]])
+                                    supplier_cost = format_string(line[
+                                        trace['destination_cost'][0]:
+                                        trace['destination_cost'][1]])
+                                    supplier_site = format_string(line[
+                                        trace['destination_site'][0]:
+                                        trace['destination_site'][1]])
+                                    destination_description = format_string(line[
+                                        trace['destination_description'][0]:
+                                        trace['destination_description'][1]])
+                                    destination = parametrized.get_destination(
+                                        supplier_facility, 
+                                        supplier_cost, 
+                                        supplier_site, 
+                                        )
                                 
-                                # Create an HMTL element for preview file:        
-                                html += "<p>"
-                                html += _("Date: %s<br/>") % date
-                                html += _("Deadline: %s<br/>") % deadline
-                                html += _("Destination: %s<br/>") % destination
-                                html += _("Customer ref.: %s<br/>") % customer
-                                html += "</p>"
-                                html += _(
-                                    """<table class='table_trip'>
-                                       <tr>
-                                           <th>Code</th>
-                                           <th>Description</th>
-                                           <th>UM</th>
-                                           <th>Q.</th>
-                                           <th>Price</th>
-                                           <th>Total</th>
-                                       </tr>""")
-                            html += """
-                                <tr>
-                                     <td>%s</td>
-                                     <td>%s</td>
-                                     <td>%s</td>
-                                     <td>%s</td>
-                                     <td>%s</td>
-                                     <td>%s</td>
-                                 </tr>""" % (
-                                     format_string(
-                                         line[
-                                             trace['detail_code'][0]:
-                                             trace['detail_code'][1]]),
-                                     format_string(
-                                         line[
-                                             trace['detail_description'][0]:
-                                             trace['detail_description'][1]]),
-                                     format_string(
-                                         line[
-                                             trace['detail_um'][0]:
-                                             trace['detail_um'][1]]),
-                                     format_string(
-                                         line[
-                                             trace['detail_quantity'][0]:
-                                             trace['detail_quantity'][1]]),
-                                     format_string(
-                                         line[
-                                             trace['detail_price'][0]:
-                                             trace['detail_price'][1]]),
-                                     format_string(
-                                         line[
-                                             trace['detail_total'][0]:
-                                             trace['detail_total'][1]]),
-                                     )
-                        html += "</table>"  # TODO if empty??
+                                    # Create an HMTL element for preview file:        
+                                    html += "<p>"
+                                    html += _("Date: %s<br/>") % date
+                                    html += _("Deadline: %s<br/>") % deadline
+                                    html += _("Destination: %s<br/>") % destination
+                                    html += _("Customer ref.: %s<br/>") % customer
+                                    html += "</p>"
+                                    html += _(
+                                        """<table class='table_trip'>
+                                           <tr>
+                                               <th>Code</th>
+                                               <th>Description</th>
+                                               <th>UM</th>
+                                               <th>Q.</th>
+                                               <th>Price</th>
+                                               <th>Total</th>
+                                           </tr>""")
+                                           
+                            # -------------------------------------------------
+                            #                      DETAILS:
+                            # -------------------------------------------------
+                            # Common part:                            
+                            if not structured or structured[
+                                   'detail_code'] == line_type:
+                                html += """
+                                    <tr>
+                                         <td>%s</td>
+                                         <td>%s</td>
+                                         <td>%s</td>
+                                         <td>%s</td>
+                                         <td>%s</td>
+                                         <td>%s</td>
+                                     </tr>""" % (
+                                         format_string(
+                                             line[
+                                                 trace['detail_code'][0]:
+                                                 trace['detail_code'][1]]),
+                                         format_string(
+                                             line[
+                                                 trace[
+                                                     'detail_description'][0]:
+                                                 trace[
+                                                     'detail_description'][1]]
+                                                     ),
+                                         format_string(
+                                             line[
+                                                 trace['detail_um'][0]:
+                                                 trace['detail_um'][1]]),
+                                         format_string(
+                                             line[
+                                                 trace['detail_quantity'][0]:
+                                                 trace['detail_quantity'][1]]),
+                                         format_string(
+                                             line[
+                                                 trace['detail_price'][0]:
+                                                 trace['detail_price'][1]]),
+                                         format_string(
+                                             line[
+                                                 trace['detail_total'][0]:
+                                                 trace['detail_total'][1]]),
+                                         )
+                        html += "</table>"  # TODO if empty??                        
                     fin.close()
                         
                     # Create file list

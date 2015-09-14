@@ -51,55 +51,72 @@ class edi_company_c3(orm.Model):
     # -------------------------------------------------------------------------    
     #                     Abstract function and property:
     # -------------------------------------------------------------------------    
-    trace = {
+    start_structure = 3 # char
+    structured = { # field > block
+        'number': 'BGM',
+        'date': 'BGM',
+        'customer': 'BGM',
+
+        'deadline': 'NAD',
+        'destination_facility': 'NAD',
+        'destination_cost': 'NAD',
+        'destination_site': 'NAD',
+        
+        'detail_code': 'LIN',
+        'detail_description': 'LIN',
+        'detail_um': 'LIN',
+        'detail_quantity': 'LIN',
+        'detail_price': 'LIN',
+        'detail_total': 'LIN',
+        }
+
+    trace = { # structured:
+        # BGM
         'number': (15, 24),
         'date': (0, 10), # 8
-        'deadline': (0, 10), #8
-        'customer': (0, 0), 
-        'detail_code': (40, 56), # 35
-        'detail_description': (56, 96), # 100
-        'detail_um': (96, 99), # 3
-        'detail_quantity': (99, 108), # 10 
-        'detail_price': (108, 118), # 10 
-        'detail_total': (2907, 2917), 
-        
+        'customer': (0, 0), # not used
+
+        # NAD
+        'deadline': (3, 13), #8
         # Destination blocks:
         'destination_facility': (0, 0), # 35 
         'destination_cost': (0, 0), # 30 
-        'destination_site': (1224, 1259), # 35 
-        'destination_description': (1259, 1359) # 100 
+        'destination_site': (3, 20), # 17
+        'destination_description': (23, 93) # 70
+        # TODO address?
+        
+        # LIN'
+        'detail_code': (84, 119), # 35
+        'detail_description': (154, 189), # 35
+        'detail_um': (207, 210), # 3
+        'detail_quantity': (192, 207), # 15
+        'detail_price': (210, 225), # 15
+        'detail_total': (0, 0), 
         }
 
     def get_timestamp_from_file(self, file_in, path_in=None):
         # TODO
         ''' Get timestamp value from file name
-            File is: 20151231_270.ASC
+            File is: COMPANY_orderdate_order_deadline.eur
         '''
+        part = file_in.split('_')        
         return "%s-%s-%s" % (
-            file_in[:4], 
-            file_in[4:6], 
-            file_in[6:8], 
+            part[1][:4], 
+            part[1][4:6], 
+            part[1][6:8], 
             )
         
     def get_state_of_file(self, file_in, forced_list):
         ''' Test state of file depend on name and forced presence
+            2 state: forced or create (no update here)
         '''
-        try:
-            type_file = file_in.split("_")[1]
-        except:
-            type_file = False # TODO lot error
-                
         if file_in in forced_list: # Forced (pickle file)
             return 'forced'
-        elif type_file == 'ORDCHG': # change (usually ORDERS)
-            return 'change'
-        elif not type_file : # change (usually ORDERS)
-            return 'anomaly'
-        else: # OR or ORDERS
-            return 'create'
+        return 'create'
 
     def get_destination(self, facility, cost, site):
-        ''' Mask for code destination (only the last: site is used)'''
+        ''' Mask for code destination (only the last: site is used here)
+        '''
         return "[%s]" % site
 
     def get_destination_id(self, cr, uid, facility, cost, site, context=None):
