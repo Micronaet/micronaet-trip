@@ -47,7 +47,6 @@ class trip_import_edi_wizard(osv.osv_memory):
     def load_edi_list(self, cr, uid, ids, context=None):
         ''' Refresh button for load EDI file list in wizard
         '''
-        import pdb; pdb.set_trace()
         # ---------------------------------------------------------------------
         #                        Common function:        
         # ---------------------------------------------------------------------
@@ -120,7 +119,6 @@ class trip_import_edi_wizard(osv.osv_memory):
         # Read company to import:
         edi_company_ids = edi_company_pool.search(cr, uid, [
             ('import', '=', True)], context=context)
-
         for company in edi_company_pool.browse(
                 cr, uid, edi_company_ids, context=context): 
        
@@ -130,10 +128,16 @@ class trip_import_edi_wizard(osv.osv_memory):
             # Normal trace:
             trace = parametrized.trace
             
-            # Structured trace:
-            structured = parametrized.structured
-            start_structure = parametrized.start_structure or 0
-            
+            # Structured trace (in flat file not present):
+            try:
+                structured = parametrized.structured or {}
+            except: 
+                structured = False
+            try:    
+                start_structure = parametrized.start_structure or 0
+            except:    
+                start_structure = 0
+                
             forced_list = edi_company_pool.load_forced(
                 cr, uid, company.id, context=context)
 
@@ -195,13 +199,12 @@ class trip_import_edi_wizard(osv.osv_memory):
                         """
                         
                     start = True # not structured (read header only first line)
-
                     # TODO load elements in importing state (depend on date)
                     if mode_type == 'delete':
                         # Short read (get info from 1st line only) 
                         line = fin.readline()
                         
-                        # TODO check structured type!
+                        # TODO check structured type! (for now not important)
                         # Read fields:
                         number = format_string(
                             line[trace['number'][0]:trace['number'][1]])
@@ -350,7 +353,7 @@ class trip_import_edi_wizard(osv.osv_memory):
                             #                      DETAILS:
                             # -------------------------------------------------
                             # Common part:                            
-                            if not structured or structured[
+                            if not structured or structured[ # test w/art. code
                                    'detail_code'] == line_type:
                                 html += """
                                     <tr>
@@ -447,7 +450,6 @@ class trip_import_edi_wizard(osv.osv_memory):
             except:
                 _logger.error("Generic error: %s" % (sys.exc_info(), ))
                 
-
         # Update recursion informations (write totals recursions):
         for key in recursion:
             total, record_ids = recursion[key]

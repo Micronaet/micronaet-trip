@@ -57,7 +57,8 @@ class edi_company_c3(orm.Model):
         'date': 'BGM',
         'customer': 'BGM',
 
-        'deadline': 'NAD',
+        'deadline': 'DTM',
+        
         'destination_facility': 'NAD',
         'destination_cost': 'NAD',
         'destination_site': 'NAD',
@@ -72,25 +73,26 @@ class edi_company_c3(orm.Model):
 
     trace = { # structured:
         # BGM
-        'number': (15, 24),
-        'date': (0, 10), # 8
+        'number': (115, 150),
+        'date': (150, 158), # 8
         'customer': (0, 0), # not used
 
-        # NAD
-        'deadline': (3, 13), #8
-        # Destination blocks:
+        # DTM
+        'deadline': (3, 11), #8
+        
+        # NAS - Destination blocks:
         'destination_facility': (0, 0), # 35 
         'destination_cost': (0, 0), # 30 
         'destination_site': (3, 20), # 17
-        'destination_description': (23, 93) # 70
+        'destination_description': (23, 93), # 70
         # TODO address?
         
         # LIN'
-        'detail_code': (84, 119), # 35
-        'detail_description': (154, 189), # 35
-        'detail_um': (207, 210), # 3
-        'detail_quantity': (192, 207), # 15
-        'detail_price': (210, 225), # 15
+        'detail_code': (82, 117), # 35
+        'detail_description': (152, 187), # 35
+        'detail_um': (205, 208), # 3
+        'detail_quantity': (190, 205), # 15
+        'detail_price': (208, 223), # 15
         'detail_total': (0, 0), 
         }
 
