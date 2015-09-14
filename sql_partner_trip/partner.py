@@ -166,7 +166,7 @@ class res_partner(osv.osv):
 
     _columns = {
         'trip_supplier_destination_code': fields.char(
-            'Supplier destination code', size=80, ), # cost + site
+            'Supplier destination code', size=80), # cost + site
         'trip_supplier_facility_code': fields.char(
             'Supplier facility code', size=40, 
             help="Patricular for EDI importation",   # facility

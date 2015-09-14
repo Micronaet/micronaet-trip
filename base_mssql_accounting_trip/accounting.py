@@ -33,7 +33,6 @@ _logger = logging.getLogger(__name__)
 class micronaet_accounting(osv.osv):
     ''' Add extra query for manage trip
     '''
-    _name = "micronaet.accounting"
     _inherit = "micronaet.accounting"
 
     # -------------------------------------------------------------------------   
@@ -61,12 +60,15 @@ class micronaet_accounting(osv.osv):
                 FROM 
                     %s pa JOIN %s va
                 ON (pa.CKY_CNT = va.CKY_CNT) 
-                WHERE pa.CKY_CNT like '%s.%s' and (pa.CSG_CODALT != '' OR va.CDS_COD__IMPIANTO_ != '');
+                WHERE 
+                    pa.CKY_CNT like '%s.%s' and (pa.CSG_CODALT != '' 
+                    OR va.CDS_COD__IMPIANTO_ != '');
                 """ % (
-                    table1, table2, prefix, "%", ))
+                    table1, table2, prefix, "%"))
             return cursor              
         except: 
-            return False  # Error return nothing
+            print sys.exc_info() #False  # Error return nothing  
+            return False
 
     def get_destination_tour(self, cr, uid, year=False, context=None):
         ''' Access to anagrafic extra table of destinations
