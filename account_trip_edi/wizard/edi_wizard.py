@@ -347,12 +347,12 @@ class trip_import_edi_wizard(osv.osv_memory):
                                    'detail_code'] == line_type:
                                 html += """
                                     <tr>
-                                         <td>%s</td>
-                                         <td>%s</td>
-                                         <td>%s</td>
-                                         <td>%s</td>
-                                         <td>%s</td>
-                                         <td>%s</td>
+                                         <td>&nbsp;%s&nbsp;</td>
+                                         <td>&nbsp;%s&nbsp;</td>
+                                         <td>&nbsp;%s&nbsp;</td>
+                                         <td>&nbsp;%s&nbsp;</td>
+                                         <td>&nbsp;%s&nbsp;</td>
+                                         <td>&nbsp;%s&nbsp;</td>
                                      </tr>""" % (
                                          parametrized.format_string(
                                              line[
@@ -369,15 +369,15 @@ class trip_import_edi_wizard(osv.osv_memory):
                                              line[
                                                  trace['detail_um'][0]:
                                                  trace['detail_um'][1]]),
-                                         parametrized.format_string(
+                                         parametrized.format_float(
                                              line[
                                                  trace['detail_quantity'][0]:
                                                  trace['detail_quantity'][1]]),
-                                         parametrized.format_string(
+                                         parametrized.format_float(
                                              line[
                                                  trace['detail_price'][0]:
                                                  trace['detail_price'][1]]),
-                                         parametrized.format_string(
+                                         parametrized.format_float(
                                              line[
                                                  trace['detail_total'][0]:
                                                  trace['detail_total'][1]]),

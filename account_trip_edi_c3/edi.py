@@ -137,22 +137,26 @@ class edi_company_c3(orm.Model):
         return 'normal'    
     
     # Format:
-    def format_int(value):
+    def format_int(self, value):
         ''' EDI integer format
         '''
         return value
 
-    def format_float(value, decimal=3, with_separator=False, separator='.'):
+    def format_float(self, value, decimal=3, with_separator=False, 
+            separator='.'):
         ''' EDI float format
         '''
-        return value
+        try:
+            return float("%s.%s" % (value[:-3], value[-3:]))
+        except:
+            return 0.0 # error    
 
-    def format_date(value):
+    def format_date(self, value, date_format='ISO'):
         ''' EDI file date format YYYYMMDD
-        '''
+        '''        
         return "%s-%s-%s" % (value[:4], value[4:6], value[6:8])
 
-    def format_string(value):
+    def format_string(self, value):
         ''' EDI file string 
         '''
         return value.strip()
