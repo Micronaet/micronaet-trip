@@ -210,6 +210,7 @@ class trip_import_edi_wizard(osv.osv_memory):
                         
                     else: # create 
                         for line in fin:
+                            line = ascii_check(line)
                             # -------------------------------------------------
                             #                       HEADER
                             # -------------------------------------------------

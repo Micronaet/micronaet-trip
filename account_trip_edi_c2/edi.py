@@ -77,7 +77,7 @@ class edi_company_c2(orm.Model):
                      ------YYYYMMGGhhmmss----
             Millisecond are 
                 00 for create order ELIORD
-                10 for delete order ELICHG     
+                10 for delete order ELICHG 
         '''
         ts = os.path.getctime(os.path.join(path_in, file_in))
         return datetime.fromtimestamp(ts).strftime(
@@ -122,10 +122,17 @@ class edi_company_c2(orm.Model):
         '''
         return value
 
-    def format_float(self, value, decimal=3, with_separator=False, separator='.'):
+    def format_float(self, value, decimal=3, with_separator=False, 
+            separator='.'):
         ''' EDI float format
         '''
         return value
+        #value = value.strip()
+        #try:
+        #    return float(value or '0')
+        #except:
+        #    import pdb; pdb.set_trace()
+        #    return ''
 
     def format_date(self, value, date_format='ISO'):
         ''' EDI file date format YYYYMMDD
@@ -135,6 +142,9 @@ class edi_company_c2(orm.Model):
     def format_string(self, value):
         ''' EDI file string 
         '''
-        return value.strip()
+        try:
+            return value.strip()
+        except:
+            return "#ERR"    
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
