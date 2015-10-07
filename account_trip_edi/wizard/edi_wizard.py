@@ -202,9 +202,10 @@ class trip_import_edi_wizard(osv.osv_memory):
                             line[trace['date'][0]:trace['date'][1]])
                         deadline = parametrized.format_date(
                             line[trace['deadline'][0]:trace['deadline'][1]])
-                        # TODO or better leave 'delete'?!?!?    
-                        if deadline < reference_date: # Next importation
-                            mode_type = 'importing'
+                        # NOTE: removed for color test on OpenERP (instead of
+                        # have all grey
+                        #if deadline < reference_date: # Next importation
+                        #    mode_type = 'importing'
                             
                         customer = False
                         destination = False
