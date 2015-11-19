@@ -420,8 +420,6 @@ class trip_import_edi_wizard(osv.osv_memory):
                         }        
                     line_id = line_pool.create(
                         cr, uid, data_line, context=context)
-                    if not destination_description:
-                        print data_line
 
                     # Create record for test recursions:    
                     if number not in recursion:
