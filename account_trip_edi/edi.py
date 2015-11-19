@@ -115,7 +115,7 @@ class edi_company(orm.Model):
         try:
             filename = self.get_trip_import_edi_folder(
                 cr, uid, company_id, value='file', context=context)
-            return pickle.load(open(filename, "rb")) or []
+            return pickle.load(open(filename, 'rb')) or []
         except: 
             return []
 

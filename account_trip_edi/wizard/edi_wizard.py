@@ -156,6 +156,7 @@ class trip_import_edi_wizard(osv.osv_memory):
                     supplier_facility = ""
                     supplier_cost = ""
                     supplier_site = ""
+                    destination_description = ""
 
                     # Open file for read informations:
                     fin = open(os.path.join(path_in, file_in), "r")
