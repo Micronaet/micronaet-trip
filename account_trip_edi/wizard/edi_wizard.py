@@ -401,8 +401,8 @@ class trip_import_edi_wizard(osv.osv_memory):
                     if not destination_id and (
                             destination_id not in destination_not_found): 
                         destination_not_found.append(destination)
-                            
-                    line_id = line_pool.create(cr, uid, {
+                        
+                    data_line = {
                         'name': file_in,
                         'timestamp': ts,
                         'deadline': deadline,
@@ -417,10 +417,11 @@ class trip_import_edi_wizard(osv.osv_memory):
                         'information': html,
                         'priority': parametrized.get_priority(
                             cr, uid, file_in),
-                        }, context=context)
+                        }        
+                    line_id = line_pool.create(
+                        cr, uid, data_line, context=context)
                     if not destination_description:
-                        print html
-                        import pdb; pdb.set_trace()
+                        print data_line
 
                     # Create record for test recursions:    
                     if number not in recursion:
