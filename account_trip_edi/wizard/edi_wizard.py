@@ -418,7 +418,10 @@ class trip_import_edi_wizard(osv.osv_memory):
                         'priority': parametrized.get_priority(
                             cr, uid, file_in),
                         }, context=context)
-                        
+                    if not destination_description:
+                        print html
+                        import pdb; pdb.set_trace()
+
                     # Create record for test recursions:    
                     if number not in recursion:
                         recursion[number] = [1, [line_id]]
