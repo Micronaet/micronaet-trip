@@ -66,6 +66,15 @@ class trip_import_edi_wizard(osv.osv_memory):
                     except:
                         v += "#" # replaced
                 return v        
+        def ascii_clean(value):        
+            value = value or ''
+            res = ''
+            for c in value:
+                if ord(c) < 127:
+                    res += c
+                else:
+                    res += ''    
+            return res
             
         # ---------------------------------------------------------------------
         #                  Main code (common part)
@@ -362,13 +371,13 @@ class trip_import_edi_wizard(osv.osv_memory):
                                              line[
                                                  trace['detail_code'][0]:
                                                  trace['detail_code'][1]]),
-                                         parametrized.format_string(
+                                         ascii_clean(parametrized.format_string(
                                              line[
                                                  trace[
                                                      'detail_description'][0]:
                                                  trace[
                                                      'detail_description'][1]]
-                                                     ),
+                                                     )),
                                          parametrized.format_string(
                                              line[
                                                  trace['detail_um'][0]:
