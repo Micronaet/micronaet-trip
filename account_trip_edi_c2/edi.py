@@ -149,7 +149,7 @@ class edi_company_c2(orm.Model):
                 if ord(c) < 127:
                     res += c
                 else:
-                    res += '*'    
+                    res += ''    
             return res
         except:
             return "#ERR"    
