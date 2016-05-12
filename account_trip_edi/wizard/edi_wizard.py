@@ -371,13 +371,13 @@ class trip_import_edi_wizard(osv.osv_memory):
                                              line[
                                                  trace['detail_code'][0]:
                                                  trace['detail_code'][1]]),
-                                         ascii_clean(parametrized.format_string(
+                                         parametrized.format_string(
                                              line[
                                                  trace[
                                                      'detail_description'][0]:
                                                  trace[
                                                      'detail_description'][1]]
-                                                     )),
+                                                     ),
                                          parametrized.format_string(
                                              line[
                                                  trace['detail_um'][0]:
