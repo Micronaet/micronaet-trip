@@ -50,7 +50,7 @@ class trip_import_edi_wizard(osv.osv_memory):
         # ---------------------------------------------------------------------
         #                        Common function:        
         # ---------------------------------------------------------------------
-        def ascii_check2(value):
+        def ascii_check(value):
             ''' Try to remove not ascii char (replaced with #)
             ''' 
             try:
@@ -67,7 +67,7 @@ class trip_import_edi_wizard(osv.osv_memory):
                         v += "#" # replaced
                 return v     
                    
-        def ascii_check(value):        
+        def ascii_check2(value):        
             value = value or ''
             res = ''
             for c in value:
