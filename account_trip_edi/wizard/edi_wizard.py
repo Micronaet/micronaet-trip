@@ -447,12 +447,15 @@ class trip_import_edi_wizard(osv.osv_memory):
                 _logger.error("Generic error: %s" % (sys.exc_info(), ))
                 
         # Update recursion informations (write totals recursions):
-        for key in recursion:
-            total, record_ids = recursion[key]
-            line_pool.write(cr, uid, record_ids, {
-                'recursion': total,
-                }, context=context)
-        
+        try:
+            for key in recursion:
+                total, record_ids = recursion[key]
+                line_pool.write(cr, uid, record_ids, {
+                    'recursion': total,
+                    }, context=context)
+        except:
+            _logger.error('Error: %s' % (sys.exc_info(), ))            
+            
         # TODO parametrize:
         # Update type informations (for create-delete-recreate management):
         for key in order_info:
