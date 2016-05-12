@@ -144,6 +144,7 @@ class edi_company_c2(orm.Model):
         '''
         try:
             value = value.strip()
+            return value
             res = ''
             for c in value:
                 if ord(c) < 127:
