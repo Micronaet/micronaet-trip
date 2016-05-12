@@ -50,7 +50,7 @@ class trip_import_edi_wizard(osv.osv_memory):
         # ---------------------------------------------------------------------
         #                        Common function:        
         # ---------------------------------------------------------------------
-        def ascii_check(value):
+        def ascii_check2(value):
             ''' Try to remove not ascii char (replaced with #)
             ''' 
             try:
@@ -65,16 +65,18 @@ class trip_import_edi_wizard(osv.osv_memory):
                         v += char
                     except:
                         v += "#" # replaced
-                return v        
-        def ascii_clean(value):        
+                return v     
+                   
+        def ascii_check(value):        
             value = value or ''
             res = ''
             for c in value:
                 if ord(c) < 127:
                     res += c
                 else:
-                    res += ''    
-            return res
+                    res += 'ç'    
+            return res.replace('çç', '#')
+            #return res
             
         # ---------------------------------------------------------------------
         #                  Main code (common part)
@@ -372,12 +374,12 @@ class trip_import_edi_wizard(osv.osv_memory):
                                                  trace['detail_code'][0]:
                                                  trace['detail_code'][1]]),
                                          parametrized.format_string(
-                                             line[
-                                                 trace[
-                                                     'detail_description'][0]:
-                                                 trace[
-                                                     'detail_description'][1]]
-                                                     ),
+                                         line[
+                                             trace[
+                                                 'detail_description'][0]:
+                                             trace[
+                                                 'detail_description'][1]]
+                                                 ),
                                          parametrized.format_string(
                                              line[
                                                  trace['detail_um'][0]:
