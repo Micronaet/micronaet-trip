@@ -143,7 +143,14 @@ class edi_company_c2(orm.Model):
         ''' EDI file string 
         '''
         try:
-            return value.strip()
+            value = value.strip()
+            res = ''
+            for c in value:
+                if ord(c) < 127:
+                    res += c
+                else:
+                    res += '*'    
+            return res
         except:
             return "#ERR"    
 
