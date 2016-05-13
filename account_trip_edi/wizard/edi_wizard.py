@@ -74,8 +74,9 @@ class trip_import_edi_wizard(osv.osv_memory):
                 if ord(c) < 127:
                     res += c
                 else:
-                    res += '#'    
-            res = res.replace('###', '')
+                    res += '#'  
+            # Particular case:           
+            res = res.replace('###', '') # Error (file start with wrong char!)
             return res.replace('##', '#')
             #return res
             
