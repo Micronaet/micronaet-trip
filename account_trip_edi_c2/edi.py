@@ -131,7 +131,6 @@ class edi_company_c2(orm.Model):
         #try:
         #    return float(value or '0')
         #except:
-        #    import pdb; pdb.set_trace()
         #    return ''
 
     def format_date(self, value, date_format='ISO'):
@@ -143,15 +142,15 @@ class edi_company_c2(orm.Model):
         ''' EDI file string 
         '''
         try:
-            value = value.strip()
-            return value
+            return value.strip()
+            # TODO Clean ASCII?!?
             res = ''
-            for c in value:
+            for c in value.strip():
                 if ord(c) < 127:
                     res += c
                 else:
-                    res += ''    
-            return res
+                    res += '#'                        
+            return res.replace('##', '#')
         except:
             return "#ERR"    
 

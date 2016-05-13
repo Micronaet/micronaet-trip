@@ -50,7 +50,7 @@ class trip_import_edi_wizard(osv.osv_memory):
         # ---------------------------------------------------------------------
         #                        Common function:        
         # ---------------------------------------------------------------------
-        def ascii_check(value):
+        def ascii_check3(value):
             ''' Try to remove not ascii char (replaced with #)
             ''' 
             try:
@@ -67,7 +67,7 @@ class trip_import_edi_wizard(osv.osv_memory):
                         v += "#" # replaced
                 return v     
                    
-        def ascii_check2(value):        
+        def ascii_check(value):        
             value = value or ''
             res = ''
             for c in value:
@@ -75,6 +75,7 @@ class trip_import_edi_wizard(osv.osv_memory):
                     res += c
                 else:
                     res += '#'    
+            res = res.replace('###', '')
             return res.replace('##', '#')
             #return res
             
@@ -162,7 +163,9 @@ class trip_import_edi_wizard(osv.osv_memory):
                 file_list.sort()
                 
                 # Print list of sorted files for logging the operation:
-                for ts, file_in in file_list:  
+                for ts, file_in in file_list:
+                    _logger.info('Read file: %s' % file_in)
+                    
                     # Reset parameter for destination code:              
                     supplier_facility = ""
                     supplier_cost = ""
