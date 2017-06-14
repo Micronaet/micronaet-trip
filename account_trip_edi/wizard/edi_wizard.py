@@ -153,7 +153,7 @@ class trip_import_edi_wizard(osv.osv_memory):
             
             file_list = []
             try:
-                # Sort correctly the files:       
+                # Sort correctly the files:   
                 for file_in in [
                         f for f in os.listdir(path_in) if os.path.isfile(
                             os.path.join(path_in, f))]:            

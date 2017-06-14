@@ -145,6 +145,7 @@ class edi_company(orm.Model):
                 "file script for force some future importation order. "
                 "Write a tuple, like: ('~', 'etl', 'export', 'todo.txt')"),
         }
+        
     _defaults = {
         'import': lambda *x: False,
         }
