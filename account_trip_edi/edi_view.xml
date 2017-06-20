@@ -160,6 +160,7 @@
                    <field name="date" />
                    <field name="number" />
                    <field name="deadline" />
+                   <field name="recursion" invisible="1"/>
                    <field name="customer" />
                    <field name="destination" />
                    <field name="destination_id" />
