@@ -228,7 +228,7 @@ class EdiOrder(orm.Model):
             for row in open(last_file.fullname, 'r'):
                 data = {
                     'order_id': order.id,
-                    'order_sequence': int(row[2327:2337]),
+                    'sequence': int(row[2336:2347]),
                     'name': row[2356:2391].strip(), 
                     'article': row[2391:2426].strip(),
                     'qty': row[2631:2641].strip(), 
