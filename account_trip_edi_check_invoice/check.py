@@ -338,7 +338,7 @@ class EdiOrderFile(orm.Model):
     
     _name = 'edi.order.file'
     _description = 'EDI order file'
-    _rec_name = 'datetime desc'
+    _order = 'datetime desc'
 
     def _get_fullname_file_name(
             self, cr, uid, ids, fields, args, context=None):
