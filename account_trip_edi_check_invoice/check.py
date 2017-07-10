@@ -176,8 +176,8 @@ class EdiOrder(orm.Model):
     _rec_name = 'name'
 
     _columns = {
-        'name': fields.char('Number', size=25, required=True, readonly=True),
-        'date': fields.date('Date', required=True, readonly=True),
+        'name': fields.char('Number', size=25, required=True),
+        'date': fields.datetime('Date', readonly=True),
         }
 
 class EdiOrder(orm.Model):
@@ -188,23 +188,100 @@ class EdiOrder(orm.Model):
     _description = 'EDI order folder'
     _rec_name = 'name'
 
-    def load_order_line(self, cr, uid, ids, context=None):
-        """ Load order passed line
+    def load_file_in_folder(self, cr, uid, ids, context=None):
+        """ Load file in this folder (used also for scheduled)
         """
-        filename = ''
-        for row in open(filename, 'r'):
-            data = {
-                #'order_id':,
-                'order_sequence': row[20:30],
-                'name': row[320:355], 
-                'article': row[355:390],
-                'qty': row[595:605], 
-                'price': row[841:871], 
-                'uom': row[605:608],
-                'description': row[495:595],
-                'total': row[871:901],
-                }
+        # Parameters:
+        extension = 'ASC'
+        
+        # Pool used:
+        order_pool = self.pool.get('edi.order')
+        file_pool = self.pool.get('edi.order.file')
+        
+        for folder in self.browse(cr, uid, ids, context=context):
+            # Delete all previouse file in folder:
+            file_ids = file_pool.search(cr, uid, [
+                ('folder_id', '=', folder.id),
+                ], context=context)
+            file_pool.unlink(cr, uid, file_ids, context=context)
+            
+            for root, dirs, files in os.walk(folder.path):
+                for f in files:                    
+                    if not f.endswith(estension):
+                        _logger.warning('Jump file: %s' % f)
+                        continue
+                        
+                    # ---------------------------------------------------------
+                    # Create order file:
+                    # ---------------------------------------------------------                    
+                    # Open file for get order number:                    
+                    filename = os.path.join(folder.path, files)
+                    f_asc = open(filename, 'r')
+                    row = f_asc.readline() # XXX only one row
+                    f_asc.close()
+                    
+                    # Parse name:
+                    mode = f[:6]
+                    date = f[6:22]
+                    
+                    date = '%s-%s-%s %s:%s:%s' % (
+                        # Date:
+                        date[:4],
+                        date[4:6],
+                        date[6:8],
+                        
+                        # Time:
+                        date[8:10],
+                        date[10:12],
+                        date[12:14],
+                        )
+                    
+                    # Order info:
+                    order = row[20:30]
 
+                    order_date = row[30:38]
+                    order_date = '%s-%s-%S' % (
+                        order_date[:4],
+                        order_date[4:6],
+                        order_date[6:8],
+                        )
+                    
+                    order_ids = order_pool.search(cr, uid, [
+                        ('name', '=', order),
+                        # XXX no date
+                        ], context=context)                    
+                    
+                    if order_ids: # Nothing:
+                        order_id = order_ids
+                    else: # Create
+                        order_id = order_pool.create(cr, uid, {
+                            'name': order,
+                            'date': order_date,
+                            }, context=context)        
+                    
+                    # Create order line:
+                    #for row in open(filename, 'r'):
+                    #    data = {
+                    #        #'order_id':,
+                    #        'order_sequence': row[20:30], # XXX errato
+                    #        'name': row[320:355], 
+                    #        'article': row[355:390],
+                    #        'qty': row[595:605], 
+                    #        'price': row[841:871], 
+                    #        'uom': row[605:608],
+                    #        'description': row[495:595],
+                    #        'total': row[871:901],
+                    #        }
+
+    def load_scheduled_folder_selected(self, cr, uid, ids, context=None):
+        ''' Load all selected folder
+        '''
+        folder_ids = self.search(cr, uid, [
+            ('autoload', '=', True),
+            ], context=context)
+            
+        return self.load_file_in_folder(cr, uid, folder_ids, context=context)
+        
     _columns = {
         'autoload': fields.boolean('Auto load', 
             help='Schedule for auto load operation'),
