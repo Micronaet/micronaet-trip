@@ -52,7 +52,7 @@ class EdiInvoiceLine(orm.Model):
         ''' Import procedure for get all invoice line for check
             Export with sprix: spx780
         '''
-        filename = '~/etl/script/elior/controllo/fatture.txt'
+        filename = '~/etl/edi/elior/controllo/fatture.txt'
         
         # Delete all previous records:
         line_ids = self.search(cr, uid, [], context=context)
@@ -83,19 +83,89 @@ class EdiInvoiceLine(orm.Model):
         return True
         
     _columns = {
-        'invoice_number': fields.char('Invoice #', size=20, required=True),
-        'invoice_date': fields.date('Invoice date', required=True),
-        'order_sequence': fields.char('Order position', size=10),
-        'name': fields.char('Company code', size=16, required=True),
-        'article': fields.char('Customer code', size=16, required=True),
-        'qty': fields.float('Q.ty', digits=(16, 3), required=True),
-        'price': fields.float('Price', digits=(16, 3), required=True),
-        'uom': fields.char('UOM', size=5, required=True),
-        'description': fields.char('Description', size=16, required=True),
-        'ddt_number': fields.char('DDT #', size=20, required=True),
-        'ddt_date': fields.date('Invoice date', required=True),
-        'order_number': fields.char('Company order #', size=25, required=True),
-        'ddt_date': fields.date('Invoice date', required=True),
+        'invoice_number': fields.char('Invoice #', size=20, 
+            required=True, readonly=True),
+        'invoice_date': fields.date('Invoice date', 
+            required=True, readonly=True),
+        'order_sequence': fields.char('Order position', 
+            size=10, readonly=True),
+        'name': fields.char('Company code', size=16, 
+            required=True, readonly=True),
+        'article': fields.char('Customer code', size=16,    
+            required=True, readonly=True),
+        'qty': fields.float('Q.ty', digits=(16, 3), 
+            required=True, readonly=True),
+        'price': fields.float('Price', digits=(16, 3), 
+            required=True, readonly=True),
+        'uom': fields.char('UOM', size=5, 
+            required=True, readonly=True),
+        'description': fields.char('Description', size=16, 
+            required=True, readonly=True),
+        'ddt_number': fields.char('DDT #', size=20, 
+            required=True, readonly=True),
+        'ddt_date': fields.date('Invoice date', 
+            required=True, readonly=True),
+        'order_number': fields.char('Company order #', size=25, 
+            required=True, readonly=True),
+        'ddt_date': fields.date('Invoice date', 
+            required=True, readonly=True),
         }
+
+class EdiOrder(orm.Model):
+    """ Model name: Edi Order
+    """
+    
+    _name = 'edi.order'
+    _description = 'EDI order'
+    _rec_name = 'name'
+
+    _columns = {
+        'name': fields.char('Company order #', size=25, 
+            required=True, readonly=True),
+        'order_sequence': fields.char('Order position', 
+            size=10, readonly=True),
+        'name': fields.char('Company code', size=16, 
+            required=True, readonly=True),
+        'article': fields.char('Customer code', size=16,    
+            required=True, readonly=True),
+        'qty': fields.float('Q.ty', digits=(16, 3), 
+            required=True, readonly=True),
+        'price': fields.float('Price', digits=(16, 3), 
+            required=True, readonly=True),
+        'uom': fields.char('UOM', size=5, 
+            required=True, readonly=True),
+        'description': fields.char('Description', size=16, 
+            required=True, readonly=True),
+        }
+        
+class EdiOrderLine(orm.Model):
+    """ Model name: Edi Invoice Line
+    """
+    
+    _name = 'edi.order.line'
+    _description = 'EDI line'
+    _rec_name = 'name'
+
+    _columns = {
+        'order_id': fields.many2one(
+            'openerp.model', 'Label', 
+            required=False),
+        'order_sequence': fields.char('Order position', 
+            size=10, readonly=True),
+        'name': fields.char('Company code', size=16, 
+            required=True, readonly=True),
+        'article': fields.char('Customer code', size=16,    
+            required=True, readonly=True),
+        'qty': fields.float('Q.ty', digits=(16, 3), 
+            required=True, readonly=True),
+        'price': fields.float('Price', digits=(16, 3), 
+            required=True, readonly=True),
+        'uom': fields.char('UOM', size=5, 
+            required=True, readonly=True),
+        'description': fields.char('Description', size=16, 
+            required=True, readonly=True),
+        }
+
+
     
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
