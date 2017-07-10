@@ -275,9 +275,10 @@ class EdiOrder(orm.Model):
             file_pool.unlink(cr, uid, file_ids, context=context)
             
             # TODO order_loaded for speed up search order operations?
-            for root, dirs, files in os.walk(folder.path):
+            folder_path = os.path.expanduser(folder.path)
+            for root, dirs, files in os.walk(folder_path):
                 for f in files:                    
-                    if not f.endswith(estension):
+                    if not f.endswith(extension):
                         _logger.warning('Jump file: %s' % f)
                         continue
                         
@@ -285,7 +286,7 @@ class EdiOrder(orm.Model):
                     # Read file data (name and content):
                     # ---------------------------------------------------------                    
                     # Open file for get order number:                    
-                    filename = os.path.join(folder.path, f)
+                    filename = os.path.join(folder_path, f)
                     f_asc = open(filename, 'r')
                     row = f_asc.readline() # XXX only one row
                     f_asc.close()
@@ -293,7 +294,7 @@ class EdiOrder(orm.Model):
                     # Parse name:
                     mode = f[:6].upper()
                     
-                    date = f[6:22]
+                    date = f[6:21]
                     
                     date = '%s-%s-%s %s:%s:%s' % (
                         # Date:
@@ -309,18 +310,20 @@ class EdiOrder(orm.Model):
                     
                     if mode == 'ELIORD':
                         mode = 'create'
-                    if mode == 'ELIURG':
+                    elif mode == 'ELIURG':
                         mode = 'urgent'
-                    if mode == 'ELICHG':
+                    elif mode == 'ELICHG':
                         mode = 'delete'
+                    else:
+                        mode = 'error'    
                         
                     # ---------------------------------------------------------
                     # Order info:
                     # ---------------------------------------------------------
                     # Create order record:
-                    order = row[20:30]
+                    order = row[19:29]
 
-                    order_date = row[30:38]
+                    order_date = row[29:37]
                     order_date = '%s-%s-%s' % (
                         order_date[:4],
                         order_date[4:6],
@@ -402,6 +405,7 @@ class EdiOrderFile(orm.Model):
             ('create', 'Create (ELIORD)'),
             ('urgent', 'Urgent (ELIURG)'),
             ('delete', 'Delete (ELICHG)'),
+            ('error', 'Error in start file name'),
             ], 'Mode', readonly=False),
         }
     
