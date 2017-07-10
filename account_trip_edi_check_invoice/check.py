@@ -181,25 +181,37 @@ class EdiOrder(orm.Model):
     def load_order_line_details(self, cr, uid, ids, context=None):
         ''' Load current order details (also used for N orders)
         '''
+        # Set last to False
+        file_pool = self.pool.get('edi.order.file')
+        file_ids = file_pool.search(cr, uid, [
+            ('order_id', 'in', ids),
+            ], context=context)
+        file_pool.write(cr, uid, file_ids, {
+            'last': False,
+            }, context=context)
+            
         # Delete all order line for all order passed
         line_pool = self.pool.get('edi.order.line')
         line_ids = line_pool.search(cr, uid, [
             ('order_id', 'in', ids),
             ], context=context)
         line_pool.unlink(cr, uid, line_ids, context=context)
-        # Search last file:
+        
+        # Read order from file:
+        last_ids = [] # Save file used for load
         for order in self.browse(cr, uid, ids, context=context):
             if not order.file_ids:
                 _logger.error('Order without file: %s' % order.name)
                 continue
+                
             last_file = order.file_ids[0]
+            last_ids.append(last_file.id)
             if last_file.mode == 'delete':
                 _logger.warning('Order deleted: %s' % order.name)
                 continue
-            filename = last_file.fullname
-                                           
+                
             #Create order line:
-            for row in open(filename, 'r'):
+            for row in open(last_file.fullname, 'r'):
                 data = {
                     'order_id': order.id,
                     'order_sequence': int(row[240:250]),
@@ -211,8 +223,12 @@ class EdiOrder(orm.Model):
                     'description': row[495:595].strip(),
                     'total': row[871:901],
                     }
-
-        return True
+                line_pool.create(cr, uid, data, context=context)
+                
+        # Set last file used:        
+        return file_pool.write(cr, uid, last_ids, {
+            'last': True,
+            }, context=context)
         
     _columns = {
         'name': fields.char('Number', size=25, required=True),
