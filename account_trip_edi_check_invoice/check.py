@@ -205,6 +205,7 @@ class EdiOrder(orm.Model):
                 ], context=context)
             file_pool.unlink(cr, uid, file_ids, context=context)
             
+            # TODO order_loaded for speed up search order operations?
             for root, dirs, files in os.walk(folder.path):
                 for f in files:                    
                     if not f.endswith(estension):
@@ -212,7 +213,7 @@ class EdiOrder(orm.Model):
                         continue
                         
                     # ---------------------------------------------------------
-                    # Create order file:
+                    # Read file data (name and content):
                     # ---------------------------------------------------------                    
                     # Open file for get order number:                    
                     filename = os.path.join(folder.path, files)
@@ -222,6 +223,7 @@ class EdiOrder(orm.Model):
                     
                     # Parse name:
                     mode = f[:6]
+                    
                     date = f[6:22]
                     
                     date = '%s-%s-%s %s:%s:%s' % (
@@ -236,7 +238,17 @@ class EdiOrder(orm.Model):
                         date[12:14],
                         )
                     
+                    if mode == 'ELIORD':
+                        mode = 'create'
+                    if mode == 'ELIURG':
+                        mode = 'urgent'
+                    if mode == 'ELICHG':
+                        mode = 'delete'
+                        
+                    # ---------------------------------------------------------
                     # Order info:
+                    # ---------------------------------------------------------
+                    # Create order record:
                     order = row[20:30]
 
                     order_date = row[30:38]
@@ -258,6 +270,19 @@ class EdiOrder(orm.Model):
                             'name': order,
                             'date': order_date,
                             }, context=context)        
+
+                    # ---------------------------------------------------------
+                    # Create file item (not write because deleted all):
+                    # ---------------------------------------------------------
+                    file_pool.create(cr, uid, {
+                        'order_id': order_id,
+                        'folder_id': folder.id,
+                        'name': f,
+                        'last': False,
+                        'datetime': date,
+                        'mode': mode,
+                        }, context=context)
+                    
                     
                     # Create order line:
                     #for row in open(filename, 'r'):
