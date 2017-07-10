@@ -66,18 +66,28 @@ class EdiInvoiceLine(orm.Model):
                     row[10:12],
                     row[12:14],
                     ),
-                'order_sequence': row[14:18],
-                'name': row[18:34],
-                'article': row[34:45],
-                'qty': row[45:60],
-                'price': row[60:75],
-                'uom': row[75:90],
-                'description': row[90:125],
-                'ddt_number': row[125:131],
-                'ddt_date': row[131:141],
-                'order_number': row[141:157],
-                'order_date': row[157:167],
+                'order_sequence': row[16:20],
+                'name': row[20:36],
+                'article': row[36:47],
+                'qty': row[47:62],
+                'price': row[62:77],
+                'uom': row[77:92],
+                'description': row[92:127],
+                'ddt_number': row[127:133],
+                'ddt_date': '%s-%s-%s' % (
+                    row[133:137],
+                    row[137:139],
+                    row[139:141],
+                    ),
+                'order_number': row[143:159],
+                'order_date': '%s-%s-%s' % (
+                    row[159:163],
+                    row[163:165],
+                    row[165:167],
+                    ), 
                 }
+                
+            self.create(cr, uid, data, context=context)
         
         
         return True
