@@ -182,28 +182,37 @@ class EdiOrder(orm.Model):
         ''' Load current order details (also used for N orders)
         '''
         # Delete all order line for all order passed
-        
+        line_pool = self.pool.get('edi.order.line')
+        line_ids = line_pool.search(cr, uid, [
+            ('order_id', 'in', ids),
+            ], context=context)
+        line_pool.unlink(cr, uid, line_ids, context=context)
         # Search last file:
-        
-        # Load order detail from file
-        
-                    
-                    # Create order line:
-                    #for row in open(filename, 'r'):
-                    #    data = {
-                    #        #'order_id':,
-                    #        'order_sequence': int(row[240:250]),
-                    #        'name': row[320:355], 
-                    #        'article': row[355:390],
-                    #        'qty': row[595:605], 
-                    #        'price': row[841:871], 
-                    #        'uom': row[605:608],
-                    #        'description': row[495:595],
-                    #        'total': row[871:901],
-                    #        }
-        
+        for order in self.browse(cr, uid, ids, context=context):
+            if not order.file_ids:
+                _logger.error('Order without file: %s' % order.name)
+                continue
+            last_file = order.file_ids[0]
+            if last_file.mode == 'delete':
+                _logger.warning('Order deleted: %s' % order.name)
+                continue
+            filename = last_file.fullname
+                                           
+            #Create order line:
+            for row in open(filename, 'r'):
+                data = {
+                    'order_id': order.id,
+                    'order_sequence': int(row[240:250]),
+                    'name': row[320:355].strip(), 
+                    'article': row[355:390].strip(),
+                    'qty': row[595:605], 
+                    'price': row[841:871], 
+                    'uom': row[605:608].strip(),
+                    'description': row[495:595].strip(),
+                    'total': row[871:901],
+                    }
+
         return True
-        
         
     _columns = {
         'name': fields.char('Number', size=25, required=True),
