@@ -144,6 +144,7 @@ class EdiOrder(orm.Model):
 
     _columns = {
         'name': fields.char('Number', size=25, required=True, readonly=True),
+        'last': fields.boolean('Last'),
         'date': fields.date('Date', required=True, readonly=True),
         }
 
@@ -157,7 +158,7 @@ class EdiOrderFile(orm.Model):
 
     _columns = {
         'name': fields.char('Number', size=25, required=True, readonly=True),
-        'folder_id': fields.many2one('edi.order.folder', 'History folder'),
+        'folder_id': fields.many2one('edi.order.folder', 'History folder'),        
         }
 
 class EdiOrderLine(orm.Model):
@@ -169,10 +170,8 @@ class EdiOrderLine(orm.Model):
     _rec_name = 'name'
 
     _columns = {
-        'order_id': fields.many2one(
-            'openerp.model', 'Label', 
-            required=False),
-        'order_sequence': fields.char('Order position', 
+        'order_id': fields.many2one('edi.order', 'Order'),
+        'sequence': fields.char('Order position', 
             size=10, readonly=True),
         'name': fields.char('Company code', size=16, 
             required=True, readonly=True),
