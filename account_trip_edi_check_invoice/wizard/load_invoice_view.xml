@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+       <!-- edi.load.invoice.line.wizard -->
+       <record id="edi_load_invoice_line_wizard_wizard_view" model="ir.ui.view">
+            <field name="name">edi.load.invoice.line.wizard</field>
+            <field name="model">edi.load.invoice.line.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Wizard" version="7.0">
+                   <header>
+                       <button string="Cancel" special="cancel" />
+                       <button name="action_done" string="Load" type="object" icon="gtk-jump-to" class="oe_highlight" />
+                   </header>                   
+                   <group colspan="4" col="4">
+                        <separator string="Note" colspan="4"/>
+                        <field name="note" nolabel="1" colspan="4" widget="html"/>
+                   </group>
+                </form>
+            </field>
+      </record>
+      <record model="ir.actions.act_window" id="action_edi_load_invoice_line_wizard_wizard">
+          <field name="name">Load invoice for check</field>
+          <field name="res_model">edi.load.invoice.line.wizard</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">form</field>
+          <field name="target">new</field>
+          <field name="view_id" ref="edi_load_invoice_line_wizard_wizard_view"/>
+      </record>            
+      <menuitem 
+          parent="menu_edi_invoice_check_invoice" 
+          id="menu_edi_load_invoice_line_wizard_wizard" 
+          action="action_edi_load_invoice_line_wizard_wizard"
+          sequence="10"
+          />
+      
+    </data>
+</openerp>

@@ -66,10 +66,14 @@ class EdiInvoiceLine(orm.Model):
         ''' Import procedure for get all invoice line for check
             Export with sprix: spx780
         '''
+        # Parameter:
+        float_convert = 1000.0 # Every float has 3 dec. without comma
+        
         # Pool used:
         invoice_pool = self.pool.get('edi.invoice')
         
         filename = '~/etl/edi/elior/controllo/fatture.txt'
+        filename = os.path.expanduser(filename)
         
         # ---------------------------------------------------------------------
         # Clean previous elements:
@@ -83,18 +87,21 @@ class EdiInvoiceLine(orm.Model):
         invoice_pool.unlink(cr, uid, invoice_ids, context=context)
         
         invoice_db = {}
+        import pdb; pdb.set_trace()
         for row in open(filename, 'r'):
             # -----------------------------------------------------------------
             # Header data:
             # -----------------------------------------------------------------
-            invoice_number = row[:6]
+            invoice_number = row[:6].strip()
             invoice_date = '%s-%s-%s' % (
                 row[6:10],
                 row[10:12],
                 row[12:14],
                 )
             invoice_number = 'FT-%s-%s' % (
-                invoice_number, row[6:10], )
+                row[6:10], 
+                invoice_number, 
+                )
                 
             if invoice_number not in invoice_db:
                 invoice_db[invoice_number] = invoice_pool.create(cr, uid, {
@@ -108,19 +115,19 @@ class EdiInvoiceLine(orm.Model):
             data = {
                 'invoice_id': invoice_db.get(invoice_number, False),                
                 'order_sequence': int(row[16:20]),
-                'name': row[20:36],
-                'article': row[36:47],
-                'qty': row[47:62],
-                'price': row[62:77],
-                'uom': row[77:92],
-                'description': row[92:127],
-                'ddt_number': row[127:133],
+                'name': row[20:36].strip(),
+                'article': row[36:47].strip(),
+                'qty': float(row[47:62]) / float_convert,
+                'price': float(row[62:77]) / float_convert,
+                'subtotal': row[77:92] / float_convert,
+                'description': row[92:127].strip(),
+                'ddt_number': row[127:133].strip(),
                 'ddt_date': '%s-%s-%s' % (
                     row[133:137],
                     row[137:139],
                     row[139:141],
                     ),
-                'order_number': row[143:159],
+                'order_number': row[143:159].strip(),
                 'order_date': '%s-%s-%s' % (
                     row[159:163],
                     row[163:165],
@@ -143,7 +150,10 @@ class EdiInvoiceLine(orm.Model):
             required=True, readonly=True),
         'price': fields.float('Price', digits=(16, 3), 
             required=True, readonly=True),
+        # TODO to load:    
         'uom': fields.char('UOM', size=5, 
+            required=True, readonly=True),
+        'subtotal': fields.float('Subtotal', digits=(16, 3),  # TODO put in view!
             required=True, readonly=True),
         'description': fields.char('Description', size=16, 
             required=True, readonly=True),

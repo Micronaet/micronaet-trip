@@ -216,6 +216,8 @@
             </field>
         </record>
 
+        <!--TODO edi.invoice.line-->
+        
         <!-- edi.invoice -->
         <record model="ir.ui.view" id="view_edi_invoice_tree">
             <field name="name">edi.invoice.tree</field>
