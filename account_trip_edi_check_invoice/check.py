@@ -39,6 +39,20 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 _logger = logging.getLogger(__name__)
 
 
+class EdiInvoice(orm.Model):
+    """ Model name: Edi Invoice
+    """
+    
+    _name = 'edi.invoice'
+    _description = 'EDI invoice'
+    _rec_name = 'name'
+    _order = 'name'
+    
+    _columns = {
+        'name': fields.char('Number', size=20, required=True),
+        'date': fields.date('Invoice date', required=True),
+        }
+
 class EdiInvoiceLine(orm.Model):
     """ Model name: Edi Invoice Line
     """
@@ -46,27 +60,54 @@ class EdiInvoiceLine(orm.Model):
     _name = 'edi.invoice.line'
     _description = 'EDI invoice line'
     _rec_name = 'name'
-    _order = 'invoice_name,name'
+    _order = 'invoice_id,name'
     
     def import_invoice_line_from_account(self, cr, uid, context=None):
         ''' Import procedure for get all invoice line for check
             Export with sprix: spx780
         '''
+        # Pool used:
+        invoice_pool = self.pool.get('edi.invoice')
+        
         filename = '~/etl/edi/elior/controllo/fatture.txt'
         
-        # Delete all previous records:
+        # ---------------------------------------------------------------------
+        # Clean previous elements:
+        # ---------------------------------------------------------------------
+        # Details:
         line_ids = self.search(cr, uid, [], context=context)
         self.unlink(cr, uid, line_ids, context=context)
         
+        # Invoice:
+        invoice_ids = invoice_pool.search(cr, uid, [], context=context)
+        invoice_pool.unlink(cr, uid, invoice_ids, context=context)
+        
+        invoice_db = {}
         for row in open(filename, 'r'):
+            # -----------------------------------------------------------------
+            # Header data:
+            # -----------------------------------------------------------------
+            invoice_number = row[:6]
+            invoice_date = '%s-%s-%s' % (
+                row[6:10],
+                row[10:12],
+                row[12:14],
+                )
+            invoice_number = 'FT-%s-%s' % (
+                invoice_number, row[6:10], )
+                
+            if invoice_number not in invoice_db:
+                invoice_db['invoice_number'] = invoice_pool.create(cr, uid, {
+                    'name': invoice_number,
+                    'date': invoice_date,
+                    }, context=context)
+                    
+            # -----------------------------------------------------------------
+            # Detail data:
+            # -----------------------------------------------------------------
             data = {
-                'invoice_number': row[:6],
-                'invoice_date': '%s-%s-%s' % (
-                    row[6:10],
-                    row[10:12],
-                    row[12:14],
-                    ),
-                'order_sequence': row[16:20],
+                'invoice_id': invoice_db.get(invoice_number, False),                
+                'order_sequence': int(row[16:20]),
                 'name': row[20:36],
                 'article': row[36:47],
                 'qty': row[47:62],
@@ -88,17 +129,12 @@ class EdiInvoiceLine(orm.Model):
                 }
                 
             self.create(cr, uid, data, context=context)
-        
-        
         return True
         
     _columns = {
-        'invoice_number': fields.char('Invoice #', size=20, 
-            required=True, readonly=True),
-        'invoice_date': fields.date('Invoice date', 
-            required=True, readonly=True),
-        'order_sequence': fields.char('Order position', 
-            size=10, readonly=True),
+        'invoice_id': fields.many2one('edi.invoice', 'Invoice'),
+        'order_sequence': fields.integer('Order position', 
+            readonly=True),
         'name': fields.char('Company code', size=16, 
             required=True, readonly=True),
         'article': fields.char('Customer code', size=16,    
@@ -121,6 +157,16 @@ class EdiInvoiceLine(orm.Model):
             required=True, readonly=True),
         }
 
+class EdiInvoice(orm.Model):
+    """ Model name: Edi Invoice
+    """
+    
+    _inherit = 'edi.invoice'
+
+    _columns = {
+        'line_ids': fields.one2many('edi.invoice.line', 'invoice_id', 'Lines'),
+        }
+        
 class EdiOrder(orm.Model):
     """ Model name: Edi Order
     """
@@ -219,6 +265,17 @@ class EdiOrderLine(orm.Model):
             required=True, readonly=True),
         'total': fields.float('Subtotal', digits=(16, 3), 
             required=True, readonly=True),
+        }
+
+class EdiOrder(orm.Model):
+    """ Model name: Edi Order
+    """
+    
+    _inherit = 'edi.order'
+    
+    _columns = {
+        'file_ids': fields.one2many('edi.order.file', 'order_id',  'Files'),
+        'line_ids': fields.one2many('edi.order.line', 'order_id',  'Line'),
         }
     
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
