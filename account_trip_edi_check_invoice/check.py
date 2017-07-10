@@ -66,7 +66,7 @@ class EdiInvoiceLine(orm.Model):
                     row[10:12],
                     row[12:14],
                     ),
-                'order_sequence': ,
+                'order_sequence': row,
                 'name': ,
                 'article': ,
                 'qty': ,
