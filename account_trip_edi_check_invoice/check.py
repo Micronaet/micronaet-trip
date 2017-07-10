@@ -71,6 +71,7 @@ class EdiInvoiceLine(orm.Model):
         
         # Pool used:
         invoice_pool = self.pool.get('edi.invoice')
+        order_pool = self.pool.get('edi.order')
         
         filename = '~/etl/edi/elior/controllo/fatture.txt'
         filename = os.path.expanduser(filename)
@@ -87,15 +88,17 @@ class EdiInvoiceLine(orm.Model):
         invoice_pool.unlink(cr, uid, invoice_ids, context=context)
         
         invoice_db = {}
+        order_db = {}
         i = 0
         for row in open(filename, 'r'):
             i += 1
-            if i % 10 == 0:
+            if i % 1000 == 0:
                 _logger.info('Import invoice line: %s' % i)
                 
             # -----------------------------------------------------------------
             # Header data:
             # -----------------------------------------------------------------
+            # Invoice part:
             invoice_number = row[:6].strip()
             invoice_date = '%s-%s-%s' % ( # mandatory
                 row[6:10],
@@ -113,10 +116,32 @@ class EdiInvoiceLine(orm.Model):
                     'date': invoice_date,
                     }, context=context)
                 _logger.info('Invoice create: %s' % invoice_number)    
-                    
-            # -----------------------------------------------------------------
-            # Detail data:
-            # -----------------------------------------------------------------
+            
+            # Order part:
+            order_number = row[143:159].strip()            
+            year = row[159:163].strip()
+            if year:
+                order_date = '%s-%s-%s' % (
+                    year,
+                    row[163:165],
+                    row[165:167],
+                    )                
+            else:        
+                order_date = False
+
+            if order_number not in order_db:                
+                order_ids = order_pool.search(cr, uid, [
+                    ('name', '=', order_number),
+                    ], context=context)    
+                if order_ids:
+                    order_db[order_number] = order_ids[0]
+                else:    
+                    order_db[order_number] = order_pool.create(cr, uid, {
+                        'name': order_number,
+                        'date': order_date,
+                        }, context=context)    
+            
+            # DDT part:
             year = row[133:137].strip()
             if year:
                 ddt_date = '%s-%s-%s' % (
@@ -126,30 +151,27 @@ class EdiInvoiceLine(orm.Model):
                         )
             else:
                 ddt_date = False
-                            
-            year = row[159:163].strip()
-            if year:
-                order_date = '%s-%s-%s' % (
-                    year,
-                    row[163:165],
-                    row[165:167],
-                    )                
-            else:        
-                order_date = False        
-                
+                                
+            # -----------------------------------------------------------------
+            # Detail part:
+            # -----------------------------------------------------------------
             data = {
-                'invoice_id': invoice_db.get(invoice_number, False),                
+                'invoice_id': invoice_db.get(invoice_number, False),
+
+                'ddt_number': row[127:133].strip(),
+                'ddt_date': ddt_date,
+
+                'order_id': order_db.get(order_number, False),
+                'order_number': order_number,
+                'order_date': order_date, 
                 'order_sequence': int(row[16:20]),
+
                 'name': row[20:36].strip(),
                 'article': row[36:47].strip(),
                 'qty': float(row[47:62]) / float_convert,
                 'price': float(row[62:77]) / float_convert,
                 'subtotal': float(row[77:92]) / float_convert,
                 'description': row[92:127].strip(),
-                'ddt_number': row[127:133].strip(),
-                'ddt_date': ddt_date,
-                'order_number': row[143:159].strip(),
-                'order_date': order_date, 
                 }
                 
             self.create(cr, uid, data, context=context)
@@ -157,6 +179,7 @@ class EdiInvoiceLine(orm.Model):
         
     _columns = {
         'invoice_id': fields.many2one('edi.invoice', 'Invoice'),
+        'order_id': fields.many2one('edi.order', 'Order'),
         'order_sequence': fields.integer('Order position', readonly=True),
         'name': fields.char('Company code', size=16, 
             required=True, readonly=True),
