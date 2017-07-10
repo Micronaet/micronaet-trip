@@ -3,13 +3,7 @@
     <data>
         <!-- edi.order -->
         <record model="ir.ui.view" id="view_edi_order_tree">
-            <field name="name">edi.            <menuitem 
-                parent="menu_edi_invoice_check_root" 
-                id="menu_edi_invoice_check_invoice" 
-                action="action_edi_invoice_form"
-                sequence="10"
-                />
-.tree</field>
+            <field name="name">edi.order.tree</field>
             <field name="model">edi.order</field>
             <field name="arch" type="xml">
                 <tree string="EDI order" >
@@ -29,6 +23,9 @@
                             <field name="date" />
                             <separator string="Details" colspan="4"/>
                             <field name="line_ids" colspan="4" nolabel="1">
+                            </field>
+                            <separator string="Files" colspan="4"/>
+                            <field name="file_ids" colspan="4" nolabel="1">
                             </field>
                         </group>
                     </sheet>    
@@ -127,7 +124,7 @@
                 parent="menu_edi_invoice_check_root" 
                 id="menu_edi_invoice_check_invoice" 
                 action="action_edi_invoice_form"
-                sequence="20"
+                sequence="10"
                 />
             
         
