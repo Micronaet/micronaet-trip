@@ -221,10 +221,22 @@ class EdiOrderFile(orm.Model):
     _description = 'EDI order file'
     _rec_name = 'name'
 
+    def _get_fullname_file_name(
+            self, cr, uid, ids, fields, args, context=None):
+        ''' Fields function for calculate 
+        '''
+        res = {}
+        for item in self.browse(cr, uid, ids, context=context):
+            res[item.id] = os.path.join(item.folder_id.path, item.name)
+        return res    
+
     _columns = {
         'order_id': fields.many2one('edi.order', 'Order'),
         'folder_id': fields.many2one('edi.order.folder', 'History folder'),        
-        'name': fields.char('Number', size=25, required=True, readonly=True),
+        'name': fields.char('Name', size=40, required=True, readonly=True),
+        'fullname': fields.function(
+            _get_fullname_file_name, method=True, 
+            type='char', string='Fullname', size=200, store=False),                         
         'last': fields.boolean('Last'),
         'datetime': fields.date('Datetime', required=False, readonly=True,
             help='Datetime form customer EDI program (not file datetime)'),
