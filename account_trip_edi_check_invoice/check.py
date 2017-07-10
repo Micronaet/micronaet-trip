@@ -117,7 +117,7 @@ class EdiInvoiceLine(orm.Model):
             required=True, readonly=True),
         'order_number': fields.char('Company order #', size=25, 
             required=True, readonly=True),
-        'order_date': fields.date('Invoice date', 
+        'order_date': fields.date('Order date', 
             required=True, readonly=True),
         }
 
@@ -130,24 +130,36 @@ class EdiOrder(orm.Model):
     _rec_name = 'name'
 
     _columns = {
-        'name': fields.char('Company order #', size=25, 
-            required=True, readonly=True),
-        'order_sequence': fields.char('Order position', 
-            size=10, readonly=True),
-        'name': fields.char('Company code', size=16, 
-            required=True, readonly=True),
-        'article': fields.char('Customer code', size=16,    
-            required=True, readonly=True),
-        'qty': fields.float('Q.ty', digits=(16, 3), 
-            required=True, readonly=True),
-        'price': fields.float('Price', digits=(16, 3), 
-            required=True, readonly=True),
-        'uom': fields.char('UOM', size=5, 
-            required=True, readonly=True),
-        'description': fields.char('Description', size=16, 
-            required=True, readonly=True),
+        'name': fields.char('Number', size=25, required=True, readonly=True),
+        'date': fields.date('Date', required=True, readonly=True),
         }
-        
+
+class EdiOrder(orm.Model):
+    """ Model name: Edi Order
+    """
+    
+    _name = 'edi.order.folder'
+    _description = 'EDI order folder'
+    _rec_name = 'name'
+
+    _columns = {
+        'name': fields.char('Number', size=25, required=True, readonly=True),
+        'date': fields.date('Date', required=True, readonly=True),
+        }
+
+class EdiOrderFile(orm.Model):
+    """ Model name: Edi Order File
+    """
+    
+    _name = 'edi.order.file'
+    _description = 'EDI order file'
+    _rec_name = 'name'
+
+    _columns = {
+        'name': fields.char('Number', size=25, required=True, readonly=True),
+        'folder_id': fields.many2one('edi.order.folder', 'History folder'),
+        }
+
 class EdiOrderLine(orm.Model):
     """ Model name: Edi Invoice Line
     """
@@ -175,7 +187,5 @@ class EdiOrderLine(orm.Model):
         'description': fields.char('Description', size=16, 
             required=True, readonly=True),
         }
-
-
     
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
