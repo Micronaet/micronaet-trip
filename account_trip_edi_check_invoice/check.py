@@ -228,14 +228,14 @@ class EdiOrder(orm.Model):
             for row in open(last_file.fullname, 'r'):
                 data = {
                     'order_id': order.id,
-                    'order_sequence': int(row[240:250]),
-                    'name': row[320:355].strip(), 
-                    'article': row[355:390].strip(),
-                    'qty': row[595:605], 
-                    'price': row[841:871], 
-                    'uom': row[605:608].strip(),
-                    'description': row[495:595].strip(),
-                    'total': row[871:901],
+                    'order_sequence': int(row[2327:2337]),
+                    'name': row[2356:2391].strip(), 
+                    'article': row[2391:2426].strip(),
+                    'qty': row[2631:2641].strip(), 
+                    'price': float(row[2877:2907]), 
+                    'uom': row[2641:2644].strip(),
+                    'description': row[2531:2631].strip(),
+                    'total': float(row[2907:2937]),
                     }
                 line_pool.create(cr, uid, data, context=context)
                 
