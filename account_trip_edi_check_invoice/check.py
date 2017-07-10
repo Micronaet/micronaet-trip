@@ -175,6 +175,36 @@ class EdiOrder(orm.Model):
     _description = 'EDI order'
     _rec_name = 'name'
 
+    # -------------------------------------------------------------------------
+    # Button event:
+    # -------------------------------------------------------------------------
+    def load_order_line_details(self, cr, uid, ids, context=None):
+        ''' Load current order details (also used for N orders)
+        '''
+        # Delete all order line for all order passed
+        
+        # Search last file:
+        
+        # Load order detail from file
+        
+                    
+                    # Create order line:
+                    #for row in open(filename, 'r'):
+                    #    data = {
+                    #        #'order_id':,
+                    #        'order_sequence': row[20:30], # XXX errato
+                    #        'name': row[320:355], 
+                    #        'article': row[355:390],
+                    #        'qty': row[595:605], 
+                    #        'price': row[841:871], 
+                    #        'uom': row[605:608],
+                    #        'description': row[495:595],
+                    #        'total': row[871:901],
+                    #        }
+        
+        return True
+        
+        
     _columns = {
         'name': fields.char('Number', size=25, required=True),
         'date': fields.datetime('Date', readonly=True),
@@ -216,13 +246,13 @@ class EdiOrder(orm.Model):
                     # Read file data (name and content):
                     # ---------------------------------------------------------                    
                     # Open file for get order number:                    
-                    filename = os.path.join(folder.path, files)
+                    filename = os.path.join(folder.path, f)
                     f_asc = open(filename, 'r')
                     row = f_asc.readline() # XXX only one row
                     f_asc.close()
                     
                     # Parse name:
-                    mode = f[:6]
+                    mode = f[:6].upper()
                     
                     date = f[6:22]
                     
@@ -252,7 +282,7 @@ class EdiOrder(orm.Model):
                     order = row[20:30]
 
                     order_date = row[30:38]
-                    order_date = '%s-%s-%S' % (
+                    order_date = '%s-%s-%s' % (
                         order_date[:4],
                         order_date[4:6],
                         order_date[6:8],
@@ -264,7 +294,8 @@ class EdiOrder(orm.Model):
                         ], context=context)                    
                     
                     if order_ids: # Nothing:
-                        order_id = order_ids
+                        order_id = order_ids[0]
+                        # TODO check if more order!
                     else: # Create
                         order_id = order_pool.create(cr, uid, {
                             'name': order,
@@ -282,21 +313,7 @@ class EdiOrder(orm.Model):
                         'datetime': date,
                         'mode': mode,
                         }, context=context)
-                    
-                    
-                    # Create order line:
-                    #for row in open(filename, 'r'):
-                    #    data = {
-                    #        #'order_id':,
-                    #        'order_sequence': row[20:30], # XXX errato
-                    #        'name': row[320:355], 
-                    #        'article': row[355:390],
-                    #        'qty': row[595:605], 
-                    #        'price': row[841:871], 
-                    #        'uom': row[605:608],
-                    #        'description': row[495:595],
-                    #        'total': row[871:901],
-                    #        }
+        return True                    
 
     def load_scheduled_folder_selected(self, cr, uid, ids, context=None):
         ''' Load all selected folder
