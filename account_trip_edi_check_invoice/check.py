@@ -66,17 +66,17 @@ class EdiInvoiceLine(orm.Model):
                     row[10:12],
                     row[12:14],
                     ),
-                'order_sequence': row,
-                'name': ,
-                'article': ,
-                'qty': ,
-                'price': ,
-                'uom': ,
-                'description': ,
-                'ddt_number': ,
-                'ddt_date': ,
-                'order_number': ,
-                'ddt_date': ,
+                'order_sequence': row[14:18],
+                'name': row[18:34],
+                'article': row[34:45],
+                'qty': row[45:60],
+                'price': row[60:75],
+                'uom': row[75:90],
+                'description': row[90:125],
+                'ddt_number': row[125:131],
+                'ddt_date': row[131:141],
+                'order_number': row[141:157],
+                'order_date': row[157:167],
                 }
         
         
@@ -107,7 +107,7 @@ class EdiInvoiceLine(orm.Model):
             required=True, readonly=True),
         'order_number': fields.char('Company order #', size=25, 
             required=True, readonly=True),
-        'ddt_date': fields.date('Invoice date', 
+        'order_date': fields.date('Invoice date', 
             required=True, readonly=True),
         }
 
