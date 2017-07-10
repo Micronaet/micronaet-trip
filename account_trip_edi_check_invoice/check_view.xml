@@ -216,7 +216,57 @@
             </field>
         </record>
 
-        <!--TODO edi.invoice.line-->
+        <!-- edi.invoice.line-->
+        <record model="ir.ui.view" id="view_edi_invoice_line_tree">
+            <field name="name">edi.invoice.line.tree</field>
+            <field name="model">edi.invoice.line</field>
+            <field name="arch" type="xml">
+                <tree string="EDI invoice line" >
+                    <field name="invoice_id" invisible="context.get('embedded', False)" />
+                    <field name="ddt_number" />
+                    <field name="ddt_date" />
+                    <field name="order_number" />
+                    <field name="order_date" />
+                    <field name="order_sequence" />
+                    <field name="name" />
+                    <field name="article" />
+                    <field name="qty" />
+                    <field name="price" />
+                    <field name="subtotal" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_edi_invoice_line_form">
+            <field name="name">edi.invoice.line.form</field>
+            <field name="model">edi.invoice.line</field>
+            <field name="arch" type="xml">
+                <form string="EDI invoice line" version="7.0">
+                    <sheet>
+                        <group colspan="4" col="4">
+                            <newline/>
+                            <field name="order_number" />
+                            <field name="order_date" />
+                            
+                            <field name="invoice_id" invisible="context.get('embedded', False)" />
+                            <field name="order_sequence" />
+
+                            <field name="name" />
+                            <field name="article" />
+
+                            <field name="qty" />
+                            <field name="price" />
+
+                            <field name="ddt_number" />
+                            <field name="ddt_date" />
+
+                            <field name="subtotal" />
+
+                            <field name="description" colspan="4"/>
+                        </group>
+                    </sheet>    
+                </form>
+            </field>
+        </record>
         
         <!-- edi.invoice -->
         <record model="ir.ui.view" id="view_edi_invoice_tree">

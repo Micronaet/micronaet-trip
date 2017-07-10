@@ -166,7 +166,7 @@ class EdiInvoiceLine(orm.Model):
         'subtotal': fields.float('Subtotal', digits=(16, 3), readonly=True),
         'description': fields.char('Description', size=16, readonly=True),
         'ddt_number': fields.char('DDT #', size=20, readonly=True),
-        'ddt_date': fields.date('Invoice date', readonly=True),
+        'ddt_date': fields.date('DDT date', readonly=True),
         'order_number': fields.char('Company order #', size=25, readonly=True),
         'order_date': fields.date('Order date', readonly=True),
         }
