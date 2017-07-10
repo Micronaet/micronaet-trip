@@ -143,9 +143,11 @@ class EdiOrder(orm.Model):
     _rec_name = 'name'
 
     _columns = {
-        'name': fields.char('Number', size=25, required=True, readonly=True),
-        'last': fields.boolean('Last'),
-        'date': fields.date('Date', required=True, readonly=True),
+        'autoload': fields.boolean('Auto load', 
+            help='Schedule for auto load operation'),
+        'name': fields.char('Name', size=25, required=True),
+        'path': fields.char('Path', size=180, required=False),
+        'note': fields.text('Note'),
         }
 
 class EdiOrderFile(orm.Model):
@@ -157,9 +159,22 @@ class EdiOrderFile(orm.Model):
     _rec_name = 'name'
 
     _columns = {
-        'name': fields.char('Number', size=25, required=True, readonly=True),
+        'order_id': fields.many2one('edi.order', 'Order'),
         'folder_id': fields.many2one('edi.order.folder', 'History folder'),        
+        'name': fields.char('Number', size=25, required=True, readonly=True),
+        'last': fields.boolean('Last'),
+        'datetime': fields.date('Datetime', required=False, readonly=True,
+            help='Datetime form customer EDI program (not file datetime)'),
+        'mode': fields.selection([
+            ('create', 'Create (ELIORD)'),
+            ('urgent', 'Urgent (ELIURG)'),
+            ('delete', 'Delete (ELICHG)'),
+            ], 'Mode', readonly=False),
         }
+    
+    _defaults = {
+        'mode': lambda *x: 'create',
+        }    
 
 class EdiOrderLine(orm.Model):
     """ Model name: Edi Invoice Line
