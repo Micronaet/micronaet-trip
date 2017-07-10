@@ -118,6 +118,7 @@
                 <tree string="EDI order" >
                     <field name="name" />
                     <field name="date" />
+                    <button name="load_order_line_details" string="Reload line" type="object" icon="gtk-refresh"/>
                 </tree>
             </field>
         </record>
