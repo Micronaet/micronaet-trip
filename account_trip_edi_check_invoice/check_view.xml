@@ -1,7 +1,73 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-
+        <!-- edi.invoice -->
+        <record model="ir.ui.view" id="view_edi_invoice_tree">
+            <field name="name">edi.invoice.tree</field>
+            <field name="model">edi.invoice</field>
+            <field name="arch" type="xml">
+                <tree string="EDI Invoice" >
+                    <field name="name" />
+                    <field name="date" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_edi_invoice_form">
+            <field name="name">edi.invoice.form</field>
+            <field name="model">edi.invoice</field>
+            <field name="arch" type="xml">
+                <form string="EDI Invoice" version="7.0">
+                    <sheet>
+                        <groups colspan="4" col="4">
+                            <field name="name" />
+                            <field name="date" />
+                            <separator string="Details" colspan="4"/>
+                            <field name="line_ids" colspan="4" nolabel="4">
+                            </field>
+                        </groups>
+                    </sheet>    
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_edi_invoice_search">
+            <field name="name">edi.invoice.search</field>
+            <field name="model">edi.invoice</field>
+            <field name="arch" type="xml">
+                <search string="Invoice" version="7.0">        
+                    <field name="name" />
+                    <field name="date" />
+                    <group expand="0" string="Group By...">
+                        <filter name="group_date" string="Date" context="{'group_by': 'date'}"/>
+                    </group>                
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_edi_invoice_form">
+            <field name="name">EDI Invoice</field>
+            <field name="res_model">edi.invoice</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_edi_invoice_tree"/>
+            <field name="search_view_id" ref="view_edi_invoice_search"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+        
+        <menuitem 
+            parent="account_trip_edi.menu_trip_trip" 
+            id="menu_edi_invoice_check_root" 
+            sequence="40"
+            name="Invoice order check"
+            help="Check invoiced data linked with order for check if there's error"
+            />
+            <menuitem 
+                parent="menu_edi_invoice_check_root" 
+                id="menu_edi_invoice_check_invoice" 
+                action="action_edi_invoice_form"
+                sequence="10"
+                />
+            
+        
     </data>
 </openerp>
 
