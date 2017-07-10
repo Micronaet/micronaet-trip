@@ -18,13 +18,13 @@
             <field name="arch" type="xml">
                 <form string="EDI Invoice" version="7.0">
                     <sheet>
-                        <groups colspan="4" col="4">
+                        <group colspan="4" col="4">
                             <field name="name" />
                             <field name="date" />
                             <separator string="Details" colspan="4"/>
                             <field name="line_ids" colspan="4" nolabel="4">
                             </field>
-                        </groups>
+                        </group>
                     </sheet>    
                 </form>
             </field>
@@ -58,7 +58,6 @@
             id="menu_edi_invoice_check_root" 
             sequence="40"
             name="Invoice order check"
-            help="Check invoiced data linked with order for check if there's error"
             />
             <menuitem 
                 parent="menu_edi_invoice_check_root" 
