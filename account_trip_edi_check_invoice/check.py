@@ -473,6 +473,8 @@ class EdiOrder(orm.Model):
     _columns = {
         'file_ids': fields.one2many('edi.order.file', 'order_id',  'Files'),
         'line_ids': fields.one2many('edi.order.line', 'order_id',  'Line'),
+        'invoiced_ids': fields.one2many('edi.invoice.line', 'order_id', 
+            'Invoiced'),
         }
     
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
