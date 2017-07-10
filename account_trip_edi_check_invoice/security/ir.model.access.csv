@@ -1,3 +1,8 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
-access_model_name_user,model.name,model_model_name,base.group_user,1,1,1,1
+access_edi_invoice_user,edi.invoice,model_edi_invoice,base.group_user,1,1,1,1
+access_edi_invoice_line_user,edi.invoice.line,model_edi_invoice_line,base.group_user,1,1,1,1
+access_edi_order_user,edi.invoice,model_edi_order,base.group_user,1,1,1,1
+access_edi_order_line_user,edi.order.line,model_edi_order_line,base.group_user,1,1,1,1
+access_edi_order_file_user,edi.order.file,model_edi_order_file,base.group_user,1,1,1,1
+access_edi_order_folder_user,edi.order.folder,model_edi_order_folder,base.group_user,1,1,1,1
 
