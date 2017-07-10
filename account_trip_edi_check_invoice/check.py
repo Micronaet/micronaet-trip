@@ -149,14 +149,14 @@ class EdiOrder(orm.Model):
         for row in open(filename, 'r'):
             data = {
                 #'order_id':,
-                'order_sequence':,
-                'name':,
-                'article':,
-                'qty':, 
-                'price':, 
-                'uom':,
-                'description':,
-                'total':,
+                'order_sequence': row[20:30],
+                'name': row[320:355], 
+                'article': row[355:390],
+                'qty': row[595:605], 
+                'price': row[841:871], 
+                'uom': row[605:608],
+                'description': row[495:595],
+                'total': row[871:901],
                 }
 
     _columns = {
