@@ -97,7 +97,7 @@ class EdiInvoiceLine(orm.Model):
                 invoice_number, row[6:10], )
                 
             if invoice_number not in invoice_db:
-                invoice_db['invoice_number'] = invoice_pool.create(cr, uid, {
+                invoice_db[invoice_number] = invoice_pool.create(cr, uid, {
                     'name': invoice_number,
                     'date': invoice_date,
                     }, context=context)
@@ -192,7 +192,7 @@ class EdiOrder(orm.Model):
                     #for row in open(filename, 'r'):
                     #    data = {
                     #        #'order_id':,
-                    #        'order_sequence': row[20:30], # XXX errato
+                    #        'order_sequence': int(row[240:250]),
                     #        'name': row[320:355], 
                     #        'article': row[355:390],
                     #        'qty': row[595:605], 
@@ -338,7 +338,7 @@ class EdiOrderFile(orm.Model):
     
     _name = 'edi.order.file'
     _description = 'EDI order file'
-    _rec_name = 'name'
+    _rec_name = 'datetime desc'
 
     def _get_fullname_file_name(
             self, cr, uid, ids, fields, args, context=None):
