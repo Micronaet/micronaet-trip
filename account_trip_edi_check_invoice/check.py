@@ -142,6 +142,23 @@ class EdiOrder(orm.Model):
     _description = 'EDI order folder'
     _rec_name = 'name'
 
+    def load_order_line(self, cr, uid, ids, context=None):
+        """ Load order passed line
+        """
+        filename = ''
+        for row in open(filename, 'r'):
+            data = {
+                #'order_id':,
+                'order_sequence':,
+                'name':,
+                'article':,
+                'qty':, 
+                'price':, 
+                'uom':,
+                'description':,
+                'total':,
+                }
+
     _columns = {
         'name': fields.char('Number', size=25, required=True, readonly=True),
         'date': fields.date('Date', required=True, readonly=True),
@@ -185,6 +202,8 @@ class EdiOrderLine(orm.Model):
         'uom': fields.char('UOM', size=5, 
             required=True, readonly=True),
         'description': fields.char('Description', size=16, 
+            required=True, readonly=True),
+        'total': fields.float('Subtotal', digits=(16, 3), 
             required=True, readonly=True),
         }
     
