@@ -87,13 +87,17 @@ class EdiInvoiceLine(orm.Model):
         invoice_pool.unlink(cr, uid, invoice_ids, context=context)
         
         invoice_db = {}
-        import pdb; pdb.set_trace()
+        i = 0
         for row in open(filename, 'r'):
+            i += 1
+            if i % 10 == 0:
+                _logger.info('Import invoice line: %s' % i)
+                
             # -----------------------------------------------------------------
             # Header data:
             # -----------------------------------------------------------------
             invoice_number = row[:6].strip()
-            invoice_date = '%s-%s-%s' % (
+            invoice_date = '%s-%s-%s' % ( # mandatory
                 row[6:10],
                 row[10:12],
                 row[12:14],
@@ -108,10 +112,31 @@ class EdiInvoiceLine(orm.Model):
                     'name': invoice_number,
                     'date': invoice_date,
                     }, context=context)
+                _logger.info('Invoice create: %s' % invoice_number)    
                     
             # -----------------------------------------------------------------
             # Detail data:
             # -----------------------------------------------------------------
+            year = row[133:137].strip()
+            if year:
+                ddt_date = '%s-%s-%s' % (
+                        year,
+                        row[137:139],
+                        row[139:141],
+                        )
+            else:
+                ddt_date = False
+                            
+            year = row[159:163].strip()
+            if year:
+                order_date = '%s-%s-%s' % (
+                    year,
+                    row[163:165],
+                    row[165:167],
+                    )                
+            else:        
+                order_date = False        
+                
             data = {
                 'invoice_id': invoice_db.get(invoice_number, False),                
                 'order_sequence': int(row[16:20]),
@@ -119,20 +144,12 @@ class EdiInvoiceLine(orm.Model):
                 'article': row[36:47].strip(),
                 'qty': float(row[47:62]) / float_convert,
                 'price': float(row[62:77]) / float_convert,
-                'subtotal': row[77:92] / float_convert,
+                'subtotal': float(row[77:92]) / float_convert,
                 'description': row[92:127].strip(),
                 'ddt_number': row[127:133].strip(),
-                'ddt_date': '%s-%s-%s' % (
-                    row[133:137],
-                    row[137:139],
-                    row[139:141],
-                    ),
+                'ddt_date': ddt_date,
                 'order_number': row[143:159].strip(),
-                'order_date': '%s-%s-%s' % (
-                    row[159:163],
-                    row[163:165],
-                    row[165:167],
-                    ), 
+                'order_date': order_date, 
                 }
                 
             self.create(cr, uid, data, context=context)
@@ -140,31 +157,18 @@ class EdiInvoiceLine(orm.Model):
         
     _columns = {
         'invoice_id': fields.many2one('edi.invoice', 'Invoice'),
-        'order_sequence': fields.integer('Order position', 
-            readonly=True),
+        'order_sequence': fields.integer('Order position', readonly=True),
         'name': fields.char('Company code', size=16, 
             required=True, readonly=True),
-        'article': fields.char('Customer code', size=16,    
-            required=True, readonly=True),
-        'qty': fields.float('Q.ty', digits=(16, 3), 
-            required=True, readonly=True),
-        'price': fields.float('Price', digits=(16, 3), 
-            required=True, readonly=True),
-        # TODO to load:    
-        'uom': fields.char('UOM', size=5, 
-            required=True, readonly=True),
-        'subtotal': fields.float('Subtotal', digits=(16, 3),  # TODO put in view!
-            required=True, readonly=True),
-        'description': fields.char('Description', size=16, 
-            required=True, readonly=True),
-        'ddt_number': fields.char('DDT #', size=20, 
-            required=True, readonly=True),
-        'ddt_date': fields.date('Invoice date', 
-            required=True, readonly=True),
-        'order_number': fields.char('Company order #', size=25, 
-            required=True, readonly=True),
-        'order_date': fields.date('Order date', 
-            required=True, readonly=True),
+        'article': fields.char('Customer code', size=16, readonly=True),
+        'qty': fields.float('Q.ty', digits=(16, 3), readonly=True),
+        'price': fields.float('Price', digits=(16, 3), readonly=True),
+        'subtotal': fields.float('Subtotal', digits=(16, 3), readonly=True),
+        'description': fields.char('Description', size=16, readonly=True),
+        'ddt_number': fields.char('DDT #', size=20, readonly=True),
+        'ddt_date': fields.date('Invoice date', readonly=True),
+        'order_number': fields.char('Company order #', size=25, readonly=True),
+        'order_date': fields.date('Order date', readonly=True),
         }
 
 class EdiInvoice(orm.Model):
