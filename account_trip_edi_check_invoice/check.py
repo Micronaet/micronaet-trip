@@ -309,27 +309,31 @@ class EdiOrder(orm.Model):
                         line.price, 0.0, 0.0,
                         # Invoice:
                         0.0, 0.0, 0.0,
+                        [], # invoice                        
                         ]
                 current_db[article][1] += line.qty # append qty
                 current_db[article][2] += line.total # append subtotal
-                
             
             # -----------------------------------------------------------------
             # Add database from invoice
             # -----------------------------------------------------------------
             for line in order.invoiced_ids:
                 article = line.article
+                invoice = line.invoice_id
                 if article not in current_db:
                     current_db[article] = [
                         # Order: price, qty, total
                         0.0, 0.0, 0.0,
                         # Invoice: price, qty, total
                         line.price, 0.0, 0.0,
+                        [], # Invoice
                         ]
                 if not current_db[article][3]:
                     current_db[article][3] = line.price
                 current_db[article][4] += line.qty # append qty
                 current_db[article][5] += line.subtotal # append subtotal
+                if invoice.name not in current_db[article][6]:
+                    current_db[article][6].append(invoice.name)
             
             # Write data:
             for article, record in current_db.iteritems():
@@ -337,7 +341,7 @@ class EdiOrder(orm.Model):
                 (
                     order_price, order_qty, order_subtotal,
                     invoice_price, invoice_qty, invoice_subtotal,
-                    ) = record
+                    invoice_info) = record
                     
                 difference = invoice_subtotal - order_subtotal
                 if abs(difference) < difference_gap: # no difference:
@@ -355,6 +359,8 @@ class EdiOrder(orm.Model):
                     'invoice_total': invoice_subtotal,
                     
                     'difference': difference,
+                    
+                    'invoice_info': ', '.join(invoice_info),
                     }
                     
                 # -------------------------------------------------------------
@@ -487,6 +493,8 @@ class EdiOrder(orm.Model):
             ('FT: Pdv', format_title),
             ('FT: Q.', format_title),
             ('FT: Totale', format_title),
+            ('Ordine', format_title),
+            ('Fatture', format_title),
             ('Differenza', format_title),
             ]
             
@@ -500,15 +508,17 @@ class EdiOrder(orm.Model):
                 if check.state == 'correct':
                     continue # jump correct line (TODO write in different WS?)
                 WS = WS_db[check.state]
-                record = [
-                    [check.article, format_text],
-                    [check.order_price, format_text],
-                    [check.order_qty, format_text],
-                    [check.order_total, format_text],
-                    [check.invoice_price, format_text],
-                    [check.invoice_qty, format_text],
-                    [check.invoice_total, format_text],
-                    [check.difference, format_text],                    
+                record = [                
+                    (check.article, format_text),
+                    (check.order_price, format_text),
+                    (check.order_qty, format_text),
+                    (check.order_total, format_text),
+                    (check.invoice_price, format_text),
+                    (check.invoice_qty, format_text),
+                    (check.invoice_total, format_text),
+                    (order.name, format_text),
+                    (check.invoice_info, format_text),
+                    (check.difference, format_text),
                     ]
                 write_xls_mrp_line(WS, counter[check.state], record)
                 counter[check.state] += 1
@@ -765,6 +775,7 @@ class EdiOrderLineCkeck(orm.Model):
         'invoice_price': fields.float('Invoice Price', digits=(16, 3)),
         'invoice_total': fields.float('Invoice Subtotal', digits=(16, 3)),
 
+        'invoice_info': fields.text('Invoice info'),
         'difference': fields.float('Difference', digits=(16, 3)),
 
         'state': fields.selection([

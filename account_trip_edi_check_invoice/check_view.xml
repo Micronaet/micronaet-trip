@@ -285,6 +285,7 @@
                             <field name="invoice_total" />
                             
                             <field name="difference" />                            
+                            <field name="invoice_info" />                    
                         </group>
                     </sheet>    
                 </form>
