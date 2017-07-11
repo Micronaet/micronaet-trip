@@ -291,7 +291,7 @@ class EdiOrder(orm.Model):
         ''' Generate mixed database invoice-order for check
         '''
         # Parameter:
-        difference_gap = 0.001 # error on difference
+        difference_gap = 0.005 # error on difference
         
         # Delete all check line:
         check_pool = self.pool.get('edi.order.line.check')
