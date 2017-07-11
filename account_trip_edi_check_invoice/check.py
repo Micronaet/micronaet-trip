@@ -432,6 +432,7 @@ class EdiOrder(orm.Model):
         # Format elements:
         # ---------------------------------------------------------------------
         num_format = '#,###.###'
+        # Text:
         format_title = WB.add_format({
             'bold': True, 
             'font_color': 'black',
@@ -449,6 +450,16 @@ class EdiOrder(orm.Model):
             'align': 'left',
             'font_size': 9,
             'border': 1,
+            })
+            
+        # Number:
+        format_white = WB.add_format({
+            'font_name': 'Arial',
+            'align': 'left',
+            'font_size': 9,
+            'border': 1,
+            #'num_format': num_format,
+            'bg_color': '#ff9999', #'red',
             })
         format_red = WB.add_format({
             'font_name': 'Arial',
@@ -471,7 +482,6 @@ class EdiOrder(orm.Model):
         # Format columns:
         # ---------------------------------------------------------------------
         # Column dimension:
-        #WS.set_column ('A:A', 35)
         #WS.set_row(0, 30)
             
         # Generate report for export:
@@ -492,6 +502,11 @@ class EdiOrder(orm.Model):
             
         # Write all header:
         for key, WS in WS_db.iteritems():
+            # Column setup:
+            WS.set_column('A:B', 20)
+            WS.set_column('I:J', 20)
+           
+            # Column header:
             write_xls_mrp_line(WS, 0, header)
             
         # Body:
