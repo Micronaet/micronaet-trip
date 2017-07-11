@@ -478,6 +478,7 @@ class EdiOrder(orm.Model):
         # Header: 
         header = [
             ('Articolo', format_title),
+            ('Nostro', format_title),
             ('OC: Pdv', format_title),
             ('FT: Pdv', format_title),
             ('OC: Q.', format_title),
@@ -521,6 +522,7 @@ class EdiOrder(orm.Model):
                 # -------------------------------------------------------------
                 record = [                
                     (check.article, format_text),
+                    (check.name, format_text),
                     (check.order_price, format_price),
                     (check.invoice_price, format_price),
                     (check.order_qty, format_qty),
