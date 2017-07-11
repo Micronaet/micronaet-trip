@@ -9,7 +9,7 @@
                 <tree string="EDI order file" colors="blue:last==True">
                     <field name="last" />
                     <field name="mode" />
-                    <field name="order_id" invisible="context.get('embedded', False)" />
+                    <field name="order_id" invisible="context.get('order_embedded', False)" />
                     <field name="folder_id" />
                     <field name="name" />                    
                     <field name="datetime" />                    
@@ -29,7 +29,7 @@
                             <field name="folder_id" />
                             <field name="name" />
 
-                            <field name="order_id" invisible="context.get('embedded', False)" />
+                            <field name="order_id" invisible="context.get('order_embedded', False)" />
                             <field name="datetime" />                    
                         </group>
                     </sheet>    
@@ -131,26 +131,36 @@
             <field name="arch" type="xml">
                 <form string="EDI order" version="7.0">
                     <header>
-                        <button name="load_order_line_details" string="Reload line" type="object" icon="gtk-refresh"/>
                     </header>
                     <sheet>
                         <group colspan="4" col="4">
                             <field name="name" />
                             <field name="date" />
                             <notebook colspan="4">
+                                <page string="Check">
+                                    <group colspan="4" col="4">
+                                        <separator string="Check" colspan="3"/>
+                                        <button name="generate_check_database" string="Refresh check" type="object" icon="gtk-refresh" colspan="1" />
+                                        <field name="check_ids" context="{'order_embedded':True}"/>
+                                    </group>
+                                </page>
                                 <page string="Details (from file)">
                                     <group colspan="4" col="4">
-                                        <separator string="Details" colspan="4"/>
-                                        <field name="line_ids" colspan="4" nolabel="1" context="{'embedded':True}"/>
+                                        <separator string="Details" colspan="3"/>
+                                        <button name="load_order_line_details" string="Reload line" type="object" icon="gtk-refresh" colspan="1"/>
+                                        <field name="line_ids" colspan="4" nolabel="1" context="{'order_embedded':True}"/>
+
+                                        <separator string="Files" colspan="4"/>
+                                        <field name="file_ids" colspan="4" nolabel="1" context="{'order_embedded':True}"/>
                                     </group>
                                 </page>
                                 <page string="Invoiced">
-                                    <field name="invoiced_ids" />
+                                    <group colspan="4" col="4">
+                                        <separator string="Invoiced" colspan="4"/>
+                                        <field name="invoiced_ids" context="{'order_embedded':True}" />
+                                    </group>
                                 </page>
                             </notebook>
-                            <separator string="Files" colspan="4"/>
-                            <field name="file_ids" colspan="4" nolabel="1">
-                            </field>
                         </group>
                     </sheet>    
                 </form>
@@ -186,7 +196,7 @@
             <field name="model">edi.order.line</field>
             <field name="arch" type="xml">
                 <tree string="EDI order line" >
-                    <field name="order_id" invisible="context.get('embedded', False)" />
+                    <field name="order_id" invisible="context.get('order_embedded', False)" />
                     <field name="sequence" />
                     <field name="name" />
                     <field name="article" />
@@ -205,7 +215,7 @@
                 <form string="Order line" version="7.0">
                     <sheet>
                         <group colspan="4" col="4">
-                            <field name="order_id" invisible="context.get('embedded', False)"  />
+                            <field name="order_id" invisible="context.get('order_embedded', False)"  />
                             <field name="sequence" />
                             
                             <field name="name" />
@@ -223,6 +233,56 @@
                 </form>
             </field>
         </record>
+        
+        <!-- edi.order.line.check -->
+        <record model="ir.ui.view" id="view_edi_order_line_check_tree">
+            <field name="name">edi.order.line.check.tree</field>
+            <field name="model">edi.order.line.check</field>
+            <field name="arch" type="xml">abs(
+                <tree string="EDI order line check" colors="red:state=='different';blue:state=='order';orange:state=='invoice';green:state=='correct'">
+                    <field name="order_id" invisible="context.get('order_embedded', False)" />
+                    <field name="article" />
+
+                    <field name="order_qty" />
+                    <field name="order_price" />
+                    <field name="order_total" />
+
+                    <field name="invoice_qty" />
+                    <field name="invoice_price" />
+                    <field name="invoice_total" />
+    
+                    <field name="difference" />
+                    <field name="state" />                    
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_edi_order_line_check_form">
+            <field name="name">edi.order.line.check.form</field>
+            <field name="model">edi.order.line.check</field>
+            <field name="arch" type="xml">
+                <form string="Order line check" version="7.0">
+                    <header>
+                        <field name="state"  widget="statusbar" />                    
+                    </header>
+                    <sheet>
+                        <group colspan="4" col="6">
+                            <field name="order_id" invisible="context.get('order_embedded', False)" />
+                            <field name="article" />
+
+                            <field name="order_qty" />
+                            <field name="order_price" />
+                            <field name="order_total" />
+
+                            <field name="invoice_qty" />
+                            <field name="invoice_price" />
+                            <field name="invoice_total" />
+                            
+                            <field name="difference" />                            
+                        </group>
+                    </sheet>    
+                </form>
+            </field>
+        </record>
 
         <!-- edi.invoice.line-->
         <record model="ir.ui.view" id="view_edi_invoice_line_tree">
@@ -230,7 +290,7 @@
             <field name="model">edi.invoice.line</field>
             <field name="arch" type="xml">
                 <tree string="EDI invoice line" colors="red:order_id==False">
-                    <field name="invoice_id" invisible="context.get('embedded', False)" />
+                    <field name="invoice_id" invisible="context.get('invoice_embedded', False)" />
                     <field name="ddt_number" />
                     <field name="ddt_date" />
                     <field name="order_id" />
@@ -258,7 +318,7 @@
                             <field name="order_number" />
                             <field name="order_date" />
                             
-                            <field name="invoice_id" invisible="context.get('embedded', False)" />
+                            <field name="invoice_id" invisible="context.get('invoice_embedded', False)" />
                             <field name="order_sequence" />
 
                             <field name="name" />
@@ -300,7 +360,7 @@
                             <field name="name" />
                             <field name="date" />
                             <separator string="Details" colspan="4"/>
-                            <field name="line_ids" colspan="4" nolabel="1">
+                            <field name="line_ids" colspan="4" nolabel="1" context="{'invoice_embedded': False}">
                             </field>
                         </group>
                     </sheet>    

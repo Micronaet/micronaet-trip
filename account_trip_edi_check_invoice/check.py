@@ -266,6 +266,92 @@ class EdiOrder(orm.Model):
         return file_pool.write(cr, uid, last_ids, {
             'last': True,
             }, context=context)
+
+    def generate_check_database(self, cr, uid, ids, context=None):
+        ''' Generate mixed database invoice-order for check
+        '''
+        # Parameter:
+        difference_gap = 0.001 # error on difference
+        
+        # Delete all check line:
+        check_pool = self.pool.get('edi.order.line.check')
+        
+        check_ids = check_pool.search(cr, uid, [
+            ('order_id', 'in', ids),
+            ], context=context)
+        check_pool.unlink(cr, uid, check_ids, context=context)
+        
+        for order in self.browse(cr, uid, ids, context=context):
+            current_db = {}
+            # -----------------------------------------------------------------
+            # Start generate database from order:
+            # -----------------------------------------------------------------
+            for line in order.line_ids:
+                article = line.article
+                if article not in current_db:
+                    current_db[article] = [
+                        # Order:
+                        line.price, 0.0, 0.0,
+                        # Invoice:
+                        0.0, 0.0, 0.0,
+                        ]
+                current_db[article][1] += line.qty # append qty
+                current_db[article][2] += line.total # append subtotal
+                
+            
+            # -----------------------------------------------------------------
+            # Add database from invoice
+            # -----------------------------------------------------------------
+            for line in order.invoiced_ids:
+                article = line.article
+                if article not in current_db:
+                    current_db[article] = [
+                        # Order: price, qty, total
+                        0.0, 0.0, 0.0,
+                        # Invoice: price, qty, total
+                        line.price, 0.0, 0.0,
+                        ]
+                current_db[article][4] += line.qty # append qty
+                current_db[article][5] += line.subtotal # append subtotal
+            
+            # Write data:
+            for article, record in current_db.iteritems():
+                # Parse fields:
+                (
+                    order_price, order_qty, order_subtotal,
+                    invoice_price, invoice_qty, invoice_subtotal,
+                    ) = record
+                    
+                difference = order_subtotal - order_subtotal
+                if abs(difference) < difference_gap: # no difference:
+                    difference = 0.0
+                data = {
+                    'article': article,
+                    'order_id': order.id,
+                    'order_price': order_price, 
+                    'order_qty': order_qty, 
+                    'order_subtotal': order_subtotal,
+                    'invoice_price': invoice_price, 
+                    'invoice_qty': invoice_qty, 
+                    'invoice_subtotal': invoice_subtotal,
+                    'difference': difference,
+                    }
+                    
+                # -------------------------------------------------------------
+                # Cases:    
+                # -------------------------------------------------------------                
+                if not order_subtotal: # only order
+                    data['state'] = 'order'
+                    check_pool.create(cr, uid, data, context=context)                
+                elif not invoice_subtotal: # only invoice
+                    data['state'] = 'invoice'
+                    check_pool.create(cr, uid, data, context=context)                                
+                elif difference: # check difference: 
+                    data['state'] = 'difference'
+                else: # no difference:
+                    data['state'] = 'correct'
+                check_pool.create(cr, uid, data, context=context)
+        return True
         
     _columns = {
         'name': fields.char('Number', size=25, required=True),
@@ -464,6 +550,37 @@ class EdiOrderLine(orm.Model):
             required=True, readonly=True),
         }
 
+class EdiOrderLineCkeck(orm.Model):
+    """ Model name: Edi Invoice Line
+    """
+    
+    _name = 'edi.order.line.check'
+    _description = 'EDI line check'
+    _rec_name = 'article'
+    _order = 'article'
+
+    _columns = {
+        'order_id': fields.many2one('edi.order', 'Order'),
+        'article': fields.char('Customer code', size=16),
+            
+        'order_qty': fields.float('Order Q.ty', digits=(16, 3)),
+        'order_price': fields.float('Order Price', digits=(16, 3)),
+        'order_total': fields.float('Order Subtotal', digits=(16, 3)),
+
+        'invoice_qty': fields.float('Invoice Q.ty', digits=(16, 3)),
+        'invoice_price': fields.float('Invoice Price', digits=(16, 3)),
+        'invoice_total': fields.float('Invoice Subtotal', digits=(16, 3)),
+
+        'difference': fields.float('Difference', digits=(16, 3)),
+
+        'state': fields.selection([
+            ('correct', 'Correct'),
+            ('order', 'Only order'),
+            ('invoice', 'Only invoice'),
+            ('different', 'Different'),
+            ], 'state')
+        }
+
 class EdiOrder(orm.Model):
     """ Model name: Edi Order
     """
@@ -475,6 +592,8 @@ class EdiOrder(orm.Model):
         'line_ids': fields.one2many('edi.order.line', 'order_id',  'Line'),
         'invoiced_ids': fields.one2many('edi.invoice.line', 'order_id', 
             'Invoiced'),
+        'check_ids': fields.one2many('edi.order.line.check', 'order_id', 
+            'Check'),
         }
     
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
