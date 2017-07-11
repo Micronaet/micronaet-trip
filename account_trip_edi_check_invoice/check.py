@@ -702,7 +702,7 @@ class EdiOrderFile(orm.Model):
             _get_fullname_file_name, method=True, 
             type='char', string='Fullname', size=200, store=False),                         
         'last': fields.boolean('Last'),
-        'datetime': fields.date('Datetime', required=False, readonly=True,
+        'datetime': fields.datetime('Datetime',
             help='Datetime form customer EDI program (not file datetime)'),
         'mode': fields.selection([
             ('create', 'Create (ELIORD)'),
@@ -771,7 +771,7 @@ class EdiOrderLineCkeck(orm.Model):
             ('correct', 'Correct'),
             ('order', 'Only order'),
             ('invoice', 'Only invoice'),
-            ('different', 'Different'),
+            ('difference', 'Difference'),
             ], 'State')
         }
 
