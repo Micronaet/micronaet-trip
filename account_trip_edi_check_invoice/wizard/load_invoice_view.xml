@@ -10,7 +10,8 @@
                    <header>
                        <button string="Cancel" special="cancel" />
                        <button name="action_done" string="Load Mexal file" type="object" icon="gtk-jump-to" class="oe_highlight" />
-                       <button name="action_export" string="Export in Excel" type="object" icon="gtk-jump-to" class="oe_highlight" confirm="Remember to load all history file before! Confirm?"/>
+                       <button name="action_export" string="Recalc and export in Excel" type="object" icon="gtk-jump-to" class="oe_highlight" confirm="Remember to load all history file before! Confirm?"/>
+                       <button name="action_only_export" string="Only in Excel" type="object" icon="gtk-jump-to" class="oe_highlight" />
                    </header>                   
                    <group colspan="4" col="4">
                         <separator string="Note" colspan="4"/>

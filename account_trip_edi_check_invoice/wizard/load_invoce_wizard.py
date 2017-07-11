@@ -87,9 +87,20 @@ class EdiLoadInvoiceLineWizard(orm.TransientModel):
         order_pool.generate_check_database(cr, uid, order_ids, context=context)
             
         # 5. Extract in Excel:
-        order_pool.extract_check_data_xlsx(cr, uid, order_ids, context=context)
+        return order_pool.extract_check_data_xlsx(cr, uid, order_ids, context=context)
 
-        return True
+    def action_only_export(self, cr, uid, ids, context=None):
+        ''' Event for button extract
+        '''
+        if context is None: 
+            context = {}
+        
+        # Pool used:
+        order_pool = self.pool.get('edi.order')
+        
+        order_ids = order_pool.search(cr, uid, [
+            ('invoiced', '=', True)], context=context)
+        return order_pool.extract_check_data_xlsx(cr, uid, order_ids, context=context)
 
     _columns = {
         'note': fields.text('Procedure', readonly=True),
