@@ -450,38 +450,21 @@ class EdiOrder(orm.Model):
             'font_size': 9,
             'border': 1,
             })
-
-        format_white = WB.add_format({
-            'font_name': 'Arial',
-            'font_size': 9,
-            'align': 'right',
-            'bg_color': 'white',
-            'border': 1,
-            'num_format': num_format,
-            })
-        format_yellow = WB.add_format({
-            'font_name': 'Arial',
-            'font_size': 9,
-            'align': 'right',
-            'bg_color': '#ffff99', #'yellow',
-            'border': 1,
-            'num_format': num_format,
-            })
         format_red = WB.add_format({
             'font_name': 'Arial',
+            'align': 'left',
             'font_size': 9,
-            'align': 'right',
-            'bg_color': '#ff9999', #'red',
             'border': 1,
             'num_format': num_format,
+            'bg_color': '#ff9999', #'red',
             })
         format_green = WB.add_format({
             'font_name': 'Arial',
+            'align': 'left',
             'font_size': 9,
-            'align': 'right',
-            'bg_color': '#c1ef94', #'green',
             'border': 1,
             'num_format': num_format,
+            'bg_color': '#c1ef94', #'green',
             })
 
         # ---------------------------------------------------------------------
@@ -516,14 +499,34 @@ class EdiOrder(orm.Model):
                 if check.state == 'correct':
                     continue # jump correct line (TODO write in different WS?)
                 WS = WS_db[check.state]
+                
+                # -------------------------------------------------------------
+                # Format:
+                # -------------------------------------------------------------
+                if check.order_price == check.invoice_price:
+                    format_price = format_text
+                else:    
+                    format_price = format_red
+                if check.order_qty == check.invoice_qty:
+                    format_qty = format_text
+                else:    
+                    format_qty = format_red
+                if check.order_total == check.invoice_total:
+                    format_total = format_text
+                else:    
+                    format_total = format_red
+                
+                # -------------------------------------------------------------
+                # Record data written:
+                # -------------------------------------------------------------
                 record = [                
                     (check.article, format_text),
-                    (check.order_price, format_text),
-                    (check.invoice_price, format_text),
-                    (check.order_qty, format_text),
-                    (check.invoice_qty, format_text),
-                    (check.order_total, format_text),
-                    (check.invoice_total, format_text),
+                    (check.order_price, format_price),
+                    (check.invoice_price, format_price),
+                    (check.order_qty, format_qty),
+                    (check.invoice_qty, format_qty),
+                    (check.order_total, format_total),
+                    (check.invoice_total, format_total),
                     (order.name, format_text),
                     (check.invoice_info, format_text),
                     (check.difference, format_text),
