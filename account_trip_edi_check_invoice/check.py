@@ -256,7 +256,12 @@ class EdiOrder(orm.Model):
                 _logger.error('Order without file: %s' % order.name)
                 continue
                 
-            last_file = order.file_ids[0]
+            if len(order.file_ids) == 1:
+                last_file = order.file_ids[0]
+            else:
+                last_file = sorted(
+                    order.file_ids, key=lambda x: x.datetime)[-1]
+                    
             last_ids.append(last_file.id)
             if last_file.mode == 'delete':
                 _logger.warning('Order deleted: %s' % order.name)
