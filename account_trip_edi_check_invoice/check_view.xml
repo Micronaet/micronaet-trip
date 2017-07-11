@@ -118,7 +118,8 @@
             <field name="name">edi.order.tree</field>
             <field name="model">edi.order</field>
             <field name="arch" type="xml">
-                <tree string="EDI order" >
+                <tree string="EDI order" colors="blue:invoiced==True">
+                    <field name="invoiced" />
                     <field name="name" />
                     <field name="date" />
                     <button name="load_order_line_details" string="Reload line" type="object" icon="gtk-refresh"/>
@@ -136,6 +137,7 @@
                         <group colspan="4" col="4">
                             <field name="name" />
                             <field name="date" />
+                            <field name="invoiced" />
                             <notebook colspan="4">
                                 <page string="Check">
                                     <group colspan="4" col="4">
@@ -173,7 +175,10 @@
                 <search string="Order" version="7.0">        
                     <field name="name" />
                     <field name="date" />
+                    <filter name="invoiced_yes" string="Invoiced" domain="[('invoiced','=',True)]"/>
+                    <filter name="invoiced_no" string="Not invoiced" domain="[('invoiced','=',False)]"/>
                     <group expand="0" string="Group By...">
+                        <filter name="group_invoiced" string="Invoiced" context="{'group_by': 'invoiced'}"/>
                         <filter name="group_date" string="Date" context="{'group_by': 'date'}"/>
                     </group>                
                 </search>

@@ -356,6 +356,7 @@ class EdiOrder(orm.Model):
     _columns = {
         'name': fields.char('Number', size=25, required=True),
         'date': fields.datetime('Date', readonly=True),
+        'invoiced': fields.boolean('Invoiced'),
         }
 
 class EdiOrder(orm.Model):
