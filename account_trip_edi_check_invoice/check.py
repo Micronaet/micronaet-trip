@@ -310,6 +310,7 @@ class EdiOrder(orm.Model):
                         # Invoice:
                         0.0, 0.0, 0.0,
                         [], # invoice                        
+                        line.name, # Company code
                         ]
                 current_db[article][1] += line.qty # append qty
                 current_db[article][2] += line.total # append subtotal
@@ -327,6 +328,7 @@ class EdiOrder(orm.Model):
                         # Invoice: price, qty, total
                         line.price, 0.0, 0.0,
                         [], # Invoice
+                        line.name, # Company code
                         ]
                 if not current_db[article][3]:
                     current_db[article][3] = line.price
@@ -341,13 +343,14 @@ class EdiOrder(orm.Model):
                 (
                     order_price, order_qty, order_subtotal,
                     invoice_price, invoice_qty, invoice_subtotal,
-                    invoice_info) = record
+                    invoice_info, name) = record
                     
                 difference = invoice_subtotal - order_subtotal
                 if abs(difference) < difference_gap: # no difference:
                     difference = 0.0
                 data = {
                     'article': article,
+                    'name': name,
                     'order_id': order.id,
                     
                     'order_price': order_price, 
@@ -765,6 +768,7 @@ class EdiOrderLineCkeck(orm.Model):
 
     _columns = {
         'order_id': fields.many2one('edi.order', 'Order'),
+        'name': fields.char('Company code', size=16),
         'article': fields.char('Customer code', size=16),
             
         'order_qty': fields.float('Order Q.ty', digits=(16, 3)),

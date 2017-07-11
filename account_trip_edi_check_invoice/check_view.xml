@@ -247,6 +247,7 @@
                 <tree string="EDI order line check" colors="red:state=='difference';blue:state=='order';orange:state=='invoice';green:state=='correct'">
                     <field name="order_id" invisible="context.get('order_embedded', False)" />
                     <field name="article" />
+                    <field name="name" />
 
                     <field name="order_qty" />
                     <field name="invoice_qty" />
@@ -273,7 +274,7 @@
                     <sheet>
                         <group colspan="4" col="4">
                             <field name="article" />
-                            <field name="difference" />                            
+                            <field name="name" />
 
                             <field name="order_id" invisible="context.get('order_embedded', False)" />
                             <field name="invoice_info" />                    
@@ -286,6 +287,8 @@
 
                             <field name="order_total" />
                             <field name="invoice_total" />                            
+
+                            <field name="difference" />                            
                         </group>
                     </sheet>    
                 </form>
