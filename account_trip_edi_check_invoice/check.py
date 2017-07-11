@@ -477,6 +477,77 @@ class EdiOrder(orm.Model):
             'num_format': num_format,
             'bg_color': '#c1ef94', #'green',
             })
+        
+        # Number database for heat / cold:    
+        cold = {
+            0: WB.add_format({
+                'font_name': 'Arial',
+                'align': 'right',
+                'font_size': 9,
+                'border': 1,
+                'num_format': num_format,
+                'bg_color': '#ddffd9',
+                })
+            1: WB.add_format({
+                'font_name': 'Arial',
+                'align': 'right',
+                'font_size': 9,
+                'border': 1,
+                'num_format': num_format,
+                'bg_color': '#b4ecac',
+                })
+            2: WB.add_format({
+                'font_name': 'Arial',
+                'align': 'right',
+                'font_size': 9,
+                'border': 1,
+                'num_format': num_format,
+                'bg_color': '#74a96d',
+                })
+            3: WB.add_format({
+                'font_name': 'Arial',
+                'align': 'right',
+                'font_size': 9,
+                'border': 1,
+                'num_format': num_format,
+                'bg_color': '#4e7449',
+                })
+            }
+             
+        heat = {    
+            0: WB.add_format({
+                'font_name': 'Arial',
+                'align': 'right',
+                'font_size': 9,
+                'border': 1,
+                'num_format': num_format,
+                'bg_color': '#ececec',
+                })
+            1: WB.add_format({
+                'font_name': 'Arial',
+                'align': 'right',
+                'font_size': 9,
+                'border': 1,
+                'num_format': num_format,
+                'bg_color': '#c8c8c8',
+                })
+            2: WB.add_format({
+                'font_name': 'Arial',
+                'align': 'right',
+                'font_size': 9,
+                'border': 1,
+                'num_format': num_format,
+                'bg_color': '#838383',
+                })
+            3: WB.add_format({
+                'font_name': 'Arial',
+                'align': 'right',
+                'font_size': 9,
+                'border': 1,
+                'num_format': num_format,
+                'bg_color': '#5f5e5e',
+                })
+            }
 
         # ---------------------------------------------------------------------
         # Format columns:
@@ -534,6 +605,21 @@ class EdiOrder(orm.Model):
                 #else:    
                 #    format_total = format_red
                 
+                # Heat map:
+                if check.difference >= 0:
+                    format_db = cold
+                else:
+                    format_db = heat                
+                difference_abs = abs(check.difference)
+                if difference_abs <= 50:
+                    format_color = format_db[0]
+                elif difference_abs <= 200:
+                    format_color = format_db[1]
+                elif difference_abs <= 1000:
+                    format_color = format_db[2]
+                else:
+                    format_color = format_db[3]
+                
                 # -------------------------------------------------------------
                 # Record data written:
                 # -------------------------------------------------------------
@@ -548,7 +634,7 @@ class EdiOrder(orm.Model):
                     (check.invoice_total, format_white),
                     (order.name, format_text),
                     (check.invoice_info, format_text),
-                    (check.difference, format_white),
+                    (check.difference, format_color),
                     ]
                 write_xls_mrp_line(WS, counter[check.state], record)
                 counter[check.state] += 1
