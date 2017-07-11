@@ -431,7 +431,7 @@ class EdiOrder(orm.Model):
         # ---------------------------------------------------------------------
         # Format elements:
         # ---------------------------------------------------------------------
-        num_format = '#,##0'
+        num_format = '#,###.###'
         format_title = WB.add_format({
             'bold': True, 
             'font_color': 'black',
@@ -455,7 +455,7 @@ class EdiOrder(orm.Model):
             'align': 'left',
             'font_size': 9,
             'border': 1,
-            'num_format': num_format,
+            #'num_format': num_format,
             'bg_color': '#ff9999', #'red',
             })
         format_green = WB.add_format({
@@ -463,7 +463,7 @@ class EdiOrder(orm.Model):
             'align': 'left',
             'font_size': 9,
             'border': 1,
-            'num_format': num_format,
+            #'num_format': num_format,
             'bg_color': '#c1ef94', #'green',
             })
 
@@ -511,10 +511,10 @@ class EdiOrder(orm.Model):
                     format_qty = format_text
                 else:    
                     format_qty = format_red
-                if check.order_total == check.invoice_total:
-                    format_total = format_text
-                else:    
-                    format_total = format_red
+                #if check.order_total == check.invoice_total:
+                #    format_total = format_text
+                #else:    
+                #    format_total = format_red
                 
                 # -------------------------------------------------------------
                 # Record data written:
@@ -525,8 +525,8 @@ class EdiOrder(orm.Model):
                     (check.invoice_price, format_price),
                     (check.order_qty, format_qty),
                     (check.invoice_qty, format_qty),
-                    (check.order_total, format_total),
-                    (check.invoice_total, format_total),
+                    (check.order_total, format_text),
+                    (check.invoice_total, format_text),
                     (order.name, format_text),
                     (check.invoice_info, format_text),
                     (check.difference, format_text),
