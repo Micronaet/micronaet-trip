@@ -299,14 +299,14 @@
                     <field name="ddt_number" />
                     <field name="ddt_date" />
                     <field name="order_id" />
-                    <!--<field name="order_number" />
-                    <field name="order_date" />-->
+                    <field name="order_number" invisible="1"/>
+                    <!--<field name="order_date" />-->
                     <field name="order_sequence" />
                     <field name="name" />
                     <field name="article" />
                     <field name="qty" />
                     <field name="price" />
-                    <field name="subtotal" />
+                    <field name="subtotal" sum="total"/>
                 </tree>
             </field>
         </record>

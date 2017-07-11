@@ -82,10 +82,20 @@ class EdiInvoiceLine(orm.Model):
         # Details:
         line_ids = self.search(cr, uid, [], context=context)
         self.unlink(cr, uid, line_ids, context=context)
+        _logger.info('Delete invoice line: %s' % len(line_ids))
         
         # Invoice:
         invoice_ids = invoice_pool.search(cr, uid, [], context=context)
         invoice_pool.unlink(cr, uid, invoice_ids, context=context)
+        _logger.info('Delete invoice: %s' % len(line_ids))
+        
+        # Set order all not invoiced:
+        order_ids = order_pool.search(cr, uid, [
+            ('invoiced', '=', True)], context=context)
+        order_pool.write(cr, uid, order_ids, {
+            'invoiced': False
+            }, context=context)
+        _logger.info('Set all order as not invoiced')
         
         invoice_db = {}
         order_db = {}
@@ -175,7 +185,12 @@ class EdiInvoiceLine(orm.Model):
                 }
                 
             self.create(cr, uid, data, context=context)
-        return True
+        
+        # Set order invoiced:
+        _logger.info('Set invoiced order [Tot.: %s]' % len(order_db))
+        return order_pool.write(cr, uid, order_db.values(), {
+            'invoiced': True,
+            }, context=context)            
         
     _columns = {
         'invoice_id': fields.many2one('edi.invoice', 'Invoice'),
@@ -275,7 +290,7 @@ class EdiOrder(orm.Model):
         
         # Delete all check line:
         check_pool = self.pool.get('edi.order.line.check')
-        
+
         check_ids = check_pool.search(cr, uid, [
             ('order_id', 'in', ids),
             ], context=context)
@@ -311,6 +326,8 @@ class EdiOrder(orm.Model):
                         # Invoice: price, qty, total
                         line.price, 0.0, 0.0,
                         ]
+                if not current_db[article][3]:
+                    current_db[article][3] = line.price
                 current_db[article][4] += line.qty # append qty
                 current_db[article][5] += line.subtotal # append subtotal
             
@@ -328,12 +345,15 @@ class EdiOrder(orm.Model):
                 data = {
                     'article': article,
                     'order_id': order.id,
+                    
                     'order_price': order_price, 
                     'order_qty': order_qty, 
-                    'order_subtotal': order_subtotal,
+                    'order_total': order_subtotal,
+                    
                     'invoice_price': invoice_price, 
                     'invoice_qty': invoice_qty, 
-                    'invoice_subtotal': invoice_subtotal,
+                    'invoice_total': invoice_subtotal,
+                    
                     'difference': difference,
                     }
                     
@@ -341,10 +361,10 @@ class EdiOrder(orm.Model):
                 # Cases:    
                 # -------------------------------------------------------------                
                 if not order_subtotal: # only order
-                    data['state'] = 'order'
+                    data['state'] = 'invoice'
                     check_pool.create(cr, uid, data, context=context)                
                 elif not invoice_subtotal: # only invoice
-                    data['state'] = 'invoice'
+                    data['state'] = 'order'
                     check_pool.create(cr, uid, data, context=context)                                
                 elif difference: # check difference: 
                     data['state'] = 'difference'
