@@ -502,13 +502,13 @@ class EdiOrder(orm.Model):
                 WS = WS_db[check.state]
                 record = [
                     [check.article, format_text],
-                    [check.order_price, format_title],
-                    [check.order_qty, format_title],
-                    [check.order_total, format_title],
-                    [check.invoice_price, format_title],
-                    [check.invoice_qty, format_title],
-                    [check.invoice_total, format_title],
-                    [check.difference, format_title],                    
+                    [check.order_price, format_text],
+                    [check.order_qty, format_text],
+                    [check.order_total, format_text],
+                    [check.invoice_price, format_text],
+                    [check.invoice_qty, format_text],
+                    [check.invoice_total, format_text],
+                    [check.difference, format_text],                    
                     ]
                 write_xls_mrp_line(WS, counter[check.state], record)
                 counter[check.state] += 1
