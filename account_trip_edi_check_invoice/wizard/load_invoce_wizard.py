@@ -96,7 +96,7 @@ class EdiLoadInvoiceLineWizard(orm.TransientModel):
         }
         
     _defaults = {
-        'note': lambda *x: '''
+        'note': lambda *x: _('''
             <b>Invoice line load procedure:</b><br/>
             <p>
             Launch sprix from Mexal Service menu:
@@ -105,7 +105,7 @@ class EdiLoadInvoiceLineWizard(orm.TransientModel):
             <p>
             When the exprot is finished press <b>DONE</b>
             </p>
-            ''',
+            '''),
         }    
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
