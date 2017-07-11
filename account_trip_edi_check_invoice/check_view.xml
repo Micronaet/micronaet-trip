@@ -244,7 +244,7 @@
             <field name="name">edi.order.line.check.tree</field>
             <field name="model">edi.order.line.check</field>
             <field name="arch" type="xml">abs(
-                <tree string="EDI order line check" colors="red:state=='different';blue:state=='order';orange:state=='invoice';green:state=='correct'">
+                <tree string="EDI order line check" colors="red:state=='difference';blue:state=='order';orange:state=='invoice';green:state=='correct'">
                     <field name="order_id" invisible="context.get('order_embedded', False)" />
                     <field name="article" />
 
