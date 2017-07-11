@@ -339,7 +339,7 @@ class EdiOrder(orm.Model):
                     invoice_price, invoice_qty, invoice_subtotal,
                     ) = record
                     
-                difference = order_subtotal - order_subtotal
+                difference = invoice_subtotal - order_subtotal
                 if abs(difference) < difference_gap: # no difference:
                     difference = 0.0
                 data = {
