@@ -376,9 +376,176 @@ class EdiOrder(orm.Model):
     def extract_check_data_xlsx(self, cr, uid, ids, context=None):
         ''' Extract order passed in in check XLSX file
         '''
+        # ---------------------------------------------------------------------
+        # Utility:
+        # ---------------------------------------------------------------------
+        def write_xls_mrp_line(WS, row, line):
+            ''' Write line in excel file
+            '''
+            col = 0
+            for item, format_cell in line:
+                WS.write(row, col, item, format_cell)
+                col += 1
+            return True
         
-        return True
-        
+        if context is None:
+            context = {}
+            
+        # Pool used:
+        attachment_pool = self.pool.get('ir.attachment')
+        # ---------------------------------------------------------------------
+        # XLS file:
+        # ---------------------------------------------------------------------
+        filename = '/tmp/edi_invoice_check.xlsx'
+        filename = os.path.expanduser(filename)
+        _logger.info('Start export status on %s' % filename)
+
+        # Open file and write header
+        WB = xlsxwriter.Workbook(filename)
+        # 2 Sheets
+        WS_db = {
+            'order': WB.add_worksheet('Solo ordini'),
+            'invoice': WB.add_worksheet('Solo fatture'),
+            'difference': WB.add_worksheet('Differenze'),
+            }
+        counter = {
+            'order': 1,
+            'invoice': 1,
+            'difference': 1,
+            }    
+            
+        # ---------------------------------------------------------------------
+        # Format elements:
+        # ---------------------------------------------------------------------
+        num_format = '#,##0'
+        format_title = WB.add_format({
+            'bold': True, 
+            'font_color': 'black',
+            'font_name': 'Arial',
+            'font_size': 10,
+            'align': 'center',
+            'valign': 'vcenter',
+            'bg_color': 'gray',
+            'border': 1,
+            'text_wrap': True,
+            })
+
+        format_text = WB.add_format({
+            'font_name': 'Arial',
+            'align': 'left',
+            'font_size': 9,
+            'border': 1,
+            })
+
+        format_white = WB.add_format({
+            'font_name': 'Arial',
+            'font_size': 9,
+            'align': 'right',
+            'bg_color': 'white',
+            'border': 1,
+            'num_format': num_format,
+            })
+        format_yellow = WB.add_format({
+            'font_name': 'Arial',
+            'font_size': 9,
+            'align': 'right',
+            'bg_color': '#ffff99', #'yellow',
+            'border': 1,
+            'num_format': num_format,
+            })
+        format_red = WB.add_format({
+            'font_name': 'Arial',
+            'font_size': 9,
+            'align': 'right',
+            'bg_color': '#ff9999', #'red',
+            'border': 1,
+            'num_format': num_format,
+            })
+        format_green = WB.add_format({
+            'font_name': 'Arial',
+            'font_size': 9,
+            'align': 'right',
+            'bg_color': '#c1ef94', #'green',
+            'border': 1,
+            'num_format': num_format,
+            })
+
+        # ---------------------------------------------------------------------
+        # Format columns:
+        # ---------------------------------------------------------------------
+        # Column dimension:
+        #WS.set_column ('A:A', 35)
+        #WS.set_row(0, 30)
+            
+        # Generate report for export:
+        # Header: 
+        header = [
+            ('Articolo', format_title),
+            ('OC: Pdv', format_title),
+            ('OC: Q.', format_title),
+            ('OC: Totale', format_title),
+            ('FT: Pdv', format_title),
+            ('FT: Q.', format_title),
+            ('FT: Totale', format_title),
+            ('Differenza', format_title),
+            ]
+            
+        # Write all header:
+        for key, WS in WS_db.iteritems():
+            write_xls_mrp_line(WS, 0, header)
+            
+        # Body:
+        for order in self.browse(cr, uid, ids, context=context):
+            for check in order.check_ids:
+                if check.state == 'correct':
+                    continue # jump correct line (TODO write in different WS?)
+                WS = WS_db[check.state]
+                record = [
+                    [check.article, format_text],
+                    [check.order_price, format_title],
+                    [check.order_qty, format_title],
+                    [check.order_total, format_title],
+                    [check.invoice_price, format_title],
+                    [check.invoice_qty, format_title],
+                    [check.invoice_total, format_title],
+                    [check.difference, format_title],                    
+                    ]
+                write_xls_mrp_line(WS, counter[check.state], record)
+                counter[check.state] += 1
+
+        _logger.info('End export status on %s' % filename)        
+        WB.close()
+
+        xlsx_raw = open(filename, 'rb').read()
+        b64 = xlsx_raw.encode('base64')
+
+        # ---------------------------------------------------------------------
+        # Open attachment form:
+        # ---------------------------------------------------------------------
+        attachment_id = attachment_pool.create(cr, uid, {
+            'name': 'Controllo EDI fatturato',
+            'datas_fname': 'edi_invoice_check.xlsx',
+            'type': 'binary',
+            'datas': b64,
+            'partner_id': 1,
+            'res_model': 'res.partner',
+            'res_id': 1,
+            }, context=context)
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'XLS Controllo EDI fatturato',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': attachment_id,
+            'res_model': 'ir.attachment',
+            'views': [(False, 'form')],
+            'context': context,
+            'target': 'current',
+            'nodestroy': False,
+            }
+                    
     _columns = {
         'name': fields.char('Number', size=25, required=True),
         'date': fields.datetime('Date', readonly=True),
