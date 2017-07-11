@@ -578,7 +578,7 @@ class EdiOrderLineCkeck(orm.Model):
             ('order', 'Only order'),
             ('invoice', 'Only invoice'),
             ('different', 'Different'),
-            ], 'state')
+            ], 'State')
         }
 
 class EdiOrder(orm.Model):

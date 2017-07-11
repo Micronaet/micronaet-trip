@@ -141,7 +141,7 @@
                                     <group colspan="4" col="4">
                                         <separator string="Check" colspan="3"/>
                                         <button name="generate_check_database" string="Refresh check" type="object" icon="gtk-refresh" colspan="1" />
-                                        <field name="check_ids" context="{'order_embedded':True}"/>
+                                        <field name="check_ids" context="{'order_embedded':True}" colspan="4" nolabel="1"/>
                                     </group>
                                 </page>
                                 <page string="Details (from file)">
@@ -157,7 +157,7 @@
                                 <page string="Invoiced">
                                     <group colspan="4" col="4">
                                         <separator string="Invoiced" colspan="4"/>
-                                        <field name="invoiced_ids" context="{'order_embedded':True}" />
+                                        <field name="invoiced_ids" context="{'order_embedded':True}" colspan="4" nolabel="1"/>
                                     </group>
                                 </page>
                             </notebook>
@@ -360,7 +360,7 @@
                             <field name="name" />
                             <field name="date" />
                             <separator string="Details" colspan="4"/>
-                            <field name="line_ids" colspan="4" nolabel="1" context="{'invoice_embedded': False}">
+                            <field name="line_ids" colspan="4" nolabel="1" context="{'invoice_embedded': True}">
                             </field>
                         </group>
                     </sheet>    
