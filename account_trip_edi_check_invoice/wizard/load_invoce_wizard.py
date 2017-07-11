@@ -49,6 +49,7 @@ class EdiLoadInvoiceLineWizard(orm.TransientModel):
     # --------------------
     # Wizard button event:
     # --------------------
+
     def action_done(self, cr, uid, ids, context=None):
         ''' Event for button done
         '''
@@ -56,11 +57,39 @@ class EdiLoadInvoiceLineWizard(orm.TransientModel):
             context = {}        
 
         line_pool = self.pool.get('edi.invoice.line')        
-        line_pool.import_invoice_line_from_account(cr, uid, context=context)
+        line_pool.import_invoice_line_from_account(cr, uid, context=context)        
+        return True
+
+    def action_export(self, cr, uid, ids, context=None):
+        ''' Event for button extract
+        '''
+        if context is None: 
+            context = {}
         
-        return {
-            'type': 'ir.actions.act_window_close'
-            }
+        # Pool used:
+        order_pool = self.pool.get('edi.order')
+        #line_pool = self.pool.get('edi.invoice.line')        
+        
+        # 0. Load history files:
+        # XXX Not here just use scheduled operation!!!
+        
+        # 1. Import invoice:
+        #line_pool.import_invoice_line_from_account(cr, uid, context=context)
+        
+        # 2. Get selected order:
+        order_ids = order_pool.search(cr, uid, [
+            ('invoiced', '=', True)], context=context)
+        
+        # 3. Load data in all selected order:
+        order_pool.load_order_line_details(cr, uid, order_ids, context=context)
+        
+        # 4. Generate check database:
+        order_pool.generate_check_database(cr, uid, order_ids, context=context)
+            
+        # 5. Extract in Excel:
+        order_pool.extract_check_data_xlsx(cr, uid, order_ids, context=context)
+
+        return True
 
     _columns = {
         'note': fields.text('Procedure', readonly=True),

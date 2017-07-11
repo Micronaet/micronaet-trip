@@ -21,6 +21,7 @@ import os
 import sys
 import logging
 import openerp
+import xlsxwriter
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
@@ -34,7 +35,6 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT, 
     DATETIME_FORMATS_MAP, 
     float_compare)
-
 
 _logger = logging.getLogger(__name__)
 
@@ -371,6 +371,12 @@ class EdiOrder(orm.Model):
                 else: # no difference:
                     data['state'] = 'correct'
                 check_pool.create(cr, uid, data, context=context)
+        return True
+        
+    def extract_check_data_xlsx(self, cr, uid, ids, context=None):
+        ''' Extract order passed in in check XLSX file
+        '''
+        
         return True
         
     _columns = {

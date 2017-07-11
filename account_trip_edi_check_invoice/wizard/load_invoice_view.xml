@@ -9,7 +9,8 @@
                 <form string="Wizard" version="7.0">
                    <header>
                        <button string="Cancel" special="cancel" />
-                       <button name="action_done" string="Load" type="object" icon="gtk-jump-to" class="oe_highlight" />
+                       <button name="action_done" string="Load Mexal file" type="object" icon="gtk-jump-to" class="oe_highlight" />
+                       <button name="action_export" string="Export in Excel" type="object" icon="gtk-jump-to" class="oe_highlight" confirm="Remember to load all history file before! Confirm?"/>
                    </header>                   
                    <group colspan="4" col="4">
                         <separator string="Note" colspan="4"/>
