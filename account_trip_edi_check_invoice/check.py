@@ -431,7 +431,7 @@ class EdiOrder(orm.Model):
         # ---------------------------------------------------------------------
         # Format elements:
         # ---------------------------------------------------------------------
-        num_format = '#,###.###'
+        num_format = '#.##0'
         # Text:
         format_title = WB.add_format({
             'bold': True, 
@@ -442,7 +442,7 @@ class EdiOrder(orm.Model):
             'valign': 'vcenter',
             'bg_color': 'gray',
             'border': 1,
-            'text_wrap': True,
+            #'text_wrap': True,
             })
 
         format_text = WB.add_format({
@@ -455,26 +455,26 @@ class EdiOrder(orm.Model):
         # Number:
         format_white = WB.add_format({
             'font_name': 'Arial',
-            'align': 'left',
+            'align': 'right',
             'font_size': 9,
             'border': 1,
-            #'num_format': num_format,
-            'bg_color': '#ff9999', #'red',
+            'num_format': num_format,
+            #'bg_color': '#ff9999', #'red',
             })
         format_red = WB.add_format({
             'font_name': 'Arial',
-            'align': 'left',
+            'align': 'right',
             'font_size': 9,
             'border': 1,
-            #'num_format': num_format,
+            'num_format': num_format,
             'bg_color': '#ff9999', #'red',
             })
         format_green = WB.add_format({
             'font_name': 'Arial',
-            'align': 'left',
+            'align': 'right',
             'font_size': 9,
             'border': 1,
-            #'num_format': num_format,
+            'num_format': num_format,
             'bg_color': '#c1ef94', #'green',
             })
 
@@ -520,13 +520,15 @@ class EdiOrder(orm.Model):
                 # Format:
                 # -------------------------------------------------------------
                 if check.order_price == check.invoice_price:
-                    format_price = format_text
+                    format_price = format_white
                 else:    
                     format_price = format_red
+                    
                 if check.order_qty == check.invoice_qty:
-                    format_qty = format_text
+                    format_qty = format_white
                 else:    
                     format_qty = format_red
+                    
                 #if check.order_total == check.invoice_total:
                 #    format_total = format_text
                 #else:    
@@ -542,11 +544,11 @@ class EdiOrder(orm.Model):
                     (check.invoice_price, format_price),
                     (check.order_qty, format_qty),
                     (check.invoice_qty, format_qty),
-                    (check.order_total, format_text),
-                    (check.invoice_total, format_text),
+                    (check.order_total, format_white),
+                    (check.invoice_total, format_white),
                     (order.name, format_text),
                     (check.invoice_info, format_text),
-                    (check.difference, format_text),
+                    (check.difference, format_white),
                     ]
                 write_xls_mrp_line(WS, counter[check.state], record)
                 counter[check.state] += 1
