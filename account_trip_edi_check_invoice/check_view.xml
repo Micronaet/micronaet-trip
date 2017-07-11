@@ -249,11 +249,12 @@
                     <field name="article" />
 
                     <field name="order_qty" />
-                    <field name="order_price" />
-                    <field name="order_total" />
-
                     <field name="invoice_qty" />
+
+                    <field name="order_price" />
                     <field name="invoice_price" />
+
+                    <field name="order_total" />
                     <field name="invoice_total" />
     
                     <field name="difference" />
@@ -270,16 +271,17 @@
                         <field name="state"  widget="statusbar" />                    
                     </header>
                     <sheet>
-                        <group colspan="4" col="6">
+                        <group colspan="4" col="4">
                             <field name="order_id" invisible="context.get('order_embedded', False)" />
                             <field name="article" />
 
                             <field name="order_qty" />
-                            <field name="order_price" />
-                            <field name="order_total" />
-
                             <field name="invoice_qty" />
+
+                            <field name="order_price" />
                             <field name="invoice_price" />
+
+                            <field name="order_total" />
                             <field name="invoice_total" />
                             
                             <field name="difference" />                            
