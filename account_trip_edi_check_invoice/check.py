@@ -487,7 +487,7 @@ class EdiOrder(orm.Model):
                 'border': 1,
                 'num_format': num_format,
                 'bg_color': '#ddffd9',
-                })
+                }),
             1: WB.add_format({
                 'font_name': 'Arial',
                 'align': 'right',
@@ -495,7 +495,7 @@ class EdiOrder(orm.Model):
                 'border': 1,
                 'num_format': num_format,
                 'bg_color': '#b4ecac',
-                })
+                }),
             2: WB.add_format({
                 'font_name': 'Arial',
                 'align': 'right',
@@ -503,7 +503,7 @@ class EdiOrder(orm.Model):
                 'border': 1,
                 'num_format': num_format,
                 'bg_color': '#74a96d',
-                })
+                }),
             3: WB.add_format({
                 'font_name': 'Arial',
                 'align': 'right',
@@ -511,7 +511,7 @@ class EdiOrder(orm.Model):
                 'border': 1,
                 'num_format': num_format,
                 'bg_color': '#4e7449',
-                })
+                }),
             }
              
         heat = {    
@@ -522,7 +522,7 @@ class EdiOrder(orm.Model):
                 'border': 1,
                 'num_format': num_format,
                 'bg_color': '#ececec',
-                })
+                }),
             1: WB.add_format({
                 'font_name': 'Arial',
                 'align': 'right',
@@ -530,7 +530,7 @@ class EdiOrder(orm.Model):
                 'border': 1,
                 'num_format': num_format,
                 'bg_color': '#c8c8c8',
-                })
+                }),
             2: WB.add_format({
                 'font_name': 'Arial',
                 'align': 'right',
@@ -538,7 +538,7 @@ class EdiOrder(orm.Model):
                 'border': 1,
                 'num_format': num_format,
                 'bg_color': '#838383',
-                })
+                }),
             3: WB.add_format({
                 'font_name': 'Arial',
                 'align': 'right',
@@ -546,7 +546,7 @@ class EdiOrder(orm.Model):
                 'border': 1,
                 'num_format': num_format,
                 'bg_color': '#5f5e5e',
-                })
+                }),
             }
 
         # ---------------------------------------------------------------------
