@@ -687,6 +687,13 @@ class EdiOrder(orm.Model):
     def load_file_in_folder(self, cr, uid, ids, context=None):
         """ Load file in this folder (used also for scheduled)
         """
+        def change_datetime_gmt(timestamp):
+            ''' Change datetime removing gap from now and GMT 0
+            '''
+            extra_gmt = datetime.now() - datetime.utcnow()
+            ts = datetime.strptime(timestamp, DEFAULT_SERVER_DATETIME_FORMAT) 
+            return (ts - extra_gmt).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        
         # Parameters:
         extension = 'ASC'
         
@@ -721,19 +728,21 @@ class EdiOrder(orm.Model):
                     # Parse name:
                     mode = f[:6].upper()
                     
-                    date = f[6:21]
+                    timestamp = f[6:21]
                     
-                    date = '%s-%s-%s %s:%s:%s' % (
+                    timestamp = '%s-%s-%s %s:%s:%s' % (
                         # Date:
-                        date[:4],
-                        date[4:6],
-                        date[6:8],
+                        timestamp[:4],
+                        timestamp[4:6],
+                        timestamp[6:8],
                         
                         # Time:
-                        date[8:10],
-                        date[10:12],
-                        date[12:14],
+                        timestamp[8:10],
+                        timestamp[10:12],
+                        timestamp[12:14],
                         )
+                    # TODO correct hour    
+                    #timestamp = change_datetime_gmt(timestamp)
                     
                     if mode == 'ELIORD':
                         mode = 'create'
@@ -779,7 +788,7 @@ class EdiOrder(orm.Model):
                         'folder_id': folder.id,
                         'name': f,
                         'last': False,
-                        'datetime': date,
+                        'datetime': timestamp,
                         'mode': mode,
                         }, context=context)
         return True                    
