@@ -376,10 +376,8 @@ class EdiOrder(orm.Model):
                 # -------------------------------------------------------------                
                 if not order_subtotal: # only order
                     data['state'] = 'invoice'
-                    check_pool.create(cr, uid, data, context=context)                
                 elif not invoice_subtotal: # only invoice
                     data['state'] = 'order'
-                    check_pool.create(cr, uid, data, context=context)                                
                 elif difference: # check difference: 
                     data['state'] = 'difference'
                 else: # no difference:
