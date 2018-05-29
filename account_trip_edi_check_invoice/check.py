@@ -429,7 +429,7 @@ class EdiOrder(orm.Model):
         # ---------------------------------------------------------------------
         # Format elements:
         # ---------------------------------------------------------------------
-        num_format = '#.##0'
+        num_format = '0.##0'
         # Text:
         format_title = WB.add_format({
             'bold': True, 

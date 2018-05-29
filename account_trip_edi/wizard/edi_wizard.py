@@ -493,6 +493,8 @@ class trip_import_edi_wizard(osv.osv_memory):
             }  
 
     _columns = {
+        #'with_csv':fields.boolean('With CSV data', 
+        #    help='Load also CSV data for export status'),
         'note': fields.text('Importation note'),
         }
     
