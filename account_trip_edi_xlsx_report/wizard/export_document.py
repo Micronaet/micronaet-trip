@@ -68,7 +68,7 @@ class QualityExportExcelReport(orm.TransientModel):
                 if not start:
                     continue    
 
-                if line == '</tr>':
+                if line.startswith('</tr>'):
                     # record end:
                     record_on = False
                     res.append(record)
@@ -164,6 +164,7 @@ class QualityExportExcelReport(orm.TransientModel):
         # Trip:
         # -----------------------------------------------------------------
         # Parameters:
+        extension='xls'
         ws_name = _('Ordini EDI')
         ws_detail_name = _('Dettaglio')
         ws_total_name = _('Totali')
@@ -174,7 +175,7 @@ class QualityExportExcelReport(orm.TransientModel):
         # Create Excel file:    
         # -----------------------------------------------------------------            
         # Worksheet:
-        excel_pool.create_worksheet(ws_name)
+        excel_pool.create_worksheet(ws_name, extension=extension)
         excel_pool.create_worksheet(ws_detail_name)
         excel_pool.create_worksheet(ws_total_name)
         
@@ -291,6 +292,9 @@ class QualityExportExcelReport(orm.TransientModel):
                     f_text = format_text
                     f_number = format_number
 
+            # -----------------------------------------------------------------
+            # Write header page:
+            # -----------------------------------------------------------------    
             data = [
                 trip.company_id.name or '',
                 trip.customer,
@@ -314,6 +318,10 @@ class QualityExportExcelReport(orm.TransientModel):
             information = parse_html_to_detail(trip.information)
             for item in information:
                 row_detail += 1
+
+                # -------------------------------------------------------------        
+                # Write detail page:
+                # -------------------------------------------------------------        
                 
                 # Update product information:
                 data[10] = item[0]
@@ -323,12 +331,20 @@ class QualityExportExcelReport(orm.TransientModel):
                 data[14] = (float(item[4]), f_number)
                 data[15] = (float(item[5]), f_number)
                 
-                key = (data[10], data[11], data[12]) 
+                key = (data[10], data[11], data[12])
+                        
+                # -------------------------------------------------------------        
+                # Write total page:
+                # -------------------------------------------------------------        
+                # Keep only positive numbers:
+                current = data[13][0]
+                if current < 0.0:
+                    current = 0.0
                 if key in res_total:
-                    res_total[key] += data[13][0]
+                    res_total[key] += current
                 else:    
-                    res_total[key] = data[13][0]
-                    
+                    res_total[key] = current
+                # Write in total page:    
                 excel_pool.write_xls_line(
                     ws_detail_name, row_detail, data, f_text)
 
@@ -345,7 +361,7 @@ class QualityExportExcelReport(orm.TransientModel):
             
                             
         return excel_pool.return_attachment(cr, uid, ws_name, 
-            name_of_file='estrazione_viaggi_selezionati', version='7.0', 
+            name_of_file='estrazione_viaggi_selezionati.xls', version='7.0', 
             php=True, context=context)
 
     _columns = {
