@@ -243,7 +243,7 @@ class QualityExportExcelReport(orm.TransientModel):
             _('Viaggio 2'),
             ]
             
-        row = row_detail = row_total = 1
+        row = row_detail = row_total = 2
         excel_pool.write_xls_line(ws_name, row, header, format_header)
         header.extend([
             _('Codice'),
