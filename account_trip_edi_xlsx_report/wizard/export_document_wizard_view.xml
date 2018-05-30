@@ -12,17 +12,41 @@
                        <button name="action_print" string="Print" type="object" icon="gtk-print" class="oe_highlight" />
                    </header>                   
                    <group colspan="4" col="4">
+                       <field name="ref" />
+                       <field name="partner_name" />
+                       
+                       <field name="company_id" widget="selection" />
+                       <field name="destination_id" domain="[('is_address', '=', True)]"/>
+                       
+                       <field name="tour1_id" widget="selection"/>
+                       <field name="tour2_id" widget="selection" />
+                       
+                       <field name="from_date" />
+                       <field name="to_date" />
+                       
+                       <field name="from_deadline" />
+                       <field name="to_deadline" />                       
                    </group>
                 </form>
             </field>
       </record>
-      <act_window
-          id="act_edi_export_excel_report_wizard_view"
-          name="Export XLSX selection"
-          res_model="edi.trip.line"
-          src_model="edi.export.excel.report"
-          view_mode="form"
-          view_type="form"
-          />
+
+      <record model="ir.actions.act_window" id="action_edi_export_excel_report_wizard">
+          <field name="name">Export Excel report</field>
+          <field name="res_model">edi.export.excel.report</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">form</field>
+          <field name="target">new</field>
+          <field name="view_id" ref="edi_export_excel_report_wizard_view"/>
+          <field name="context">{}</field>
+          <field name="domain">[]</field>
+      </record>
+      <menuitem 
+          parent="account_trip_edi.menu_trip_trip" 
+          id="menu_action_edi_export_excel_report_wizard" 
+          action="action_edi_export_excel_report_wizard"
+          sequence="10"
+          />     
+          
     </data>
 </openerp>

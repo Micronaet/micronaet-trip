@@ -412,7 +412,7 @@ class trip_order(orm.Model):
         'tour_code': fields.function(
             _get_tour_code,
             fnct_search=_search_tour_code,
-            type="char", 
+            type='char', 
             method=True,
             string="Tour code",
             store=False,
