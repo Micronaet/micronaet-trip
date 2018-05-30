@@ -57,6 +57,7 @@ class QualityExportExcelReport(orm.TransientModel):
             ''' Explode line from HTML table text:
             '''
             res = []
+            
             start = False
             record_on = False
             for line in html.split('\n'):
@@ -133,6 +134,12 @@ class QualityExportExcelReport(orm.TransientModel):
             domain.append(('deadline', '<=', '%s' % wiz_proxy.to_deadline))
             filter_description += _(', Alla scadenza: %s') % \
                 wiz_proxy.to_deadline
+
+        # Selection: 
+        if wiz_proxy.type:
+            domain.append(('type', '=', wiz_proxy.type))
+            filter_description += _(', Tipo: %s') % \
+                wiz_proxy.type
         
         # One2many:    
         if wiz_proxy.company_id:
@@ -175,19 +182,29 @@ class QualityExportExcelReport(orm.TransientModel):
         excel_pool.set_format()
         format_title = excel_pool.get_format('title')
         format_header = excel_pool.get_format('header')
+
         format_text = excel_pool.get_format('text')
+        format_text_green = excel_pool.get_format('text_green')
+        format_text_blue = excel_pool.get_format('text_blue')
+        format_text_red = excel_pool.get_format('text_red')
+
+        format_number = excel_pool.get_format('number')
+        format_number_green = excel_pool.get_format('number_green')
+        format_number_blue = excel_pool.get_format('number_blue')
+        format_number_red = excel_pool.get_format('number_red')
+
         
         # Column setup width:
         col_width = [
             7, 20, 50,            
             12, 12,            
-            10, 3,
+            10, 5,
             7, 7
             ]
         excel_pool.column_width(ws_name, col_width)
-        col_width.extend([15, 10])
+        col_width.extend([15, 30, 5, 10, 10])
         excel_pool.column_width(ws_detail_name, col_width)
-        excel_pool.column_width(ws_total_name, [15, 20, 10])
+        excel_pool.column_width(ws_total_name, [15, 40, 5, 10])
             
         # Title:
         row = row_detail = row_total = 0
@@ -198,8 +215,8 @@ class QualityExportExcelReport(orm.TransientModel):
         excel_pool.write_xls_line(ws_detail_name, row_detail, [
             _('Dettaglio prodotti da ordine:'),
             ], format_title)
-        excel_pool.write_xls_line(ws_name, row_total, [
-            _('Totale prodotti'),
+        excel_pool.write_xls_line(ws_total_name, row_total, [
+            _('Totale prodotti per codice e UM:'),
             ], format_title)
 
         # Header:            
@@ -230,9 +247,10 @@ class QualityExportExcelReport(orm.TransientModel):
             ])
         excel_pool.write_xls_line(ws_detail_name, row_detail, header, 
             format_header)
-        excel_pool.write_xls_line(ws_detail_name, row_total, [
+        excel_pool.write_xls_line(ws_total_name, row_total, [
             _('Codice'),
             _('Nome'),
+            _('UM'),
             _('Totale'),
             ], format_header)
 
@@ -245,11 +263,32 @@ class QualityExportExcelReport(orm.TransientModel):
             len(trip_ids),
             domain,
             ))
+
+        res_total = {}
         for trip in sorted(
                 trip_pool.browse(
                     cr, uid, trip_ids, context=context), 
                 key=lambda x: (x.date, x.number)):
             row += 1    
+
+            # Get detail of line:            
+            if trip.type in ('deleting', 'delete', 'anomaly'):
+                sign = -1
+                if trip.type == 'delete': # delete has no data
+                    f_text = format_text_blue
+                    f_number = format_number_blue
+                else:    
+                    f_text = format_text_red
+                    f_number = format_number_red
+            else:
+                sign = +1
+                if trip.type == 'forced': # delete has no data
+                    f_text = format_text_green
+                    f_number = format_number_green
+                else:
+                    f_text = format_text
+                    f_number = format_number
+
             data = [
                 trip.company_id.name or '',
                 trip.customer,
@@ -264,32 +303,44 @@ class QualityExportExcelReport(orm.TransientModel):
                 trip.tour1_id.name or '',
                 trip.tour2_id.name or '',
                 
-                
                 # Extra data for detail sheet:
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
+                '', '', '', '', '', '',
                 ]
-            excel_pool.write_xls_line(ws_name, row, data, format_text)
+            excel_pool.write_xls_line(ws_name, row, data, f_text)
 
-            # Get detail of line:            
             information = parse_html_to_detail(trip.information)
             for item in information:
                 row_detail += 1
-                # Update prodcut information:
+                
+                # Update product information:
                 data[9] = item[0]
                 data[10] = item[1]
                 data[11] = item[2]
-                data[12] = item[3]
-                data[13] = item[4]
-                data[14] = item[5]
+                data[12] = (sign * float(item[3]), f_number)
+                data[13] = (float(item[4]), f_number)
+                data[14] = (float(item[5]), f_number)
                 
+                key = (data[9], data[10], data[11]) 
+                if key in res_total:
+                    res_total[key] += data[12][0]
+                else:    
+                    res_total[key] = data[12][0]
+                    
                 excel_pool.write_xls_line(
-                    ws_detail_name, row_detail, data, format_text)
-        
+                    ws_detail_name, row_detail, data, f_text)
+
+        for item in sorted(res_total):
+            row_total += 1
+            tot = res_total[item]
+            
+            excel_pool.write_xls_line(ws_total_name, row_total, [
+                item[0], 
+                item[1], 
+                item[2], 
+                (tot, f_number),
+                ], format_text)
+            
+                            
         return excel_pool.return_attachment(cr, uid, ws_name, 
             name_of_file='estrazione_viaggi_selezionati', version='7.0', 
             php=True, context=context)
