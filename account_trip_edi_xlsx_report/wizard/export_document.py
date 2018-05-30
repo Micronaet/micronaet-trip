@@ -179,7 +179,8 @@ class QualityExportExcelReport(orm.TransientModel):
         excel_pool.create_worksheet(ws_total_name)
         
         # Format:
-        excel_pool.set_format()
+        excel_pool.set_format(number_format='0,#0')
+        excel_pool.get_format() # Update workbook
         format_title = excel_pool.get_format('title')
         format_header = excel_pool.get_format('header')
 
@@ -196,10 +197,10 @@ class QualityExportExcelReport(orm.TransientModel):
         
         # Column setup width:
         col_width = [
-            7, 20, 50,            
+            7, 20, 12, 50,            
             12, 12,            
-            10, 5,
-            7, 7
+            10, 6,
+            8, 8
             ]
         excel_pool.column_width(ws_name, col_width)
         col_width.extend([15, 30, 5, 10, 10])
@@ -223,6 +224,7 @@ class QualityExportExcelReport(orm.TransientModel):
         header = [
             _('Azienda'),
             _('Cliente'),
+            _('Rif.'),
             _('Destinazione cliente'),
             
             _('Data'),
@@ -292,10 +294,11 @@ class QualityExportExcelReport(orm.TransientModel):
             data = [
                 trip.company_id.name or '',
                 trip.customer,
+                trip.number,
                 trip.destination_id.name,
 
-                trip.date,
-                trip.deadline,
+                excel_pool.format_date(trip.date),
+                excel_pool.format_date(trip.deadline),
                 
                 trip.type or '',
                 'X' if trip.recursion else '',
@@ -303,28 +306,28 @@ class QualityExportExcelReport(orm.TransientModel):
                 trip.tour1_id.name or '',
                 trip.tour2_id.name or '',
                 
-                # Extra data for detail sheet:
-                '', '', '', '', '', '',
                 ]
             excel_pool.write_xls_line(ws_name, row, data, f_text)
+            # Extra data for detail sheet:
+            data.extend(['', '', '', '', '', '',])
 
             information = parse_html_to_detail(trip.information)
             for item in information:
                 row_detail += 1
                 
                 # Update product information:
-                data[9] = item[0]
-                data[10] = item[1]
-                data[11] = item[2]
-                data[12] = (sign * float(item[3]), f_number)
-                data[13] = (float(item[4]), f_number)
-                data[14] = (float(item[5]), f_number)
+                data[10] = item[0]
+                data[11] = item[1]
+                data[12] = item[2]
+                data[13] = (sign * float(item[3]), f_number)
+                data[14] = (float(item[4]), f_number)
+                data[15] = (float(item[5]), f_number)
                 
-                key = (data[9], data[10], data[11]) 
+                key = (data[10], data[11], data[12]) 
                 if key in res_total:
-                    res_total[key] += data[12][0]
+                    res_total[key] += data[13][0]
                 else:    
-                    res_total[key] = data[12][0]
+                    res_total[key] = data[13][0]
                     
                 excel_pool.write_xls_line(
                     ws_detail_name, row_detail, data, f_text)
