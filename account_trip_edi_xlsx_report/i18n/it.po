@@ -1,0 +1,134 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# 	* account_trip_edi_xlsx_report
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-30 07:42+0000\n"
+"PO-Revision-Date: 2018-05-30 09:44+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: account_trip_edi_xlsx_report
+#: model:ir.actions.act_window,name:account_trip_edi_xlsx_report.action_edi_export_excel_report_wizard
+#: model:ir.ui.menu,name:account_trip_edi_xlsx_report.menu_action_edi_export_excel_report_wizard
+msgid "Export Excel report"
+msgstr "Esporta in Excel"
+
+#. module: account_trip_edi_xlsx_report
+#: selection:edi.export.excel.report,type:0
+msgid "Create"
+msgstr "Crea"
+
+#. module: account_trip_edi_xlsx_report
+#: view:edi.export.excel.report:0
+msgid "Wizard"
+msgstr "Wizard"
+
+#. module: account_trip_edi_xlsx_report
+#: selection:edi.export.excel.report,type:0
+msgid "To delete"
+msgstr "Da cancellare"
+
+#. module: account_trip_edi_xlsx_report
+#: view:edi.export.excel.report:0
+msgid "Print"
+msgstr "Stampa"
+
+#. module: account_trip_edi_xlsx_report
+#: field:edi.export.excel.report,type:0
+msgid "Type"
+msgstr "Tipo"
+
+#. module: account_trip_edi_xlsx_report
+#: field:edi.export.excel.report,company_id:0
+msgid "Company"
+msgstr "Azienda"
+
+#. module: account_trip_edi_xlsx_report
+#: field:edi.export.excel.report,from_deadline:0
+msgid "From deadline"
+msgstr "Dalla scadenza"
+
+#. module: account_trip_edi_xlsx_report
+#: field:edi.export.excel.report,to_date:0
+msgid "To date"
+msgstr "Alla data"
+
+#. module: account_trip_edi_xlsx_report
+#: selection:edi.export.excel.report,type:0
+msgid "To importing"
+msgstr "Da importare"
+
+#. module: account_trip_edi_xlsx_report
+#: field:edi.export.excel.report,ref:0
+msgid "Ref."
+msgstr "Rif."
+
+#. module: account_trip_edi_xlsx_report
+#: model:ir.model,name:account_trip_edi_xlsx_report.model_edi_export_excel_report
+msgid "edi.export.excel.report"
+msgstr "edi.export.excel.report"
+
+#. module: account_trip_edi_xlsx_report
+#: selection:edi.export.excel.report,type:0
+msgid "Change"
+msgstr "Cambia"
+
+#. module: account_trip_edi_xlsx_report
+#: field:edi.export.excel.report,to_deadline:0
+msgid "To deadline"
+msgstr "Alla scadenza"
+
+#. module: account_trip_edi_xlsx_report
+#: field:edi.export.excel.report,destination_id:0
+msgid "Destination"
+msgstr "Destinazione"
+
+#. module: account_trip_edi_xlsx_report
+#: field:edi.export.excel.report,tour1_id:0
+msgid "Tour 1"
+msgstr "Viaggio 1"
+
+#. module: account_trip_edi_xlsx_report
+#: field:edi.export.excel.report,tour2_id:0
+msgid "Tour 2"
+msgstr "Viaggio 2"
+
+#. module: account_trip_edi_xlsx_report
+#: selection:edi.export.excel.report,type:0
+msgid "To force"
+msgstr "Da forzare"
+
+#. module: account_trip_edi_xlsx_report
+#: selection:edi.export.excel.report,type:0
+msgid "Delete"
+msgstr "Cancella"
+
+#. module: account_trip_edi_xlsx_report
+#: selection:edi.export.excel.report,type:0
+msgid "Delete (Anomaly)"
+msgstr "Cancella (anomalia)"
+
+#. module: account_trip_edi_xlsx_report
+#: field:edi.export.excel.report,from_date:0
+msgid "From date"
+msgstr "Dalla data"
+
+#. module: account_trip_edi_xlsx_report
+#: view:edi.export.excel.report:0
+msgid "Cancel"
+msgstr "Annulla"
+
+#. module: account_trip_edi_xlsx_report
+#: field:edi.export.excel.report,partner_name:0
+msgid "Partner"
+msgstr "Partner"
