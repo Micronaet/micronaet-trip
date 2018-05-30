@@ -160,6 +160,11 @@ class QualityExportExcelReport(orm.TransientModel):
             filter_description += _(', Viaggio 2: %s') % \
                 wiz_proxy.tour2_id.name
 
+        # Filter for details:
+        filter_code = wiz_proxy.filter_code or False
+        if filter_code: 
+            filter_description += _(', Codice prodotto: %s') % filter_code
+        
         # -----------------------------------------------------------------
         # Trip:
         # -----------------------------------------------------------------
@@ -272,7 +277,6 @@ class QualityExportExcelReport(orm.TransientModel):
                 trip_pool.browse(
                     cr, uid, trip_ids, context=context), 
                 key=lambda x: (x.date, x.number)):
-            row += 1    
 
             # Get detail of line:            
             if trip.type in ('deleting', 'delete', 'anomaly'):
@@ -305,23 +309,28 @@ class QualityExportExcelReport(orm.TransientModel):
                 excel_pool.format_date(trip.deadline),
                 
                 trip.type or '',
-                'X' if trip.recursion else '',
+                'X' if trip.recursion > 1 else '',
                 
                 trip.tour1_id.name or '',
                 trip.tour2_id.name or '',
                 
+                '', '', '', '', '', '',
                 ]
-            excel_pool.write_xls_line(ws_name, row, data, f_text)
+                
             # Extra data for detail sheet:
-            data.extend(['', '', '', '', '', '',])
-
             information = parse_html_to_detail(trip.information)
+            filter_code_present = False
             for item in information:
-                row_detail += 1
+                # Filter code management:
+                if filter_code and filter_code not in item[0]:
+                    continue
 
+                filter_code_present = True
+                
                 # -------------------------------------------------------------        
                 # Write detail page:
                 # -------------------------------------------------------------        
+                row_detail += 1
                 
                 # Update product information:
                 data[10] = item[0]
@@ -347,6 +356,12 @@ class QualityExportExcelReport(orm.TransientModel):
                 # Write in total page:    
                 excel_pool.write_xls_line(
                     ws_detail_name, row_detail, data, f_text)
+           
+            # Write now header data (for filter code test):
+            if not filter_code or filter_code_present:
+                row += 1    
+                excel_pool.write_xls_line(ws_name, row, data[:10], f_text)
+         
 
         for item in sorted(res_total):
             row_total += 1
@@ -368,6 +383,7 @@ class QualityExportExcelReport(orm.TransientModel):
         # Char:
         'ref': fields.char('Ref.', size=20),
         'partner_name': fields.char('Partner', size=80),
+        'filter_code': fields.char('Product', size=80),
         
         # Many 2 one
         'company_id': fields.many2one('edi.company', 'Company'),
