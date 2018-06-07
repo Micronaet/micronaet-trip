@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-11 10:19+0000\n"
-"PO-Revision-Date: 2017-07-11 12:27+0100\n"
+"POT-Creation-Date: 2018-06-07 15:35+0000\n"
+"PO-Revision-Date: 2018-06-07 17:36+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,40 +18,9 @@ msgstr ""
 "X-Generator: Poedit 1.6.10\n"
 
 #. module: account_trip_edi_check_invoice
-#: help:edi.order.file,datetime:0
-msgid "Datetime form customer EDI program (not file datetime)"
-msgstr "Date e ora fa programma EDI cliente (non la data del file)"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.invoice.line,article:0 field:edi.order.line,article:0
-#: field:edi.order.line.check,article:0
-msgid "Customer code"
-msgstr "Codice cliente"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.order.line.check,order_qty:0
-msgid "Order Q.ty"
-msgstr "Q. ordine"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.invoice.line,order_sequence:0
+#: field:edi.ddt.line,order_sequence:0 field:edi.invoice.line,order_sequence:0
 msgid "Order position"
 msgstr "Pos. ordine"
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.order:0
-msgid "Reload line"
-msgstr "Ricarica riga"
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.load.invoice.line.wizard:0
-msgid "Export in Excel"
-msgstr "Esporta in Excel"
-
-#. module: account_trip_edi_check_invoice
-#: selection:edi.order.file,mode:0
-msgid "Urgent (ELIURG)"
-msgstr "Urgente (ELIURG)"
 
 #. module: account_trip_edi_check_invoice
 #: model:ir.model,name:account_trip_edi_check_invoice.model_edi_order_line_check
@@ -60,40 +29,14 @@ msgid "EDI line check"
 msgstr "EDI controllo righe"
 
 #. module: account_trip_edi_check_invoice
-#: view:edi.order.line.check:0
-msgid "Order line check"
-msgstr "Controllo righe ordine"
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.load.invoice.line.wizard:0 view:edi.order.folder:0
-#: field:edi.order.folder,note:0
-msgid "Note"
-msgstr "Note"
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.invoice:0 view:edi.order:0 view:edi.order.file:0
+#: view:edi.ddt:0 view:edi.invoice:0 view:edi.order:0 view:edi.order.file:0
 msgid "Group By..."
 msgstr "Raggruppa per..."
-
-#. module: account_trip_edi_check_invoice
-#: model:ir.model,name:account_trip_edi_check_invoice.model_edi_invoice
-msgid "EDI invoice"
-msgstr "Fatture EDI"
 
 #. module: account_trip_edi_check_invoice
 #: selection:edi.order.line.check,state:0
 msgid "Only invoice"
 msgstr "Solo fattura"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.invoice.line,qty:0 field:edi.order.line,qty:0
-msgid "Q.ty"
-msgstr "Q."
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.invoice:0 view:edi.order:0
-msgid "Details"
-msgstr "Dettagli"
 
 #. module: account_trip_edi_check_invoice
 #: model:ir.actions.act_window,name:account_trip_edi_check_invoice.action_edi_load_invoice_line_wizard_wizard
@@ -102,9 +45,295 @@ msgid "Load invoice for check"
 msgstr "Carica fattura per controllo"
 
 #. module: account_trip_edi_check_invoice
+#: view:edi.order:0 field:edi.order,file_ids:0
+msgid "Files"
+msgstr "Files"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.load.invoice.line.wizard:0
+msgid "Load Mexal file"
+msgstr "Carica file Mexal"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.ddt.line,order_date:0 field:edi.invoice.line,order_date:0
+msgid "Order date"
+msgstr "Data ordine"
+
+#. module: account_trip_edi_check_invoice
+#: selection:edi.order.file,mode:0
+msgid "Create (ELIORD)"
+msgstr "Creazione (ELIORD)"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.ddt.line,order_number:0 field:edi.invoice.line,order_number:0
+msgid "Company order #"
+msgstr "Ordine azienda #"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.order.line.check,order_price:0
+msgid "Order Price"
+msgstr "Prezzo Ordine"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.ddt.line,name:0 field:edi.invoice.line,name:0
+#: field:edi.order.line,name:0 field:edi.order.line.check,name:0
+msgid "Company code"
+msgstr "Codice cliente"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.order.file:0 field:edi.order.file,last:0
+msgid "Last"
+msgstr "Ultimo"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.order.file,folder_id:0
+msgid "History folder"
+msgstr "Cartella storico"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.ddt,date:0 field:edi.invoice.line,ddt_date:0
+msgid "DDT date"
+msgstr "Data DDT"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.order.file,datetime:0
+msgid "Datetime"
+msgstr "Data ora"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.invoice:0
+msgid "EDI Invoice"
+msgstr "Fattura EDI"
+
+#. module: account_trip_edi_check_invoice
+#: model:ir.model,name:account_trip_edi_check_invoice.model_edi_ddt
+msgid "EDI DDT"
+msgstr "EDI DDT"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.order.line.check,invoice_qty:0
+msgid "Invoice Q.ty"
+msgstr "Q. fattura"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.order:0 field:edi.order,check_ids:0
+msgid "Check"
+msgstr "Controllo"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.order.line.check:0
+msgid "EDI order line check"
+msgstr "Controllo righe ordine EDI"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.order.line.check:0
+msgid "Order line check"
+msgstr "Controllo righe ordine"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.ddt,name:0 field:edi.invoice,name:0 field:edi.order,name:0
+msgid "Number"
+msgstr "Numero"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.order.line.check,state:0
+msgid "State"
+msgstr "Stato"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.order.line,uom:0
+msgid "UOM"
+msgstr "UM"
+
+#. module: account_trip_edi_check_invoice
+#: selection:edi.order.file,mode:0
+msgid "Delete (ELICHG)"
+msgstr "Cancellazione (ELICHG)"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.ddt.line:0
+msgid "EDI ddt line"
+msgstr "EDI ddt line"
+
+#. module: account_trip_edi_check_invoice
+#: model:ir.ui.menu,name:account_trip_edi_check_invoice.menu_edi_invoice_check_root
+msgid "Invoice order check"
+msgstr "Controllo ordine fatturato"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.order.line.check,invoice_info:0
+msgid "Invoice info"
+msgstr "Info fattura"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.order,line_ids:0
+msgid "Line"
+msgstr "Riga"
+
+#. module: account_trip_edi_check_invoice
+#: model:ir.model,name:account_trip_edi_check_invoice.model_edi_order_line
+msgid "EDI line"
+msgstr "Riga EDI"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.ddt:0 field:edi.ddt.line,ddt_id:0
+#: model:ir.actions.act_window,name:account_trip_edi_check_invoice.action_edi_ddt_form
+#: model:ir.ui.menu,name:account_trip_edi_check_invoice.menu_edi_ddt_check_ddt
+msgid "DDT"
+msgstr "DDT"
+
+#. module: account_trip_edi_check_invoice
+#: help:edi.order.folder,autoload:0
+msgid "Schedule for auto load operation"
+msgstr "Schedulato per essere caricato automaticamente"
+
+#. module: account_trip_edi_check_invoice
+#: model:ir.model,name:account_trip_edi_check_invoice.model_edi_load_invoice_line_wizard
+msgid "edi.load.invoice.line.wizard"
+msgstr "edi.load.invoice.line.wizard"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.invoice.line,ddt_number:0
+msgid "DDT #"
+msgstr "DDT #"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.order:0 field:edi.order,invoiced:0 field:edi.order,invoiced_ids:0
+msgid "Invoiced"
+msgstr "Fatturato"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.ddt.line,article:0 field:edi.invoice.line,article:0
+#: field:edi.order.line,article:0 field:edi.order.line.check,article:0
+msgid "Customer code"
+msgstr "Codice cliente"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.load.invoice.line.wizard:0
+msgid "Recalc and export in Excel"
+msgstr "Ricalcola ed esporta in Excel"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.load.invoice.line.wizard:0 view:edi.order.folder:0
+#: field:edi.order.folder,note:0
+msgid "Note"
+msgstr "Note"
+
+#. module: account_trip_edi_check_invoice
 #: field:edi.order.line.check,invoice_price:0
 msgid "Invoice Price"
 msgstr "Prezzo fattura"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.ddt.line:0 view:edi.invoice.line:0
+msgid "total"
+msgstr "totale"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.order.line:0
+msgid "EDI order line"
+msgstr "Righe ordine EDI"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.ddt:0 view:edi.invoice:0 view:edi.order:0 field:edi.order,date:0
+#: view:edi.order.file:0
+msgid "Date"
+msgstr "Data"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.order.folder:0
+msgid "Reload file in folder"
+msgstr "Ricarica file della cartella"
+
+#. module: account_trip_edi_check_invoice
+#: help:edi.order.file,datetime:0
+msgid "Datetime form customer EDI program (not file datetime)"
+msgstr "Date e ora fa programma EDI cliente (non la data del file)"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.order:0
+msgid "Reload line"
+msgstr "Ricarica riga"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.order.line,sequence:0
+msgid "Seq."
+msgstr "Pos."
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.order.folder,autoload:0
+msgid "Auto load"
+msgstr "Auto caricamento"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.order.folder,path:0
+msgid "Path"
+msgstr "Percorso"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.load.invoice.line.wizard,note:0
+msgid "Procedure"
+msgstr "Procedura"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.ddt.line,subtotal:0 field:edi.invoice.line,subtotal:0
+#: field:edi.order.line,total:0
+msgid "Subtotal"
+msgstr "Subtotale"
+
+#. module: account_trip_edi_check_invoice
+#: model:ir.model,name:account_trip_edi_check_invoice.model_edi_invoice
+msgid "EDI invoice"
+msgstr "Fatture EDI"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.order:0
+msgid "Not invoiced"
+msgstr "Non fatturato"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.invoice:0 field:edi.invoice.line,invoice_id:0
+#: model:ir.actions.act_window,name:account_trip_edi_check_invoice.action_edi_invoice_form
+#: model:ir.ui.menu,name:account_trip_edi_check_invoice.menu_edi_invoice_check_invoice
+msgid "Invoice"
+msgstr "Fattura"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.load.invoice.line.wizard:0
+msgid "Cancel"
+msgstr "Annulla"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.order.folder:0
+#: model:ir.model,name:account_trip_edi_check_invoice.model_edi_order_folder
+msgid "EDI order folder"
+msgstr "Cartella ordini EDI"
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.load.invoice.line.wizard:0
+msgid "Wizard"
+msgstr "Wizard"
+
+#. module: account_trip_edi_check_invoice
+#: selection:edi.order.line.check,state:0
+msgid "Only order"
+msgstr "Solo ordine"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.order.line.check,order_qty:0
+msgid "Order Q.ty"
+msgstr "Q. ordine"
+
+#. module: account_trip_edi_check_invoice
+#: field:edi.ddt.line,qty:0 field:edi.invoice.line,qty:0
+#: field:edi.order.line,qty:0
+msgid "Q.ty"
+msgstr "Q."
+
+#. module: account_trip_edi_check_invoice
+#: view:edi.ddt:0 view:edi.invoice:0 view:edi.order:0
+msgid "Details"
+msgstr "Dettagli"
 
 #. module: account_trip_edi_check_invoice
 #: selection:edi.order.file,mode:0
@@ -123,39 +352,9 @@ msgid "Folder"
 msgstr "Cartella"
 
 #. module: account_trip_edi_check_invoice
-#: view:edi.invoice.line:0
-msgid "total"
-msgstr "totale"
-
-#. module: account_trip_edi_check_invoice
 #: selection:edi.order.line.check,state:0
 msgid "Correct"
 msgstr "Corretto"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.order.line,uom:0
-msgid "UOM"
-msgstr "UM"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.order.line,sequence:0
-msgid "Seq."
-msgstr "Pos."
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.order.line:0
-msgid "EDI order line"
-msgstr "Righe ordine EDI"
-
-#. module: account_trip_edi_check_invoice
-#: selection:edi.order.file,mode:0
-msgid "Delete (ELICHG)"
-msgstr "Cancellazione (ELICHG)"
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.load.invoice.line.wizard:0
-msgid "Load Mexal file"
-msgstr "Carica file Mexal"
 
 #. module: account_trip_edi_check_invoice
 #: field:edi.order.line.check,invoice_total:0
@@ -163,17 +362,14 @@ msgid "Invoice Subtotal"
 msgstr "Subtotale fattura"
 
 #. module: account_trip_edi_check_invoice
-#: field:edi.invoice.line,description:0 field:edi.order.line,description:0
+#: field:edi.ddt.line,description:0 field:edi.invoice.line,description:0
+#: field:edi.order.line,description:0
 msgid "Description"
 msgstr "Descrizione"
 
 #. module: account_trip_edi_check_invoice
-#: view:edi.order.folder:0
-msgid "Reload file in folder"
-msgstr "Ricarica file della cartella"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.invoice.line,price:0 field:edi.order.line,price:0
+#: field:edi.ddt.line,price:0 field:edi.invoice.line,price:0
+#: field:edi.order.line,price:0
 msgid "Price"
 msgstr "Prezzo"
 
@@ -183,16 +379,6 @@ msgid "Remember to load all history file before! Confirm?"
 msgstr "Ricordati di caricare lo storico dei file prima! Confermi?"
 
 #. module: account_trip_edi_check_invoice
-#: view:edi.order:0
-msgid "Not invoiced"
-msgstr "Non fatturato"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.invoice.line,order_date:0
-msgid "Order date"
-msgstr "Data ordine"
-
-#. module: account_trip_edi_check_invoice
 #: view:edi.order.file:0
 #: model:ir.actions.act_window,name:account_trip_edi_check_invoice.action_edi_order_file_form
 #: model:ir.ui.menu,name:account_trip_edi_check_invoice.menu_edi_order_file
@@ -200,66 +386,10 @@ msgid "Order file"
 msgstr "File ordine"
 
 #. module: account_trip_edi_check_invoice
-#: selection:edi.order.file,mode:0
-msgid "Create (ELIORD)"
-msgstr "Creazione (ELIORD)"
-
-#. module: account_trip_edi_check_invoice
-#: model:ir.ui.menu,name:account_trip_edi_check_invoice.menu_edi_invoice_check_root
-msgid "Invoice order check"
-msgstr "Controllo ordine fatturato"
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.invoice:0 view:edi.order:0 field:edi.order,date:0
-#: view:edi.order.file:0
-msgid "Date"
-msgstr "Data"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.invoice.line,order_number:0
-msgid "Company order #"
-msgstr "Ordine azienda #"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.order,line_ids:0
-msgid "Line"
-msgstr "Riga"
-
-#. module: account_trip_edi_check_invoice
 #: field:edi.order.line.check,difference:0
 #: selection:edi.order.line.check,state:0
 msgid "Difference"
 msgstr "Differenza"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.order.line.check,order_price:0
-msgid "Order Price"
-msgstr "Prezzo Ordine"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.order.file,folder_id:0
-msgid "History folder"
-msgstr "Cartella storico"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.invoice.line,name:0 field:edi.order.line,name:0
-msgid "Company code"
-msgstr "Codice cliente"
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.order:0 field:edi.order,file_ids:0
-msgid "Files"
-msgstr "Files"
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.load.invoice.line.wizard:0
-msgid "Wizard"
-msgstr "Wizard"
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.order.file:0 field:edi.order.file,last:0
-msgid "Last"
-msgstr "Ultimo"
 
 #. module: account_trip_edi_check_invoice
 #: field:edi.order.file,name:0 field:edi.order.folder,name:0
@@ -273,34 +403,24 @@ msgid "Order folder"
 msgstr "Cartella ordine"
 
 #. module: account_trip_edi_check_invoice
-#: field:edi.order.folder,autoload:0
-msgid "Auto load"
-msgstr "Auto caricamento"
-
-#. module: account_trip_edi_check_invoice
 #: field:edi.invoice,date:0
 msgid "Invoice date"
 msgstr "Data fattura"
 
 #. module: account_trip_edi_check_invoice
-#: field:edi.invoice,line_ids:0
+#: field:edi.ddt,line_ids:0 field:edi.invoice,line_ids:0
 msgid "Lines"
 msgstr "Righe"
 
 #. module: account_trip_edi_check_invoice
-#: model:ir.model,name:account_trip_edi_check_invoice.model_edi_order_line
-msgid "EDI line"
-msgstr "Riga EDI"
+#: model:ir.model,name:account_trip_edi_check_invoice.model_edi_ddt_line
+msgid "EDI DDT line"
+msgstr "EDI DDT line"
 
 #. module: account_trip_edi_check_invoice
-#: field:edi.invoice.line,ddt_date:0
-msgid "DDT date"
-msgstr "Data DDT"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.order.line.check,state:0
-msgid "State"
-msgstr "Stato"
+#: view:edi.ddt:0
+msgid "EDI ddt"
+msgstr "EDI ddt"
 
 #. module: account_trip_edi_check_invoice
 #: view:edi.order.file:0 field:edi.order.file,mode:0
@@ -308,14 +428,9 @@ msgid "Mode"
 msgstr "Modalità"
 
 #. module: account_trip_edi_check_invoice
-#: help:edi.order.folder,autoload:0
-msgid "Schedule for auto load operation"
-msgstr "Schedulato per essere caricato automaticamente"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.order.folder,path:0
-msgid "Path"
-msgstr "Percorso"
+#: selection:edi.order.file,mode:0
+msgid "Urgent (ELIURG)"
+msgstr "Urgente (ELIURG)"
 
 #. module: account_trip_edi_check_invoice
 #: view:edi.invoice.line:0
@@ -334,28 +449,13 @@ msgid "Order line"
 msgstr "Riga ordine"
 
 #. module: account_trip_edi_check_invoice
-#: field:edi.invoice.line,order_id:0 view:edi.order:0 view:edi.order.file:0
-#: field:edi.order.file,order_id:0 field:edi.order.line,order_id:0
-#: field:edi.order.line.check,order_id:0
+#: field:edi.ddt.line,order_id:0 field:edi.invoice.line,order_id:0
+#: view:edi.order:0 view:edi.order.file:0 field:edi.order.file,order_id:0
+#: field:edi.order.line,order_id:0 field:edi.order.line.check,order_id:0
 #: model:ir.actions.act_window,name:account_trip_edi_check_invoice.action_edi_order_form
 #: model:ir.ui.menu,name:account_trip_edi_check_invoice.menu_edi_invoice_check_order
 msgid "Order"
 msgstr "Ordine"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.load.invoice.line.wizard,note:0
-msgid "Procedure"
-msgstr "Procedura"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.invoice.line,subtotal:0 field:edi.order.line,total:0
-msgid "Subtotal"
-msgstr "Subtotale"
-
-#. module: account_trip_edi_check_invoice
-#: selection:edi.order.line.check,state:0
-msgid "Only order"
-msgstr "Solo ordine"
 
 #. module: account_trip_edi_check_invoice
 #: view:edi.order:0
@@ -368,75 +468,17 @@ msgid "Order Subtotal"
 msgstr "Subtotale ordine"
 
 #. module: account_trip_edi_check_invoice
-#: view:edi.order:0
-msgid "Refresh check"
-msgstr "Aggiorna controllo"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.invoice.line,ddt_number:0
-msgid "DDT #"
-msgstr "DDT #"
-
-#. module: account_trip_edi_check_invoice
 #: view:edi.order.file:0
 #: model:ir.model,name:account_trip_edi_check_invoice.model_edi_order_file
 msgid "EDI order file"
 msgstr "File ordine EDI"
 
 #. module: account_trip_edi_check_invoice
-#: field:edi.invoice,name:0 field:edi.order,name:0
-msgid "Number"
-msgstr "Numero"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.order.file,datetime:0
-msgid "Datetime"
-msgstr "Data ora"
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.invoice:0
-msgid "EDI Invoice"
-msgstr "Fattura EDI"
-
-#. module: account_trip_edi_check_invoice
-#: model:ir.model,name:account_trip_edi_check_invoice.model_edi_load_invoice_line_wizard
-msgid "edi.load.invoice.line.wizard"
-msgstr "edi.load.invoice.line.wizard"
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.invoice:0 field:edi.invoice.line,invoice_id:0
-#: model:ir.actions.act_window,name:account_trip_edi_check_invoice.action_edi_invoice_form
-#: model:ir.ui.menu,name:account_trip_edi_check_invoice.menu_edi_invoice_check_invoice
-msgid "Invoice"
-msgstr "Fattura"
-
-#. module: account_trip_edi_check_invoice
-#: field:edi.order.line.check,invoice_qty:0
-msgid "Invoice Q.ty"
-msgstr "Q. fattura"
+#: view:edi.order:0
+msgid "Refresh check"
+msgstr "Aggiorna controllo"
 
 #. module: account_trip_edi_check_invoice
 #: view:edi.load.invoice.line.wizard:0
-msgid "Cancel"
-msgstr "Annulla"
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.order.folder:0
-#: model:ir.model,name:account_trip_edi_check_invoice.model_edi_order_folder
-msgid "EDI order folder"
-msgstr "Cartella ordini EDI"
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.order:0 field:edi.order,check_ids:0
-msgid "Check"
-msgstr "Controllo"
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.order.line.check:0
-msgid "EDI order line check"
-msgstr "Controllo righe ordine EDI"
-
-#. module: account_trip_edi_check_invoice
-#: view:edi.order:0 field:edi.order,invoiced:0 field:edi.order,invoiced_ids:0
-msgid "Invoiced"
-msgstr "Fatturato"
+msgid "Only in Excel"
+msgstr "Only in Excel"
