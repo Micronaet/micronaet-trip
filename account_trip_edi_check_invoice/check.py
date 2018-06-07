@@ -958,6 +958,7 @@ class EdiOrder(orm.Model):
                         'mode': mode,
                         }, context=context)
                 break # only base folder XXX maybe parametrize        
+        # TODO regenerate order information        
         return True                    
 
     def load_scheduled_folder_selected(self, cr, uid, ids, context=None):
