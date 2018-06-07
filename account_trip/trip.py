@@ -597,7 +597,5 @@ class trip_tour(orm.Model):
         'destination2_ids': fields.one2many('res.partner', 'tour2_id', 
             'Destination 2'),
         }
-
         
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-

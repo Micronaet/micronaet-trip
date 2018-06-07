@@ -39,6 +39,172 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 _logger = logging.getLogger(__name__)
 
 
+class EdiDDT(orm.Model):
+    """ Model name: Edi DDT
+    """
+    
+    _name = 'edi.ddt'
+    _description = 'EDI DDT'
+    _rec_name = 'name'
+    _order = 'name'
+    
+    _columns = {
+        'name': fields.char('Number', size=20, required=True),
+        'date': fields.date('DDT date', required=True),
+        }
+
+class EdiDDTLine(orm.Model):
+    """ Model name: Edi DDT Line
+    """
+    
+    _name = 'edi.ddt.line'
+    _description = 'EDI DDT line'
+    _rec_name = 'name'
+    _order = 'ddt_id,name'
+    
+    def import_ddt_line_from_account(self, cr, uid, context=None):
+        ''' Import procedure for get all ddt line for check
+            Export with sprix: spx780
+        '''
+        # Parameter:
+        float_convert = 1000.0 # Every float has 3 dec. without comma
+        
+        # Pool used:
+        ddt_pool = self.pool.get('edi.ddt')
+        order_pool = self.pool.get('edi.order')
+        
+        filename = '~/etl/edi/elior/controllo/ddt.txt'
+        filename = os.path.expanduser(filename)
+        
+        # ---------------------------------------------------------------------
+        # Clean previous elements:
+        # ---------------------------------------------------------------------
+        # Details:
+        line_ids = self.search(cr, uid, [], context=context)
+        self.unlink(cr, uid, line_ids, context=context)
+        _logger.info('Delete DDT line: %s' % len(line_ids))
+        
+        # DDT:
+        ddt_ids = ddt_pool.search(cr, uid, [], context=context)
+        ddt_pool.unlink(cr, uid, ddt_ids, context=context)
+        _logger.info('Delete ddt: %s' % len(line_ids))
+        
+        ddt_db = {}
+        order_db = {}
+        i = 0
+        for row in open(filename, 'r'):
+            i += 1
+            if i % 1000 == 0:
+                _logger.info('Import ddt line: %s' % i)
+                
+            # -----------------------------------------------------------------
+            # Header data:
+            # -----------------------------------------------------------------
+            # ddt part:
+            ddt_number = row[:6].strip()
+            ddt_date = '%s-%s-%s' % ( # mandatory
+                row[6:10],
+                row[10:12],
+                row[12:14],
+                )
+            ddt_number = 'DDT-%s-%s' % (
+                row[6:10], 
+                ddt_number, 
+                )
+                
+            if ddt_number not in ddt_db:
+                ddt_db[ddt_number] = ddt_pool.create(cr, uid, {
+                    'name': ddt_number,
+                    'date': ddt_date,
+                    }, context=context)
+                _logger.info('ddt create: %s' % ddt_number)    
+            
+            # Order part:
+            order_number = row[143:159].strip()            
+            year = row[159:163].strip()
+            if year:
+                order_date = '%s-%s-%s' % (
+                    year,
+                    row[163:165],
+                    row[165:167],
+                    )                
+            else:        
+                order_date = False
+
+            if order_number not in order_db:                
+                order_ids = order_pool.search(cr, uid, [
+                    ('name', '=', order_number),
+                    ], context=context)    
+                if order_ids:
+                    order_db[order_number] = order_ids[0]
+                else:    
+                    order_db[order_number] = order_pool.create(cr, uid, {
+                        'name': order_number,
+                        'date': order_date,
+                        }, context=context)    
+            
+            # DDT part:
+            year = row[133:137].strip()
+            if year:
+                ddt_date = '%s-%s-%s' % (
+                        year,
+                        row[137:139],
+                        row[139:141],
+                        )
+            else:
+                ddt_date = False
+                                
+            # -----------------------------------------------------------------
+            # Detail part:
+            # -----------------------------------------------------------------
+            data = {
+                'ddt_id': ddt_db.get(ddt_number, False),
+
+                'order_id': order_db.get(order_number, False),
+                'order_number': order_number,
+                'order_date': order_date, 
+                'order_sequence': int(row[16:20]),
+
+                'name': row[20:36].strip(),
+                'article': row[36:47].strip(),
+                'qty': float(row[47:62]) / float_convert,
+                'price': float(row[62:77]) / float_convert,
+                'subtotal': float(row[77:92]) / float_convert,
+                'description': row[92:127].strip(),
+                }                
+            self.create(cr, uid, data, context=context)
+        
+        # Set order ddt:
+        _logger.info('Set invoiced order [Tot.: %s]' % len(order_db))
+        return order_pool.write(cr, uid, order_db.values(), {
+            'invoiced': True,
+            }, context=context)            
+        
+    _columns = {
+        'ddt_id': fields.many2one('edi.ddt', 'DDT'),
+        'order_id': fields.many2one('edi.order', 'Order'),
+        'order_sequence': fields.integer('Order position', readonly=True),
+        'name': fields.char('Company code', size=16, 
+            required=True, readonly=True),
+        'article': fields.char('Customer code', size=16, readonly=True),
+        'qty': fields.float('Q.ty', digits=(16, 3), readonly=True),
+        'price': fields.float('Price', digits=(16, 3), readonly=True),
+        'subtotal': fields.float('Subtotal', digits=(16, 3), readonly=True),
+        'description': fields.char('Description', size=16, readonly=True),
+        'order_number': fields.char('Company order #', size=25, readonly=True),
+        'order_date': fields.date('Order date', readonly=True),
+        }
+
+class EdiDDT(orm.Model):
+    """ Model name: Edi DDT
+    """
+    
+    _inherit = 'edi.ddt'
+
+    _columns = {
+        'line_ids': fields.one2many('edi.ddt.line', 'ddt_id', 'Lines'),
+        }
+
 class EdiInvoice(orm.Model):
     """ Model name: Edi Invoice
     """
@@ -791,6 +957,7 @@ class EdiOrder(orm.Model):
                         'datetime': timestamp,
                         'mode': mode,
                         }, context=context)
+                break # only base folder XXX maybe parametrize        
         return True                    
 
     def load_scheduled_folder_selected(self, cr, uid, ids, context=None):
@@ -806,7 +973,7 @@ class EdiOrder(orm.Model):
         'autoload': fields.boolean('Auto load', 
             help='Schedule for auto load operation'),
         'name': fields.char('Name', size=25, required=True),
-        'path': fields.char('Path', size=180, required=False),
+        'path': fields.char('Path', size=180, required=True),
         'note': fields.text('Note'),
         }
 
