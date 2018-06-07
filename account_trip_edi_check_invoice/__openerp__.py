@@ -39,6 +39,8 @@
         'security/ir.model.access.csv',    
         'check_view.xml',
         'wizard/load_invoice_view.xml',
+        
+        'scheduler.xml',
         ],
     'active': False,
     'installable': True,
