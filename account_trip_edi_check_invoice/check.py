@@ -980,9 +980,8 @@ class EdiOrder(orm.Model):
         # 1. Load order file in all autoload folder:
         # ---------------------------------------------------------------------
         _logger.info('Now: %s Passed [min: %s]' % (
-            now, 
-            (datetime.now() - now).seconds / 60.0,
-            ))
+            now, (datetime.now() - now).seconds / 60.0))
+            
         if load_file:
             _logger.warning('YES: Load files of order in autoload folder')
             folder_ids = self.search(cr, uid, [
@@ -995,6 +994,8 @@ class EdiOrder(orm.Model):
         # ---------------------------------------------------------------------
         # 2. Generate order line detail from file:
         # ---------------------------------------------------------------------
+        _logger.info('Now: %s Passed [min: %s]' % (
+            now, (datetime.now() - now).seconds / 60.0))
         order_ids = order_pool.search(cr, uid, [], context=context)
         if generate_line: 
             _logger.warning('YES: Generate order line detail from file')
@@ -1006,6 +1007,8 @@ class EdiOrder(orm.Model):
         # ---------------------------------------------------------------------
         # 3. Import invoice:
         # ---------------------------------------------------------------------
+        _logger.info('Now: %s Passed [min: %s]' % (
+            now, (datetime.now() - now).seconds / 60.0))
         if import_invoice: 
             _logger.warning('YES: Import invoice')
             invoice_pool.import_invoice_line_from_account(
@@ -1016,6 +1019,8 @@ class EdiOrder(orm.Model):
         # ---------------------------------------------------------------------
         # 4. Import DDT
         # ---------------------------------------------------------------------
+        _logger.info('Now: %s Passed [min: %s]' % (
+            now, (datetime.now() - now).seconds / 60.0))
         if import_ddt:
             _logger.warning('YES: Import DDT')
         else:    
@@ -1024,6 +1029,8 @@ class EdiOrder(orm.Model):
         # ---------------------------------------------------------------------
         # 5. Compare line with invoice
         # ---------------------------------------------------------------------
+        _logger.info('Now: %s Passed [min: %s]' % (
+            now, (datetime.now() - now).seconds / 60.0))
         if check_invoice:
             _logger.warning('YES: Compare line with invoice')
             order_pool.generate_check_database(
@@ -1034,6 +1041,8 @@ class EdiOrder(orm.Model):
         # ---------------------------------------------------------------------
         # 6. Compare line with DDT
         # ---------------------------------------------------------------------
+        _logger.info('Now: %s Passed [min: %s]' % (
+            now, (datetime.now() - now).seconds / 60.0))
         if check_ddt: 
             _logger.warning('YES: Compare line with DDT')
         else:    
