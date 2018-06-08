@@ -404,6 +404,7 @@ class EdiOrder(orm.Model):
         file_ids = file_pool.search(cr, uid, [
             ('order_id', 'in', ids),
             ], context=context)
+        # Reset last state:    
         file_pool.write(cr, uid, file_ids, {
             'last': False,
             }, context=context)
@@ -453,7 +454,22 @@ class EdiOrder(orm.Model):
             'last': True,
             }, context=context)
 
-    def generate_check_database(self, cr, uid, ids, context=None):
+    # Button event:
+    def generate_check_database_mode_ddt(self, cr, uid, ids, context=None):
+        ''' Generate check database for DDT:
+        '''
+        return self.generate_check_database(
+            cr, uid, ids, mode='ddt', context=context)
+
+    def generate_check_database_mode_invoice(self, cr, uid, ids, context=None):
+        ''' Generate check database for Invoice:
+        '''
+        return self.generate_check_database(
+            cr, uid, ids, mode='invoice', context=context)
+
+    # Procedure:    
+    def generate_check_database(self, cr, uid, ids, mode='invoice', 
+            context=None):
         ''' Generate mixed database invoice-order for check
         '''
         # Parameter:
@@ -464,6 +480,7 @@ class EdiOrder(orm.Model):
 
         check_ids = check_pool.search(cr, uid, [
             ('order_id', 'in', ids),
+            ('mode', '=', mode),
             ], context=context)
         check_pool.unlink(cr, uid, check_ids, context=context)
         
@@ -478,8 +495,10 @@ class EdiOrder(orm.Model):
                     current_db[article] = [
                         # Order:
                         line.price, 0.0, 0.0,
+                        
                         # Invoice:
                         0.0, 0.0, 0.0,
+                        
                         [], # invoice                        
                         line.name, # Company code
                         ]
@@ -746,7 +765,7 @@ class EdiOrder(orm.Model):
             
         # Body:
         for order in self.browse(cr, uid, ids, context=context):
-            for check in order.check_ids:
+            for check in order.check_invoice_ids:
                 if check.state == 'correct':
                     continue # jump correct line (TODO write in different WS?)
                 WS = WS_db[check.state]
@@ -1034,7 +1053,7 @@ class EdiOrder(orm.Model):
         if check_invoice:
             _logger.warning('YES: Compare line with invoice')
             order_pool.generate_check_database(
-                cr, uid, order_ids, context=context)
+                cr, uid, order_ids, mode='invoice', context=context)
         else:    
             _logger.warning('NO: Compare line with invoice')
 
@@ -1045,6 +1064,8 @@ class EdiOrder(orm.Model):
             now, (datetime.now() - now).seconds / 60.0))
         if check_ddt: 
             _logger.warning('YES: Compare line with DDT')
+            order_pool.generate_check_database(
+                cr, uid, order_ids, mode='ddt', context=context)
         else:    
             _logger.warning('NO: Compare line with DDT')
         
@@ -1143,20 +1164,31 @@ class EdiOrderLineCkeck(orm.Model):
         'order_price': fields.float('Order Price', digits=(16, 3)),
         'order_total': fields.float('Order Subtotal', digits=(16, 3)),
 
-        'invoice_qty': fields.float('Invoice Q.ty', digits=(16, 3)),
-        'invoice_price': fields.float('Invoice Price', digits=(16, 3)),
-        'invoice_total': fields.float('Invoice Subtotal', digits=(16, 3)),
+        # Used both DDT and invoice values:
+        'invoice_qty': fields.float('Q.ty', digits=(16, 3)),
+        'invoice_price': fields.float('Price', digits=(16, 3)),
+        'invoice_total': fields.float('Subtotal', digits=(16, 3)),
+        'difference': fields.float('Difference', digits=(16, 3)),
 
         'invoice_info': fields.text('Invoice info'),
-        'difference': fields.float('Difference', digits=(16, 3)),
+        'ddt_info': fields.text('DDT info'),
+
+        'mode': fields.selection([
+            ('invoice', 'Invoice'),
+            ('ddt', 'DDT'),
+            ], 'Mode'),
 
         'state': fields.selection([
             ('correct', 'Correct'),
             ('order', 'Only order'),
             ('invoice', 'Only invoice'),
             ('difference', 'Difference'),
-            ], 'State')
+            ], 'State'),
         }
+        
+    _defaults = {
+        'mode': lambda *x: 'invoice',
+        }    
 
 class EdiOrder(orm.Model):
     """ Model name: Edi Order
@@ -1167,9 +1199,15 @@ class EdiOrder(orm.Model):
     _columns = {
         'file_ids': fields.one2many('edi.order.file', 'order_id',  'Files'),
         'line_ids': fields.one2many('edi.order.line', 'order_id',  'Line'),
+        
         'invoiced_ids': fields.one2many('edi.invoice.line', 'order_id', 
             'Invoiced'),
-        'check_ids': fields.one2many('edi.order.line.check', 'order_id', 
-            'Check'),
+        'ddt_ids': fields.one2many('edi.ddt.line', 'order_id', 
+            'DDT'),
+            
+        'check_invoice_ids': fields.one2many('edi.order.line.check', 'order_id', 
+            'Check Invoice'),
+        'check_ddt_ids': fields.one2many('edi.order.line.check', 'order_id', 
+            'Check DDT'),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

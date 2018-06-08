@@ -139,11 +139,18 @@
                             <field name="date" />
                             <field name="invoiced" />
                             <notebook colspan="4">
-                                <page string="Check">
+                                <page string="Check DDT">
                                     <group colspan="4" col="4">
-                                        <separator string="Check" colspan="3"/>
-                                        <button name="generate_check_database" string="Refresh check" type="object" icon="gtk-refresh" colspan="1" />
-                                        <field name="check_ids" context="{'order_embedded':True}" colspan="4" nolabel="1"/>
+                                        <separator string="Check DDT" colspan="3"/>
+                                        <button name="generate_check_database_mode_ddt" string="Refresh DDT check" type="object" icon="gtk-refresh" colspan="1" />
+                                        <field name="check_ddt_ids" context="{'order_embedded': True}" colspan="4" nolabel="1"/>
+                                    </group>
+                                </page>
+                                <page string="Check invoice">
+                                    <group colspan="4" col="4">
+                                        <separator string="Check invoice" colspan="3"/>
+                                        <button name="generate_check_database_mode_invoice" string="Refresh invoice check" type="object" icon="gtk-refresh" colspan="1" />
+                                        <field name="check_invoice_ids" context="{'order_embedded': True}" colspan="4" nolabel="1"/>
                                     </group>
                                 </page>
                                 <page string="Details (from file)">
@@ -154,6 +161,12 @@
 
                                         <separator string="Files" colspan="4"/>
                                         <field name="file_ids" colspan="4" nolabel="1" context="{'order_embedded':True}"/>
+                                    </group>
+                                </page>
+                                <page string="DDT">
+                                    <group colspan="4" col="4">
+                                        <separator string="DDT" colspan="4"/>
+                                        <field name="ddt_ids" context="{'order_embedded':True}" colspan="4" nolabel="1"/>
                                     </group>
                                 </page>
                                 <page string="Invoiced">
