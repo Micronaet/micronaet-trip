@@ -505,7 +505,12 @@ class EdiOrder(orm.Model):
             ], context=context)
         check_pool.unlink(cr, uid, check_ids, context=context)
         
+        i = 0
         for order in self.browse(cr, uid, ids, context=context):
+            i += 1
+            if i % 10 == 0:
+                _logger.warning('Order check %s lines' % mode)
+                
             current_db = {}
             # -----------------------------------------------------------------
             # Start generate database from order:
