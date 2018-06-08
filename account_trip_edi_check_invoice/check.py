@@ -486,6 +486,7 @@ class EdiOrder(orm.Model):
             context=None):
         ''' Generate mixed database invoice-order for check
         '''
+        import pdb; pdb.set_trace()
         # Parameter:
         difference_gap = 0.005 # error on difference
         
