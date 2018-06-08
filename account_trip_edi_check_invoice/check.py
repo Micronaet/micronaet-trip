@@ -1088,9 +1088,11 @@ class EdiOrder(orm.Model):
         _logger.info('Now: %s Passed [min: %s]' % (
             now, (datetime.now() - now).seconds / 60.0))
         if import_invoice:
-            _logger.warning('YES: Compare line with invoice')
+            _logger.warning('YES: Compare line with invoice (only %s order' % (
+                len(invoice_order_name)))
             order_pool.generate_check_database(
-                cr, uid, order_ids, mode='invoice', context=context)
+                cr, uid, order_ids, mode='invoice', 
+                order_name=invoice_order_name, context=context)
         else:    
             _logger.warning('NO: Compare line with invoice')
 
@@ -1111,9 +1113,11 @@ class EdiOrder(orm.Model):
         _logger.info('Now: %s Passed [min: %s]' % (
             now, (datetime.now() - now).seconds / 60.0))
         if import_ddt: 
-            _logger.warning('YES: Compare line with DDT')
+            _logger.warning('YES: Compare line with DDT (only: %s order)' % (
+                len(ddt_order_name)))
             order_pool.generate_check_database(
-                cr, uid, order_ids, mode='ddt', context=context)
+                cr, uid, order_ids, mode='ddt', 
+                order_name=ddt_order_name, context=context)
         else:    
             _logger.warning('NO: Compare line with DDT')
         
