@@ -509,7 +509,7 @@ class EdiOrder(orm.Model):
         for order in self.browse(cr, uid, ids, context=context):
             i += 1
             if i % 10 == 0:
-                _logger.warning('Order check %s lines' % mode)
+                _logger.warning('Order VS %s' % mode)
                 
             current_db = {}
             # -----------------------------------------------------------------
