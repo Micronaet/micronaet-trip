@@ -877,7 +877,13 @@ class EdiOrder(orm.Model):
             # TODO order_loaded for speed up search order operations?
             folder_path = os.path.expanduser(folder.path)
             for root, dirs, files in os.walk(folder_path):
+                _logger.warning('Root folder %s' % root)
+                i = 0
                 for f in files:                    
+                    i += 1
+                    if i % 100 == 0:
+                        _logger.warning('Root folder %s files# %s' % (root, i))
+                        
                     if not f.endswith(extension):
                         _logger.warning('Jump file: %s' % f)
                         continue
