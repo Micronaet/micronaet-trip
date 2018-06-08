@@ -967,14 +967,74 @@ class EdiOrder(orm.Model):
         # TODO regenerate order information        
         return True                    
 
-    def load_scheduled_folder_selected(self, cr, uid, context=None):
+    def load_scheduled_folder_selected(self, cr, uid, load_file=True, 
+            generate_line=True, import_invoice=True, import_ddt=True,
+            check_invoice=True, check_ddt=True, context=None):
         ''' Load all selected folder
         '''
-        folder_ids = self.search(cr, uid, [
-            ('autoload', '=', True),
-            ], context=context)
-            
-        return self.load_file_in_folder(cr, uid, folder_ids, context=context)
+        order_pool = self.pool.get('edi.order')
+        invoice_pool = self.pool.get('edi.invoice.line')
+        
+        # ---------------------------------------------------------------------
+        # 1. Load order file in all autoload folder:
+        # ---------------------------------------------------------------------
+        if load_file:
+            _logger.warning('YES: Load files of order in autoload folder')
+            folder_ids = self.search(cr, uid, [
+                ('autoload', '=', True),
+                ], context=context)
+            self.load_file_in_folder(cr, uid, folder_ids, context=context)
+        else:    
+            _logger.warning('NO: Load files of order in autoload folder')
+
+        # ---------------------------------------------------------------------
+        # 2. Generate order line detail from file:
+        # ---------------------------------------------------------------------
+        order_ids = order_pool.search(cr, uid, [], context=context)
+        if generate_line: 
+            _logger.warning('YES: Generate order line detail from file')
+            order_pool.load_order_line_details(
+                cr, uid, order_ids, context=context)
+        else:    
+            _logger.warning('NO: Generate order line detail from file')
+
+        # ---------------------------------------------------------------------
+        # 3. Import invoice:
+        # ---------------------------------------------------------------------
+        if import_invoice: 
+            _logger.warning('YES: Import invoice')
+            invoice_pool.import_invoice_line_from_account(
+                cr, uid, context=context)
+        else:    
+            _logger.warning('NO: Import invoice')
+
+        # ---------------------------------------------------------------------
+        # 4. Import DDT
+        # ---------------------------------------------------------------------
+        if import_ddt:
+            _logger.warning('YES: Import DDT')
+        else:    
+            _logger.warning('NO: Import DDT')
+
+        # ---------------------------------------------------------------------
+        # 5. Compare line with invoice
+        # ---------------------------------------------------------------------
+        if check_invoice:
+            _logger.warning('YES: Compare line with invoice')
+            order_pool.generate_check_database(
+                cr, uid, order_ids, context=context)
+        else:    
+            _logger.warning('NO: Compare line with invoice')
+
+        # ---------------------------------------------------------------------
+        # 6. Compare line with DDT
+        # ---------------------------------------------------------------------
+        if check_ddt: 
+            _logger.warning('YES: Compare line with DDT')
+        else:    
+            _logger.warning('NO: Compare line with DDT')
+        
+        return True
         
     _columns = {
         'autoload': fields.boolean('Auto load', 
@@ -1098,5 +1158,4 @@ class EdiOrder(orm.Model):
         'check_ids': fields.one2many('edi.order.line.check', 'order_id', 
             'Check'),
         }
-    
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
