@@ -185,9 +185,12 @@ class EdiDDTLine(orm.Model):
         
         # Set order ddt:
         _logger.info('Set DDT order [Tot.: %s]' % len(order_db))
-        return order_pool.write(cr, uid, order_db.values(), {
+        order_pool.write(cr, uid, order_db.values(), {
             'has_ddt': True,
             }, context=context)            
+
+        # Return list of touched order, not used with button but with scheduled
+        return order_db.keys() 
         
     _columns = {
         'ddt_id': fields.many2one('edi.ddt', 'DDT'),
@@ -240,7 +243,7 @@ class EdiInvoiceLine(orm.Model):
     def import_invoice_line_from_account(self, cr, uid, context=None):
         ''' Import procedure for get all invoice line for check
             Export with sprix: spx780
-        '''
+        '''        
         # Parameter:
         float_convert = 1000.0 # Every float has 3 dec. without comma
         
@@ -315,7 +318,7 @@ class EdiInvoiceLine(orm.Model):
             else:        
                 order_date = False
 
-            if order_number not in order_db:                
+            if order_number not in order_db:
                 order_ids = order_pool.search(cr, uid, [
                     ('name', '=', order_number),
                     ], context=context)    
@@ -364,9 +367,12 @@ class EdiInvoiceLine(orm.Model):
         
         # Set order invoiced:
         _logger.info('Set invoiced order [Tot.: %s]' % len(order_db))
-        return order_pool.write(cr, uid, order_db.values(), {
+        order_pool.write(cr, uid, order_db.values(), {
             'has_invoice': True,
-            }, context=context)            
+            }, context=context)
+        
+        # Return list of touched order, not used with button but with scheduled
+        return order_db.keys() 
         
     _columns = {
         'invoice_id': fields.many2one('edi.invoice', 'Invoice'),
@@ -483,10 +489,11 @@ class EdiOrder(orm.Model):
     # Procedure:    
     # -------------------------------------------------------------------------
     def generate_check_database(self, cr, uid, ids, mode='invoice', 
-            context=None):
+            order_name=None, context=None):
         ''' Generate mixed database invoice-order for check
+            mode: invoice or ddt for load data in 2 different ways
+            touched_ids: list of order name to refresh (not all)
         '''
-        import pdb; pdb.set_trace()
         # Parameter:
         difference_gap = 0.005 # error on difference
         
@@ -505,9 +512,18 @@ class EdiOrder(orm.Model):
             (key_field, 'in', ids),
             ], context=context)
         check_pool.unlink(cr, uid, check_ids, context=context)
-        
+                
+        # Update only passed order_name:
+        if order_name:
+            # Update only touched order name (loaded externally)
+            select_ids = self.search(cr, uid, [
+                ('name', 'in', order_name),
+                ], context=context)
+        else:
+            # Instead load only ids (usually button pressed)
+            select_ids = ids
         i = 0
-        for order in self.browse(cr, uid, ids, context=context):
+        for order in self.browse(cr, uid, select_ids, context=context):
             i += 1
             if i % 10 == 0:
                 _logger.warning('Order VS %s' % mode)
@@ -1017,7 +1033,7 @@ class EdiOrder(orm.Model):
 
     def load_scheduled_folder_selected(self, cr, uid, load_file=True, 
             generate_line=True, import_invoice=True, import_ddt=True,
-            check_invoice=True, check_ddt=True, context=None):
+            context=None):
         ''' Load all selected folder
         '''
         # Pool used:
@@ -1056,34 +1072,22 @@ class EdiOrder(orm.Model):
             _logger.warning('NO: Generate order line detail from file')
 
         # ---------------------------------------------------------------------
-        # 3. Import invoice:
+        # 3a Import invoice:
         # ---------------------------------------------------------------------
         _logger.info('Now: %s Passed [min: %s]' % (
             now, (datetime.now() - now).seconds / 60.0))
         if import_invoice: 
             _logger.warning('YES: Import invoice')
-            invoice_pool.import_invoice_line_from_account(
+            invoice_order_name = invoice_pool.import_invoice_line_from_account(
                 cr, uid, context=context)
         else:    
             _logger.warning('NO: Import invoice')
-
         # ---------------------------------------------------------------------
-        # 4. Import DDT
-        # ---------------------------------------------------------------------
-        _logger.info('Now: %s Passed [min: %s]' % (
-            now, (datetime.now() - now).seconds / 60.0))
-        if import_ddt:
-            _logger.warning('YES: Import DDT')
-            ddt_pool.import_ddt_line_from_account(cr, uid, context=context)
-        else:    
-            _logger.warning('NO: Import DDT')
-
-        # ---------------------------------------------------------------------
-        # 5. Compare line with invoice
+        # 3b. Compare line with invoice
         # ---------------------------------------------------------------------
         _logger.info('Now: %s Passed [min: %s]' % (
             now, (datetime.now() - now).seconds / 60.0))
-        if check_invoice:
+        if import_invoice:
             _logger.warning('YES: Compare line with invoice')
             order_pool.generate_check_database(
                 cr, uid, order_ids, mode='invoice', context=context)
@@ -1091,11 +1095,22 @@ class EdiOrder(orm.Model):
             _logger.warning('NO: Compare line with invoice')
 
         # ---------------------------------------------------------------------
-        # 6. Compare line with DDT
+        # 4a. Import DDT
         # ---------------------------------------------------------------------
         _logger.info('Now: %s Passed [min: %s]' % (
             now, (datetime.now() - now).seconds / 60.0))
-        if check_ddt: 
+        if import_ddt:
+            _logger.warning('YES: Import DDT')
+            ddt_order_name = ddt_pool.import_ddt_line_from_account(
+                cr, uid, context=context)
+        else:    
+            _logger.warning('NO: Import DDT')
+        # ---------------------------------------------------------------------
+        # 4b. Compare line with DDT
+        # ---------------------------------------------------------------------
+        _logger.info('Now: %s Passed [min: %s]' % (
+            now, (datetime.now() - now).seconds / 60.0))
+        if import_ddt: 
             _logger.warning('YES: Compare line with DDT')
             order_pool.generate_check_database(
                 cr, uid, order_ids, mode='ddt', context=context)
