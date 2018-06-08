@@ -961,7 +961,7 @@ class EdiOrder(orm.Model):
         # TODO regenerate order information        
         return True                    
 
-    def load_scheduled_folder_selected(self, cr, uid, ids, context=None):
+    def load_scheduled_folder_selected(self, cr, uid, context=None):
         ''' Load all selected folder
         '''
         folder_ids = self.search(cr, uid, [
