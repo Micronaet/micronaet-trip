@@ -1068,7 +1068,7 @@ class EdiOrder(orm.Model):
             now, (datetime.now() - now).seconds / 60.0))
         if import_ddt:
             _logger.warning('YES: Import DDT')
-            ddt_pool = import_ddt_line_from_account(cr, uid, context=context)
+            ddt_pool.import_ddt_line_from_account(cr, uid, context=context)
         else:    
             _logger.warning('NO: Import DDT')
 
