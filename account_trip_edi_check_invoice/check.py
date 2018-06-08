@@ -79,7 +79,7 @@ class EdiDDTLine(orm.Model):
         # ---------------------------------------------------------------------
         # Clean previous elements:
         # ---------------------------------------------------------------------
-        # Details:
+        # DDT Details:
         line_ids = self.search(cr, uid, [], context=context)
         self.unlink(cr, uid, line_ids, context=context)
         _logger.info('Delete DDT line: %s' % len(line_ids))
@@ -87,7 +87,7 @@ class EdiDDTLine(orm.Model):
         # DDT:
         ddt_ids = ddt_pool.search(cr, uid, [], context=context)
         ddt_pool.unlink(cr, uid, ddt_ids, context=context)
-        _logger.info('Delete ddt: %s' % len(line_ids))
+        _logger.info('Delete DDT: %s' % len(line_ids))
         
         ddt_db = {}
         order_db = {}
@@ -95,7 +95,7 @@ class EdiDDTLine(orm.Model):
         for row in open(filename, 'r'):
             i += 1
             if i % 1000 == 0:
-                _logger.info('Import ddt line: %s' % i)
+                _logger.info('Import DDT line: %s' % i)
                 
             # -----------------------------------------------------------------
             # Header data:
@@ -175,9 +175,9 @@ class EdiDDTLine(orm.Model):
             self.create(cr, uid, data, context=context)
         
         # Set order ddt:
-        _logger.info('Set invoiced order [Tot.: %s]' % len(order_db))
+        _logger.info('Set DDT order [Tot.: %s]' % len(order_db))
         return order_pool.write(cr, uid, order_db.values(), {
-            'invoiced': True,
+            'has_ddt': True,
             }, context=context)            
         
     _columns = {
@@ -257,9 +257,10 @@ class EdiInvoiceLine(orm.Model):
         
         # Set order all not invoiced:
         order_ids = order_pool.search(cr, uid, [
-            ('invoiced', '=', True)], context=context)
+            ('has_invoice', '=', True),
+            ], context=context)
         order_pool.write(cr, uid, order_ids, {
-            'invoiced': False
+            'has_invoice': False,
             }, context=context)
         _logger.info('Set all order as not invoiced')
         
@@ -355,7 +356,7 @@ class EdiInvoiceLine(orm.Model):
         # Set order invoiced:
         _logger.info('Set invoiced order [Tot.: %s]' % len(order_db))
         return order_pool.write(cr, uid, order_db.values(), {
-            'invoiced': True,
+            'has_invoice': True,
             }, context=context)            
         
     _columns = {
@@ -454,7 +455,9 @@ class EdiOrder(orm.Model):
             'last': True,
             }, context=context)
 
+    # -------------------------------------------------------------------------
     # Button event:
+    # -------------------------------------------------------------------------
     def generate_check_database_mode_ddt(self, cr, uid, ids, context=None):
         ''' Generate check database for DDT:
         '''
@@ -467,7 +470,9 @@ class EdiOrder(orm.Model):
         return self.generate_check_database(
             cr, uid, ids, mode='invoice', context=context)
 
+    # -------------------------------------------------------------------------
     # Procedure:    
+    # -------------------------------------------------------------------------
     def generate_check_database(self, cr, uid, ids, mode='invoice', 
             context=None):
         ''' Generate mixed database invoice-order for check
@@ -477,10 +482,17 @@ class EdiOrder(orm.Model):
         
         # Delete all check line:
         check_pool = self.pool.get('edi.order.line.check')
+        if mode == 'ddt':
+            key_field = 'ddt_order_id'
+            detail_field = 'ddt_ids'
+            foreign_field = 'ddt_id'
+        else:    
+            key_field = 'invoice_order_id'
+            detail_field = 'invoiced_ids'
+            foreign_field = 'invoice_id'
 
         check_ids = check_pool.search(cr, uid, [
-            ('order_id', 'in', ids),
-            ('mode', '=', mode),
+            (key_field, 'in', ids),
             ], context=context)
         check_pool.unlink(cr, uid, check_ids, context=context)
         
@@ -496,10 +508,10 @@ class EdiOrder(orm.Model):
                         # Order:
                         line.price, 0.0, 0.0,
                         
-                        # Invoice:
+                        # Invoice / DDT:
                         0.0, 0.0, 0.0,
                         
-                        [], # invoice                        
+                        [], # invoice / DDT                      
                         line.name, # Company code
                         ]
                 current_db[article][1] += line.qty # append qty
@@ -508,24 +520,25 @@ class EdiOrder(orm.Model):
             # -----------------------------------------------------------------
             # Add database from invoice
             # -----------------------------------------------------------------
-            for line in order.invoiced_ids:
+            for line in order.__getattr__(detail_field):
                 article = line.article
-                invoice = line.invoice_id
+                document = line.__getattr__(foreign_field)
+                
                 if article not in current_db:
                     current_db[article] = [
                         # Order: price, qty, total
                         0.0, 0.0, 0.0,
-                        # Invoice: price, qty, total
+                        # Invoice / DDT: price, qty, total
                         line.price, 0.0, 0.0,
-                        [], # Invoice
+                        [], # Invoice / DDT
                         line.name, # Company code
                         ]
                 if not current_db[article][3]:
                     current_db[article][3] = line.price
                 current_db[article][4] += line.qty # append qty
                 current_db[article][5] += line.subtotal # append subtotal
-                if invoice.name not in current_db[article][6]:
-                    current_db[article][6].append(invoice.name)
+                if document.name not in current_db[article][6]:
+                    current_db[article][6].append(document.name)
             
             # Write data:
             for article, record in current_db.iteritems():
@@ -541,7 +554,7 @@ class EdiOrder(orm.Model):
                 data = {
                     'article': article,
                     'name': name,
-                    'order_id': order.id,
+                    key_field: order.id,
                     
                     'order_price': order_price, 
                     'order_qty': order_qty, 
@@ -557,8 +570,8 @@ class EdiOrder(orm.Model):
                     }
                     
                 # -------------------------------------------------------------
-                # Cases:    
-                # -------------------------------------------------------------                
+                # Cases:
+                # -------------------------------------------------------------        
                 if not order_subtotal: # only order
                     data['state'] = 'invoice'
                 elif not invoice_subtotal: # only invoice
@@ -858,7 +871,8 @@ class EdiOrder(orm.Model):
     _columns = {
         'name': fields.char('Number', size=25, required=True),
         'date': fields.date('Date', readonly=True),
-        'invoiced': fields.boolean('Invoiced'),
+        'has_invoice': fields.boolean('Has invoice'),
+        'has_ddt': fields.boolean('Has DDT'),
         }
 
 class EdiOrder(orm.Model):
@@ -1156,7 +1170,10 @@ class EdiOrderLineCkeck(orm.Model):
     _order = 'article'
 
     _columns = {
-        'order_id': fields.many2one('edi.order', 'Order'),
+        # Mode fields:
+        'invoice_order_id': fields.many2one('edi.order', 'Order invoiced'),
+        'ddt_order_id': fields.many2one('edi.order', 'Order DDT'),
+        
         'name': fields.char('Company code', size=16),
         'article': fields.char('Customer code', size=16),
             
@@ -1173,23 +1190,14 @@ class EdiOrderLineCkeck(orm.Model):
         'invoice_info': fields.text('Invoice info'),
         'ddt_info': fields.text('DDT info'),
 
-        'mode': fields.selection([
-            ('invoice', 'Invoice'),
-            ('ddt', 'DDT'),
-            ], 'Mode'),
-
         'state': fields.selection([
             ('correct', 'Correct'),
             ('order', 'Only order'),
-            ('invoice', 'Only invoice'),
+            ('invoice', 'Not in order'),
             ('difference', 'Difference'),
             ], 'State'),
         }
         
-    _defaults = {
-        'mode': lambda *x: 'invoice',
-        }    
-
 class EdiOrder(orm.Model):
     """ Model name: Edi Order
     """
@@ -1205,9 +1213,9 @@ class EdiOrder(orm.Model):
         'ddt_ids': fields.one2many('edi.ddt.line', 'order_id', 
             'DDT'),
             
-        'check_invoice_ids': fields.one2many('edi.order.line.check', 'order_id', 
-            'Check Invoice'),
-        'check_ddt_ids': fields.one2many('edi.order.line.check', 'order_id', 
-            'Check DDT'),
+        'check_invoice_ids': fields.one2many('edi.order.line.check', 
+            'invoice_order_id', 'Check Invoice'),
+        'check_ddt_ids': fields.one2many('edi.order.line.check', 
+            'ddt_order_id', 'Check DDT'),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
