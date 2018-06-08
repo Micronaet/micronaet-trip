@@ -974,10 +974,15 @@ class EdiOrder(orm.Model):
         '''
         order_pool = self.pool.get('edi.order')
         invoice_pool = self.pool.get('edi.invoice.line')
+        now = datetime.now()
         
         # ---------------------------------------------------------------------
         # 1. Load order file in all autoload folder:
         # ---------------------------------------------------------------------
+        _logger.info('Now: %s Passed [min: %s]' % (
+            now, 
+            (datetime.now() - now).seconds / 60.0,
+            ))
         if load_file:
             _logger.warning('YES: Load files of order in autoload folder')
             folder_ids = self.search(cr, uid, [

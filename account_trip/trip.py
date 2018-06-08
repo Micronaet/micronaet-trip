@@ -501,7 +501,6 @@ class res_partner(orm.Model):
                 limit=limit)                
         res = self.name_get(cr, uid, ids, context=context)
         return res
-        
 
     # -------------
     # Button event:
@@ -596,6 +595,5 @@ class trip_tour(orm.Model):
             'Destination 1'),
         'destination2_ids': fields.one2many('res.partner', 'tour2_id', 
             'Destination 2'),
-        }
-        
+        }        
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
