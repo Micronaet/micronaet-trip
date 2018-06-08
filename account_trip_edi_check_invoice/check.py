@@ -1005,8 +1005,11 @@ class EdiOrder(orm.Model):
             check_invoice=True, check_ddt=True, context=None):
         ''' Load all selected folder
         '''
+        # Pool used:
         order_pool = self.pool.get('edi.order')
         invoice_pool = self.pool.get('edi.invoice.line')
+        ddt_pool = self.pool.get('edi.ddt.line')
+        
         now = datetime.now()
         
         # ---------------------------------------------------------------------
@@ -1056,6 +1059,7 @@ class EdiOrder(orm.Model):
             now, (datetime.now() - now).seconds / 60.0))
         if import_ddt:
             _logger.warning('YES: Import DDT')
+            ddt_pool = import_ddt_line_from_account(cr, uid, context=context)
         else:    
             _logger.warning('NO: Import DDT')
 
