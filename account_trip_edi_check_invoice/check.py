@@ -88,13 +88,22 @@ class EdiDDTLine(orm.Model):
         ddt_ids = ddt_pool.search(cr, uid, [], context=context)
         ddt_pool.unlink(cr, uid, ddt_ids, context=context)
         _logger.info('Delete DDT: %s' % len(line_ids))
+
+        # Set order all not DDT:
+        order_ids = order_pool.search(cr, uid, [
+            ('has_ddt', '=', True),
+            ], context=context)
+        order_pool.write(cr, uid, order_ids, {
+            'has_ddt': False,
+            }, context=context)
+        _logger.info('Set all order as not DDT')
         
         ddt_db = {}
         order_db = {}
         i = 0
         for row in open(filename, 'r'):
             i += 1
-            if i % 1000 == 0:
+            if i % 100 == 0:
                 _logger.info('Import DDT line: %s' % i)
                 
             # -----------------------------------------------------------------
@@ -269,7 +278,7 @@ class EdiInvoiceLine(orm.Model):
         i = 0
         for row in open(filename, 'r'):
             i += 1
-            if i % 1000 == 0:
+            if i % 100 == 0:
                 _logger.info('Import invoice line: %s' % i)
                 
             # -----------------------------------------------------------------
