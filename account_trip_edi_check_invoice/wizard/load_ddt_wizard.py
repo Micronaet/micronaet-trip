@@ -193,9 +193,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                     res[ddt][1].append(check)
                     
         # not DDT but order!!!!            
-        for ddt in sorted(res, key=lambda x: x.name):
-            row += 1
-            
+        for ddt in sorted(res, key=lambda x: x.name):            
             # DDT Line color depend on difference: (red - green - white)
             difference = res[ddt][0]
             if abs(difference) <= tollerance:
@@ -210,6 +208,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 f_text_default = f_bg_green
                 f_number_default = f_bg_green_number
                 
+            row += 1
             excel_pool.write_xls_line(ws_name, row, [
                 ddt.name, 
                 ddt.date,
