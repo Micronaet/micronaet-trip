@@ -85,7 +85,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         domain = [('has_ddt', '=', True)]
         domain_text = _('Order VS DDT (%s)') % mode
             
-        # TODO wrong filter:
+        
         if wiz_proxy.from_date:
             domain.append(
                 ('date', '>=', wiz_proxy.from_date))
@@ -180,7 +180,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         order_ids = order_pool.search(cr, uid, domain, context=context)
         for order in order_pool.browse(cr, uid, order_ids, context=context):            
             for check in order.check_ddt_ids:
-                ddt = check.ddt_info
+                ddt = check.ddt_order_id
                 
                 if ddt not in res:
                     res[ddt] = [0.0, []]
@@ -192,7 +192,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 if mode != 'ddt': # add line only if not ddt mode
                     res[ddt][1].append(check)
                     
-        for ddt in sorted(res):
+        for ddt in sorted(res, key=lambda x: x.name):
             row += 1
             
             # DDT Line color depend on difference: (red - green - white)
@@ -208,15 +208,15 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 f_number_default = f_bg_green_number
                 
             excel_pool.write_xls_line(ws_name, row, [
-                ddt, 
-                '',
+                ddt.name, 
+                ddt.date,
                 (difference, f_number_default),                    
                 ], default_format=f_text_default)
 
             # Detailed extra data:    
             if mode != 'ddt':
                 excel_pool.write_xls_line(ws_name, row, [
-                    ddt,
+                    '%s [%s]' % (ddt.name, ddt.date),
                     '', '', '', '', '', '', '', 
                     (res[ddt][0], f_number),
                     ], default_format=f_text)
@@ -258,7 +258,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                         ], default_format=f_text_default, col=1)
 
         return excel_pool.return_attachment(cr, uid, ws_name, 
-            version='7.0', php=False, context=context)# TODO
+            version='7.0', php=False, context=context)
 
     _columns = {
         'mode': fields.selection([
