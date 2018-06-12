@@ -134,11 +134,9 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         # Format columns:
         # ---------------------------------------------------------------------
         excel_pool.column_width(ws_name, [
-            20, 20, 20,
-            15, 15, 
-            15, 15, 
-            15, 15, 
-            20,             
+            20, 20, 35,
+            20,
+            10, 10, 10, 10, 10, 10, 10,             
             ])
         
         # ---------------------------------------------------------------------
@@ -163,7 +161,8 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
             header = [
                 _('Order'),
                 _('DDT'),
-                _('Code'),
+                _('Our Code'),
+                _('EDI Code'),
                 _('OC: Pdv'),
                 _('DDT: Pdv'),
                 _('OC: Q.'),
@@ -267,16 +266,17 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                         f_number_default = f_bg_yellow_number
                     
                     excel_pool.write_xls_line(ws_name, row, [
+                        check.name, 
                         check.article, 
 
-                        check.order_price, 
-                        check.invoice_price,
+                        (check.order_price, f_number_default), 
+                        (check.invoice_price, f_number_default),
 
-                        check.order_qty, 
-                        check.invoice_qty, 
+                        (check.order_qty, f_number_default), 
+                        (check.invoice_qty, f_number_default), 
 
-                        check.order_total, 
-                        check.invoice_total,
+                        (check.order_total, f_number_default), 
+                        (check.invoice_total, f_number_default),
 
                         (difference, f_number_default),
                         ], default_format=f_text_default, col=2)
