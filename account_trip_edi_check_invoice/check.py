@@ -468,7 +468,6 @@ class EdiOrder(orm.Model):
             #Create order line:
             for row in open(last_file.fullname, 'r'):
                 data = self.generate_record_dict(row)
-                data['order_id'] = order.id
                 line_pool.create(cr, uid, data, context=context)
                 
         # Set last file used:        
@@ -1167,14 +1166,25 @@ class EdiOrderFile(orm.Model):
             f = open(fullname, 'r')
             tr = ''
             for row in f:
-                tr += '''
-                    <tr>
-                        <td>%(sequence)s</td><td>%(name)s</td>
-                        <td>%(article)s</td><td>%(description)s</td>
-                        <td>%(qty)s</td><td>%(uom)s</td>
-                        <td>%(price)s</td><td>%(total)s</td>
-                    </tr>
-                    ''' % order_pool.generate_record_dict(row)
+                try:
+                    tr += '''
+                        <tr>
+                            <td>%(sequence)s</td><td>%(name)s</td>
+                            <td>%(article)s</td><td>%(description)s</td>
+                            <td>%(qty)s</td><td>%(uom)s</td>
+                            <td>%(price)s</td><td>%(total)s</td>
+                        </tr>
+                        ''' % order_pool.generate_record_dict(row)
+                except:
+                    tr += '''
+                        <tr>
+                            <td>ERR</td><td>ERR</td>
+                            <td>ERR</td><td>ERR</td>
+                            <td>ERR</td><td>ERR</td>
+                            <td>ERR</td><td>ERR</td>
+                        </tr>
+                        '''
+                        
                     
             res[item_id] = '''
                 <style>
