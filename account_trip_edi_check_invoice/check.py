@@ -1170,13 +1170,42 @@ class EdiOrderFile(orm.Model):
                 tr += '''
                     <tr>
                         <td>%(sequence)s</td><td>%(name)s</td>
-                        <td>%(article)s</td><td>%(qty)s</td>
-                        <td>%(price)s</td><td>%(uom)s</td>
-                        <td>%(description)s</td><td>%(total)s</td>
+                        <td>%(article)s</td><td>%(description)s</td>
+                        <td>%(qty)s</td><td>%(uom)s</td>
+                        <td>%(price)s</td><td>%(total)s</td>
                     </tr>
                     ''' % order_pool.generate_record_dict(row)
                     
-            res[item_id] = '<table>%s</table>' % tr
+            res[item_id] = '''
+                <style>
+                    .table_bf {
+                         border:1px;
+                         padding: 3px; 
+                         solid black;
+                     }
+                    .table_bf td {
+                         border:1px; 
+                         solid black; 
+                         padding: 3px;
+                         text-align: center;
+                     }
+                    .table_bf th {
+                         border:1px; 
+                         solid black;
+                         padding: 3px;
+                         text-align: center;
+                         background-color: grey;
+                         color: white;
+                     }
+                </style>
+                <table class='table_bf'>
+                    <tr>
+                        <th>Seq.</th><th>Ns. codice</th><th>Vs. codice</th>
+                        <th>Descrizione</th>
+                        <th>Q.</th><th>UM</th><th>Prezzo</th><th>Totale</th>
+                    </tr>
+                    %s</table>
+                ''' % tr
             f.close()
         return res
 
