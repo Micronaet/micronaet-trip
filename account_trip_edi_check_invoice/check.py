@@ -1175,7 +1175,7 @@ class EdiOrderFile(orm.Model):
                             <td>%(price)s</td><td>%(total)s</td>
                         </tr>
                         ''' % order_pool.generate_record_dict(row)
-                        #td>%(article)s</td>
+                        
                 except:
                     tr += '''
                         <tr>
