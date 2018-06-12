@@ -203,6 +203,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         # Print sorted order:
         for order in sorted(res, key=lambda x: x.name):            
             # DDT Line color depend on difference: (red - green - white)
+            import pdb; pdb.set_trace()
             difference = res[order][0]
             if abs(difference) <= tollerance:
                 f_text_default = f_bg_white
