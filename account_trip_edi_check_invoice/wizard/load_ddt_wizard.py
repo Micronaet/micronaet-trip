@@ -101,7 +101,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 cr, uid, domain_ddt, context=context)
             find_order_ids = [
                 line.order_id.id for line in ddt_line_pool.browse(
-                    cr, uid, ddt_ids, context=context]
+                    cr, uid, ddt_ids, context=context)]
             domain.append(('id', 'in', tuple(set(find_order_ids))))
         
         # ---------------------------------------------------------------------
