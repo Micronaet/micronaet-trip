@@ -192,7 +192,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 if mode != 'ddt': # add line only if not ddt mode
                     res[ddt][1].append(check)
                     
-        for ddt in sorted(res, key=lambda x: x.name):
+        for ddt in sorted(res):
             row += 1
             
             # DDT Line color depend on difference: (red - green - white)
