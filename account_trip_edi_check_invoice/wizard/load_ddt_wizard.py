@@ -243,7 +243,6 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                         f_number_default = f_bg_yellow_number
                     
                     excel_pool.write_xls_line(ws_name, row, [
-                        '',
                         check.article, 
 
                         check.order_price, 
@@ -256,10 +255,10 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                         check.invoice_total,
 
                         (difference, f_number_default),
-                        ], default_format=f_text_default)
+                        ], default_format=f_text_default, col=1)
 
         return excel_pool.return_attachment(cr, uid, ws_name, 
-            version='7.0', php=False, context=context)
+            version='7.0', php=False, context=context)# TODO
 
     _columns = {
         'mode': fields.selection([
