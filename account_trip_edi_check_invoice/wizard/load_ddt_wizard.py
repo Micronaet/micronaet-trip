@@ -131,15 +131,6 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         f_number = excel_pool.get_format('number')
         
         # ---------------------------------------------------------------------
-        # Format columns:
-        # ---------------------------------------------------------------------
-        excel_pool.column_width(ws_name, [
-            20, 20, 35,
-            20,
-            10, 10, 10, 10, 10, 10, 10,             
-            ])
-        
-        # ---------------------------------------------------------------------
         # Write title and header:
         # ---------------------------------------------------------------------
         # Title:
@@ -151,6 +142,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         # Header:
         row += 2
         if mode == 'ddt':
+            excel_pool.column_width(ws_name, [22, 22, 35, 10])
             header = [
                 _('Order'),
                 _('Date'),
@@ -158,6 +150,12 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 _('Differenza'),
                 ]
         else:
+            excel_pool.column_width(ws_name, [
+                22, 22, 
+                20, 20,
+                10, 10, 10, 10, 10, 10, 10,             
+                ])
+
             header = [
                 _('Order'),
                 _('DDT'),
@@ -240,7 +238,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 excel_pool.write_xls_line(ws_name, row, [
                     '%s [%s]' % (order.name, order.date),
                     ddt_text,
-                    '', '', '', '', '', '', '', 
+                    '', '', '', '', '', '', '', '', 
                     (res[order][0], f_number),
                     ], default_format=f_text)
                 
