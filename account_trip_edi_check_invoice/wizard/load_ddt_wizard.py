@@ -112,9 +112,20 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         f_header = excel_pool.get_format('header')
         
         f_text = excel_pool.get_format('text')        
+
+        # Color setup:
         f_bg_white = excel_pool.get_format('bg_white')
         f_bg_red = excel_pool.get_format('bg_red')
         f_bg_green = excel_pool.get_format('bg_green')
+        f_bg_yellow = excel_pool.get_format('bg_yellow')
+        f_bg_blue = excel_pool.get_format('bg_blue')
+
+        f_bg_white_number = excel_pool.get_format('bg_white_number')
+        f_bg_red_number = excel_pool.get_format('bg_red_number')
+        f_bg_green_number = excel_pool.get_format('bg_green_number')
+        f_bg_yellow_number = excel_pool.get_format('bg_yellow_number')
+        f_bg_blue_number = excel_pool.get_format('bg_blue_number')
+        
         
         f_number = excel_pool.get_format('number')
         
@@ -183,26 +194,54 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                     
         for ddt in sorted(res, key=lambda x: x.name):
             row += 1
+            
+            # DDT Line color depend on difference: (red - green - white)
+            difference = res[ddt][0]
+            if abs(difference) <= tollerance:
+                f_text_default = f_bg_white
+                f_number_default = f_bg_white_number
+            elif difference < 0:
+                f_text_default = f_bg_red
+                f_number_default = f_bg_red_number
+            else: # >0
+                f_text_default = f_bg_green
+                f_number_default = f_bg_green_number
+                
             excel_pool.write_xls_line(ws_name, row, [
                 ddt.name, 
                 ddt.date,
-                res[ddt][0],                    
-                ], default_format=f_text)
+                (difference, f_number_default),                    
+                ], default_format=f_text_default)
 
             # Detailed extra data:    
             if mode != 'ddt':
                 excel_pool.write_xls_line(ws_name, row, [
                     '%s [%s]' % (ddt.name, ddt.date),
                     '', '', '', '', '', '', '', 
-                    res[ddt][0],
+                    (res[ddt][0], f_number),
                     ], default_format=f_text)
                 
                 # Detailed check line:    
                 for check in res[ddt][1]:
-                    if mode == 'difference' and abs(res[ddt][0]) <= tollerance:
+                    difference = res[ddt][0]
+                    if mode == 'difference' and abs(difference) <= tollerance:
                         continue # only case to jump
                         
                     row += 1
+                    # DDT Line color depend on status:
+                    if check.state == 'correct':
+                        f_text_default = f_bg_white
+                        f_number_default = f_bg_white_number
+                    elif check.state == 'difference':
+                        f_text_default = f_bg_red
+                        f_number_default = f_bg_red_number
+                    elif check.state == 'order':
+                        f_text_default = f_bg_blue
+                        f_number_default = f_bg_blue_number
+                    elif check.state == 'invoice':
+                        f_text_default = f_bg_yellow
+                        f_number_default = f_bg_yellow_number
+                    
                     excel_pool.write_xls_line(ws_name, row, [
                         '',
                         check.article, 
@@ -216,8 +255,8 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                         check.order_total, 
                         check.invoice_total,
 
-                        res[ddt][0], # total difference:
-                        ], default_format=f_text)
+                        (difference, f_number_default),
+                        ], default_format=f_text_default)
 
         return excel_pool.return_attachment(cr, uid, ws_name, 
             version='7.0', php=True, context=context)
