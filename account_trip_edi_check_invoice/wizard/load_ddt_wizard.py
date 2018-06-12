@@ -197,7 +197,6 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 # DDT ref: (gap, check list)
             
             for check in order.check_ddt_ids:
-
                 if abs(check.difference) >= tollerance:
                     res[order][0] += check.difference
 
@@ -205,6 +204,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                     res[order][1].append(check)
                     
         # Print sorted order:
+        import pdb; pdb.set_trace()
         for order in sorted(res, key=lambda x: x.name):            
             # DDT Line color depend on difference: (red - green - white)
             difference = res[order][0]
