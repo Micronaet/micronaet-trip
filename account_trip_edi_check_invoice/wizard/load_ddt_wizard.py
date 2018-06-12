@@ -175,7 +175,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                     res[ddt] = [0.0, []]
                     # DDT ref: (gap, check list)
 
-                if abs(difference) >= res[ddt][0]:
+                if abs(check.difference) >= tollerance:
                     res[ddt][0] += difference
 
                 if mode != 'ddt': # add line only if not ddt mode
@@ -224,9 +224,9 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
 
     _columns = {
         'mode': fields.selection([
-            ('ddt', 'DDT'),
-            ('difference', 'Difference'),
-            ('all', 'All'),
+            ('ddt', 'Only DDT'),
+            ('difference', 'With difference'),
+            ('all', 'All details'),
             ], 'Mode', required=True),
             
         'from_date': fields.date('From date'),
