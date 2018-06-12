@@ -192,6 +192,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 if mode != 'ddt': # add line only if not ddt mode
                     res[ddt][1].append(check)
                     
+        # not DDT but order!!!!            
         for ddt in sorted(res, key=lambda x: x.name):
             row += 1
             
@@ -200,6 +201,8 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
             if abs(difference) <= tollerance:
                 f_text_default = f_bg_white
                 f_number_default = f_bg_white_number
+                if mode == 'difference':
+                    continue # jump line that write DDT header without diff.
             elif difference < 0:
                 f_text_default = f_bg_red
                 f_number_default = f_bg_red_number
