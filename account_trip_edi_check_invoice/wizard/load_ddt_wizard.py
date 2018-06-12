@@ -87,11 +87,11 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         domain = [('has_ddt', '=', True)]
         domain_text = _('Order VS DDT (%s)') % mode
 
-        if wiz_proxy.yes_invoiced:
+        if wiz_proxy.yes_invoice:
             domain_ddt.append(
                 ('has_invoice', '=', True))
             domain_text += _(' - Con fattura all\'attivo') 
-        if wiz_proxy.no_invoiced:
+        if wiz_proxy.no_invoice:
             domain_ddt.append(
                 ('has_invoice', '=', False))
             domain_text += _(' - Senza fattura all\'attivo') 
@@ -186,7 +186,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 _('DDT: Q.'),
                 _('OC: Totale'),
                 _('DDT: Totale'),
-                _('Differenza'),
+                _('DDT Differ.'),
                 ]
                     
         excel_pool.write_xls_line(
@@ -219,7 +219,8 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                     (1, order.check_ddt_ids), 
                     (2, order.check_invoice_ids)):
                 for check in list_ids:
-                    if abs(check.difference) >= tollerance:
+                    if abs(check.difference) >= tollerance and level == 1:
+                        # Difference only for DDT                        
                         res[order][0] += check.difference
 
                     if mode != 'ddt': # add line only if not ddt mode
@@ -341,8 +342,8 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         'from_date': fields.date('From date'),
         'to_date': fields.date('To date'),
         
-        'yes_invoiced': fields.boolean('Invoiced'),
-        'not_invoice': fields.boolean('Not invoiced'),
+        'yes_invoice': fields.boolean('Invoiced'),
+        'no_invoice': fields.boolean('Not invoiced'),
         
         'note': fields.text('Procedure', readonly=True),
         }

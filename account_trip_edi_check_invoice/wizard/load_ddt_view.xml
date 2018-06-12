@@ -19,8 +19,8 @@
                         <field name="from_date" />
                         <field name="to_date" />
                         
-                        <field name="yes_invoiced" />
-                        <field name="no_invoiced" />
+                        <field name="yes_invoice" />
+                        <field name="no_invoice" />
                         
                         <separator string="Note" colspan="4"/>
                         <field name="note" nolabel="1" colspan="4" widget="html" />
