@@ -91,11 +91,13 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         if wiz_proxy.from_date:
             domain_ddt.append(
                 ('ddt_id.date', '>=', wiz_proxy.from_date))
-            domain_text += _(' - Dalla date DDT %s') % wiz_proxy.from_date
+            domain_text += _(' - Dalla date DDT %s') % excel_pool.format_date(
+                wiz_proxy.from_date)
         if wiz_proxy.to_date:
             domain_ddt.append(
                 ('ddt_id.date', '<=', wiz_proxy.from_date))
-            domain_text += _(' - Alla data DDT %s') % wiz_proxy.to_date
+            domain_text += _(' - Alla data DDT %s') % excel_pool.format_date(
+                wiz_proxy.to_date)
         if domain_ddt:
             ddt_ids = ddt_line_pool.search(
                 cr, uid, domain_ddt, context=context)
