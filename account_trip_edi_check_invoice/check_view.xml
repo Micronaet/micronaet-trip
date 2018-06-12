@@ -31,6 +31,9 @@
 
                             <field name="order_id" invisible="context.get('order_embedded', False)" />
                             <field name="datetime" />                    
+                            
+                            <separator string="Content" colspan="4"/>
+                            <field name="content" colspan="4" nolabel="1" widget="html"/>
                         </group>
                     </sheet>    
                 </form>

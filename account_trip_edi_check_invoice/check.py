@@ -409,6 +409,21 @@ class EdiOrder(orm.Model):
     _description = 'EDI order'
     _rec_name = 'name'
 
+    # Utility:
+    def generate_record_dict(self, row):
+        ''' Extract data from file for generare ODOO record
+        '''
+        return {
+            'sequence': int(row[2336:2347]),
+            'name': row[2356:2391].strip(), 
+            'article': row[2391:2426].strip(),
+            'qty': row[2631:2641].strip(), 
+            'price': float(row[2877:2907]), 
+            'uom': row[2641:2644].strip(),
+            'description': row[2531:2631].strip(),
+            'total': float(row[2907:2937]),
+            }
+
     # -------------------------------------------------------------------------
     # Button event:
     # -------------------------------------------------------------------------
@@ -452,17 +467,8 @@ class EdiOrder(orm.Model):
                 
             #Create order line:
             for row in open(last_file.fullname, 'r'):
-                data = {
-                    'order_id': order.id,
-                    'sequence': int(row[2336:2347]),
-                    'name': row[2356:2391].strip(), 
-                    'article': row[2391:2426].strip(),
-                    'qty': row[2631:2641].strip(), 
-                    'price': float(row[2877:2907]), 
-                    'uom': row[2641:2644].strip(),
-                    'description': row[2531:2631].strip(),
-                    'total': float(row[2907:2937]),
-                    }
+                data = self.generate_record_dict(row)
+                data['order_id'] = order.id
                 line_pool.create(cr, uid, data, context=context)
                 
         # Set last file used:        
@@ -1138,7 +1144,7 @@ class EdiOrderFile(orm.Model):
     _name = 'edi.order.file'
     _description = 'EDI order file'
     _order = 'datetime desc'
-
+    
     def _get_fullname_file_name(
             self, cr, uid, ids, fields, args, context=None):
         ''' Fields function for calculate 
@@ -1147,6 +1153,32 @@ class EdiOrderFile(orm.Model):
         for item in self.browse(cr, uid, ids, context=context):
             res[item.id] = os.path.join(item.folder_id.path, item.name)
         return res    
+
+    def _show_file_content(self, cr, uid, ids, fields, args, context=None):
+        ''' Fields function for calculate 
+        '''
+        order_pool = self.pool.get('edi.order')
+        
+        res = {}
+        filename_db = self._get_fullname_file_name(
+            cr, uid, ids, None, None, context=context)
+                
+        for item_id, fullname in filename_db.iteritems():
+            f = open(fullname, 'r')
+            tr = ''
+            for row in f:
+                tr += '''
+                    <tr>
+                        <td>%(sequence)s</td><td>%(name)s</td>
+                        <td>%(article)s</td><td>%(qty)s</td>
+                        <td>%(price)s</td><td>%(uom)s</td>
+                        <td>%(description)s</td><td>%(total)s</td>
+                    </tr>
+                    ''' % order_pool.generate_record_dict(row)
+                    
+            res[item_id] = '<table>%s</table>' % tr
+            f.close()
+        return res
 
     _columns = {
         'order_id': fields.many2one('edi.order', 'Order'),
@@ -1164,6 +1196,9 @@ class EdiOrderFile(orm.Model):
             ('delete', 'Delete (ELICHG)'),
             ('error', 'Error in start file name'),
             ], 'Mode', readonly=False),
+        'content': fields.function(
+            _show_file_content, method=True, 
+            type='text', string='Content', store=False),                         
         }
     
     _defaults = {
