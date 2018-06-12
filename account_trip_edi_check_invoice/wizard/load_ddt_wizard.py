@@ -209,12 +209,12 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
             for level, list_ids in (
                     (1, order.check_ddt_ids), 
                     (2, order.check_invoice_ids)):
-            for check in list_ids:
-                if abs(check.difference) >= tollerance:
-                    res[order][0] += check.difference
+                for check in list_ids:
+                    if abs(check.difference) >= tollerance:
+                        res[order][0] += check.difference
 
-                if mode != 'ddt': # add line only if not ddt mode
-                    res[order][level].append(check)
+                    if mode != 'ddt': # add line only if not ddt mode
+                        res[order][level].append(check)
                     
         # Print sorted order:
         total = 0.0
@@ -290,7 +290,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                             f_number_default = f_bg_yellow_number
                         
                         excel_pool.write_xls_line(ws_name, row, [
-                            '(DDT)' if level == 1 else '(FATT)'
+                            '(DDT)' if level == 1 else '(FATT)',
                             check.name, 
                             check.article, 
 
