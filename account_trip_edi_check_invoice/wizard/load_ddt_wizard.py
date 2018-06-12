@@ -74,6 +74,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         # Pool used:
         excel_pool = self.pool.get('excel.writer')
         order_pool = self.pool.get('edi.order')
+        ddt_line_pool = self.pool.get('edi.ddt.line')
 
         # ---------------------------------------------------------------------
         # Parameters and domain filter:
@@ -133,7 +134,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         # Format columns:
         # ---------------------------------------------------------------------
         excel_pool.column_width(ws_name, [
-            20, 20, 
+            20, 20, 20,
             15, 15, 
             15, 15, 
             15, 15, 
@@ -153,12 +154,14 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         row += 2
         if mode == 'ddt':
             header = [
-                _('DDT'),
+                _('Order'),
                 _('Date'),
+                _('DDT'),
                 _('Differenza'),
                 ]
         else:
             header = [
+                _('Order'),
                 _('DDT'),
                 _('Code'),
                 _('OC: Pdv'),
@@ -176,26 +179,35 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         # Extract data:
         # ---------------------------------------------------------------------
+        # Database for DDT and order:
+        ddt_db = {}
+        ddt_ids = ddt_line_pool.search(cr, uid, [], context=context)
+        for line in ddt_line_pool.browse(cr, uid, ddt_ids, context=context):
+            if line.order_id.id not in ddt_db:
+                ddt_db[line.order_id.id] = []
+            if line.ddt_id not in ddt_db[line.order_id.id]:
+                ddt_db[line.order_id.id].append(line.ddt_id)
+
+        # Read order:
         res = {}
         order_ids = order_pool.search(cr, uid, domain, context=context)
         for order in order_pool.browse(cr, uid, order_ids, context=context):            
+            if order not in res:
+                res[order] = [0.0, []]
+                # DDT ref: (gap, check list)
+            
             for check in order.check_ddt_ids:
-                ddt = check.ddt_order_id
-                
-                if ddt not in res:
-                    res[ddt] = [0.0, []]
-                    # DDT ref: (gap, check list)
 
                 if abs(check.difference) >= tollerance:
-                    res[ddt][0] += check.difference
+                    res[order][0] += check.difference
 
                 if mode != 'ddt': # add line only if not ddt mode
-                    res[ddt][1].append(check)
+                    res[order][1].append(check)
                     
-        # not DDT but order!!!!            
-        for ddt in sorted(res, key=lambda x: x.name):            
+        # Print sorted order:
+        for order in sorted(res, key=lambda x: x.name):            
             # DDT Line color depend on difference: (red - green - white)
-            difference = res[ddt][0]
+            difference = res[order][0]
             if abs(difference) <= tollerance:
                 f_text_default = f_bg_white
                 f_number_default = f_bg_white_number
@@ -209,22 +221,24 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 f_number_default = f_bg_green_number
                 
             row += 1
-            excel_pool.write_xls_line(ws_name, row, [
-                ddt.name, 
-                ddt.date,
-                (difference, f_number_default),                    
-                ], default_format=f_text_default)
-
             # Detailed extra data:    
-            if mode != 'ddt':
+            if mode == 'ddt':
                 excel_pool.write_xls_line(ws_name, row, [
-                    '%s [%s]' % (ddt.name, ddt.date),
+                    order.name, 
+                    order.date,
+                    ddt_db.get(order.id, ''),
+                    (difference, f_number_default),                    
+                    ], default_format=f_text_default)
+            else:
+                excel_pool.write_xls_line(ws_name, row, [
+                    '%s [%s]' % (order.name, order.date),
+                    ddt_db.get(order.id, ''),
                     '', '', '', '', '', '', '', 
-                    (res[ddt][0], f_number),
+                    (res[order][0], f_number),
                     ], default_format=f_text)
                 
                 # Detailed check line:    
-                for check in res[ddt][1]:
+                for check in res[order][1]:
                     difference = check.difference or 0.0
                     if mode == 'difference' and abs(difference) <= tollerance:
                         continue # only case to jump
@@ -257,7 +271,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                         check.invoice_total,
 
                         (difference, f_number_default),
-                        ], default_format=f_text_default, col=1)
+                        ], default_format=f_text_default, col=2)
 
         return excel_pool.return_attachment(cr, uid, ws_name, 
             version='7.0', php=False, context=context)
