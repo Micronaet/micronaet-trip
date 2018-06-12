@@ -55,12 +55,13 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         '''
         if context is None: 
             context = {}        
-
-        # 1. Import DDT file from Mexal (previously extracted)
         
-        # 2. Refresh Order in ODOO (from files loaded nightly)
-        
-        return True
+        # Launch opeation scheduled for reimport DDT (previous exported)
+        folder_pool = self.pool.get('edi.order.folder')
+        _logger.info('Reimport DDT and check lines')
+        return folder_pool.load_scheduled_folder_selected(cr, uid, load_file=False, 
+            generate_line=False, import_invoice=False, import_ddt=True,
+            context=context)
     
     def action_export_report(self, cr, uid, ids, context=None):
         ''' Extract DDT report with parameters
