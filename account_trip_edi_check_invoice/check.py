@@ -1170,18 +1170,18 @@ class EdiOrderFile(orm.Model):
                     tr += '''
                         <tr>
                             <td>%(sequence)s</td><td>%(name)s</td>
-                            <td>%(article)s</td><td>%(description)s</td>
+                            <<td>%(description)s</td>
                             <td>%(qty)s</td><td>%(uom)s</td>
                             <td>%(price)s</td><td>%(total)s</td>
                         </tr>
                         ''' % order_pool.generate_record_dict(row)
+                        #td>%(article)s</td>
                 except:
                     tr += '''
                         <tr>
                             <td>ERR</td><td>ERR</td>
                             <td>ERR</td><td>ERR</td>
-                            <td>ERR</td><td>ERR</td>
-                            <td>ERR</td><td>ERR</td>
+                            <td>ERR</td><td>ERR</td><td>ERR</td>
                         </tr>
                         '''
                         
@@ -1208,7 +1208,7 @@ class EdiOrderFile(orm.Model):
                 </style>
                 <table class='table_bf'>
                     <tr>
-                        <th>Seq.</th><th>Ns. codice</th><th>Vs. codice</th>
+                        <th>Seq.</th><th>Codice</th>
                         <th>Descrizione</th>
                         <th>Q.</th><th>UM</th><th>Prezzo</th><th>Totale</th>
                     </tr>
