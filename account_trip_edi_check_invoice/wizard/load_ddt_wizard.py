@@ -176,7 +176,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                     # DDT ref: (gap, check list)
 
                 if abs(check.difference) >= tollerance:
-                    res[ddt][0] += difference
+                    res[ddt][0] += check.difference
 
                 if mode != 'ddt': # add line only if not ddt mode
                     res[ddt][1].append(check)
