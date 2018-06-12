@@ -225,9 +225,10 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
             total += difference
             if abs(difference) <= tollerance:
                 f_text_default = f_bg_white
-                f_number_default = f_bg_white_number
+                f_number_default = f_bg_white_number                
                 if mode == 'difference':
                     continue # jump line that write DDT header without diff.
+                difference = 0.0 # Reset unused decimal    
             elif difference > 0:
                 f_text_default = f_bg_red
                 f_number_default = f_bg_red_number
