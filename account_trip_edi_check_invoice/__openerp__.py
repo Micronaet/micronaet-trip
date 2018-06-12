@@ -32,6 +32,7 @@
     'depends': [
         'base',
         'account_trip_edi',
+        'excel_export',
         ],
     'init_xml': [],
     'demo': [],
@@ -39,6 +40,7 @@
         'security/ir.model.access.csv',    
         'check_view.xml',
         'wizard/load_invoice_view.xml',
+        'wizard/load_ddt_view.xml',
         
         'scheduler.xml',
         ],
