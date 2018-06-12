@@ -270,7 +270,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 
                 # Detailed check line:
                 for level in (1, 2):   
-                    for check in res[order][1]:
+                    for check in res[order][level]:
                         difference = check.difference or 0.0
                         if mode == 'difference' and abs(difference) <= tollerance:
                             continue # only case to jump
