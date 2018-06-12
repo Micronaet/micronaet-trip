@@ -200,19 +200,26 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         order_ids = order_pool.search(cr, uid, domain, context=context)
         for order in order_pool.browse(cr, uid, order_ids, context=context):            
             if order not in res:
-                res[order] = [0.0, []]
-                # DDT ref: (gap, check list)
-            
-            for check in order.check_ddt_ids:
+                # Order ref: (gap, DDT check, Invoice check)
+                res[order] = [0.0, [], []]
+
+            # -----------------------------------------------------------------            
+            # DDT and invoice check:
+            # -----------------------------------------------------------------            
+            for level, list_ids in (
+                    (1, order.check_ddt_ids), 
+                    (2, order.check_invoice_ids)):
+            for check in list_ids:
                 if abs(check.difference) >= tollerance:
                     res[order][0] += check.difference
 
                 if mode != 'ddt': # add line only if not ddt mode
-                    res[order][1].append(check)
+                    res[order][level].append(check)
                     
         # Print sorted order:
         total = 0.0
-        for order in sorted(res, key=lambda x: x.name):            
+        for order in sorted(res, key=lambda x: x.name):
+
             # DDT Line color depend on difference: (red - green - white)
             difference = res[order][0]
             total += difference
@@ -231,7 +238,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
             row += 1
             ddt_text = ''
             for item in ddt_db.get(order.id, ()):
-                ddt_text += '%s%s [%s]' % (
+                ddt_text += '%s%s%s [%s]' % (
                     ', ' if ddt_text else '',
                     item.name,
                     excel_pool.format_date(item.date),
@@ -241,54 +248,63 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
             if mode == 'ddt':
                 excel_pool.write_xls_line(ws_name, row, [
                     ddt_text,
-                    order.name, 
+                    '%s%s' % (
+                        order.name, 
+                        '(FATT.)' if order.has_invoice else '',
+                        ),                        
                     order.date,
                     (difference, f_number_default),                    
                     ], default_format=f_text_default)
             else:
                 excel_pool.write_xls_line(ws_name, row, [
                     ddt_text,
-                    '%s [%s]' % (order.name, order.date),
+                    '%s%s [%s]' % (
+                        order.name, 
+                        '(FATT.)' if order.has_invoice else '',
+                        order.date,
+                        ),
                     '', '', '', '', '', '', '', '', 
                     (res[order][0], f_number_default),
                     ], default_format=f_text_default)
                 
-                # Detailed check line:    
-                for check in res[order][1]:
-                    difference = check.difference or 0.0
-                    if mode == 'difference' and abs(difference) <= tollerance:
-                        continue # only case to jump
+                # Detailed check line:
+                for level in (1, 2):   
+                    for check in res[order][1]:
+                        difference = check.difference or 0.0
+                        if mode == 'difference' and abs(difference) <= tollerance:
+                            continue # only case to jump
+                            
+                        row += 1
+                        # DDT Line color depend on status:
+                        if check.state == 'correct':
+                            f_text_default = f_bg_white
+                            f_number_default = f_bg_white_number
+                        elif check.state == 'difference':
+                            f_text_default = f_bg_red
+                            f_number_default = f_bg_red_number
+                        elif check.state == 'order':
+                            f_text_default = f_bg_blue
+                            f_number_default = f_bg_blue_number
+                        elif check.state == 'invoice':
+                            f_text_default = f_bg_yellow
+                            f_number_default = f_bg_yellow_number
                         
-                    row += 1
-                    # DDT Line color depend on status:
-                    if check.state == 'correct':
-                        f_text_default = f_bg_white
-                        f_number_default = f_bg_white_number
-                    elif check.state == 'difference':
-                        f_text_default = f_bg_red
-                        f_number_default = f_bg_red_number
-                    elif check.state == 'order':
-                        f_text_default = f_bg_blue
-                        f_number_default = f_bg_blue_number
-                    elif check.state == 'invoice':
-                        f_text_default = f_bg_yellow
-                        f_number_default = f_bg_yellow_number
-                    
-                    excel_pool.write_xls_line(ws_name, row, [
-                        check.name, 
-                        check.article, 
+                        excel_pool.write_xls_line(ws_name, row, [
+                            '(DDT)' if level == 1 else '(FATT)'
+                            check.name, 
+                            check.article, 
 
-                        (check.order_price, f_number_default), 
-                        (check.invoice_price, f_number_default),
+                            (check.order_price, f_number_default), 
+                            (check.invoice_price, f_number_default),
 
-                        (check.order_qty, f_number_default), 
-                        (check.invoice_qty, f_number_default), 
+                            (check.order_qty, f_number_default), 
+                            (check.invoice_qty, f_number_default), 
 
-                        (check.order_total, f_number_default), 
-                        (check.invoice_total, f_number_default),
+                            (check.order_total, f_number_default), 
+                            (check.invoice_total, f_number_default),
 
-                        (difference, f_number_default),
-                        ], default_format=f_text_default, col=2)
+                            (difference, f_number_default),
+                            ], default_format=f_text_default, col=1)
 
         row += 1
         if mode=='ddt':
