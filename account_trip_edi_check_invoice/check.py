@@ -1170,7 +1170,7 @@ class EdiOrderFile(orm.Model):
                     tr += '''
                         <tr>
                             <td>%(sequence)s</td><td>%(name)s</td>
-                            <<td>%(description)s</td>
+                            <td>%(description)s</td>
                             <td>%(qty)s</td><td>%(uom)s</td>
                             <td>%(price)s</td><td>%(total)s</td>
                         </tr>
