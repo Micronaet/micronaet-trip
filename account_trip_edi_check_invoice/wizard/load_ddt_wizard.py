@@ -220,18 +220,27 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 f_number_default = f_bg_green_number
                 
             row += 1
-            # Detailed extra data:    
+            # Detailed extra data:
+            
+            ddt_text = ''
+            for item in ddt_db.get(order.id, ()):
+                ddt_text += '%s%s [%s]' % (
+                    ', ' if ddt_text else '',
+                    item.name,
+                    excel_pool.format_date(item.date),
+                    )
+                    
             if mode == 'ddt':
                 excel_pool.write_xls_line(ws_name, row, [
                     order.name, 
                     order.date,
-                    '%s' % (ddt_db.get(order.id, ''), ),
+                    ddt_text,
                     (difference, f_number_default),                    
                     ], default_format=f_text_default)
             else:
                 excel_pool.write_xls_line(ws_name, row, [
                     '%s [%s]' % (order.name, order.date),
-                    '%s' % (ddt_db.get(order.id, '')),
+                    ddt_text,
                     '', '', '', '', '', '', '', 
                     (res[order][0], f_number),
                     ], default_format=f_text)
