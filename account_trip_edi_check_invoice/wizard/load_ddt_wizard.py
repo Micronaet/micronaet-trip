@@ -168,7 +168,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         res = []
         order_ids = order_pool.search(cr, uid, domain, context=context)
         for order in order_pool.browse(cr, uid, order_ids, context=context):            
-            if check in order.check_ddt_ids:
+            for check in order.check_ddt_ids:
                 ddt = check.ddt_id
                 
                 if ddt not in res:
