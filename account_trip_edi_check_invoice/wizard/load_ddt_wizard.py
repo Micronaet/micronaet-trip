@@ -208,8 +208,8 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 f_number_default = f_bg_green_number
                 
             excel_pool.write_xls_line(ws_name, row, [
-                ddt.name, 
-                ddt.date,
+                ddt, 
+                '',
                 (difference, f_number_default),                    
                 ], default_format=f_text_default)
 
