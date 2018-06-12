@@ -181,11 +181,11 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 _('Ns Codice'),
                 _('Vs Codice'),
                 _('OC: Pdv'),
-                _('DDT: Pdv'),
+                _('Doc.: Pdv'),
                 _('OC: Q.'),
-                _('DDT: Q.'),
+                _('Doc.: Q.'),
                 _('OC: Totale'),
-                _('DDT: Totale'),
+                _('Doc: Totale'),
                 _('DDT Differ.'),
                 ]
                     
