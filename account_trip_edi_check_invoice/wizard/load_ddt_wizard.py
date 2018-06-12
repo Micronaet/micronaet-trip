@@ -127,7 +127,6 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         f_bg_yellow_number = excel_pool.get_format('bg_yellow_number')
         f_bg_blue_number = excel_pool.get_format('bg_blue_number')
         
-        
         f_number = excel_pool.get_format('number')
         
         # ---------------------------------------------------------------------
@@ -145,8 +144,8 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
             excel_pool.column_width(ws_name, [22, 22, 35, 10])
             header = [
                 _('DDT'),
-                _('Order'),
-                _('Date'),
+                _('Ordine'),
+                _('Data'),
                 _('Differenza'),
                 ]
         else:
@@ -158,15 +157,15 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
 
             header = [
                 _('DDT'),
-                _('Order'),
-                _('Our Code'),
-                _('EDI Code'),
+                _('Ordine'),
+                _('Ns Codice'),
+                _('Vs Codice'),
                 _('OC: Pdv'),
                 _('DDT: Pdv'),
                 _('OC: Q.'),
                 _('DDT: Q.'),
-                _('OC: Total'),
-                _('DDT: Total'),
+                _('OC: Totale'),
+                _('DDT: Totale'),
                 _('Differenza'),
                 ]
                     
@@ -201,9 +200,11 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                     res[order][1].append(check)
                     
         # Print sorted order:
+        total = 0.0
         for order in sorted(res, key=lambda x: x.name):            
             # DDT Line color depend on difference: (red - green - white)
             difference = res[order][0]
+            total += difference
             if abs(difference) <= tollerance:
                 f_text_default = f_bg_white
                 f_number_default = f_bg_white_number
@@ -277,6 +278,14 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
 
                         (difference, f_number_default),
                         ], default_format=f_text_default, col=2)
+
+        row += 1
+        if total > 0:
+            excel_pool.write_xls_line(ws_name, row, [total, ], 
+                default_format=f_br_green_number, col=10)
+        else:    
+            excel_pool.write_xls_line(ws_name, row, [total, ], 
+                default_format=f_br_red_number, col=10)
 
         return excel_pool.return_attachment(cr, uid, ws_name, 
             version='7.0', php=False, context=context)
