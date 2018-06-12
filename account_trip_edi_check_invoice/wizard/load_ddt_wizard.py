@@ -167,14 +167,14 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         res = []
         order_ids = order_pool.search(cr, uid, domain, context=context)
-        for order in order_pool.browse(cr, uid, order_ids, context=context):
-            ddt = order.ddt_id
-            
-            if ddt not in res:
-                res[ddt] = [0.0, []]
-                # DDT ref: (gap, check list)
-            
-            if check in ddt.check_ddt_ids:
+        for order in order_pool.browse(cr, uid, order_ids, context=context):            
+            if check in order.check_ddt_ids:
+                ddt = check.ddt_id
+                
+                if ddt not in res:
+                    res[ddt] = [0.0, []]
+                    # DDT ref: (gap, check list)
+
                 if abs(difference) >= res[ddt][0]:
                     res[ddt][0] += difference
 
