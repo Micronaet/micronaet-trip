@@ -281,14 +281,14 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
 
         row += 1
         if mode=='ddt':
-            col = 3
+            col = 2
         else:
-            col = 10    
+            col = 9
         if total > 0:
-            excel_pool.write_xls_line(ws_name, row, [total, ], 
+            excel_pool.write_xls_line(ws_name, row, ['Totale', total, ], 
                 default_format=f_bg_green_number, col=col)
         else:    
-            excel_pool.write_xls_line(ws_name, row, [total, ], 
+            excel_pool.write_xls_line(ws_name, row, ['Totale', total, ], 
                 default_format=f_bg_red_number, col=col)
 
         return excel_pool.return_attachment(cr, uid, ws_name, 
