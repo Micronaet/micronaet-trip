@@ -165,7 +165,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         # Extract data:
         # ---------------------------------------------------------------------
-        res = []
+        res = {}
         order_ids = order_pool.search(cr, uid, domain, context=context)
         for order in order_pool.browse(cr, uid, order_ids, context=context):            
             for check in order.check_ddt_ids:
