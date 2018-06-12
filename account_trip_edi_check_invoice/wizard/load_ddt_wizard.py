@@ -225,7 +225,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 
                 # Detailed check line:    
                 for check in res[ddt][1]:
-                    difference = check.difference
+                    difference = check.difference or 0.0
                     if mode == 'difference' and abs(difference) <= tollerance:
                         continue # only case to jump
                         
