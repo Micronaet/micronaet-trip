@@ -226,13 +226,13 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 excel_pool.write_xls_line(ws_name, row, [
                     order.name, 
                     order.date,
-                    ddt_db.get(order.id, ''),
+                    '%s' % (ddt_db.get(order.id, ''), ),
                     (difference, f_number_default),                    
                     ], default_format=f_text_default)
             else:
                 excel_pool.write_xls_line(ws_name, row, [
                     '%s [%s]' % (order.name, order.date),
-                    ddt_db.get(order.id, ''),
+                    '%s' % (ddt_db.get(order.id, '')),
                     '', '', '', '', '', '', '', 
                     (res[order][0], f_number),
                     ], default_format=f_text)
