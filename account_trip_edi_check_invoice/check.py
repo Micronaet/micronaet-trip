@@ -83,7 +83,7 @@ class EdiDDTLine(orm.Model):
         line_ids = self.search(cr, uid, [], context=context)
         self.unlink(cr, uid, line_ids, context=context)
         _logger.info('Delete DDT line: %s' % len(line_ids))
-        
+
         # DDT:
         ddt_ids = ddt_pool.search(cr, uid, [], context=context)
         ddt_pool.unlink(cr, uid, ddt_ids, context=context)

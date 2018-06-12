@@ -86,15 +86,23 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         domain = [('has_ddt', '=', True)]
         domain_text = _('Order VS DDT (%s)') % mode
             
-        
+        # DDT filter:    
+        domain_ddt = []
         if wiz_proxy.from_date:
-            domain.append(
-                ('date', '>=', wiz_proxy.from_date))
+            domain_ddt.append(
+                ('ddt_id.date', '>=', wiz_proxy.from_date))
             domain_text.append(_(' - From date %s') % wiz_proxy.from_date)
         if wiz_proxy.to_date:
-            domain.append(
-                ('date', '<=', wiz_proxy.from_date))
+            domain_ddt.append(
+                ('ddt_id.date', '<=', wiz_proxy.from_date))
             domain_text.append(_(' - To date %s') % wiz_proxy.to_date)
+        if domain_ddt:
+            ddt_ids = ddt_line_pool.search(
+                cr, uid, domain_ddt, context=context)
+            find_order_ids = [
+                line.order_id.id for line in ddt_line_pool.browse(
+                    cr, uid, ddt_ids, context=context]
+            domain.append(('id', 'in', tuple(set(find_order_ids))))
         
         # ---------------------------------------------------------------------
         # Create XSXL file:
