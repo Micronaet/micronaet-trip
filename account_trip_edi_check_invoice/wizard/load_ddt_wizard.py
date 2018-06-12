@@ -85,7 +85,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         domain = [('has_ddt', '=', True)]
         domain_text = _('Order VS DDT (%s)') % mode
             
-        
+        # TODO wrong filter:
         if wiz_proxy.from_date:
             domain.append(
                 ('date', '>=', wiz_proxy.from_date))
@@ -180,7 +180,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         order_ids = order_pool.search(cr, uid, domain, context=context)
         for order in order_pool.browse(cr, uid, order_ids, context=context):            
             for check in order.check_ddt_ids:
-                ddt = check.ddt_order_id
+                ddt = check.ddt_info
                 
                 if ddt not in res:
                     res[ddt] = [0.0, []]
@@ -216,7 +216,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
             # Detailed extra data:    
             if mode != 'ddt':
                 excel_pool.write_xls_line(ws_name, row, [
-                    '%s [%s]' % (ddt.name, ddt.date),
+                    ddt,
                     '', '', '', '', '', '', '', 
                     (res[ddt][0], f_number),
                     ], default_format=f_text)
