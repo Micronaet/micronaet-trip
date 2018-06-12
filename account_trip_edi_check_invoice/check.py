@@ -1189,19 +1189,17 @@ class EdiOrderFile(orm.Model):
             res[item_id] = '''
                 <style>
                     .table_bf {
-                         border:1px;
+                         border: 1px solid black;
                          padding: 3px; 
-                         solid black;
+                         
                      }
                     .table_bf td {
-                         border:1px; 
-                         solid black; 
+                         border: 1px solid black; 
                          padding: 3px;
                          text-align: center;
                      }
                     .table_bf th {
-                         border:1px; 
-                         solid black;
+                         border: 1px solid black;
                          padding: 3px;
                          text-align: center;
                          background-color: grey;
