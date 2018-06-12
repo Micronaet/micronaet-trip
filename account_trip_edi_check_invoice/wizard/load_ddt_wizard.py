@@ -238,7 +238,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
             row += 1
             ddt_text = ''
             for item in ddt_db.get(order.id, ()):
-                ddt_text += '%s%s%s [%s]' % (
+                ddt_text += '%s%s [%s]' % (
                     ', ' if ddt_text else '',
                     item.name,
                     excel_pool.format_date(item.date),
