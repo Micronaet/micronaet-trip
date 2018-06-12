@@ -86,7 +86,16 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         
         domain = [('has_ddt', '=', True)]
         domain_text = _('Order VS DDT (%s)') % mode
-            
+
+        if wiz_proxy.yes_invoiced:
+            domain_ddt.append(
+                ('has_invoice', '=', True))
+            domain_text += _(' - Con fattura all\'attivo') 
+        if wiz_proxy.no_invoiced:
+            domain_ddt.append(
+                ('has_invoice', '=', False))
+            domain_text += _(' - Senza fattura all\'attivo') 
+                        
         # DDT filter:    
         domain_ddt = []
         if wiz_proxy.from_date:
@@ -331,6 +340,9 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
             
         'from_date': fields.date('From date'),
         'to_date': fields.date('To date'),
+        
+        'yes_invoiced': fields.boolean('Invoiced'),
+        'not_invoice': fields.boolean('Not invoiced'),
         
         'note': fields.text('Procedure', readonly=True),
         }
