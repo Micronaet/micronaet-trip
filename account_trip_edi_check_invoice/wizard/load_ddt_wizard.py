@@ -140,14 +140,14 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         f_bg_green = excel_pool.get_format('bg_green')
         f_bg_yellow = excel_pool.get_format('bg_yellow')
         f_bg_blue = excel_pool.get_format('bg_blue')
-        f_bg_grey = excel_pool.get_format('bg_grey')
+        f_bg_orange = excel_pool.get_format('bg_orange')
 
         f_bg_white_number = excel_pool.get_format('bg_white_number')
         f_bg_red_number = excel_pool.get_format('bg_red_number')
         f_bg_green_number = excel_pool.get_format('bg_green_number')
         f_bg_yellow_number = excel_pool.get_format('bg_yellow_number')
         f_bg_blue_number = excel_pool.get_format('bg_blue_number')
-        f_bg_grey_number = excel_pool.get_format('bg_grey_number')
+        f_bg_orange_number = excel_pool.get_format('bg_orange_number')
         
         f_number = excel_pool.get_format('number')
         
@@ -293,8 +293,8 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                             f_text_default = f_bg_white
                             f_number_default = f_bg_white_number
                         elif check.state == 'difference':
-                            f_text_default = f_bg_grey
-                            f_number_default = f_bg_grey_number
+                            f_text_default = f_bg_orange
+                            f_number_default = f_bg_orange_number
                         elif check.state == 'order':
                             f_text_default = f_bg_blue
                             f_number_default = f_bg_blue_number
