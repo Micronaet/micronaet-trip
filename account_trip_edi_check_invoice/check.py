@@ -420,7 +420,7 @@ class EdiOrder(orm.Model):
             'qty': row[2631:2641].strip(), 
             'price': float(row[2877:2907]), 
             'uom': row[2641:2644].strip(),
-            'mode': row[2641:2644].strip(),
+            'mode': row[2644:2645].strip(),
             'description': row[2531:2631].strip(),
             'total': float(row[2907:2937]),            
             }
@@ -1170,13 +1170,14 @@ class EdiOrderFile(orm.Model):
         color_mode = {
             'A': '#FFCCCC', # Red
             'R': '#CCE0FF', # Blue
-            # Default = '#FFFFFF'
+            ' ': '#FFFFFF', # White
             }
         for item_id, fullname in filename_db.iteritems():
             f = open(fullname, 'r')
             tr = ''
             for row in f:
                 try:
+                    import pdb; pdb.set_trace()
                     data = order_pool.generate_record_dict(row)                    
                     
                     # Setup color for TD elements:
@@ -1192,7 +1193,7 @@ class EdiOrderFile(orm.Model):
                             <td bgcolor="%s" >%(total)s</td>
                         </tr>
                         ''' % tuple([
-                            color_mode.get(data['mode'], '#FFFFFF') \
+                            color_mode.get(data['mode'], color_mode[' ']) \
                                 for item in range(0, 8)])                      
                     tr += tr_mask % data                        
                 except:
