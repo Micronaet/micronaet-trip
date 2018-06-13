@@ -1177,20 +1177,19 @@ class EdiOrderFile(orm.Model):
             tr = ''
             for row in f:
                 try:
-                    import pdb; pdb.set_trace()
                     data = order_pool.generate_record_dict(row)                    
                     
                     # Setup color for TD elements:
                     tr_mask = '''
                         <tr>
-                            <td bgcolor="%s">%%(mode)s</td>
+                            <td bgcolor="%s" >%%(mode)s</td>
                             <td bgcolor="%s" >%%(sequence)s</td>
-                            <td bgcolor="%s" >%(name)s</td>
+                            <td bgcolor="%s" >%%(name)s</td>
                             <td bgcolor="%s" >%%(description)s</td>
                             <td bgcolor="%s" >%%(qty)s</td>
-                            <td bgcolor="%s" >%(uom)s</td>
+                            <td bgcolor="%s" >%%(uom)s</td>
                             <td bgcolor="%s" >%%(price)s</td>
-                            <td bgcolor="%s" >%(total)s</td>
+                            <td bgcolor="%s" >%%(total)s</td>
                         </tr>
                         ''' % tuple([
                             color_mode.get(data['mode'], color_mode[' ']) \
