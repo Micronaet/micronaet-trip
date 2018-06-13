@@ -1177,6 +1177,7 @@ class EdiOrderFile(orm.Model):
             tr = ''
             for row in f:
                 try:
+                    import pdb; pdb.set_trace()
                     data = order_pool.generate_record_dict(row)                    
                     
                     # Setup color for TD elements:
