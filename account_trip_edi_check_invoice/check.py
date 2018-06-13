@@ -1196,7 +1196,6 @@ class EdiOrderFile(orm.Model):
                                 for item in range(0, 8)])                      
                     tr += tr_mask % data                        
                 except:
-                    import pdb; pdb.set_trace()
                     tr += '''
                         <tr>
                             <td>ERR</td><td>ERR</td><td>ERR</td>
@@ -1236,7 +1235,6 @@ class EdiOrderFile(orm.Model):
                     %s</table>
                 ''' % tr
             f.close()
-        import pdb; pdb.set_trace()
         return res
 
     _columns = {
