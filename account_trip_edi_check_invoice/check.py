@@ -430,7 +430,6 @@ class EdiOrder(orm.Model):
     def load_order_line_details(self, cr, uid, ids, context=None):
         ''' Load current order details (also used for N orders)
         '''
-        import pdb; pdb.set_trace()
         # Set last to False
         file_pool = self.pool.get('edi.order.file')
         file_ids = file_pool.search(cr, uid, [
