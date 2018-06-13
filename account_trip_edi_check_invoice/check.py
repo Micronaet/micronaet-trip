@@ -469,6 +469,7 @@ class EdiOrder(orm.Model):
             #Create order line:
             for row in open(last_file.fullname, 'r'):
                 data = self.generate_record_dict(row)
+                data['order_id'] = order.id
                 line_pool.create(cr, uid, data, context=context)
                 
         # Set last file used:        
