@@ -577,7 +577,7 @@ class trip_import_edi_wizard(orm.Model):
         log_file = open(os.path.join(
             os.path.expanduser('~'), 
             'forced_edi_order.log',
-            ), 'w')
+            ), 'a')
 
         if force: # add to pickle list
             if file_proxy.name not in forced_list:
@@ -654,7 +654,7 @@ class trip_import_edi_wizard(orm.Model):
             # Log deletion:
             # -----------------------------------------------------------------
             log_file = open(os.path.join(
-                delete_folder, 'log', 'delete.log'), 'w')
+                delete_folder, 'log', 'delete.log'), 'a')
             log_file.write('[INFO] %s. USER: %s FILE: %s\r\n' % (
                 datetime.now(), uid, item_proxy.name))
             log_file.close()    
