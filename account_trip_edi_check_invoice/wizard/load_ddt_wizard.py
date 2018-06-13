@@ -326,10 +326,10 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
             col = 9
         if total > 0:
             excel_pool.write_xls_line(ws_name, row, ['Totale', total, ], 
-                default_format=f_bg_green_number, col=col)
+                default_format=f_bg_red_number, col=col)
         else:    
             excel_pool.write_xls_line(ws_name, row, ['Totale', total, ], 
-                default_format=f_bg_red_number, col=col)
+                default_format=f_bg_green_number, col=col)
 
         return excel_pool.return_attachment(cr, uid, ws_name, 
             version='7.0', php=False, context=context)
