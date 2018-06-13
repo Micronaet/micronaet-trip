@@ -574,16 +574,32 @@ class trip_import_edi_wizard(orm.Model):
         # Save if not present:
         file_proxy = self.browse(cr, uid, ids, context=context)[0]
         modified = False
+        log_file = open(os.path.join(
+            os.path.expanduser('~'), 
+            'forced_edi_order.log',
+            ), 'w')
+
         if force: # add to pickle list
             if file_proxy.name not in forced_list:
                 forced_list.append(file_proxy.name)
                 modified = True
             state = 'forced'
+            
+            # Log forced:
+            log_file.write('[INFO] %s. USER: %s FORCED: %s' % (
+                datetime.now(), uid, file_proxy.name))
+
         else:     # remove from pickle list
             if file_proxy.name in forced_list:
                 forced_list.remove(file_proxy.name)  # TODO only one? yes!?
                 modified = True
-            state = 'create'                
+            state = 'create'   
+
+            # Log forced:
+            log_file.write('[INFO] %s. USER: %s UNFORCED: %s' % (
+                datetime.now(), uid, file_proxy.name))
+
+        log_file.close()    
         if modified: # only if changed:
             edi_pool.store_forced(cr, uid, company_id, forced_list, 
                 context=context)
@@ -624,8 +640,8 @@ class trip_import_edi_wizard(orm.Model):
                     context=context)
             if not all((origin_folder, delete_folder)):
                 raise osv.except_osv(
-                    _("Error"), 
-                    _("Set in EDI Company view: origin and delete folder!"))  
+                    _('Error'), 
+                    _('Set in EDI Company view: origin and delete folder!'))  
 
             item_proxy = self.browse(cr, uid, ids, context=context)[0]
             os.rename(
