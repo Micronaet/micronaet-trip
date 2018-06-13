@@ -631,8 +631,18 @@ class trip_import_edi_wizard(orm.Model):
             os.rename(
                 os.path.join(origin_folder, item_proxy.name),
                 os.path.join(delete_folder, item_proxy.name),
-                )
-            return self.unlink(cr, uid, ids, context=context)    
+                )                
+            self.unlink(cr, uid, ids, context=context)    
+            
+            # -----------------------------------------------------------------
+            # Log deletion:
+            # -----------------------------------------------------------------
+            log_file = open(os.path.join(
+                delete_folder, 'log', 'delete.log'), 'w')
+            log_file.write('[INFO] %s. USER: %s FILE: %s' % (
+                datetime.now(), uid, item_proxy.name))
+            log_file.close()    
+            return True
         except:
             raise osv.except_osv(
                 _("Error"), 
