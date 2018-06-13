@@ -3,6 +3,7 @@ access_edi_invoice_user,edi.invoice,model_edi_invoice,base.group_user,1,1,1,1
 access_edi_invoice_line_user,edi.invoice.line,model_edi_invoice_line,base.group_user,1,1,1,1
 access_edi_ddt_user,edi.ddt,model_edi_ddt,base.group_user,1,1,1,1
 access_edi_ddt_line_user,edi.ddt.line,model_edi_ddt_line,base.group_user,1,1,1,1
+access_edi_order_user,edi.order,model_edi_order,base.group_user,1,1,1,1
 access_edi_order_line_user,edi.order.line,model_edi_order_line,base.group_user,1,1,1,1
 access_edi_order_line_check_user,edi.order.line.check,model_edi_order_line_check,base.group_user,1,1,1,1
 access_edi_order_file_user,edi.order.file,model_edi_order_file,base.group_user,1,1,1,1
