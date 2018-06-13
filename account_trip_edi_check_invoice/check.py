@@ -1177,7 +1177,6 @@ class EdiOrderFile(orm.Model):
             tr = ''
             for row in f:
                 try:
-                    import pdb; pdb.set_trace()
                     data = order_pool.generate_record_dict(row)                    
                     
                     # Setup color for TD elements:
@@ -1197,6 +1196,7 @@ class EdiOrderFile(orm.Model):
                                 for item in range(0, 8)])                      
                     tr += tr_mask % data                        
                 except:
+                    import pdb; pdb.set_trace()
                     tr += '''
                         <tr>
                             <td>ERR</td><td>ERR</td><td>ERR</td>
