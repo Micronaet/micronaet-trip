@@ -1228,7 +1228,7 @@ class EdiOrderFile(orm.Model):
                 </style>
                 <table class='table_bf'>
                     <tr>
-                        <th>Mod</th>
+                        <th>Modo</th>
                         <th>Seq.</th><th>Codice</th>
                         <th>Descrizione</th>
                         <th>Q.</th><th>UM</th><th>Prezzo</th><th>Totale</th>
@@ -1236,6 +1236,7 @@ class EdiOrderFile(orm.Model):
                     %s</table>
                 ''' % tr
             f.close()
+        import pdb; pdb.set_trace()
         return res
 
     _columns = {
