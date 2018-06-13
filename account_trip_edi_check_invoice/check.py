@@ -420,8 +420,9 @@ class EdiOrder(orm.Model):
             'qty': row[2631:2641].strip(), 
             'price': float(row[2877:2907]), 
             'uom': row[2641:2644].strip(),
+            'mode': row[2641:2644].strip(),
             'description': row[2531:2631].strip(),
-            'total': float(row[2907:2937]),
+            'total': float(row[2907:2937]),            
             }
 
     # -------------------------------------------------------------------------
@@ -468,6 +469,9 @@ class EdiOrder(orm.Model):
             #Create order line:
             for row in open(last_file.fullname, 'r'):
                 data = self.generate_record_dict(row)
+                if data['mode'] == 'A': # cancel line
+                    continue # jump no create in line
+                
                 data['order_id'] = order.id
                 line_pool.create(cr, uid, data, context=context)
                 
@@ -1162,25 +1166,39 @@ class EdiOrderFile(orm.Model):
         res = {}
         filename_db = self._get_fullname_file_name(
             cr, uid, ids, None, None, context=context)
-                
+        
+        color_mode = {
+            'A': '#FFCCCC', # Red
+            'R': '#CCE0FF', # Blue
+            # Default = '#FFFFFF'
+            }
         for item_id, fullname in filename_db.iteritems():
             f = open(fullname, 'r')
             tr = ''
             for row in f:
                 try:
-                    tr += '''
+                    data = order_pool.generate_record_dict(row)                    
+                    
+                    # Setup color for TD elements:
+                    tr_mask = '''
                         <tr>
-                            <td>%(sequence)s</td><td>%(name)s</td>
-                            <td>%(description)s</td>
-                            <td>%(qty)s</td><td>%(uom)s</td>
-                            <td>%(price)s</td><td>%(total)s</td>
+                            <td bgcolor="%s">%%(mode)s</td>
+                            <td bgcolor="%s" >%%(sequence)s</td>
+                            <td bgcolor="%s" >%(name)s</td>
+                            <td bgcolor="%s" >%%(description)s</td>
+                            <td bgcolor="%s" >%%(qty)s</td>
+                            <td bgcolor="%s" >%(uom)s</td>
+                            <td bgcolor="%s" >%%(price)s</td>
+                            <td bgcolor="%s" >%(total)s</td>
                         </tr>
-                        ''' % order_pool.generate_record_dict(row)
-                        
+                        ''' % tuple([
+                            color_mode.get(data['mode'], '#FFFFFF') \
+                                for item in range(0, 8)])                      
+                    tr += tr_mask % data                        
                 except:
                     tr += '''
                         <tr>
-                            <td>ERR</td><td>ERR</td>
+                            <td>ERR</td><td>ERR</td><td>ERR</td>
                             <td>ERR</td><td>ERR</td>
                             <td>ERR</td><td>ERR</td><td>ERR</td>
                         </tr>
@@ -1209,6 +1227,7 @@ class EdiOrderFile(orm.Model):
                 </style>
                 <table class='table_bf'>
                     <tr>
+                        <th>Mod</th>
                         <th>Seq.</th><th>Codice</th>
                         <th>Descrizione</th>
                         <th>Q.</th><th>UM</th><th>Prezzo</th><th>Totale</th>
@@ -1267,6 +1286,7 @@ class EdiOrderLine(orm.Model):
             required=True, readonly=True),
         'description': fields.char('Description', size=16, 
             required=True, readonly=True),
+        'mode': fields.char('Mode', size=5),
         'total': fields.float('Subtotal', digits=(16, 3), 
             required=True, readonly=True),
         }
