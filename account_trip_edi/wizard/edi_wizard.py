@@ -586,7 +586,7 @@ class trip_import_edi_wizard(orm.Model):
             state = 'forced'
             
             # Log forced:
-            log_file.write('[INFO] %s. USER: %s FORCED: %s' % (
+            log_file.write('[INFO] %s. USER: %s FORCED: %s\r\n' % (
                 datetime.now(), uid, file_proxy.name))
 
         else:     # remove from pickle list
@@ -596,7 +596,7 @@ class trip_import_edi_wizard(orm.Model):
             state = 'create'   
 
             # Log forced:
-            log_file.write('[INFO] %s. USER: %s UNFORCED: %s' % (
+            log_file.write('[INFO] %s. USER: %s UNFORCED: %s\r\n' % (
                 datetime.now(), uid, file_proxy.name))
 
         log_file.close()    
@@ -655,7 +655,7 @@ class trip_import_edi_wizard(orm.Model):
             # -----------------------------------------------------------------
             log_file = open(os.path.join(
                 delete_folder, 'log', 'delete.log'), 'w')
-            log_file.write('[INFO] %s. USER: %s FILE: %s' % (
+            log_file.write('[INFO] %s. USER: %s FILE: %s\r\n' % (
                 datetime.now(), uid, item_proxy.name))
             log_file.close()    
             return True
