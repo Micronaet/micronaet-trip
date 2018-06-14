@@ -70,6 +70,11 @@ class edi_company_c2(orm.Model):
         'destination_description': (1259, 1359) # 100 description
         }
 
+    def is_an_invalid_row(self, row):
+        ''' Always valid
+        '''
+        return False
+
     def get_timestamp_from_file(self, file_in, path_in=None):
         # TODO
         ''' Get timestamp value from file name

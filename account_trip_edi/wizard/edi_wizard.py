@@ -228,7 +228,11 @@ class trip_import_edi_wizard(osv.osv_memory):
                         
                     else: # create 
                         for line in fin:
-                            line = ascii_check(line)
+                            # Check if line is cancel
+                            if parametrized.is_an_invalid_row(row):
+                                continue # Line cancel
+                            
+                            line = ascii_check(line)                            
                             # -------------------------------------------------
                             #                       HEADER
                             # -------------------------------------------------

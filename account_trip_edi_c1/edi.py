@@ -69,7 +69,14 @@ class edi_company_c1(orm.Model):
         'destination_site': (1189, 1224), # 35 site             
         'destination_description': (1259, 1359) # 100 description
         }
-
+    
+    def is_an_invalid_row(self, row):
+        ''' Check if the row is not (A) = Cancel
+        '''
+        if row[2644:2645] == 'A':
+            return True
+        return False
+        
     def get_timestamp_from_file(self, file_in, path=None):
         ''' Get timestamp value from file name
             File is: ELIORD20141103091707.ASC

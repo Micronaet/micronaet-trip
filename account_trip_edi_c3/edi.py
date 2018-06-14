@@ -99,6 +99,11 @@ class edi_company_c3(orm.Model):
         'detail_total': (0, 0), 
         }
 
+    def is_an_invalid_row(self, row):
+        ''' Always valid
+        '''
+        return False
+
     def get_timestamp_from_file(self, file_in, path_in=None):
         # TODO
         ''' Get timestamp value from file name
