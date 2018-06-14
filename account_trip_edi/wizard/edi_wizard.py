@@ -229,7 +229,7 @@ class trip_import_edi_wizard(osv.osv_memory):
                     else: # create 
                         for line in fin:
                             # Check if line is cancel
-                            if parametrized.is_an_invalid_row(row):
+                            if parametrized.is_an_invalid_row(line):
                                 continue # Line cancel
                             
                             line = ascii_check(line)                            
