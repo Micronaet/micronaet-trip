@@ -231,7 +231,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
         # Print sorted order:
         total = 0.0
         for order in sorted(res, key=lambda x: (
-                ddt_db.get(x.id, False),
+                ddt_db.get(x.id, (False, False, False)[1]),
                 x.name,
                 )):
 
@@ -287,7 +287,8 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 for level in (1, 2):   
                     for check in res[order][level]:
                         difference = check.difference or 0.0
-                        if mode == 'difference' and abs(difference) <= tollerance:
+                        if mode == 'difference' and \
+                                abs(difference) <= tollerance:
                             continue # only case to jump
                             
                         row += 1
