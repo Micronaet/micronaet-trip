@@ -332,7 +332,7 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                 default_format=f_bg_green_number, col=col)
 
         return excel_pool.return_attachment(cr, uid, ws_name, 
-            version='7.0', php=True, context=context)
+            version='7.0', php=False, context=context)
 
     _columns = {
         'mode': fields.selection([
