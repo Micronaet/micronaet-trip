@@ -230,7 +230,10 @@ class EdiLoadDdtLineWizard(orm.TransientModel):
                     
         # Print sorted order:
         total = 0.0
-        for order in sorted(res, key=lambda x: x.name):
+        for order in sorted(res, key=lambda x: (
+                ddt_db.get(x.id, False),
+                x.name,
+                ):
 
             # DDT Line color depend on difference: (red - green - white)
             difference = res[order][0]
