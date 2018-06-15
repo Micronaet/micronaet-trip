@@ -80,6 +80,11 @@ class edi_company_c4(orm.Model):
             file_in[4:6], 
             file_in[6:8], 
             )
+
+    def is_an_invalid_row(self, row):
+        ''' Always valid
+        '''
+        return False
         
     def get_state_of_file(self, file_in, forced_list):
         ''' Test state of file depend on name and forced presence
