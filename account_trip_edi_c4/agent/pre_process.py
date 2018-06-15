@@ -21,6 +21,7 @@ import sys
 import os
 import shutil
 import ConfigParser
+from datetime import datetime
 
 # -----------------------------------------------------------------------------
 # Utility:
@@ -92,6 +93,20 @@ def clean_float(value, length, decimal=3, separator='.', error=None):
     res = res.replace('.', separator)
     return res
 
+def log_on_file(message, mode='INFO', file_list=None):
+    ''' Write message in file list passed
+        mode: INFO WARNING ERROR
+    '''
+    if file_list is None:
+        return False
+
+    message_log = f_log.write('%s. [%s] %s' % (
+        datetime.now(), mode, message))
+        
+    for f_log in file_list:
+        f_log.write(message_log)
+    return True
+            
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
@@ -133,17 +148,30 @@ mail_info = config.get ('mail', 'info')
 separator = ';'
 tot_col = 15
 
+# Calculated parameters:
+f_out_log = open(in_log, 'a')
+f_in_schedule = open(in_schedule, 'a')
+f_in_log = open(out_log, 'a')
+f_out_schedule = open(out_schedule, 'a')
+
 # -----------------------------------------------------------------------------
 # Read IN folder:
 # -----------------------------------------------------------------------------
+log_on_file(
+    'Start import order mode: %s' % company, mode='INFO', file_list=[
+        f_in_schedule, f_out_schedule])
+    
 for root, dirs, files in os.walk(in_path):
+    log_on_file(
+        'Read root folder: %s [%s]' % (root, company), 
+        mode='INFO', 
+        file_list=[f_in_log, f_out_log])
+
     for f in files:
         # Fullname needed:
         file_in = os.path.join(root, f)
-        file_historty = os.path.join(in_history, f)
-        
-        # TODO change destination filename
-        file_out = os.path.join(out_path, f)
+        file_historty = os.path.join(in_history, f)        
+        file_out = os.path.join(out_path, '%s' % f) # TODO change name
         
         # ---------------------------------------------------------------------
         # Read input file:
@@ -151,6 +179,7 @@ for root, dirs, files in os.walk(in_path):
         error = []
         f_in = open(file_in, 'r')
         row_out = []
+        # TODO Log file_id
         for line in f_in:
             row = line.split(separator)
             if len(row) != tot_col:
@@ -177,7 +206,7 @@ for root, dirs, files in os.walk(in_path):
             um = clean_text(row[11], 2, error, uppercase=True)
             
             # Float:
-            quantity = clean_float(row[12], 15, 3, error=error)
+            quantity = clean_float(row[12], 15, 2, error=error)
             price = clean_float(row[13], 15, 3, error=error)
             cost = clean_float(row[14], 15, 3, error=error)
 
@@ -205,7 +234,7 @@ for root, dirs, files in os.walk(in_path):
                     cost,
                     ))
         f_in.close()
-        # TODO error no 
+        
         if error: 
             # TODO Log error
             continue
@@ -213,22 +242,44 @@ for root, dirs, files in os.walk(in_path):
         # ---------------------------------------------------------------------
         # Save file out:
         # ---------------------------------------------------------------------
-        # TODO error management:
         error = []
         # Convert file:
         f_out = open(file_out, 'w')
         for line in row_out:
             f_out.write(line)
         f_out.close()
-        
-        # ---------------------------------------------------------------------
-        # History the in file:
-        # ---------------------------------------------------------------------
         if error:
             # TODO Log error
             continue
         
-        # TODO error management
-        shutil.move(file_in, file_history)
+        # ---------------------------------------------------------------------
+        # History the in file:
+        # ---------------------------------------------------------------------        
+        error = ''
+        try:
+            shutil.move(file_in, file_history)
+        except:
+            error.append('Error moving file %s >> %s' % (
+                file_in, file_history))
+                
+        if error:
+            # TODO Log error
+            # TODO delete OUT file
+            continue
             
     break # only root folder is read
+
+log_on_file(
+    'End import order mode: %s' % company, mode='INFO', file_list=[
+        f_in_schedule, f_out_schedule])
+
+# -----------------------------------------------------------------------------
+# History the in file:
+# -----------------------------------------------------------------------------
+try:
+    f_out_log.close()
+    f_in_schedule.close()
+    f_in_log.close()
+    f_out_schedule.close()
+except:
+    print 'Error closing log file    
