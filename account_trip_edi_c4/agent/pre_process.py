@@ -87,6 +87,7 @@ def clean_float(value, length, decimal=3, separator='.', error=None):
         float_value = float(value.strip())
     except:
         error.append('Not a float: %s' % value)
+        float_value = 0.0
     
     mask = '%%%s.%sf' % (length, decimal)
     res = mask % float_value
