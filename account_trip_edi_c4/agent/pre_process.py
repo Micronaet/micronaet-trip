@@ -128,7 +128,6 @@ config = ConfigParser.ConfigParser()
 config.read([cfg_file])
 
 # In parameters:
-import pdb; pdb.set_trace()
 in_check = os.path.expanduser(config.get('in', 'check'))
 in_path = os.path.expanduser(config.get('in', 'path'))
 in_history = os.path.expanduser(config.get('in', 'history'))
@@ -181,6 +180,7 @@ log_on_file(
     'Start import order mode: %s' % company, mode='INFO', file_list=[
         f_in_schedule, f_out_schedule])
     
+import pdb; pdb.set_trace()
 for root, dirs, files in os.walk(in_path):
     log_on_file(
         'Read root folder: %s [%s]' % (root, company), 
@@ -190,7 +190,7 @@ for root, dirs, files in os.walk(in_path):
     for f in files:
         # Fullname needed:
         file_in = os.path.join(root, f)
-        file_historty = os.path.join(in_history, f)        
+        file_history = os.path.join(in_history, f)        
         file_original = os.path.join(out_orignal, f)        
         file_out = os.path.join(out_path, '%s' % f) # TODO change name
         
