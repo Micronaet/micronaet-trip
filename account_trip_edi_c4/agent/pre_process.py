@@ -217,7 +217,7 @@ for root, dirs, files in os.walk(in_path):
             # -----------------------------------------------------------------
             # Read fields:
             # -----------------------------------------------------------------
-            deadline = clean_date(row[0], 8, separator='', out_format='iso', 
+            deadline = clean_date(row[0], separator='', out_format='iso', 
                 error=error)
             
             # Char:
