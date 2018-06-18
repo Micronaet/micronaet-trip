@@ -301,6 +301,9 @@ for root, dirs, files in os.walk(in_path):
             pass
         try:
             shutil.copy(file_in, file_original)
+            log_on_file(
+                'History company file: %s [%s]' % (file_original, company), 
+                mode='INFO', file_list=[f_in_log, f_out_log])
         except:
             error += 'Error copy orginal folder %s >> %s' % (
                 file_in, file_original)
@@ -310,6 +313,9 @@ for root, dirs, files in os.walk(in_path):
             pass
         try:
             shutil.move(file_in, file_history)
+            log_on_file(
+                'History supplier file: %s [%s]' % (file_history, company), 
+                mode='INFO', file_list=[f_in_log, f_out_log])
         except:
             error += 'Error moving file %s >> %s' % (file_in, file_history)
 
