@@ -44,7 +44,6 @@ def clean_date(italian_date, separator='', out_format='iso', error=None):
     ''' Return clean text with limit cut
         Log in error if over length
     '''
-    import pdb; pdb.set_trace()
     if error is None:
         error = []
     italian_date = italian_date.split(' ')[0] # remove hour block
@@ -55,7 +54,7 @@ def clean_date(italian_date, separator='', out_format='iso', error=None):
         return '%s%s%s%s%s' % (
             italian_date[-4:],
             separator,
-            italian_date[5:7],
+            italian_date[3:5],
             separator,        
             italian_date[:2],
             )
@@ -63,13 +62,13 @@ def clean_date(italian_date, separator='', out_format='iso', error=None):
         return '%s%s%s%s%s' % (
             italian_date[:2],
             separator,
-            italian_date[5:7],
+            italian_date[3:5],
             separator,        
             italian_date[-4:],
             )
     elif out_format == 'english': 
         return '%s%s%s%s%s' % (
-            italian_date[5:7],
+            italian_date[3:5],
             separator,
             italian_date[:2],
             separator,        
