@@ -211,8 +211,7 @@ for root, dirs, files in os.walk(in_path):
             if len(row) != tot_col:
                 log_on_file(
                     'Different number columns: %s [%s]' % (file_in, company),
-                    mode='INFO',
-                    file_list=[f_in_log, f_out_log])  
+                    mode='INFO', file_list=[f_in_log, f_out_log])  
                 break
             
             # -----------------------------------------------------------------
@@ -268,8 +267,7 @@ for root, dirs, files in os.walk(in_path):
         if error:
             log_on_file(
                 'Error reading file: %s [%s]' % (error, company), 
-                mode='ERROR', 
-                file_list=[f_in_log, f_out_log])
+                mode='ERROR', file_list=[f_in_log, f_out_log])
             continue
         
         # ---------------------------------------------------------------------
@@ -278,15 +276,20 @@ for root, dirs, files in os.walk(in_path):
         error = []
         # Convert file:
         f_out = open(file_out, 'w')
+        
         for line in row_out:
             f_out.write(line)
         f_out.close()
+        
         if error:
             log_on_file(
                 'Error generating out file: %s [%s]' % (error, company), 
-                mode='ERROR', 
-                file_list=[f_in_log, f_out_log])
+                mode='ERROR', file_list=[f_in_log, f_out_log])
             continue
+        else:    
+            log_on_file(
+                'Created file: %s [%s]' % (file_out, company), 
+                mode='INFO', file_list=[f_in_log, f_out_log])
         
         # ---------------------------------------------------------------------
         # History the in file:
@@ -308,9 +311,7 @@ for root, dirs, files in os.walk(in_path):
 
         if error:
             log_on_file(
-                error,
-                mode='ERROR', 
-                file_list=[f_in_log, f_out_log])
+                error, mode='ERROR', file_list=[f_in_log, f_out_log])
             # XXX TODO delete OUT file
             continue            
     break # only root folder is read
