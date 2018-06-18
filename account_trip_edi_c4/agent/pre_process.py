@@ -139,20 +139,38 @@ out_check = os.expanduser(config.get('out', 'check'))
 out_path = os.expanduser(config.get('out', 'path'))
 out_log = os.expanduser(config.get('out', 'log'))
 out_schedule = os.expanduser(config.get('out', 'schedule'))
+out_original = os.expanduser(config.get('out', 'original'))
 
 # Mail parameters:
-mail_error = config.get ('mail', 'error')
-mail_info = config.get ('mail', 'info')
+mail_error = config.get('mail', 'error')
+mail_info = config.get('mail', 'info')
 
 # TODO put in config file:
-separator = ';'
-tot_col = 15
+separator = config.get('file', 'separator')
+tot_col = eval(config.get('file', 'tot_col'))
 
 # Calculated parameters:
 f_out_log = open(in_log, 'a')
 f_in_schedule = open(in_schedule, 'a')
 f_in_log = open(out_log, 'a')
 f_out_schedule = open(out_schedule, 'a')
+
+# -----------------------------------------------------------------------------
+# Check mount folder:
+# -----------------------------------------------------------------------------
+if in_check:
+    if not os.path.exists(in_check):
+        log_on_file(
+            'Cannot mount IN folder: %s' % in_path, mode='ERROR', file_list=[
+                f_in_schedule, f_out_schedule])
+        sys.exit()
+
+if out_check:
+    if not os.path.exists(out_check):
+        log_on_file(
+            'Cannot mount OUT folder: %s' % out_path, mode='ERROR', file_list=[
+                f_in_schedule, f_out_schedule])
+        sys.exit()
 
 # -----------------------------------------------------------------------------
 # Read IN folder:
@@ -171,6 +189,7 @@ for root, dirs, files in os.walk(in_path):
         # Fullname needed:
         file_in = os.path.join(root, f)
         file_historty = os.path.join(in_history, f)        
+        file_original = os.path.join(out_orignal, f)        
         file_out = os.path.join(out_path, '%s' % f) # TODO change name
         
         # ---------------------------------------------------------------------
@@ -179,11 +198,17 @@ for root, dirs, files in os.walk(in_path):
         error = []
         f_in = open(file_in, 'r')
         row_out = []
-        # TODO Log file_id
+        log_on_file(
+            'Parsing file: %s [%s]' % (file_in, company), 
+            mode='INFO', 
+            file_list=[f_in_log, f_out_log])        
         for line in f_in:
             row = line.split(separator)
             if len(row) != tot_col:
-                # TODO log error
+                log_on_file(
+                    'Different number columns: %s [%s]' % (file_in, company),
+                    mode='INFO',
+                    file_list=[f_in_log, f_out_log])  
                 break
             
             # -----------------------------------------------------------------
@@ -235,8 +260,11 @@ for root, dirs, files in os.walk(in_path):
                     ))
         f_in.close()
         
-        if error: 
-            # TODO Log error
+        if error:
+            log_on_file(
+                'Error reading file: %s [%s]' % (error, company), 
+                mode='ERROR', 
+                file_list=[f_in_log, f_out_log])
             continue
         
         # ---------------------------------------------------------------------
@@ -249,7 +277,10 @@ for root, dirs, files in os.walk(in_path):
             f_out.write(line)
         f_out.close()
         if error:
-            # TODO Log error
+            log_on_file(
+                'Error generating out file: %s [%s]' % (error, company), 
+                mode='ERROR', 
+                file_list=[f_in_log, f_out_log])
             continue
         
         # ---------------------------------------------------------------------
@@ -257,16 +288,22 @@ for root, dirs, files in os.walk(in_path):
         # ---------------------------------------------------------------------        
         error = ''
         try:
+            shutil.copy(file_in, file_original)
+        except:
+            error += 'Error copy orginal folder %s >> %s' % (
+                file_in, file_original)
+        try:
             shutil.move(file_in, file_history)
         except:
-            error.append('Error moving file %s >> %s' % (
-                file_in, file_history))
-                
+            error += 'Error moving file %s >> %s' % (file_in, file_history)
+
         if error:
-            # TODO Log error
-            # TODO delete OUT file
-            continue
-            
+            log_on_file(
+                error,
+                mode='ERROR', 
+                file_list=[f_in_log, f_out_log])
+            # XXX TODO delete OUT file
+            continue            
     break # only root folder is read
 
 log_on_file(
