@@ -296,6 +296,10 @@ for root, dirs, files in os.walk(in_path):
         # ---------------------------------------------------------------------        
         error = ''
         try:
+            os.remove(file_original)
+        except:
+            pass
+        try:
             shutil.copy(file_in, file_original)
         except:
             error += 'Error copy orginal folder %s >> %s' % (
