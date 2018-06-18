@@ -22,7 +22,6 @@ import os
 import shutil
 import ConfigParser
 from datetime import datetime
-import pdb; pdb.set_trace()
 
 # -----------------------------------------------------------------------------
 # Utility:
@@ -128,18 +127,19 @@ config = ConfigParser.ConfigParser()
 config.read([cfg_file])
 
 # In parameters:
-in_check = os.expanduser(config.get('in', 'check'))
-in_path = os.expanduser(config.get('in', 'path'))
-in_history = os.expanduser(config.get('in', 'history'))
-in_log = os.expanduser(config.get('in', 'log'))
-in_schedule = os.expanduser(config.get('in', 'schedule'))
+import pdb; pdb.set_trace()
+in_check = os.path.expanduser(config.get('in', 'check'))
+in_path = os.path.expanduser(config.get('in', 'path'))
+in_history = os.path.expanduser(config.get('in', 'history'))
+in_log = os.path.expanduser(config.get('in', 'log'))
+in_schedule = os.path.expanduser(config.get('in', 'schedule'))
 
 # Outp arameters:
-out_check = os.expanduser(config.get('out', 'check'))
-out_path = os.expanduser(config.get('out', 'path'))
-out_log = os.expanduser(config.get('out', 'log'))
-out_schedule = os.expanduser(config.get('out', 'schedule'))
-out_original = os.expanduser(config.get('out', 'original'))
+out_check = os.path.expanduser(config.get('out', 'check'))
+out_path = os.path.expanduser(config.get('out', 'path'))
+out_log = os.path.expanduser(config.get('out', 'log'))
+out_schedule = os.path.expanduser(config.get('out', 'schedule'))
+out_original = os.path.expanduser(config.get('out', 'original'))
 
 # Mail parameters:
 mail_error = config.get('mail', 'error')
