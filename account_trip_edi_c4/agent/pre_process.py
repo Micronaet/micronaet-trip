@@ -153,10 +153,10 @@ tot_col = eval(config.get('file', 'tot_col'))
 
 # Calculated parameters:
 f_in_schedule = False # open(in_schedule, 'a')
-f_in_log = False #open(out_log, 'a')
+f_in_log = False #open(in_log, 'a')
 
 f_out_schedule = open(out_schedule, 'a')
-f_out_log = open(in_log, 'a')
+f_out_log = open(out_log, 'a')
 
 # -----------------------------------------------------------------------------
 # Check mount folder:
