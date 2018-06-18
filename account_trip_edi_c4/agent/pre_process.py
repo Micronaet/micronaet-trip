@@ -219,18 +219,18 @@ for root, dirs, files in os.walk(in_path):
             deadline = clean_date(row[0], 10, error)
             
             # Char:
-            code = clean_text(row[1], 9, error)
-            cook_center = clean_text(row[2], 10, error) # XXX check 
-            address = clean_text(row[3], 60, error)
-            cap = clean_text(row[4], 5, error) # XXX Check
-            city = clean_text(row[5], 60, error) # XXX Check
-            province = clean_text(row[6], 60, error, uppercase=True)
-            order = clean_text(row[7], 10, error)
-            default_code = clean_text(row[8], 16, error, uppercase=True)
+            code = clean_text(row[1], 9, error=error)
+            cook_center = clean_text(row[2], 10, error=error) # XXX check 
+            address = clean_text(row[3], 60, error=error)
+            cap = clean_text(row[4], 5, error=error) # XXX Check
+            city = clean_text(row[5], 60, error=error) # XXX Check
+            province = clean_text(row[6], 60, uppercase=True, error=error)
+            order = clean_text(row[7], 10, error=error)
+            default_code = clean_text(row[8], 16, uppercase=True, error=error)
             default_code_supplier = clean_text(
-                row[9], 16, error, uppercase=True)
-            name = clean_text(row[10], 60, error)
-            um = clean_text(row[11], 2, error, uppercase=True)
+                row[9], 16, uppercase=True, error=error)
+            name = clean_text(row[10], 60, error=error)
+            um = clean_text(row[11], 2, uppercase=True, error=error)
             
             # Float:
             quantity = clean_float(row[12], 15, 2, error=error)
