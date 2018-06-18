@@ -104,6 +104,8 @@ def log_on_file(message, mode='INFO', file_list=None):
         datetime.now(), mode, message))
         
     for f_log in file_list:
+        if not f_log:
+            continue
         f_log.write(message_log)
     return True
             
@@ -150,10 +152,11 @@ separator = config.get('file', 'separator')
 tot_col = eval(config.get('file', 'tot_col'))
 
 # Calculated parameters:
-f_out_log = open(in_log, 'a')
-f_in_schedule = open(in_schedule, 'a')
-f_in_log = open(out_log, 'a')
+f_in_schedule = False # open(in_schedule, 'a')
+f_in_log = False #open(out_log, 'a')
+
 f_out_schedule = open(out_schedule, 'a')
+f_out_log = open(in_log, 'a')
 
 # -----------------------------------------------------------------------------
 # Check mount folder:
@@ -314,9 +317,13 @@ log_on_file(
 # History the in file:
 # -----------------------------------------------------------------------------
 try:
-    f_out_log.close()
-    f_in_schedule.close()
-    f_in_log.close()
-    f_out_schedule.close()
+    if f_out_log:
+        f_out_log.close()
+    if f_in_schedule:
+        f_in_schedule.close()
+    if f_in_log:
+        f_in_log.close()
+    if f_out_schedule:
+        f_out_schedule.close()
 except:
     print 'Error closing log file'
