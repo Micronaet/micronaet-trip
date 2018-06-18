@@ -94,7 +94,7 @@ def clean_float(value, length, decimal=3, separator='.', error=None):
     res = res.replace('.', separator)
     return res
 
-def log_on_file(message, mode='INFO', file_list=None):
+def log_on_file(message, mode='INFO', file_list=None, verbose=True):
     ''' Write message in file list passed
         mode: INFO WARNING ERROR
     '''
@@ -102,6 +102,8 @@ def log_on_file(message, mode='INFO', file_list=None):
         return False
 
     message_log = '%s. [%s] %s\n' % (datetime.now(), mode, message)
+    if verbose:
+        print message_log
         
     for f_log in file_list:
         if not f_log:
