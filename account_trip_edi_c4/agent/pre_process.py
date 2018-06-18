@@ -244,7 +244,7 @@ for root, dirs, files in os.walk(in_path):
             # Convert row input file:
             # -----------------------------------------------------------------
             row_out.append(            
-                '%3s|%-8s|%-9s|%-10s|%-60s|%-5s|%-60s|%-60s|%-10s|%-16s|%-16s|'
+                '%3s|%-8s|%-9s|%-60s|%-60s|%-5s|%-60s|%-4s|%-10s|%-16s|%-16s|'
                 '%-60s|%-2s|%-15s|%-15s|%-15s\r\n' % (
                     company, # depend on parameter
                     deadline,
