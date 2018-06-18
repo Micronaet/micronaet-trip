@@ -100,8 +100,7 @@ def log_on_file(message, mode='INFO', file_list=None):
     if file_list is None:
         return False
 
-    message_log = f_log.write('%s. [%s] %s' % (
-        datetime.now(), mode, message))
+    message_log = '%s. [%s] %s' % (datetime.now(), mode, message)
         
     for f_log in file_list:
         if not f_log:
