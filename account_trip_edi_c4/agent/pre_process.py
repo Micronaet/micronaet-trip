@@ -319,4 +319,4 @@ try:
     f_in_log.close()
     f_out_schedule.close()
 except:
-    print 'Error closing log file    
+    print 'Error closing log file'
