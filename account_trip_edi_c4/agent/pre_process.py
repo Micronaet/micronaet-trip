@@ -221,11 +221,11 @@ for root, dirs, files in os.walk(in_path):
             
             # Char:
             code = clean_text(row[1], 9, error=error)
-            cook_center = clean_text(row[2], 10, error=error) # XXX check 
+            cook_center = clean_text(row[2], 60, error=error) # XXX check 
             address = clean_text(row[3], 60, error=error)
             cap = clean_text(row[4], 5, error=error) # XXX Check
             city = clean_text(row[5], 60, error=error) # XXX Check
-            province = clean_text(row[6], 60, uppercase=True, error=error)
+            province = clean_text(row[6], 4, uppercase=True, error=error)
             order = clean_text(row[7], 10, error=error)
             default_code = clean_text(row[8], 16, uppercase=True, error=error)
             default_code_supplier = clean_text(
