@@ -108,7 +108,7 @@ def log_on_file(message, mode='INFO', file_list=None, verbose=True):
     for f_log in file_list:
         if not f_log:
             continue
-        f_log.write(message_log)
+        f_log.write(message_log.strip())
     return True
             
 # -----------------------------------------------------------------------------
