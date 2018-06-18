@@ -191,7 +191,7 @@ for root, dirs, files in os.walk(in_path):
         # Fullname needed:
         file_in = os.path.join(root, f)
         file_history = os.path.join(in_history, f)        
-        file_original = os.path.join(out_orignal, f)        
+        file_original = os.path.join(out_original, f)        
         file_out = os.path.join(out_path, '%s' % f) # TODO change name
         
         # ---------------------------------------------------------------------
