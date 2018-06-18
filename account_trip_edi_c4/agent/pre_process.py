@@ -114,8 +114,7 @@ def log_on_file(message, mode='INFO', file_list=None):
 try:
     company = sys.argv[1]
     if len(company) >= 3:
-        print '''Launch program as:\n\npython ./pre_process.py CMP\n'
-            (CMP must be max 3 char length)'''
+        print 'Run: python ./pre_process.py CMP (must be max 3 char length)'
         sys.exit()
 except:
     print 'Launch program as:\n\npython ./pre_process.py CMP' 
