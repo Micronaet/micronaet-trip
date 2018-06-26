@@ -20,7 +20,7 @@
 {
     'name': 'Account trip - EDI order import procedure for Company 4',
     'version': '0.1',
-    'category': '',
+    'category': 'EDI',
     'description': """
         Import function for load EDI files
         this is a model of importation for Company 4
