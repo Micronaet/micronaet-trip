@@ -659,6 +659,7 @@ class trip_import_edi_wizard(orm.Model):
                 shutil.move(f_in, f_out)
             except:
                 try:
+                    comment = 'Error moving, retry with delete before!'
                     _logger.error('Error renaming, try delete and rename...')
                     os.remove(f_out)
                     shutil.move(f_in, f_out)
