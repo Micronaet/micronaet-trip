@@ -80,9 +80,9 @@ class edi_company_c4(orm.Model):
             file_in[4:6], 
             file_in[6:8],
 
-            file_in[9:13], 
-            file_in[13:15], 
-            file_in[15:17],
+            file_in[9:11], 
+            file_in[11:13], 
+            file_in[13:15],
             
             )
 
