@@ -657,15 +657,21 @@ class trip_import_edi_wizard(orm.Model):
             f_out = os.path.join(delete_folder, item_proxy.name)
             try:
                 shutil.move(f_in, f_out)
+                comment = 'File moved'
             except:
+                # 1. Delete
                 try:
-                    comment = 'Error moving, retry with delete before!'
-                    _logger.error('Error renaming, try delete and rename...')
                     os.remove(f_out)
+                except:
+                    pass
+
+                # 1. Move
+                try:                    
                     shutil.move(f_in, f_out)
+                    comment = 'Moved after delete existent!'
                 except: 
-                    comment = 'Error moving deleted file!'
                     _logger.error('Error moving deleted file!')
+                    comment = 'Error moving deleted file!'
 
             self.unlink(cr, uid, ids, context=context)    
             
