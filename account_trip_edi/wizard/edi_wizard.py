@@ -126,6 +126,8 @@ class trip_import_edi_wizard(osv.osv_memory):
                 cr, uid, edi_company_ids, context=context): 
             # Load object for use the same function name where needed:
             parametrized = self.pool.get(company.type_importation_id.object)
+            _logger.warning('Reading %s...' % company.name)
+            import pdb; pdb.set_trace()
             
             # Normal trace:
             trace = parametrized.trace
@@ -281,15 +283,18 @@ class trip_import_edi_wizard(osv.osv_memory):
                                 # NOTE: All 3 parts stay on same line (for now)
                                 if structured[
                                         'destination_facility'] == line_type:
-                                    supplier_facility = parametrized.format_string(line[
-                                        trace['destination_facility'][0]:
-                                        trace['destination_facility'][1]])
-                                    supplier_cost = parametrized.format_string(line[
-                                        trace['destination_cost'][0]:
-                                        trace['destination_cost'][1]])
-                                    supplier_site = parametrized.format_string(line[
-                                        trace['destination_site'][0]:
-                                        trace['destination_site'][1]])
+                                    supplier_facility = \
+                                        parametrized.format_string(line[
+                                            trace['destination_facility'][0]:
+                                            trace['destination_facility'][1]])
+                                    supplier_cost = parametrized.format_string(
+                                        line[
+                                            trace['destination_cost'][0]:
+                                            trace['destination_cost'][1]])
+                                    supplier_site = parametrized.format_string(
+                                        line[
+                                            trace['destination_site'][0]:
+                                            trace['destination_site'][1]])
                                     destination_description = parametrized.format_string(line[
                                         trace['destination_description'][0]:
                                         trace['destination_description'][1]])
