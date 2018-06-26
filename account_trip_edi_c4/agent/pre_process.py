@@ -197,7 +197,7 @@ for root, dirs, files in os.walk(in_path):
 
         create_date = datetime.fromtimestamp(
             os.path.getctime(file_in)
-            ).strftime('%Y%m%d')
+            ).strftime('%Y%m%d_%H%M%S')
 
         file_out = os.path.join(
             out_path, '%s' % (
