@@ -631,6 +631,7 @@ class trip_import_edi_wizard(orm.Model):
     def delete_order(self, cr, uid, ids, context=None):
         ''' Move order in delete folder
         '''
+        import pdb; pdb.set_trace()
         try:
             company_id = self.browse(
                 cr, uid, ids, context=context)[0].company_id.id

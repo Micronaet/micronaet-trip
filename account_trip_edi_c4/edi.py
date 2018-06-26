@@ -73,8 +73,9 @@ class edi_company_c4(orm.Model):
     def get_timestamp_from_file(self, file_in, path_in=None):
         # TODO
         ''' Get timestamp value from file name
-            File is: 20151231_270.ASC
+            File is: 20151231_120000_NAME.ASC
         '''
+        # TODO better is manage data in file instead change name!!
         return "%s/%s/%s %s:%s:%s" % (
             file_in[:4], 
             file_in[4:6], 
