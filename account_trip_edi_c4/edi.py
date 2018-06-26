@@ -95,7 +95,10 @@ class edi_company_c4(orm.Model):
         ''' Test state of file depend on name and forced presence
         '''
         # Always create (no modify management)
-        return 'create'
+        if file_in in forced_list: # Forced (pickle file)
+            return 'forced'
+        else:
+            return 'create'
 
     def get_destination(self, facility, cost, site):
         ''' Mask for code destination (only the last: site is used)'''
