@@ -631,6 +631,7 @@ class trip_import_edi_wizard(orm.Model):
     def delete_order(self, cr, uid, ids, context=None):
         ''' Move order in delete folder
         '''
+        comment = ''
         try:
             company_id = self.browse(
                 cr, uid, ids, context=context)[0].company_id.id
@@ -651,10 +652,19 @@ class trip_import_edi_wizard(orm.Model):
                     _('Set in EDI Company view: origin and delete folder!'))  
 
             item_proxy = self.browse(cr, uid, ids, context=context)[0]
-            os.rename(
-                os.path.join(origin_folder, item_proxy.name),
-                os.path.join(delete_folder, item_proxy.name),
-                )                
+            f_in = os.path.join(origin_folder, item_proxy.name)
+            f_out = os.path.join(delete_folder, item_proxy.name)
+            try:
+                os.rename(f_in, f_out)
+            except:
+                try:
+                    _logger.error('Error renaming, try delete and rename...')
+                    os.remove(f_out)
+                    os.rename(f_in, f_out)
+                except: 
+                    comment = 'Error moving deleted file!'
+                    _logger.error('Error moving deleted file!')
+
             self.unlink(cr, uid, ids, context=context)    
             
             # -----------------------------------------------------------------
@@ -662,9 +672,10 @@ class trip_import_edi_wizard(orm.Model):
             # -----------------------------------------------------------------
             log_file = open(os.path.join(
                 delete_folder, 'log', 'delete.log'), 'a')
-            log_file.write('[INFO] %s. USER: %s FILE: %s RIF: %s\r\n' % (
-                datetime.now(), uid, item_proxy.name, item_proxy.number))
-            log_file.close()    
+            log_file.write('[INFO] %s. USER: %s FILE: %s RIF: %s [%s]\r\n' % (
+                datetime.now(), uid, item_proxy.name, item_proxy.number,
+                comment))
+            log_file.close()
             return True
         except:
             raise osv.except_osv(
