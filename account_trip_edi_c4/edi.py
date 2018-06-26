@@ -75,10 +75,15 @@ class edi_company_c4(orm.Model):
         ''' Get timestamp value from file name
             File is: 20151231_270.ASC
         '''
-        return "%s-%s-%s" % (
+        return "%s/%s/%s %s:%s:%s" % (
             file_in[:4], 
             file_in[4:6], 
-            file_in[6:8], 
+            file_in[6:8],
+
+            file_in[9:13], 
+            file_in[13:15], 
+            file_in[15:17],
+            
             )
 
     def is_an_invalid_row(self, row):
