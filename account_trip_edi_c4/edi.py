@@ -114,7 +114,8 @@ class edi_company_c4(orm.Model):
         '''
         return value
 
-    def format_float(self, value, decimal=3, with_separator=False, separator='.'):
+    def format_float(self, value, decimal=3, with_separator=False, 
+            separator='.'):
         ''' EDI float format
         '''
         return value
