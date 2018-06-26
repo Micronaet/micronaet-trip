@@ -661,7 +661,7 @@ class trip_import_edi_wizard(orm.Model):
                 try:
                     _logger.error('Error renaming, try delete and rename...')
                     os.remove(f_out)
-                    os.rename(f_in, f_out)
+                    shutil.move(f_in, f_out)
                 except: 
                     comment = 'Error moving deleted file!'
                     _logger.error('Error moving deleted file!')
