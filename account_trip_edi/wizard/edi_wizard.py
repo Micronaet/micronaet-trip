@@ -127,7 +127,6 @@ class trip_import_edi_wizard(osv.osv_memory):
             # Load object for use the same function name where needed:
             parametrized = self.pool.get(company.type_importation_id.object)
             _logger.warning('Reading %s...' % company.name)
-            import pdb; pdb.set_trace()
             
             # Normal trace:
             trace = parametrized.trace
