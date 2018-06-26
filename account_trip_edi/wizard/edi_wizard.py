@@ -22,6 +22,7 @@ import sys
 import netsvc
 import logging
 import pickle
+import shutil
 from openerp.osv import osv, orm, fields
 from datetime import datetime, timedelta
 from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
@@ -656,7 +657,7 @@ class trip_import_edi_wizard(orm.Model):
             f_in = os.path.join(origin_folder, item_proxy.name)
             f_out = os.path.join(delete_folder, item_proxy.name)
             try:
-                os.rename(f_in, f_out)
+                shutil.move(f_in, f_out)
             except:
                 try:
                     _logger.error('Error renaming, try delete and rename...')
