@@ -52,22 +52,22 @@ class edi_company_c4(orm.Model):
     #                     Abstract function and property:
     # -------------------------------------------------------------------------    
     trace = {
-        'number': (15, 24),
-        'date': (0, 10), # 8
-        'deadline': (0, 10), #8   # TODO ???? not present!!!<<<<<<<<<<<<<<<<<<<
-        'customer': (0, 0), # TODO not present<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        'detail_code': (40, 56), # 35
-        'detail_description': (56, 96), # 100
-        'detail_um': (96, 99), # 3
-        'detail_quantity': (99, 108), # 10 
-        'detail_price': (108, 118), # 10 
-        'detail_total': (2907, 2917), # 10 TODO not present!!!
+        'number': (13, 22),
+        'date': (4, 12), # Not present
+        'deadline': (4, 12),
+        'customer': (0, 0), # XXX not present
+        'detail_code': (245, 261),
+        'detail_description': (262, 322),
+        'detail_um': (323, 325),
+        'detail_quantity': (326, 341),
+        'detail_price': (342, 357),
+        'detail_total': (358, 373), # XXX not present
         
         # Destination blocks:
-        'destination_facility': (0, 0), # 35 TODO not present!!
-        'destination_cost': (0, 0), # 30 TODO not present!!
-        'destination_site': (1224, 1259), # 35 TODO not present!!<<<<<<<<<<<<<<
-        'destination_description': (1259, 1359) # 100 TODO not present!!<<<<<<<
+        'destination_facility': (0, 0), # not present
+        'destination_cost': (0, 0), # XXX not present
+        'destination_site': (13, 22),
+        'destination_description': (23, 83),
         }
 
     def get_timestamp_from_file(self, file_in, path_in=None):
@@ -89,19 +89,8 @@ class edi_company_c4(orm.Model):
     def get_state_of_file(self, file_in, forced_list):
         ''' Test state of file depend on name and forced presence
         '''
-        try:
-            type_file = file_in.split("_")[1]
-        except:
-            type_file = False # TODO lot error
-                
-        if file_in in forced_list: # Forced (pickle file)
-            return 'forced'
-        elif type_file == 'ORDCHG': # change (usually ORDERS)
-            return 'change'
-        elif not type_file : # change (usually ORDERS)
-            return 'anomaly'
-        else: # OR or ORDERS
-            return 'create'
+        # Always create (no modify management)
+        return create
 
     def get_destination(self, facility, cost, site):
         ''' Mask for code destination (only the last: site is used)'''
@@ -112,7 +101,7 @@ class edi_company_c4(orm.Model):
             generated during importation
         '''
         return self.pool.get('res.partner').search_supplier_destination(
-            cr, uid, "", site, context=context)
+            cr, uid, '', site, context=context)
 
     def get_priority(self, cr, uid, file_in):
         ''' Always normal (no priority management)
