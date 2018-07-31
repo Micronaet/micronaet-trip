@@ -233,7 +233,7 @@ for root, dirs, files in os.walk(in_path):
             # Char:
             code = clean_text(row[1], 9, error=error)
             cook_center = clean_text(row[2], 60, error=error) # XXX check 
-            address = clean_text(row[3], 90, error=error)[:60] # XXX Truncated!
+            address = clean_text(row[3], 110, error=error)[:60] # XXX Truncated!
             cap = clean_text(row[4], 5, error=error) # XXX Check
             city = clean_text(row[5], 60, error=error) # XXX Check
             province = clean_text(row[6], 4, uppercase=True, error=error)
