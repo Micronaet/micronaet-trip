@@ -225,7 +225,7 @@ for root, dirs, files in os.walk(in_path):
             # -----------------------------------------------------------------
             # Read fields:
             # -----------------------------------------------------------------
-            date = file_out[:8] # From out filename (create date)
+            date = create_date[:8] # From create date
             
             deadline = clean_date(row[0], separator='', out_format='iso', 
                 error=error)
