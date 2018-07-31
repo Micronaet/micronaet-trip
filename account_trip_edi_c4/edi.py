@@ -83,8 +83,7 @@ class edi_company_c4(orm.Model):
 
             file_in[9:11], 
             file_in[11:13], 
-            file_in[13:15],
-            
+            file_in[13:15],            
             )
 
     def is_an_invalid_row(self, row):

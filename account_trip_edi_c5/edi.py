@@ -53,7 +53,7 @@ class edi_company_c5(orm.Model):
     # -------------------------------------------------------------------------    
     trace = {
         'number': (13, 22),
-        'date': (4, 12), # Not present
+        'date': (374, 382), # Insert with parser function
         'deadline': (4, 12),
         'customer': (0, 0), # XXX not present
         'detail_code': (245, 261),
