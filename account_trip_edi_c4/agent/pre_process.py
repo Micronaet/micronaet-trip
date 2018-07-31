@@ -103,12 +103,12 @@ def log_on_file(message, mode='INFO', file_list=None, verbose=True):
 
     message_log = '%s. [%s] %s\n' % (datetime.now(), mode, message)
     if verbose:
-        print message_log
+        print message_log.strip()
         
     for f_log in file_list:
         if not f_log:
             continue
-        f_log.write(message_log.strip())
+        f_log.write(message_log)
     return True
             
 # -----------------------------------------------------------------------------
