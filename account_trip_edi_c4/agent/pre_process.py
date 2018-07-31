@@ -225,7 +225,7 @@ for root, dirs, files in os.walk(in_path):
             # -----------------------------------------------------------------
             # Read fields:
             # -----------------------------------------------------------------
-            date = f[:8] # From file name
+            #date = f[:8] # From file name
             
             deadline = clean_date(row[0], separator='', out_format='iso', 
                 error=error)
@@ -254,7 +254,7 @@ for root, dirs, files in os.walk(in_path):
             # -----------------------------------------------------------------
             row_out.append(            
                 '%3s|%-8s|%-9s|%-60s|%-60s|%-5s|%-60s|%-4s|%-10s|%-16s|%-16s|'
-                '%-60s|%-2s|%-15s|%-15s|%-15s|%-8s\r\n' % (
+                '%-60s|%-2s|%-15s|%-15s|%-15s\r\n' % ( #|%-8s
                     company, # depend on parameter
                     deadline,
                     code,
@@ -271,7 +271,7 @@ for root, dirs, files in os.walk(in_path):
                     quantity,
                     price,
                     cost,
-                    date,
+                    #date,
                     ))
         f_in.close()
         
