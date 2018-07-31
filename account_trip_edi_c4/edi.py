@@ -52,7 +52,7 @@ class edi_company_c4(orm.Model):
     #                     Abstract function and property:
     # -------------------------------------------------------------------------    
     trace = {
-        'number': (13, 22),
+        'number': (217, 227),
         'date': (374, 382), # Insert with parser function
         'deadline': (4, 12),
         'customer': (0, 0), # XXX not present
