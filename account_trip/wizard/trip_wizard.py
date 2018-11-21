@@ -256,5 +256,3 @@ class trip_trip_create_wizard(osv.osv_memory):
             cr, uid, context=ctx),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-
-

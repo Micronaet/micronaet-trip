@@ -26,7 +26,7 @@ from datetime import datetime
 # -----------------------------------------------------------------------------
 # Utility:
 # -----------------------------------------------------------------------------
-def clean_text(text, length, uppercase=False, error=None):
+def clean_text(text, length, uppercase=False, error=None, truncate=False):
     ''' Return clean text with limit cut
         Log in error if over length
     '''
@@ -35,7 +35,10 @@ def clean_text(text, length, uppercase=False, error=None):
 
     text = text.strip()
     if len(text) > length:
-        error.append('Text: %s > %s' % (text, length))
+        if truncate:
+            return text = text[:length]
+        else:
+            error.append('Text: %s > %s' % (text, length))
     if uppercase:
         return text.upper()
     return text    
@@ -241,7 +244,7 @@ for root, dirs, files in os.walk(in_path):
             default_code = clean_text(row[8], 16, uppercase=True, error=error)
             default_code_supplier = clean_text(
                 row[9], 16, uppercase=True, error=error)
-            name = clean_text(row[10], 60, error=error)
+            name = clean_text(row[10], 60, error=error, truncate=True)
             um = clean_text(row[11], 2, uppercase=True, error=error)
             
             # Float:
