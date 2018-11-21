@@ -36,7 +36,7 @@ def clean_text(text, length, uppercase=False, error=None, truncate=False):
     text = text.strip()
     if len(text) > length:
         if truncate:
-            return text = text[:length]
+            text = text[:length]
         else:
             error.append('Text: %s > %s' % (text, length))
     if uppercase:
