@@ -470,6 +470,7 @@ class trip_import_edi_wizard(osv.osv_memory):
                 _logger.error("Generic error: %s" % (sys.exc_info(), ))
                 
         # Update recursion informations (write totals recursions):
+        import pdb; pdb.set_trace()
         for key in recursion:
             total, record_ids = recursion[key]
             line_pool.write(cr, uid, record_ids, {
