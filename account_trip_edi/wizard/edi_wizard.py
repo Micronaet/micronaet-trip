@@ -670,8 +670,8 @@ class trip_import_edi_wizard(orm.Model):
                     shutil.move(f_in, f_out)
                     comment = 'Moved after delete existent!'
                 except: 
-                    _logger.error('Error moving deleted file!')
                     comment = 'Error moving deleted file!'
+                    _logger.error('Error moving deleted file!')
 
             self.unlink(cr, uid, ids, context=context)    
             
