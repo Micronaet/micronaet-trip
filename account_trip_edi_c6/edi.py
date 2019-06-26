@@ -40,13 +40,13 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
-class edi_company_c5(orm.Model):
-    ''' Add model for parametrize function for Company 5
+class edi_company_c6(orm.Model):
+    ''' Add model for parametrize function for Company 6
         Model has only function for a sort of abstract class
     '''
 
-    _name = 'edi.company.c5'
-    _description = 'EDI Company 5'
+    _name = 'edi.company.c6'
+    _description = 'EDI Company 6'
 
     # -------------------------------------------------------------------------    
     #                     Abstract function and property:
@@ -72,8 +72,9 @@ class edi_company_c5(orm.Model):
 
     def get_timestamp_from_file(self, file_in, path_in=None):
         # TODO
-        ''' Get timestamp value from file name
+        ''' Get timestamp value from file name            
             File is: 20151231_120000_NAME.ASC
+                     Date Time Filename
         '''
         # TODO better is manage data in file instead change name!!
         return "%s/%s/%s %s:%s:%s" % (
@@ -83,8 +84,7 @@ class edi_company_c5(orm.Model):
 
             file_in[9:11], 
             file_in[11:13], 
-            file_in[13:15],
-            
+            file_in[13:15],            
             )
 
     def is_an_invalid_row(self, row):
@@ -96,10 +96,20 @@ class edi_company_c5(orm.Model):
         ''' Test state of file depend on name and forced presence
         '''
         # Always create (no modify management)
-        if file_in in forced_list: # Forced (pickle file)
-            return 'forced'
-        else:
-            return 'create'
+        try:
+            if file_in in forced_list: # Forced (pickle file)
+                return 'forced'
+            else:        
+                file_part = file_in.split('_'):
+                command = file_part[4][:3].upper()
+                if command == 'NEW': 
+                    return 'create'
+                elif command == 'CAN': 
+                    return 'delete'
+                else: # UPD
+                    return 'change'
+        except:
+            return 'anomaly'            
 
     def get_destination(self, facility, cost, site):
         ''' Mask for code destination (only the last: site is used)'''
