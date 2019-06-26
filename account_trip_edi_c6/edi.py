@@ -52,22 +52,22 @@ class edi_company_c6(orm.Model):
     #                     Abstract function and property:
     # -------------------------------------------------------------------------    
     trace = {
-        'number': (217, 227),
-        'date': (374, 382), # Insert with parser function
-        'deadline': (4, 12),
+        'number': (221, 231),
+        'date': (378, 386), # Insert with parser function
+        'deadline': (8, 16),
         'customer': (0, 0), # XXX not present
-        'detail_code': (245, 261),
-        'detail_description': (262, 322),
-        'detail_um': (323, 325),
-        'detail_quantity': (326, 341),
-        'detail_price': (342, 357),
-        'detail_total': (358, 373), # XXX not present
+        'detail_code': (249, 265),
+        'detail_description': (266, 326),
+        'detail_um': (327, 329),
+        'detail_quantity': (330, 345),
+        'detail_price': (346, 361),
+        'detail_total': (362, 377), # XXX not present
         
         # Destination blocks:
         'destination_facility': (0, 0), # not present
         'destination_cost': (0, 0), # XXX not present
-        'destination_site': (13, 22),
-        'destination_description': (23, 83),
+        'destination_site': (17, 26),
+        'destination_description': (27, 87),
         }
 
     def get_timestamp_from_file(self, file_in, path_in=None):
@@ -100,12 +100,12 @@ class edi_company_c6(orm.Model):
             if file_in in forced_list: # Forced (pickle file)
                 return 'forced'
             else:        
-                file_part = file_in.split('_'):
+                file_part = file_in.split('_')
                 command = file_part[4][:3].upper()
                 if command == 'NEW': 
                     return 'create'
                 elif command == 'CAN': 
-                    return 'delete'
+                    return 'deleting'
                 else: # UPD
                     return 'change'
         except:
