@@ -186,6 +186,7 @@ log_on_file(
     'Start import order mode: %s' % company, mode='INFO', file_list=[
         f_in_schedule, f_out_schedule])
     
+import pdb; pdb.set_trace()
 for root, dirs, files in os.walk(in_path):
     log_on_file(
         'Read root folder: %s [%s]' % (root, company), 
@@ -193,6 +194,9 @@ for root, dirs, files in os.walk(in_path):
         file_list=[f_in_log, f_out_log])
 
     for f in files:
+        file_part = f.split('_')
+        command = (file_part[2][:3]).upper() # New, Upd, Can
+
         # Fullname needed:
         file_in = os.path.join(root, f)
         file_history = os.path.join(in_history, f)        
@@ -256,9 +260,11 @@ for root, dirs, files in os.walk(in_path):
             # Convert row input file:
             # -----------------------------------------------------------------
             row_out.append(            
-                '%3s|%-8s|%-9s|%-60s|%-60s|%-5s|%-60s|%-4s|%-10s|%-16s|%-16s|'
-                '%-60s|%-2s|%-15s|%-15s|%-15s|%-8s\r\n' % (
+                '%3s|%3s|%-8s|%-9s|%-60s|%-60s|%-5s|%-60s|%-4s|%-10s|%-16s|'
+                '%-16s|%-60s|%-2s|%-15s|%-15s|%-15s|%-8s\r\n' % (
+                    # Header:
                     company, # depend on parameter
+                    command,
                     deadline,
                     code,
                     cook_center,
@@ -267,6 +273,8 @@ for root, dirs, files in os.walk(in_path):
                     city,
                     province,
                     order,
+                    
+                    # Row:
                     default_code,
                     default_code_supplier,
                     name,
