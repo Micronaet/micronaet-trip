@@ -105,7 +105,7 @@ class edi_company_c6(orm.Model):
                 if command == 'NEW': 
                     return 'create'
                 elif command == 'CAN': 
-                    return 'deleting'
+                    return 'deleting' # TODO delete?
                 else: # UPD
                     return 'change'
         except:
