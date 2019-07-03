@@ -35,7 +35,12 @@
     'demo': [],
     'data': [
         'security/ir.model.access.csv',
+
+        # View:
         'soap_view.xml'
+
+        # Init setup:
+        'data/connection_data.xml',
         ],
     'active': False,
     'installable': True,

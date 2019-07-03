@@ -187,10 +187,8 @@ class EdiSoapConnection(orm.Model):
         
         return True
 
-        
     _columns = {
         'name': fields.char('Soap Connection', size=64, required=True),
-        'company_id': fields.many2one('res.company', 'Company', required=True),
         'token': fields.char('Soap token', size=180, 
             help='Token assigned and saved when updated'),
 

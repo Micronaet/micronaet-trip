@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+   <data>
+        <record id="data_edi_soap_connection_1" model="edi.soap.connection">
+            <field name="name">Soap company 1</field>
+            <field name="username">COMPANY</field>
+            <field name="secret">xxxxxxx</field>
+            <field name="wsdl_root">https://example.it/pep/wsdl</field>
+            <field name="namespace">{it.example.soapws.ws}WsPortSoap11</field>            
+        </record>
+   </data>
+</openerp>
