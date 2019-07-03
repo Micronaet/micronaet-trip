@@ -63,7 +63,7 @@ class EdiSoapConnection(orm.Model):
     # -------------------------------------------------------------------------
     # Custom parameter
     # -------------------------------------------------------------------------
-    _error_status = {
+    _response_status = {
             0: u'Nessun Errore',
             1: u'Credenziali non valide',
             2: u'Dati non disponibili',
@@ -85,10 +85,10 @@ class EdiSoapConnection(orm.Model):
     # -------------------------------------------------------------------------
     # Utility function:
     # -------------------------------------------------------------------------
-    def _get_error_status(self, error_code):
+    def _get_error_status(self, status_code):
         ''' Return error comment:
         '''
-        return self._error_status.get(error_code, 'Errore non gestito')
+        return self._response_status.get(status_code, 'Errore non gestito')
         
     def _get_soap_service(self, cr, uid, ids, wsdl_root=False, namespace=False, 
             context=None):
@@ -113,6 +113,8 @@ class EdiSoapConnection(orm.Model):
         parameter = self.browse(cr, uid, ids, context=context)[0]
         message_mask = 'GET+/users/%s/account+%s+%s'
         token = parameter.token
+        username = bytes(parameter.username)
+        secret = bytes(parameter.secret)
         namespace = parameter.namespace
         #'{it.niuma.mscsoapws.ws}MscWsPortSoap11'
         wsdl_root = parameter.wsdl_root         
@@ -134,8 +136,9 @@ class EdiSoapConnection(orm.Model):
         message = message_mask % (username, timestamp, number)
 
         # HMAC encrypt:
+        import pdb; pdb.set_trace()
         signature = hmac.new(
-            secret, msg=message, digestmod=hashlib.sha256).digest()
+            secret, msg=message, digestmod=hashlib.sha256).digest()            
         hash_text = base64.b64encode(signature)
 
         # Link client and WSDL service:
@@ -157,7 +160,7 @@ class EdiSoapConnection(orm.Model):
             raise osv.except_osv(
                 _('SOAP Error'), 
                 _('Cannot login to SOAP WS: %s!') % self._get_error_status(
-                    error_code)
+                    status_code)
                 )
             
         # Get new token and save for next calls:    

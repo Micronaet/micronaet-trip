@@ -37,7 +37,7 @@
         'security/ir.model.access.csv',
 
         # View:
-        'soap_view.xml'
+        'soap_view.xml',
 
         # Init setup:
         'data/connection_data.xml',

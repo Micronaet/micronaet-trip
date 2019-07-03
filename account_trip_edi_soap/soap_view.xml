@@ -1,7 +1,71 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-
+        <!--edi.soap.connection-->
+        <record model="ir.ui.view" id="view_edi_soap_connection_tree">
+            <field name="name">edi.soap.connection.tree</field>
+            <field name="model">edi.soap.connection</field>
+            <field name="arch" type="xml">
+                <tree string="SOAP Connection" colors="blue:token!=False">        
+                    <field name="name" />
+                    <field name="username" />
+                    <field name="wsdl_root" />
+                    <field name="namespace" />
+                    <field name="token" invisible="1" />
+                    <button name="get_token" string="Token refresh" type="object" icon="gtk-refresh" class="oe_highlight" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_edi_soap_connection_form">
+            <field name="name">edi.soap.connection.form</field>
+            <field name="model">edi.soap.connection</field>
+            <field name="arch" type="xml">
+                <form string="SOAP Connection" version="7.0">
+                    <header>
+                        <button name="get_token" string="Token refresh" type="object" icon="gtk-refresh" class="oe_highlight" />
+                    </header>
+                    <shell>
+                        <group colspan="4" col="4">
+                            <field name="name" />
+                            
+                            <separator string="Access information:" colspan="4"/>
+                            <field name="username" />
+                            <field name="token" />
+                            <field name="secret" colspan="4"/>
+                            
+                            <field name="wsdl_root" />
+                            <field name="namespace" />
+                        </group>
+                    </shell>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_edi_soap_connection">
+            <field name="name">SOAP Connection</field>
+            <field name="res_model">edi.soap.connection</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_edi_soap_connection_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+        
+        <menuitem 
+            parent="account_trip.menu_trip_configuration" 
+            id="menu_trip_soap_configuration" 
+            name="SOAP"
+            sequence="60"
+            />
+            
+            <menuitem 
+                parent="menu_trip_soap_configuration" 
+                id="menu_trip_soap_connection" 
+                name="SOAP Connection"
+                action="action_edi_soap_connection"
+                sequence="10"
+                />
+            
+        
     </data>
 </openerp>
 
