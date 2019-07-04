@@ -13,6 +13,7 @@
                     <field name="namespace" />
                     <field name="token" invisible="1" />
                     <button name="get_token" string="Token refresh" type="object" icon="gtk-refresh" class="oe_highlight" />
+                    <button name="load_new_order" string="Load new order" type="object" icon="gtk-new" class="oe_highlight" />
                 </tree>
             </field>
         </record>
@@ -52,6 +53,73 @@
             <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>
+
+        <!--edi.soap.order-->
+        <record model="ir.ui.view" id="view_edi_soap_order_tree">
+            <field name="name">edi.soap.order.tree</field>
+            <field name="model">edi.soap.order</field>
+            <field name="arch" type="xml">
+                <tree string="SOAP order">
+                    <field name="name" />
+                    <field name="connection_id" />
+                    <field name="entity_name" />
+                    <field name="delivery_port_nam" />
+                    <field name="status" />
+                    <field name="currency" />
+                    <field name="fullname" />
+                    <field name="buyer_group" />
+                    <field name="invoice_holder" />
+                    <field name="invoice_address" />
+                    <field name="invoice_vatcode" />
+                    <field name="delivery_at" />
+                    <field name="delivery_address" />                    
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_edi_soap_order_form">
+            <field name="name">edi.soap.order.form</field>
+            <field name="model">edi.soap.order</field>
+            <field name="arch" type="xml">
+                <form string="SOAP order" version="7.0">
+                    <header>
+                    </header>
+                    <shell>
+                        <group colspan="4" col="4">
+                            <field name="name" />
+                            <field name="connection_id" />
+                            
+                            <field name="entity_name" />
+                            <field name="delivery_port_nam" />
+                            
+                            <field name="status" />
+                            <field name="currency" />
+                            
+                            <field name="fullname" />
+                            <field name="buyer_group" />
+                            
+                            <separator string="Invoice:" colspan="4"/>
+                            <field name="invoice_holder" />
+                            <field name="invoice_address" />
+                            
+                            <field name="invoice_vatcode" />
+                            <field name="delivery_at" />
+                            
+                            <field name="delivery_address" />                    
+                            
+                        </group>
+                    </shell>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_edi_soap_order">
+            <field name="name">SOAP order</field>
+            <field name="res_model">edi.soap.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_edi_soap_order_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
         
         <menuitem 
             parent="account_trip.menu_trip_configuration" 
@@ -66,6 +134,13 @@
                 name="SOAP Connection"
                 action="action_edi_soap_connection"
                 sequence="10"
+                />
+            <menuitem 
+                parent="menu_trip_soap_configuration" 
+                id="menu_trip_soap_order" 
+                name="SOAP order"
+                action="action_edi_soap_order"
+                sequence="20"
                 />
             
         

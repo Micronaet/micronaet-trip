@@ -196,6 +196,15 @@ class EdiSoapConnection(orm.Model):
         _logger.warning('Token reloaded')
         return token
     
+    def _safe_get(self, item, field, default=False):
+        ''' Safe eval the field data
+        ''' 
+        try:
+            return eval("item[field] or default")
+        except:    
+            _logger.error('Cannot eval: field %s' % field)
+            return default
+            
     # -------------------------------------------------------------------------
     # Button events:
     # -------------------------------------------------------------------------
@@ -211,105 +220,106 @@ class EdiSoapConnection(orm.Model):
 
         service = self._get_soap_service(cr, uid, ids, context=context)
 
-        import pdb; pdb.set_trace()        
         res = service.getOngoingPOrders(
             accessToken=self.get_token(cr, uid, ids, context=context))            
         self.check_return_status(res, 'Load new order') 
         
         # TODO Manage token problem
-        import pdb; pdb.set_trace()
         for order in res['orders']:
             # -----------------------------------------------------------------
             # Header data:
             # -----------------------------------------------------------------
-            po_number = order.get('poNumber', False)
+            po_number = self._safe_get(order, 'poNumber')
             
             order_ids = order_pool.search(cr, uid, [
-                ('po_number', '=', po_number),
+                ('name', '=', po_number),
                 ], context=context)
             if order_ids:
                 _logger.warning('Order %s yet present' % po_number)                 
                 continue      
                 
             header = {
-                'po_number': po_number, # '2198110479-FB04023',
-                'delivery_date': order.get(
-                    'deliveryDate', False), # None,
-                'entity_name': order.get(
-                    'entityName', False),# 'MV Poesia',
-                'delivery_port_nam': order.get(
-                    'deliveryPortName', False), # u'Wa\xfcnde',
-                'status': order.get(
-                    'status', False),# 'Emitted',
-                'create_date': order.get(
-                    'createDate', False),# None,
-                'currency': order.get(
-                    'currency', False),# 'EUR',
-                'fullname': order.get(
-                    'fullName', False),# 'xxx yyy',
-                'document_value': order.get(
-                    'documentValue', False),#: Decimal('234.20000')
-                'buyer_group': order.get(
-                    'buyerGroup', False),#: 'Buyers',
-                'delivery_terms': order.get(
-                    'deliveryTerms', False),#: None,
-                'info_container': order.get(
-                    'infoContainer', False),#: None,
-                'document_comment': order.get(
-                    'documentComment', False),#: None,
-                'invoice_holder': order.get(
-                    'invoiceHolder', False),#: 'Cruises',
-                'invoice_address': order.get(
-                    'invoiceAddress', False),#: u'Eug\xe8ne 40 120 GENEVA (CH)'
-                'invoice_vatcode': order.get(
-                    'invoiceVatcode', False),#: 'CHE-123.808.357 TVA',
-                'delivery_at': order.get(
-                    'deliveryAt', False),# 'Comando nave',
-                'delivery_address': order.get(
-                    'deliveryAddress', False),# 'Via X 91 Genova 16162 Italy',
-                'delivery_ship': order.get(
-                    'deliveryShip', False),#: None,
-                'logistic': order.get(
-                    'logistic', False),# False,
-                'requires_logistic': order.get(
-                    'requiresLogistic', False),# None,
+                'connection_id': ids[0],
+                'name': po_number, # '2198110479-FB04023',
+                #'delivery_date': self._safe_get(
+                #    order, 'deliveryDate'), # None,
+                'entity_name': self._safe_get(
+                    order, 'entityName'),# 'MV Poesia',
+                'delivery_port_nam': self._safe_get(
+                    order, 'deliveryPortName'), # u'Wa\xfcnde',
+                'status': self._safe_get(
+                    order, 'status'),# 'Emitted',
+                #'po_create_date': self._safe_get(
+                #    order, 'createDate'),# None,
+                'currency': self._safe_get(
+                    order, 'currency'),# 'EUR',
+                'fullname': self._safe_get(
+                    order, 'fullName'),# 'xxx yyy',
+                #'document_value': self._safe_get(
+                #    order, 'documentValue'),#: Decimal('234.20000')
+                'buyer_group': self._safe_get(
+                    order, 'buyerGroup'),#: 'Buyers',
+                #'delivery_terms': self._safe_get(
+                #    order, 'deliveryTerms'),#: None,
+                #'info_container': self._safe_get(
+                #    order, 'infoContainer'),#: None,
+                #'document_comment': self._safe_get(
+                #    order, 'documentComment'),#: None,
+                'invoice_holder': self._safe_get(
+                    order, 'invoiceHolder'),#: 'Cruises',
+                'invoice_address': self._safe_get(
+                    order, 'invoiceAddress'),#: u'Eug\xe8ne 40 120 GENEVA (CH)'
+                'invoice_vatcode': self._safe_get(
+                    order, 'invoiceVatcode'),#: 'CHE-123.808.357 TVA',
+                'delivery_at': self._safe_get(
+                    order, 'deliveryAt'),# 'Comando nave',
+                'delivery_address': self._safe_get(
+                    order, 'deliveryAddress'),# 'Via X 91 Genova 16162 Italy',
+                #'delivery_ship': self._safe_get(
+                #    order, 'deliveryShip'),#: None,
+                #'logistic': self._safe_get(
+                #    order, 'logistic'),# False,
+                #'requires_logistic': self._safe_get(
+                #    order, 'requiresLogistic'),# None,
                 }            
-                
+
             # Create order not present:    
             order_pool.create(cr, uid, header, context=context)
+            _logger.info('New Order %s' % po_number)                 
+
             # TODO load also file for ERP Management
     
-            for line in order.get('orderLines', []):
+            for line in order['orderLines']:
                 # -------------------------------------------------------------
                 # Detail data:
                 # -------------------------------------------------------------
                 line = {
-                    'item_code': order.get(
-                        'itemCode', False), # 'F0000801',
-                    'item_description': order.get(
-                        'itemDescription', False), # 'CORN KERNEL WHOLE FRZ',
-                    'item_price': order.get(
-                        'itemPrice', False), # Decimal('0.93000'),,
-                    'item_receiving_unit': order.get(
-                        'itemReceivingUnit', False), # 'KG',
-                    'quantity_ordered': order.get(
-                        'quantityOrdered', False), # Decimal('230.00000'),,
-                    'quantity_confirmed': order.get(
-                        'quantityConfirmed', False), # Decimal('230.00000'),,
-                    'quantity_logistic': order.get(
-                        'quantityLogistic', False), # None,
-                    'cd_gtin': order.get(
-                        'cdGtin', False), # None,
-                    'cd_voce_doganale': order.get(
-                        'cdVoceDoganale', False), # None,
-                    'nr_pz_conf': order.get(
-                        'nrPzConf', False), # None,
-                    'cd_paese_origine': order.get(
-                        'cdPaeseOrigine', False), # None,
-                    'cd_paese_provenienza': order.get(
-                        'cdPaeseProvenienza', False), # None,
-                    'fl_dogana': order.get(
-                        'flDogana', False), # None
+                    'item_code': self._safe_get(
+                        line, 'itemCode'), # 'F0000801',
+                    'item_description': self._safe_get(
+                        line, 'itemDescription'), # 'CORN KERNEL WHOLE FRZ',
+                    'item_price': self._safe_get(
+                        line, 'itemPrice'), # Decimal('0.93000'),,
+                    'item_receiving_unit': self._safe_get(
+                        line, 'itemReceivingUnit'), # 'KG',
+                    'quantity_ordered': self._safe_get(
+                        line, 'quantityOrdered'), # Decimal('230.00000'),,
+                    'quantity_confirmed': self._safe_get(
+                        line, 'quantityConfirmed'), # Decimal('230.00000'),,
+                    'quantity_logistic': self._safe_get(
+                        line, 'quantityLogistic'), # None,
+                    'cd_gtin': self._safe_get(
+                        line, 'cdGtin'), # None,
+                    'cd_voce_doganale': self._safe_get(
+                        line, 'cdVoceDoganale'), # None,
+                    'nr_pz_conf': self._safe_get(
+                        line, 'nrPzConf'), # None,
+                    'cd_paese_origine': self._safe_get(
+                        line, 'cdPaeseOrigine'), # None,
+                    'cd_paese_provenienza': self._safe_get(
+                        line, 'cdPaeseProvenienza'), # None,
+                    'fl_dogana': self._safe_get(
+                        line, 'flDogana'), # None
                     }
         return True
 
