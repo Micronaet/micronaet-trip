@@ -1,0 +1,247 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# 	* account_trip_edi_soap
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-04 15:15+0000\n"
+"PO-Revision-Date: 2019-07-04 17:21+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: account_trip_edi_soap
+#: view:edi.soap.connection:0
+#: model:ir.actions.act_window,name:account_trip_edi_soap.action_edi_soap_connection
+#: model:ir.ui.menu,name:account_trip_edi_soap.menu_trip_soap_connection
+msgid "SOAP Connection"
+msgstr "Connessione SOAP"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order.line,confirmed_qty:0
+msgid "Confirmed"
+msgstr "Confermato"
+
+#. module: account_trip_edi_soap
+#: view:edi.soap.connection:0
+msgid "Load new order"
+msgstr "Carica nuovi ordini"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order,entity_name:0
+msgid "Entity name"
+msgstr "Nome entità"
+
+#. module: account_trip_edi_soap
+#: model:ir.model,name:account_trip_edi_soap.model_edi_soap_order
+msgid "EDI Soap Order"
+msgstr "EDI Ordini"
+
+#. module: account_trip_edi_soap
+#: model:ir.model,name:account_trip_edi_soap.model_edi_soap_order_line
+msgid "EDI Soap Order line"
+msgstr "EDI Riga ordine "
+
+#. module: account_trip_edi_soap
+#: view:edi.soap.connection:0
+msgid "Token refresh"
+msgstr "Rigenera token"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.connection,namespace:0
+msgid "Namespace"
+msgstr "Namespace"
+
+#. module: account_trip_edi_soap
+#: view:edi.soap.order:0
+msgid "Detail"
+msgstr "Dettaglio"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order,currency:0
+msgid "currency"
+msgstr "valuta"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.connection,secret:0
+msgid "Secret"
+msgstr "Segreto"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.connection,token:0
+msgid "Soap token"
+msgstr "Token SOAP"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order.line,uom:0
+msgid "UOM"
+msgstr "UM"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order,status:0
+msgid "Status"
+msgstr "Stato"
+
+#. module: account_trip_edi_soap
+#: view:edi.soap.order:0
+msgid "Invoice:"
+msgstr "Fattura:"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order.line,description:0
+msgid "Description"
+msgstr "Descrizione"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order,invoice_vatcode:0
+msgid "Invoice VAT code"
+msgstr "Codice IVA"
+
+#. module: account_trip_edi_soap
+#: help:edi.soap.connection,token:0
+msgid "Token assigned and saved when updated"
+msgstr "Token assigned and saved when updated"
+
+#. module: account_trip_edi_soap
+#: view:edi.soap.connection:0
+msgid "Access information:"
+msgstr "Informazioni di accesso:"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order,delivery_address:0
+msgid "Delivery Address"
+msgstr "Indirizzo consegna"
+
+#. module: account_trip_edi_soap
+#: help:edi.soap.connection,wsdl_root:0
+msgid "Example: https://example.com/pep/wsdl"
+msgstr "Esempio: https://example.com/pep/wsdl"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order,fullname:0
+msgid "Full name"
+msgstr "Nome completo"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order,invoice_holder:0
+msgid "Invoice Holder"
+msgstr "Fatturazione"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.connection,username:0
+msgid "Username"
+msgstr "Nome utente"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order,name:0
+msgid "PO Number"
+msgstr "Numero ordine"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order,line_ids:0
+msgid "Lines"
+msgstr "Righe"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order,delivery_port_nam:0
+msgid "Delivery Port Nam"
+msgstr "Nome porto consegna"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order,connection_id:0
+msgid "Connection"
+msgstr "Connezione"
+
+#. module: account_trip_edi_soap
+#: help:edi.soap.connection,namespace:0
+msgid "Example: {it.example.soapws.ws}WsPortSoap11"
+msgstr "Esempio: {it.example.soapws.ws}WsPortSoap11"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order,delivery_at:0
+msgid "Delivery at"
+msgstr "Consegna a"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order.line,logistic_qty:0
+msgid "Logistic"
+msgstr "Logistica"
+
+#. module: account_trip_edi_soap
+#: view:edi.soap.connection:0
+msgid "Token:"
+msgstr "Token:"
+
+#. module: account_trip_edi_soap
+#: view:edi.soap.order:0
+#: model:ir.actions.act_window,name:account_trip_edi_soap.action_edi_soap_order
+#: model:ir.ui.menu,name:account_trip_edi_soap.menu_trip_soap_order
+msgid "SOAP order"
+msgstr "SOAP ordini"
+
+#. module: account_trip_edi_soap
+#: view:edi.soap.order:0
+msgid "Detail:"
+msgstr "Dettagli:"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order.line,order_id:0
+msgid "Order"
+msgstr "Ordine"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.connection,name:0
+msgid "Soap Connection"
+msgstr "Connessione SOAP"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order,invoice_address:0
+msgid "Invoice Address"
+msgstr "Indirizzo fattura"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order.line,name:0
+msgid "Code"
+msgstr "Codice"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order.line,ordered_qty:0
+msgid "Ordered"
+msgstr "Ordinato"
+
+#. module: account_trip_edi_soap
+#: view:edi.soap.order:0
+msgid "Reload order"
+msgstr "Ricarica ordine"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.connection,wsdl_root:0
+msgid "WSDL Root"
+msgstr "Percorso WSDL"
+
+#. module: account_trip_edi_soap
+#: view:edi.soap.order:0
+msgid "Invoice"
+msgstr "Fattura"
+
+#. module: account_trip_edi_soap
+#: model:ir.model,name:account_trip_edi_soap.model_edi_soap_connection
+msgid "EDI Soap Connection"
+msgstr "EDI Connessione SOAP"
+
+#. module: account_trip_edi_soap
+#: model:ir.ui.menu,name:account_trip_edi_soap.menu_trip_soap_configuration
+msgid "SOAP"
+msgstr "SOAP"
+
+#. module: account_trip_edi_soap
+#: field:edi.soap.order,buyer_group:0
+msgid "Buyer Group"
+msgstr "Gruppo di acquisto"
