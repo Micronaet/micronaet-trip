@@ -1,4 +1,5 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
 access_edi_soap_connection_user,edi.soap.connection,model_edi_soap_connection,base.group_user,1,1,1,1
 access_edi_soap_order_user,edi.soap.order,model_edi_soap_order,base.group_user,1,1,1,1
+access_edi_soap_order_line_user,edi.soap.order.line,model_edi_soap_order_line,base.group_user,1,1,1,1
 

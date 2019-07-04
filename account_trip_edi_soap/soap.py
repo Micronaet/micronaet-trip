@@ -217,6 +217,7 @@ class EdiSoapConnection(orm.Model):
         ''' Load order from WSDL Soap Connection
         '''
         order_pool = self.pool.get('edi.soap.order')
+        line_pool = self.pool.get('edi.soap.order.line')
 
         service = self._get_soap_service(cr, uid, ids, context=context)
 
@@ -284,7 +285,7 @@ class EdiSoapConnection(orm.Model):
                 }            
 
             # Create order not present:    
-            order_pool.create(cr, uid, header, context=context)
+            order_id = order_pool.create(cr, uid, header, context=context)
             _logger.info('New Order %s' % po_number)                 
 
             # TODO load also file for ERP Management
@@ -294,33 +295,36 @@ class EdiSoapConnection(orm.Model):
                 # Detail data:
                 # -------------------------------------------------------------
                 line = {
-                    'item_code': self._safe_get(
+                    'order_id': order_id,
+                    'name': self._safe_get(
                         line, 'itemCode'), # 'F0000801',
-                    'item_description': self._safe_get(
+                    'description': self._safe_get(
                         line, 'itemDescription'), # 'CORN KERNEL WHOLE FRZ',
-                    'item_price': self._safe_get(
-                        line, 'itemPrice'), # Decimal('0.93000'),,
-                    'item_receiving_unit': self._safe_get(
+                    #'item_price': self._safe_get(
+                    #    line, 'itemPrice'), # Decimal('0.93000'),
+                    'uom': self._safe_get(
                         line, 'itemReceivingUnit'), # 'KG',
-                    'quantity_ordered': self._safe_get(
-                        line, 'quantityOrdered'), # Decimal('230.00000'),,
-                    'quantity_confirmed': self._safe_get(
-                        line, 'quantityConfirmed'), # Decimal('230.00000'),,
-                    'quantity_logistic': self._safe_get(
-                        line, 'quantityLogistic'), # None,
-                    'cd_gtin': self._safe_get(
-                        line, 'cdGtin'), # None,
-                    'cd_voce_doganale': self._safe_get(
-                        line, 'cdVoceDoganale'), # None,
-                    'nr_pz_conf': self._safe_get(
-                        line, 'nrPzConf'), # None,
-                    'cd_paese_origine': self._safe_get(
-                        line, 'cdPaeseOrigine'), # None,
-                    'cd_paese_provenienza': self._safe_get(
-                        line, 'cdPaeseProvenienza'), # None,
-                    'fl_dogana': self._safe_get(
-                        line, 'flDogana'), # None
-                    }
+                    'ordered_qty': float(self._safe_get(
+                        line, 'quantityOrdered', 0.0)), # Decimal('230.00000'),
+                    'confirmed_qty': float(self._safe_get(
+                        line, 'quantityConfirmed', 0.0)), # Decimal('230.00000'),                    
+                    'logistic_qty': float(self._safe_get(
+                        line, 'quantityLogistic', 0.0)), # None,
+                    
+                    #'cd_gtin': self._safe_get(
+                    #    line, 'cdGtin'), # None,
+                    #'cd_voce_doganale': self._safe_get(
+                    #    line, 'cdVoceDoganale'), # None,
+                    #'nr_pz_conf': self._safe_get(
+                    #    line, 'nrPzConf'), # None,
+                    #'cd_paese_origine': self._safe_get(
+                    #    line, 'cdPaeseOrigine'), # None,
+                    #'cd_paese_provenienza': self._safe_get(
+                    #    line, 'cdPaeseProvenienza'), # None,
+                    #'fl_dogana': self._safe_get(
+                    #    line, 'flDogana'), # None
+                    }                    
+                line_pool.create(cr, uid, line, context=context)
         return True
 
     _columns = {
@@ -359,7 +363,7 @@ class EdiSoapOrder(orm.Model):
         # create_date = order.get('createDate', False)# None,
         'currency': fields.char('currency', size=10),
         'fullname': fields.char('Full name', size=40),
-        #document_value = order.get('documentValue', False)#: Decimal('234.20000'),
+        #document_value = order.get('documentValue', False)#: 234.20000,
         'buyer_group': fields.char('Buyer Group', size=30),
         #delivery_terms = order.get('deliveryTerms', False)#: None,
         #info_container = order.get('infoContainer', False)#: None,
@@ -373,5 +377,42 @@ class EdiSoapOrder(orm.Model):
         #logistic = order.get('logistic', False)# False,
         #requires_logistic = order.get('requiresLogistic', False)# None,
         }    
+
+class EdiSoapOrderLine(orm.Model):
+    ''' Soap order line
+    '''
+    _name = 'edi.soap.order.line'
+    _description = 'EDI Soap Order line'
+    _rec_name = 'name'
+    _order = 'name'
+
+    _columns = {
+        'name': fields.char('Code', size=40, required=True),
+        'order_id': fields.many2one('edi.soap.order', 'Order'),
+
+        'description': fields.char('Description', size=40),
+        #'price': fields.char('', size=40),
+        'uom': fields.char('UOM', size=10),
+        'ordered_qty': fields.float('Ordered', digits=(16, 3)),
+        'confirmed_qty': fields.float('Confirmed', digits=(16, 3)),
+        'logistic_qty': fields.float('Logistic', digits=(16, 3)),
+
+        #'item_price'
+        #'cd_gtin'
+        #'cd_voce_doganale'
+        #'nr_pz_conf'
+        #'cd_paese_origine'
+        #'cd_paese_provenienza'
+        #'fl_dogana'
+        }
+
+class EdiSoapOrder(orm.Model):
+    ''' Soap Parameter for connection
+    '''
+    _inherit = 'edi.soap.order'
+    
+    _columns = {
+        'line_ids': fields.one2many('edi.soap.order.line', 'order_id', 'Lines'),
+        }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

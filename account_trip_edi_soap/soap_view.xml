@@ -97,15 +97,34 @@
                             <field name="fullname" />
                             <field name="buyer_group" />
                             
-                            <separator string="Invoice:" colspan="4"/>
-                            <field name="invoice_holder" />
-                            <field name="invoice_address" />
-                            
-                            <field name="invoice_vatcode" />
-                            <field name="delivery_at" />
-                            
-                            <field name="delivery_address" />                    
-                            
+                            <notebook colspan="4">
+                                <page string="Detail">
+                                    <group colspan="4" col="4">
+                                        <separator string="Detail:" colspan="4"/>
+                                        <field name="line_ids" colspan="4" nolabel="1">
+                                            <tree string="Detail:" editable="bottom" colors="blue:ordered_qty!=confirmed_qty">
+                                                <field name="name" readonly="1"/>
+                                                <field name="description" readonly="1" />
+                                                <field name="uom" readonly="1" />
+                                                <field name="ordered_qty" readonly="1" />
+                                                <field name="confirmed_qty" />
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </page>
+                                <page string="Invoice">
+                                    <group colspan="4" col="4">
+                                        <separator string="Invoice:" colspan="4"/>
+                                        <field name="invoice_holder" />
+                                        <field name="invoice_address" />
+                                        
+                                        <field name="invoice_vatcode" />
+                                        <field name="delivery_at" />
+                                        
+                                        <field name="delivery_address" />                    
+                                    </group>
+                                </page>
+                            </notebook>
                         </group>
                     </shell>
                 </form>
