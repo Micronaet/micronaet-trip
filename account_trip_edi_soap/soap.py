@@ -122,6 +122,7 @@ class EdiSoapConnection(orm.Model):
         header = _('SOAP Error') 
         error_mask = _('Cannot connect with SOAP [%s]: %s')
         
+        # XXX Status code 14 > New login!
         try:
             status_code = res['operationOutcome']['statusCode']
         except:
@@ -143,7 +144,7 @@ class EdiSoapConnection(orm.Model):
         '''
         if context is None:
             context = {}
-        force_reload = context.get('force_reload', False)    
+        force_reload = context.get('force_reload', True)
         parameter = self.browse(cr, uid, ids, context=context)[0]
 
         # Get all parameters:
@@ -151,10 +152,11 @@ class EdiSoapConnection(orm.Model):
         username = bytes(parameter.username)
         secret = bytes(parameter.secret)
         namespace = bytes(parameter.namespace)
+        # Ex.: '{it.niuma.mscsoapws.ws}MscWsPortSoap11'
         wsdl_root = bytes(parameter.wsdl_root)
+        # Ex.: 'https://layer7test.msccruises.com/pep/wsdl'  DEMO
+        # Ex.: 'https://layer7prod.msccruises.com/pep/wsdl'  PRODUCTION
         token = parameter.token
-        # 'https://layer7test.msccruises.com/pep/wsdl'  DEMO
-        # 'https://layer7prod.msccruises.com/pep/wsdl'  PRODUCTION
 
         # ---------------------------------------------------------------------
         # Check if present last token saved: 
