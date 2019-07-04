@@ -81,7 +81,8 @@
             <field name="model">edi.soap.order</field>
             <field name="arch" type="xml">
                 <form string="SOAP order" version="7.0">
-                    <header>
+                    <header>                        
+                        <button name="reload_this_order" string="Reload order" type="object" icon="gtk-refresh" class="oe_highlight" />
                     </header>
                     <shell>
                         <group colspan="4" col="4">

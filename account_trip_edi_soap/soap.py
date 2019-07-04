@@ -196,15 +196,6 @@ class EdiSoapConnection(orm.Model):
         _logger.warning('Token reloaded')
         return token
     
-    def _safe_get(self, item, field, default=False):
-        ''' Safe eval the field data
-        ''' 
-        try:
-            return eval("item[field] or default")
-        except:    
-            _logger.error('Cannot eval: field %s' % field)
-            return default
-            
     # -------------------------------------------------------------------------
     # Button events:
     # -------------------------------------------------------------------------
@@ -217,7 +208,6 @@ class EdiSoapConnection(orm.Model):
         ''' Load order from WSDL Soap Connection
         '''
         order_pool = self.pool.get('edi.soap.order')
-        line_pool = self.pool.get('edi.soap.order.line')
 
         service = self._get_soap_service(cr, uid, ids, context=context)
 
@@ -227,104 +217,8 @@ class EdiSoapConnection(orm.Model):
         
         # TODO Manage token problem
         for order in res['orders']:
-            # -----------------------------------------------------------------
-            # Header data:
-            # -----------------------------------------------------------------
-            po_number = self._safe_get(order, 'poNumber')
-            
-            order_ids = order_pool.search(cr, uid, [
-                ('name', '=', po_number),
-                ], context=context)
-            if order_ids:
-                _logger.warning('Order %s yet present' % po_number)                 
-                continue      
-                
-            header = {
-                'connection_id': ids[0],
-                'name': po_number, # '2198110479-FB04023',
-                #'delivery_date': self._safe_get(
-                #    order, 'deliveryDate'), # None,
-                'entity_name': self._safe_get(
-                    order, 'entityName'),# 'MV Poesia',
-                'delivery_port_nam': self._safe_get(
-                    order, 'deliveryPortName'), # u'Wa\xfcnde',
-                'status': self._safe_get(
-                    order, 'status'),# 'Emitted',
-                #'po_create_date': self._safe_get(
-                #    order, 'createDate'),# None,
-                'currency': self._safe_get(
-                    order, 'currency'),# 'EUR',
-                'fullname': self._safe_get(
-                    order, 'fullName'),# 'xxx yyy',
-                #'document_value': self._safe_get(
-                #    order, 'documentValue'),#: Decimal('234.20000')
-                'buyer_group': self._safe_get(
-                    order, 'buyerGroup'),#: 'Buyers',
-                #'delivery_terms': self._safe_get(
-                #    order, 'deliveryTerms'),#: None,
-                #'info_container': self._safe_get(
-                #    order, 'infoContainer'),#: None,
-                #'document_comment': self._safe_get(
-                #    order, 'documentComment'),#: None,
-                'invoice_holder': self._safe_get(
-                    order, 'invoiceHolder'),#: 'Cruises',
-                'invoice_address': self._safe_get(
-                    order, 'invoiceAddress'),#: u'Eug\xe8ne 40 120 GENEVA (CH)'
-                'invoice_vatcode': self._safe_get(
-                    order, 'invoiceVatcode'),#: 'CHE-123.808.357 TVA',
-                'delivery_at': self._safe_get(
-                    order, 'deliveryAt'),# 'Comando nave',
-                'delivery_address': self._safe_get(
-                    order, 'deliveryAddress'),# 'Via X 91 Genova 16162 Italy',
-                #'delivery_ship': self._safe_get(
-                #    order, 'deliveryShip'),#: None,
-                #'logistic': self._safe_get(
-                #    order, 'logistic'),# False,
-                #'requires_logistic': self._safe_get(
-                #    order, 'requiresLogistic'),# None,
-                }            
-
-            # Create order not present:    
-            order_id = order_pool.create(cr, uid, header, context=context)
-            _logger.info('New Order %s' % po_number)                 
-
-            # TODO load also file for ERP Management
-    
-            for line in order['orderLines']:
-                # -------------------------------------------------------------
-                # Detail data:
-                # -------------------------------------------------------------
-                line = {
-                    'order_id': order_id,
-                    'name': self._safe_get(
-                        line, 'itemCode'), # 'F0000801',
-                    'description': self._safe_get(
-                        line, 'itemDescription'), # 'CORN KERNEL WHOLE FRZ',
-                    #'item_price': self._safe_get(
-                    #    line, 'itemPrice'), # Decimal('0.93000'),
-                    'uom': self._safe_get(
-                        line, 'itemReceivingUnit'), # 'KG',
-                    'ordered_qty': float(self._safe_get(
-                        line, 'quantityOrdered', 0.0)), # Decimal('230.00000'),
-                    'confirmed_qty': float(self._safe_get(
-                        line, 'quantityConfirmed', 0.0)), # Decimal('230.00000'),                    
-                    'logistic_qty': float(self._safe_get(
-                        line, 'quantityLogistic', 0.0)), # None,
-                    
-                    #'cd_gtin': self._safe_get(
-                    #    line, 'cdGtin'), # None,
-                    #'cd_voce_doganale': self._safe_get(
-                    #    line, 'cdVoceDoganale'), # None,
-                    #'nr_pz_conf': self._safe_get(
-                    #    line, 'nrPzConf'), # None,
-                    #'cd_paese_origine': self._safe_get(
-                    #    line, 'cdPaeseOrigine'), # None,
-                    #'cd_paese_provenienza': self._safe_get(
-                    #    line, 'cdPaeseProvenienza'), # None,
-                    #'fl_dogana': self._safe_get(
-                    #    line, 'flDogana'), # None
-                    }                    
-                line_pool.create(cr, uid, line, context=context)
+            order_pool.create_new_order(
+                cr, uid, ids[0], order, force=False, context=context)
         return True
 
     _columns = {
@@ -349,7 +243,168 @@ class EdiSoapOrder(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
-    # TODO Reload operation needes?
+    # -------------------------------------------------------------------------
+    # Utility:
+    # -------------------------------------------------------------------------
+    def _safe_get(self, item, field, default=False):
+        ''' Safe eval the field data
+        ''' 
+        try:
+            return eval("item[field] or default")
+        except:    
+            _logger.error('Cannot eval: field %s' % field)
+            return default
+
+    def create_new_order(self, cr, uid, connection_id, order, force=False, 
+            context=None):
+        ''' Create new order from order object
+        '''        
+        line_pool = self.pool.get('edi.soap.order.line')
+
+        po_number = self._safe_get(order, 'poNumber')
+        
+        order_ids = self.search(cr, uid, [
+            ('name', '=', po_number),
+            ], context=context)
+        if order_ids:
+            if force:
+                # Delete and recreate
+                _logger.warning('Order deleted for recreation: %s' % (
+                    order_ids,
+                    ))
+                self.unlink(cr, uid, order_ids, context=context)
+            else:
+                _logger.warning('Order %s yet present' % po_number)                 
+                return False
+            
+        header = {
+            'connection_id': connection_id,
+            'name': self._safe_get(order, 'poNumber'), # '2110479-FB04023'
+            #'delivery_date': self._safe_get(
+            #    order, 'deliveryDate'), # None,
+            'entity_name': self._safe_get(
+                order, 'entityName'),# 'MV Poesia',
+            'delivery_port_nam': self._safe_get(
+                order, 'deliveryPortName'), # u'Wa\xfcnde',
+            'status': self._safe_get(
+                order, 'status'),# 'Emitted',
+            #'po_create_date': self._safe_get(
+            #    order, 'createDate'),# None,
+            'currency': self._safe_get(
+                order, 'currency'),# 'EUR',
+            'fullname': self._safe_get(
+                order, 'fullName'),# 'xxx yyy',
+            #'document_value': self._safe_get(
+            #    order, 'documentValue'),#: Decimal('234.20000')
+            'buyer_group': self._safe_get(
+                order, 'buyerGroup'),#: 'Buyers',
+            #'delivery_terms': self._safe_get(
+            #    order, 'deliveryTerms'),#: None,
+            #'info_container': self._safe_get(
+            #    order, 'infoContainer'),#: None,
+            #'document_comment': self._safe_get(
+            #    order, 'documentComment'),#: None,
+            'invoice_holder': self._safe_get(
+                order, 'invoiceHolder'),#: 'Cruises',
+            'invoice_address': self._safe_get(
+                order, 'invoiceAddress'),#: u'Eug\xe8ne 40 120 GENEVA (CH)'
+            'invoice_vatcode': self._safe_get(
+                order, 'invoiceVatcode'),#: 'CHE-123.808.357 TVA',
+            'delivery_at': self._safe_get(
+                order, 'deliveryAt'),# 'Comando nave',
+            'delivery_address': self._safe_get(
+                order, 'deliveryAddress'),# 'Via X 91 Genova 16162 Italy',
+            #'delivery_ship': self._safe_get(
+            #    order, 'deliveryShip'),#: None,
+            #'logistic': self._safe_get(
+            #    order, 'logistic'),# False,
+            #'requires_logistic': self._safe_get(
+            #    order, 'requiresLogistic'),# None,
+            }            
+
+        # Create order not present:    
+        order_id = self.create(cr, uid, header, context=context)
+        _logger.info('New Order %s' % po_number)                 
+
+        # TODO load also file for ERP Management
+
+        for line in order['orderLines']:
+            # -------------------------------------------------------------
+            # Detail data:
+            # -------------------------------------------------------------
+            line = {
+                'order_id': order_id,
+                'name': self._safe_get(
+                    line, 'itemCode'), # 'F0000801',
+                'description': self._safe_get(
+                    line, 'itemDescription'), # 'CORN KERNEL WHOLE FRZ',
+                #'item_price': self._safe_get(
+                #    line, 'itemPrice'), # Decimal('0.93000'),
+                'uom': self._safe_get(
+                    line, 'itemReceivingUnit'), # 'KG',
+                'ordered_qty': float(self._safe_get(
+                    line, 'quantityOrdered', 0.0)), # Decimal('230.00000'),
+                'confirmed_qty': float(self._safe_get(
+                    line, 'quantityConfirmed', 0.0)), # Decimal('230.00000'),                    
+                'logistic_qty': float(self._safe_get(
+                    line, 'quantityLogistic', 0.0)), # None,
+                
+                #'cd_gtin': self._safe_get(
+                #    line, 'cdGtin'), # None,
+                #'cd_voce_doganale': self._safe_get(
+                #    line, 'cdVoceDoganale'), # None,
+                #'nr_pz_conf': self._safe_get(
+                #    line, 'nrPzConf'), # None,
+                #'cd_paese_origine': self._safe_get(
+                #    line, 'cdPaeseOrigine'), # None,
+                #'cd_paese_provenienza': self._safe_get(
+                #    line, 'cdPaeseProvenienza'), # None,
+                #'fl_dogana': self._safe_get(
+                #    line, 'flDogana'), # None
+                }                    
+            line_pool.create(cr, uid, line, context=context)
+        return order_id
+
+    # -------------------------------------------------------------------------
+    # Button events:
+    # -------------------------------------------------------------------------
+    def reload_this_order(self, cr, uid, ids, context=None):
+        ''' Reload this order
+        '''
+        connection_pool = self.pool.get('edi.soap.connection')
+        current_proxy = self.browse(cr, uid, ids, context=context)[0]
+        connection_id = current_proxy.connection_id.id
+
+        service = connection_pool._get_soap_service(
+            cr, uid, [connection_id], context=context)
+
+        res = service.getPOrder(
+            accessToken=connection_pool.get_token(
+                cr, uid, [connection_id], context=context),
+            poNumber=current_proxy.name,
+            )
+        connection_pool.check_return_status(
+            res, 'Reload order: %s' % current_proxy.name) 
+        order = res['pOrder']    
+
+        # Force recreation of order:
+        order_id = self.create_new_order(
+            cr, uid, connection_id, order, force=True, 
+            context=context)
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Reload order'),
+            'view_type': 'form',
+            'view_mode': 'form,tree',
+            'res_id': order_id,
+            'res_model': 'edi.soap.order',
+            'view_id': False,
+            'views': [(False, 'form'), (False, 'tree')],
+            'domain': [],
+            'context': context,
+            'target': 'current', # 'new'
+            'nodestroy': False,
+            }    
 
     _columns = {
         'name': fields.char(
@@ -388,7 +443,8 @@ class EdiSoapOrderLine(orm.Model):
 
     _columns = {
         'name': fields.char('Code', size=40, required=True),
-        'order_id': fields.many2one('edi.soap.order', 'Order'),
+        'order_id': fields.many2one('edi.soap.order', 'Order', 
+            ondelete='cascade'),
 
         'description': fields.char('Description', size=40),
         #'price': fields.char('', size=40),
