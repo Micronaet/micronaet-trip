@@ -23,6 +23,7 @@
                 <form string="SOAP Connection" version="7.0">
                     <header>
                         <button name="get_token" string="Token refresh" type="object" icon="gtk-refresh" class="oe_highlight" />
+                        <button name="load_new_order" string="Load new order" type="object" icon="gtk-new" class="oe_highlight" />
                     </header>
                     <shell>
                         <group colspan="4" col="4">
@@ -30,11 +31,13 @@
                             
                             <separator string="Access information:" colspan="4"/>
                             <field name="username" />
-                            <field name="token" />
-                            <field name="secret" colspan="4"/>
+                            <field name="secret" />
                             
                             <field name="wsdl_root" />
                             <field name="namespace" />
+
+                            <separator string="Token:" colspan="4"/>
+                            <field name="token" colspan="4" readonly="1" nolabel="1"/>
                         </group>
                     </shell>
                 </form>
