@@ -260,12 +260,11 @@ class EdiSoapOrder(orm.Model):
         ''' Create new order from order object
         '''        
         line_pool = self.pool.get('edi.soap.order.line')
-
-        po_number = self._safe_get(order, 'poNumber')
-        
+        po_number = self._safe_get(order, 'poNumber')        
         order_ids = self.search(cr, uid, [
             ('name', '=', po_number),
             ], context=context)
+
         if order_ids:
             if force:
                 # Delete and recreate
