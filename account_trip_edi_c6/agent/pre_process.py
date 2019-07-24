@@ -26,6 +26,30 @@ from datetime import datetime
 # -----------------------------------------------------------------------------
 # Utility:
 # -----------------------------------------------------------------------------
+def sort_line(row):
+    ''' Generate order depend on start code, the row is the string generated
+        for ERP (code 4th field)
+    '''
+    code = row.slit('|')[3].upper()
+    start_1 = code[:1]
+    start_2 = code[:2]
+
+    # Test based on 1 or 2 start char:
+    if start_1 in 'OH' or start_2 == 'SP': # XXX has S - SP problem so first
+        return 3 # dry
+    elif start_1 in 'VCPDSF': # XXX has S - SP problem so second test
+        return 1 # freeze
+    elif start_1 in 'ILTB': 
+        return 2 # fresh
+    elif start_1 in 'G': 
+        return 4 # pasta
+    else: # Error list
+        # Log error:
+        f_error = ('./sort_error.log', 'w')
+        f_error.write('Char not found %s - %s\n' % (start_1, start_2))        
+        f_error.close()
+        return 5
+    
 def clean_text(text, length, uppercase=False, error=None, truncate=False):
     ''' Return clean text with limit cut
         Log in error if over length
@@ -298,7 +322,7 @@ for root, dirs, files in os.walk(in_path):
         # Convert file:
         f_out = open(file_out, 'w')
         
-        for line in row_out:
+        for line in sorted(row_out, key=lambda x: sort_line(s)):
             f_out.write(line)
         f_out.close()
         
