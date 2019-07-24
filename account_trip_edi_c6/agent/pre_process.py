@@ -35,11 +35,11 @@ def sort_line(row):
     start_2 = code[:2]
 
     # Test based on 1 or 2 start char:
-    if start_1 in 'OH' or start_2 == 'SP': # XXX has S - SP problem so first
+    if start_1 in 'HO' or start_2 == 'SP': # XXX has S - SP problem so first
         return (3, start_2) # dry
-    elif start_1 in 'VCPDSF': # XXX has S - SP problem so second test
+    elif start_1 in 'CDFPSV': # XXX has S - SP problem so second test
         return (1, start_2) # freeze
-    elif start_1 in 'ILTB': 
+    elif start_1 in 'BILT': 
         return (2, start_2) # fresh
     elif start_1 in 'G': 
         return (4, start_2) # pasta
