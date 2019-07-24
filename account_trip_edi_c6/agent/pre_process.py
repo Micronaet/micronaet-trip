@@ -30,6 +30,7 @@ def sort_line(row):
     ''' Generate order depend on start code, the row is the string generated
         for ERP (code 4th field)
     '''
+    import pdb; pdb.set_trace()
     code = row.split('|')[3].upper()
     start_1 = code[:1]
     start_2 = code[:2]
