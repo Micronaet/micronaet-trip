@@ -36,19 +36,19 @@ def sort_line(row):
 
     # Test based on 1 or 2 start char:
     if start_1 in 'OH' or start_2 == 'SP': # XXX has S - SP problem so first
-        return 3 # dry
+        return (3, start_2) # dry
     elif start_1 in 'VCPDSF': # XXX has S - SP problem so second test
-        return 1 # freeze
+        return (1, start_2) # freeze
     elif start_1 in 'ILTB': 
-        return 2 # fresh
+        return (2, start_2) # fresh
     elif start_1 in 'G': 
-        return 4 # pasta
+        return (4, start_2) # pasta
     else: # Error list
         # Log error:
         f_error = ('./sort_error.log', 'w')
         f_error.write('Char not found %s - %s\n' % (start_1, start_2))        
         f_error.close()
-        return 5
+        return (5, start_2)
     
 def clean_text(text, length, uppercase=False, error=None, truncate=False):
     ''' Return clean text with limit cut
