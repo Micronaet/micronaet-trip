@@ -151,8 +151,8 @@
                    <button name="unforce_import" type="object" string="Unforce import order" icon="gtk-undo" attrs="{'invisible':[('type','!=','forced')]}" invisible="context.get('force_button_on', False)"/>
                    
                    <!--Change mode:-->
-                   <button name="force_import" type="object" string="Force import order" icon="gtk-refresh" attrs="{'invisible':[('type','!=','create')]}" invisible="not context.get('force_button_on', False)" />
-                   <button name="unforce_import" type="object" string="Unforce import order" icon="gtk-undo" attrs="{'invisible':[('type','!=','forced')]}" invisible="not context.get('force_button_on', False)" />
+                   <button name="force_import" type="object" string="Force import order" icon="gtk-refresh" attrs="{'invisible':[('type','!=','change')]}" invisible="not context.get('force_button_on', False)" />
+                   <!--<button name="unforce_import" type="object" string="Unforce import order" icon="gtk-undo" attrs="{'invisible':[('type','!=','forced')]}" invisible="not context.get('force_button_on', False)" />-->
                 </tree>
             </field>
        </record>         
