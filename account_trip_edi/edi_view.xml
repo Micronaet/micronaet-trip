@@ -262,8 +262,8 @@
           <field name="view_id" ref="trip_edi_line_tree_view"/>
           <field name="search_view_id" ref="trip_edi_line_search_view"/>
           <field name="domain">[('type', '=', 'change')]</field>
-          <!--<field name="context">{'search_default_recursion_test':1,'search_default_group_number':1,'hide_delete':False}</field>-->
       </record>
+      <!--<field name="context">{'search_default_recursion_test':1,'search_default_group_number':1,'hide_delete':False}</field>-->
 
     <menuitem parent="account_trip.menu_trip_root" id="menu_trip_trip" name="EDI" sequence="20" groups="group_edi_manager,group_edi_operator"/>
          <menuitem parent="menu_trip_trip" id="menu_trip_view" name="View" sequence="20" action="action_trip_edi_line_view" />
