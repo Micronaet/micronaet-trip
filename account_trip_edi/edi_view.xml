@@ -270,7 +270,7 @@
              <menuitem parent="menu_trip_view" id="menu_trip_view_list" name="All orders" sequence="10" action="action_trip_edi_line_view_list"/>
              <menuitem parent="menu_trip_view" id="menu_trip_view_forceable" name="Order forceable" sequence="20" action="action_trip_edi_line_view"/>
              <menuitem parent="menu_trip_view" id="menu_trip_view_recursion" name="Recursion check" sequence="30" action="action_trip_edi_line_view_recursion"/>
-             <menuitem parent="menu_trip_view" id="menu_trip_view_recursion" name="Change check" sequence="35" action="action_trip_edi_line_view_change"/>
+             <menuitem parent="menu_trip_view" id="menu_trip_view_change" name="Change check" sequence="35" action="action_trip_edi_line_view_change"/>
              <menuitem parent="menu_trip_view" id="menu_trip_view_check_destination" name="Check destination" sequence="40" action="action_trip_edi_line_check_destination_view_list"/>
       
     <menuitem parent="account_trip.menu_trip_configuration" id="menu_edi_company_trip_parameter" name="EDI Company" sequence="90" action="action_edi_company_trip_parameter"/>
