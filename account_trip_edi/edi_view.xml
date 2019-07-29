@@ -147,6 +147,9 @@
                    <button name="delete_order" type="object" string="Delete order" icon="gtk-delete" attrs="{'invisible':[('recursion','=',1),('type','=','create')]}" /><!--invisible="context.get('hide_delete',True)"-->
                    <button name="force_import" type="object" string="Force import order" icon="gtk-refresh" attrs="{'invisible':['|',('recursion','>',1),('type','!=','create')]}" />
                    <button name="unforce_import" type="object" string="Unforce import order" icon="gtk-undo" attrs="{'invisible':[('type','!=','forced')]}" />
+                   
+                   <button name="force_import" type="object" string="Force import order" icon="gtk-refresh" invisible="not context.get('force_button_on', False)" />
+                   <button name="unforce_import" type="object" string="Unforce import order" icon="gtk-undo" invisible="not context.get('force_button_on', False)" />
                 </tree>
             </field>
        </record>         
@@ -262,8 +265,8 @@
           <field name="view_id" ref="trip_edi_line_tree_view"/>
           <field name="search_view_id" ref="trip_edi_line_search_view"/>
           <field name="domain">[('type', '=', 'change')]</field>
+          <field name="context">{'force_button_on': True}</field>
       </record>
-      <!--<field name="context">{'search_default_recursion_test':1,'search_default_group_number':1,'hide_delete':False}</field>-->
 
     <menuitem parent="account_trip.menu_trip_root" id="menu_trip_trip" name="EDI" sequence="20" groups="group_edi_manager,group_edi_operator"/>
          <menuitem parent="menu_trip_trip" id="menu_trip_view" name="View" sequence="20" action="action_trip_edi_line_view" />
