@@ -643,9 +643,6 @@ class EdiSoapLogistic(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
-    # -------------------------------------------------------------------------
-    # Columns:
-    # -------------------------------------------------------------------------
     _columns = {
         'name': fields.char('Invoice reference', size=40, required=True),
         'pallet': fields.integer('Pallet #'),
@@ -663,22 +660,6 @@ class EdiSoapLogistic(orm.Model):
         'state': lambda *x: 'state',
         }    
 
-class EdiSoapLogistic(orm.Model):
-    ''' Soap logistic order
-    '''
-    _name = 'edi.soap.logistic.line'
-    _description = 'EDI Soap Logistic Line'
-    _rec_name = 'name'
-    _order = 'name'
-
-    # -------------------------------------------------------------------------
-    # Columns:
-    # -------------------------------------------------------------------------
-    _columns = {
-        'name': fields.char('Article', size=40, required=True),
-        'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order'),
-        }
-
 class EdiSoapLogisticPallet(orm.Model):
     ''' Soap logistic order
     '''
@@ -687,17 +668,40 @@ class EdiSoapLogisticPallet(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
-    # -------------------------------------------------------------------------
-    # Columns:
-    # -------------------------------------------------------------------------
     _columns = {
         'name': fields.integer('#', required=True),
         'sscc': fields.char('SSCC Code', size=40, required=True),
         'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order'),
         }        
-    
+
 class EdiSoapLogistic(orm.Model):
     ''' Soap logistic order
+    '''
+    _name = 'edi.soap.logistic.line'
+    _description = 'EDI Soap Logistic Line'
+    _rec_name = 'name'
+    _order = 'name'
+
+    _columns = {
+        'name': fields.char('Article', size=40, required=True),
+        # TODO add extra fields
+        'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order'),
+        'pallet_id': fields.many2one('edi.soap.logistic.pallet', 'Pallet'),
+        }
+
+
+class EdiSoapLogisticPallet(orm.Model):
+    ''' Soap logistic order relations
+    '''
+    _inherit = 'edi.soap.logistic.pallet'
+
+    _columns = {
+        'line_ids': fields.one2many(
+            'edi.soap.logistic.line', 'pallet_id', 'Lines'),
+        }
+    
+class EdiSoapLogistic(orm.Model):
+    ''' Soap logistic order relations
     '''
     _inherit = 'edi.soap.logistic'
     
