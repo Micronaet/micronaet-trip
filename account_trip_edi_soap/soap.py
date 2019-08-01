@@ -23,6 +23,7 @@ import os
 import sys
 import logging
 import openerp
+import shutil
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
@@ -199,6 +200,160 @@ class EdiSoapConnection(orm.Model):
     # -------------------------------------------------------------------------
     # Button events:
     # -------------------------------------------------------------------------
+    # Server:
+    def load_new_invoice(self, cr, uid, ids, context=None):
+        ''' Load invoice from file
+        '''
+        # ---------------------------------------------------------------------
+        # Function
+        # ---------------------------------------------------------------------
+        def log_data(log_f, comment, mode='INFO', cr='\r\n'):
+            ''' Write comment on log file:
+            '''
+            return log_f.write('%s [%s] %s%s' % (
+                datetime.now(),
+                mode,
+                comment,
+                cr,
+                ))                
+        
+        # ---------------------------------------------------------------------
+        # Parameters:
+        # ---------------------------------------------------------------------
+        separator = '|*|'
+
+        # Load parameters:
+        parameter = self.browse(cr, uid, ids, context=context)[0]
+        path = os.path.expanduser(parameter.server_root)
+        partner_code = os.path.expanduser(parameter.server_account_code)
+        partner_start = partner_code.split('|')
+        if not partner_code or path:
+            raise osv.except_osv(
+                _('Error'), 
+                _('Check parameter on SAOP Configuration!'),
+                )
+
+        partner_len = len(partner_start[0])
+
+        # ---------------------------------------------------------------------
+        # Extra path:
+        # ---------------------------------------------------------------------
+        # Path used:
+        history_path = os.path(path, 'history')
+        after_path = os.path(path, 'after')
+        log_path = os.path(path, 'log')
+
+        # Create process:
+        for folder in (path, history_path, folder_path, log_path):
+            os.system('mkdir -p %s' % folder)
+        
+        # ---------------------------------------------------------------------
+        # Check folder for files:
+        # ---------------------------------------------------------------------
+        log_f = open(os.path.join(log_path, 'invoice.log', 'w')
+        remove_list = []
+        for root, foldes, files in os.walk(path):
+            for filename in files:
+                if filename[:partner_len] not in partner_start:
+                    remove_list.append(filename)
+                    continue
+                log_data(
+                    log_f, 'File removed: %s' % filename, mode='WARNING')
+
+                # Read file (last part)
+                fullname = os.path(root, filename)                
+                data = { # Collect order data
+                    'i': 0,
+                    'text': '',
+                    'detail_status': 'off',
+                    'detail_text': '',
+                    'error': False,
+                    'error_comment': '',
+                    
+                    #'header': '',
+                    #'detail': [],                 
+                    #'footer': {},
+                    }
+                    
+                for line in open(fullname):
+                    data['i'] += 1
+                    line = line.strip()
+                    
+                    # Keep only last part of the file:    
+                    data['text'] += line
+                    
+                    # ---------------------------------------------------------
+                    # Check part of document:
+                    # ---------------------------------------------------------
+                    if line.startswith('HEADER'):
+                        data.update({
+                            'header': line,
+                            'i': 1, # Restart from 1
+                            'text': line, # Restart from here
+
+                            'detail': [],                 
+                            'footer': {},
+                            })
+                    elif line.startswith('DETAIL'):
+                        data['detail_status'] = 'on'
+
+                    # ---------------------------------------------------------
+                    #                         Header data:
+                    # ---------------------------------------------------------
+                    elif data['i'] == 3: # Invoice number
+                        data['invoice'] = line                        
+                    elif data['i'] == 4: # Invoice number
+                        data['invoice_date'] = line
+
+                    # ---------------------------------------------------------
+                    #                         Detail data:
+                    # ---------------------------------------------------------
+                    elif data['detail_status'] == 'on': # Start details
+                        if line.startswith(separator): # Detail line
+                            data['detail_text'] = line
+                        elif line.startswith('PESO LORDO: '):
+                            data['detail'].append(data['detail_text'], line)
+                            # TODO Check error (ex. 2 PESO LORDO line)
+                        elif not line: # End detail block
+                            data['detail_status'] = 'end'
+                        else:
+                            data['error'] = True
+                            data['error_comment'] += \
+                                '%s Detail without correct schema' % data['i']
+                        
+                    # ---------------------------------------------------------
+                    #                       End of document part:
+                    # ---------------------------------------------------------
+                    elif data['detail_status'] == 'end': # Start details
+                        if line.startswith('N.ORDINE'):
+                           
+                        elif line.startswith('PESO LORDO'):
+                        
+                        elif line.startswith('PESO TOTALE'):
+                        
+                        elif line.startswith('BANCALI'):
+                           
+                            
+                        
+                        
+                        
+                    
+                    
+                
+            break # only path folder
+
+        # ---------------------------------------------------------------------
+        # Remove unused file:        
+        # ---------------------------------------------------------------------
+        for filename in remove_list:
+            os.remove(filename)
+            log_data(
+                log_f, 'File removed: %s' % filename, mode='WARNING')
+          
+        log_f.close()
+        return True
+
+    # SOAP: 
     def get_token(self, cr, uid, ids, context=None):
         ''' Try to use previous token or get new one for period
         '''
@@ -233,10 +388,17 @@ class EdiSoapConnection(orm.Model):
             help='Example: https://example.com/pep/wsdl'),
         'namespace': fields.char('Namespace', size=40, required=True,
             help='Example: {it.example.soapws.ws}WsPortSoap11'),
+        
+        # Server connection:    
+        'server_root': fields.char('Server Root', size=180, required=True, 
+            help='Example: ~/account/invoice'),
+        'server_account_code': fields.char('Account code', size=180, 
+            required=True, 
+            help='Account ref. for partners, ex: 02.00001|02.00002'),
         }
 
 class EdiSoapOrder(orm.Model):
-    ''' Soap Parameter for connection
+    ''' Soap Soap Order
     '''
     _name = 'edi.soap.order'
     _description = 'EDI Soap Order'
@@ -469,5 +631,82 @@ class EdiSoapOrder(orm.Model):
     _columns = {
         'line_ids': fields.one2many('edi.soap.order.line', 'order_id', 'Lines'),
         }
+
+# -----------------------------------------------------------------------------
+#                              LOGISTIC ORDER:
+# -----------------------------------------------------------------------------
+class EdiSoapLogistic(orm.Model):
+    ''' Soap logistic order
+    '''
+    _name = 'edi.soap.logistic'
+    _description = 'EDI Soap Logistic'
+    _rec_name = 'name'
+    _order = 'name'
+
+    # -------------------------------------------------------------------------
+    # Columns:
+    # -------------------------------------------------------------------------
+    _columns = {
+        'name': fields.char('Invoice reference', size=40, required=True),
+        'pallet': fields.integer('Pallet #'),
+        'text': fields.text('File text', help='Account file as original')
+        'state': fields.selection([
+            ('draft', 'Draft'), # To be worked
+            ('working', 'Working'), # Start assign pallet
+            ('confirmed', 'Confirmed'), # Confirmed and sent
+            ('done', 'Done'), # Received and approved
+            ], 'State'),
+        }        
+    
+    _defaults = {
+        'pallet': lambda *x: 1,
+        'state': lambda *x: 'state',
+        }    
+
+class EdiSoapLogistic(orm.Model):
+    ''' Soap logistic order
+    '''
+    _name = 'edi.soap.logistic.line'
+    _description = 'EDI Soap Logistic Line'
+    _rec_name = 'name'
+    _order = 'name'
+
+    # -------------------------------------------------------------------------
+    # Columns:
+    # -------------------------------------------------------------------------
+    _columns = {
+        'name': fields.char('Article', size=40, required=True),
+        'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order'),
+        }
+
+class EdiSoapLogisticPallet(orm.Model):
+    ''' Soap logistic order
+    '''
+    _name = 'edi.soap.logistic.pallet'
+    _description = 'EDI Soap Logistic Pallet'
+    _rec_name = 'name'
+    _order = 'name'
+
+    # -------------------------------------------------------------------------
+    # Columns:
+    # -------------------------------------------------------------------------
+    _columns = {
+        'name': fields.integer('#', required=True),
+        'sscc': fields.char('SSCC Code', size=40, required=True),
+        'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order'),
+        }        
+    
+class EdiSoapLogistic(orm.Model):
+    ''' Soap logistic order
+    '''
+    _inherit = 'edi.soap.logistic'
+    
+    _columns = {
+        'line_ids': fields.one2many(
+            'edi.soap.logistic.line', 'logistic_id', 'Lines'),
+        'pallet_ids': fields.one2many(
+            'edi.soap.logistic.pallet', 'logistic_id', 'Pallet'),
+        }
+    
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
