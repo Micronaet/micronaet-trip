@@ -340,11 +340,33 @@ class EdiSoapConnection(orm.Model):
                         elif line.startswith('BANCALI'):
                             pass # TODO 
                            
-                            
+                # -------------------------------------------------------------
+                # Create ODOO Record:                
+                # -------------------------------------------------------------
+                name = '%s del %s' % (data['invoice'], data['invoice_date'])
+                logistic_ids = logistic_pool.search(cr, uid, [
+                    ('name', '=', name),
+                    ], context=context)
+                if logistic_ids:
+                    logistic = logistic_pool.browse(
+                        cr, uid, logistic_ids, context=context)[0]
+                    if logistic.state != 'draft':
+                        # Yet load cannot override:
+                        # TODO move in after folder (unused)
+                        continue
                         
+                    # Delete and override:
+                    logistic_pool.unlink(
+                        cr, uid, logistic_ids, context=context)
+                
+                # A. Import order:
+                logistic_id = logistic_pool.create(cr, uid, {
+                    'name': name,
+                    'connection_id': ids[0],
+                    'text': data['text'],
+                    }, context=context)
                         
-                        
-                    
+                # B. Import order line:
                     
                 
             break # only path folder
@@ -702,7 +724,6 @@ class EdiSoapLogistic(orm.Model):
         'pallet_id': fields.many2one('edi.soap.logistic.pallet', 'Pallet'),
         }
 
-
 class EdiSoapLogisticPallet(orm.Model):
     ''' Soap logistic order relations
     '''
@@ -723,7 +744,6 @@ class EdiSoapLogistic(orm.Model):
             'edi.soap.logistic.line', 'logistic_id', 'Lines'),
         'pallet_ids': fields.one2many(
             'edi.soap.logistic.pallet', 'logistic_id', 'Pallet'),
-        }
-    
+        }    
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
