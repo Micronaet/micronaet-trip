@@ -34,6 +34,7 @@
     'init_xml': [],
     'demo': [],
     'data': [
+        'security/soap_group.xml',
         'security/ir.model.access.csv',
 
         # View:

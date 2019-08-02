@@ -216,6 +216,11 @@ class EdiSoapConnection(orm.Model):
                 comment,
                 cr,
                 ))                
+
+        # Pool used:
+        logistic_pool = self.pool.get('edi.soap.logistic')
+        line_pool = self.pool.get('edi.soap.logistic.line')
+        pallet_pool = self.pool.get('edi.soap.logistic.pallet')
         
         # ---------------------------------------------------------------------
         # Parameters:
@@ -250,7 +255,7 @@ class EdiSoapConnection(orm.Model):
         # ---------------------------------------------------------------------
         # Check folder for files:
         # ---------------------------------------------------------------------
-        log_f = open(os.path.join(log_path, 'invoice.log', 'w')
+        log_f = open(os.path.join(log_path, 'invoice.log', 'w'))
         remove_list = []
         for root, foldes, files in os.walk(path):
             for filename in files:
@@ -326,12 +331,14 @@ class EdiSoapConnection(orm.Model):
                     # ---------------------------------------------------------
                     elif data['detail_status'] == 'end': # Start details
                         if line.startswith('N.ORDINE'):
-                           
+                            pass # TODO 
                         elif line.startswith('PESO LORDO'):
-                        
+                            pass # TODO 
                         elif line.startswith('PESO TOTALE'):
+                            pass # TODO 
                         
                         elif line.startswith('BANCALI'):
+                            pass # TODO 
                            
                             
                         
@@ -395,6 +402,12 @@ class EdiSoapConnection(orm.Model):
         'server_account_code': fields.char('Account code', size=180, 
             required=True, 
             help='Account ref. for partners, ex: 02.00001|02.00002'),
+        'detail_separator': fields.char('Detail separator', size=5, 
+            required=True, help='Separator used for detail columns'),
+        }
+    
+    _defaults = {
+        'detail_separator': lambda *x: '|*|',
         }
 
 class EdiSoapOrder(orm.Model):
@@ -646,7 +659,7 @@ class EdiSoapLogistic(orm.Model):
     _columns = {
         'name': fields.char('Invoice reference', size=40, required=True),
         'pallet': fields.integer('Pallet #'),
-        'text': fields.text('File text', help='Account file as original')
+        'text': fields.text('File text', help='Account file as original'),
         'state': fields.selection([
             ('draft', 'Draft'), # To be worked
             ('working', 'Working'), # Start assign pallet

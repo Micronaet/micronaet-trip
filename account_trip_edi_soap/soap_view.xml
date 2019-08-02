@@ -14,6 +14,7 @@
                     <field name="token" invisible="1" />
                     <button name="get_token" string="Token refresh" type="object" icon="gtk-refresh" class="oe_highlight" />
                     <button name="load_new_order" string="Load new order" type="object" icon="gtk-new" class="oe_highlight" />
+                    <button name="load_new_invoice" string="Load invoice" type="object" icon="STOCK_SAVE" class="oe_highlight" colspan="1" />
                 </tree>
             </field>
         </record>
@@ -47,8 +48,9 @@
                                 <page string="Server">
                                     <group colspan="4" col="4">
                                         <separator string="Server folder:" colspan="3"/>
-                                        <button name="load_new_invoice" string="Load invoice" type="object" icon="gtk-new" class="oe_highlight" colspan="1" />
-                                        <field name="server_root" colspan="4" />
+                                        <button name="load_new_invoice" string="Load invoice" type="object" icon="STOCK_SAVE" class="oe_highlight" colspan="1" />
+                                        <field name="server_root" />
+                                        <field name="detail_separator" />
                                         <field name="server_account_code" colspan="4" />
                                     </group>
                                 </page>
@@ -156,26 +158,68 @@
             <field name="domain">[]</field>
         </record>
         
+        <!--edi.soap.logistic-->
+        <record model="ir.ui.view" id="view_edi_soap_logistic_tree">
+            <field name="name">edi.soap.logistic.tree</field>
+            <field name="model">edi.soap.logistic</field>
+            <field name="arch" type="xml">
+                <tree string="SOAP Logistic order"> 
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_edi_soap_logistic_form">
+            <field name="name">edi.soap.logistic.form</field>
+            <field name="model">edi.soap.logistic</field>
+            <field name="arch" type="xml">
+                <form string="SOAP Logistic order" version="7.0"> 
+                     <sheet>
+                         <group colspan="4" col="4">
+                              <field name="name" />
+                         </group>     
+                     </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_edi_soap_logistic">
+            <field name="name">SOAL Logistic</field>
+            <field name="res_model">edi.soap.logistic</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_edi_soap_logistic_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
         <menuitem 
-            parent="account_trip.menu_trip_configuration" 
+            parent="account_trip.menu_trip_root" 
             id="menu_trip_soap_configuration" 
-            name="SOAP"
+            name="SOAP order"
             sequence="60"
+            groups="account_trip_edi_soap.group_edi_soap_user,account_trip_edi_soap.group_edi_soap_manager"
             />
-            
+            <menuitem 
+                parent="menu_trip_soap_configuration" 
+                id="menu_trip_soap_order" 
+                name="EDI order"
+                action="action_edi_soap_order"
+                sequence="10"
+                />
+            <menuitem 
+                parent="menu_trip_soap_configuration" 
+                id="menu_trip_soap_logistic" 
+                name="Logistic order"
+                action="action_edi_soap_logistic"
+                sequence="20"
+                />
+
             <menuitem 
                 parent="menu_trip_soap_configuration" 
                 id="menu_trip_soap_connection" 
                 name="SOAP Connection"
                 action="action_edi_soap_connection"
-                sequence="10"
-                />
-            <menuitem 
-                parent="menu_trip_soap_configuration" 
-                id="menu_trip_soap_order" 
-                name="SOAP order"
-                action="action_edi_soap_order"
-                sequence="20"
+                sequence="90"
+                groups="account_trip_edi_soap.group_edi_soap_manager"
                 />
             
         
