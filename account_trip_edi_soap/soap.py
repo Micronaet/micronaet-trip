@@ -256,19 +256,19 @@ class EdiSoapConnection(orm.Model):
         # ---------------------------------------------------------------------
         log_f = open(os.path.join(log_path, 'invoice.log'), 'w')
         remove_list = []
-        import pdb; pdb.set_trace()
+        history_list = []
         for root, foldes, files in os.walk(path):
             for filename in files:
+                fullname = os.path.join(root, filename)                
                 if filename[:partner_len] not in partner_start:
-                    remove_list.append(filename)
-                    log_data(
-                        log_f, 'File removed: %s' % filename, mode='WARNING')
+                    remove_list.append(fullname)
                     continue
-                log_data(
-                    log_f, 'File checked: %s' % filename)
+                history_list.append(
+                    (fullname, os.path.join(history_path, filename)))
+
+                log_data(log_f, 'File checked: %s' % filename)
 
                 # Read file (last part)
-                fullname = os.path.join(root, filename)                
                 data = { # Collect order data
                     'i': 0,
                     'text': '',
@@ -345,7 +345,6 @@ class EdiSoapConnection(orm.Model):
                 # -------------------------------------------------------------
                 # Create ODOO Record:                
                 # -------------------------------------------------------------
-                import pdb; pdb.set_trace()
                 name = 'FT %s del %s' % (data['invoice'], data['invoice_date'])
                 logistic_ids = logistic_pool.search(cr, uid, [
                     ('name', '=', name),
@@ -363,10 +362,11 @@ class EdiSoapConnection(orm.Model):
                         cr, uid, logistic_ids, context=context)
                 
                 # A. Import order:
+                text = data['text'].replace('\xb0', '')
                 logistic_id = logistic_pool.create(cr, uid, {
                     'name': name,
                     'connection_id': ids[0],
-                    'text': data['text'],
+                    'text': text,
                     }, context=context)
                         
                 # B. Import order line:
@@ -377,10 +377,13 @@ class EdiSoapConnection(orm.Model):
         # ---------------------------------------------------------------------
         # Remove unused file:        
         # ---------------------------------------------------------------------
-        for filename in remove_list:
-            os.remove(filename)
-            log_data(
-                log_f, 'File removed: %s' % filename, mode='WARNING')
+        for fullname in remove_list:
+            os.remove(fullname)
+            log_data(log_f, 'File removed: %s' % filename, 
+                mode='WARNING')
+        for filename, history in history_list:
+            shutil.move(filename, history)
+            log_data(log_f, 'File history: %s > %s' % (filename, history))
           
         log_f.close()
         return True
@@ -697,7 +700,7 @@ class EdiSoapLogistic(orm.Model):
     
     _defaults = {
         'pallet': lambda *x: 1,
-        'state': lambda *x: 'state',
+        'state': lambda *x: 'draft',
         }    
 
 class EdiSoapLogisticPallet(orm.Model):
