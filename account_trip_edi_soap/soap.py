@@ -207,7 +207,7 @@ class EdiSoapConnection(orm.Model):
         # ---------------------------------------------------------------------
         # Function
         # ---------------------------------------------------------------------
-        def log_data(log_f, comment, mode='INFO', cr='\r\n'):
+        def log_data(log_f, comment, mode='INFO', newline='\r\n'):
             ''' Write comment on log file:
             '''
             return log_f.write('%s [%s] %s%s' % (
@@ -225,6 +225,7 @@ class EdiSoapConnection(orm.Model):
         # ---------------------------------------------------------------------
         # Parameters:
         # ---------------------------------------------------------------------
+        newline = '\r\n'
         separator = '|*|'
 
         # Load parameters:
@@ -287,7 +288,7 @@ class EdiSoapConnection(orm.Model):
                     line = line.strip()
                     
                     # Keep only last part of the file:    
-                    data['text'] += line
+                    data['text'] += line + newline
                     
                     # ---------------------------------------------------------
                     # Check part of document:
@@ -296,7 +297,7 @@ class EdiSoapConnection(orm.Model):
                         data.update({
                             'header': line,
                             'i': 1, # Restart from 1
-                            'text': line, # Restart from here
+                            'text': line + newline, # Restart from here
 
                             'detail': [],                 
                             'footer': {},
@@ -349,6 +350,7 @@ class EdiSoapConnection(orm.Model):
                 logistic_ids = logistic_pool.search(cr, uid, [
                     ('name', '=', name),
                     ], context=context)
+
                 if logistic_ids:
                     logistic = logistic_pool.browse(
                         cr, uid, logistic_ids, context=context)[0]
@@ -360,17 +362,25 @@ class EdiSoapConnection(orm.Model):
                     # Delete and override:
                     logistic_pool.unlink(
                         cr, uid, logistic_ids, context=context)
+
+                # Bug management:                
+                text = data['text'].replace('\xb0', ' ')
                 
                 # A. Import order:
-                text = data['text'].replace('\xb0', '')
                 logistic_id = logistic_pool.create(cr, uid, {
                     'name': name,
                     'connection_id': ids[0],
                     'text': text,
                     }, context=context)
-                        
+
                 # B. Import order line:
-                    
+                for row, weight in data['detail']:
+                    line_part = row.split(separator)
+                    line_pool.create(cr, uid, {
+                        'logistic_id': logistic_id,
+                        'name': line_part[2],
+                        # TODO remain fileds
+                        }, context=context)
                 
             break # only path folder
 
