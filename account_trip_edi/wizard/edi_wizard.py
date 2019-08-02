@@ -33,18 +33,16 @@ from openerp.tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
-class trip_import_edi_wizard(osv.osv_memory):
-    ''' Read EDI folder and list all files
-        TODO: now TS is get from file, before from OS datetime
-             (leave the old code for backport)
+class trip_import_edi_wizard(orm.Model):
+    ''' EDI file present in folder
     '''
+    _name = 'trip.edi.line'
+    _description = 'EDI import line'
+    _order = 'timestamp'
 
-    _name = 'trip.edi.wizard'
-    _description = 'EDI import wizard'
-
-    # -------------
-    # Button event: 
-    # -------------
+    # --------------
+    # Server Action:
+    # --------------
     def load_edi_list(self, cr, uid, ids, context=None):
         ''' Refresh button for load EDI file list in wizard
         '''
@@ -86,7 +84,6 @@ class trip_import_edi_wizard(osv.osv_memory):
         # ---------------------------------------------------------------------
         edi_company_pool = self.pool.get('edi.company')
         partner_pool = self.pool.get('res.partner')
-        line_pool = self.pool.get('trip.edi.line')
 
         order_info = {
             'create': {},   # last numer created
@@ -108,9 +105,9 @@ class trip_import_edi_wizard(osv.osv_memory):
         # Delete all previous: 
         # TODO >> force single company importation?
         # If we create a wizard for select only one company:
-        line_ids = line_pool.search(cr, uid, [], context=context)
+        line_ids = self.search(cr, uid, [], context=context)
         try:
-            line_pool.unlink(cr, uid, line_ids, context=context)
+            self.unlink(cr, uid, line_ids, context=context)
         except:
             pass # No comunication of error        
         
@@ -441,7 +438,7 @@ class trip_import_edi_wizard(osv.osv_memory):
                         'priority': parametrized.get_priority(
                             cr, uid, file_in),
                         }        
-                    line_id = line_pool.create(
+                    line_id = self.create(
                         cr, uid, data_line, context=context)
 
                     # Create record for test recursions:    
@@ -472,7 +469,7 @@ class trip_import_edi_wizard(osv.osv_memory):
         # Update recursion informations (write totals recursions):
         for key in recursion:
             total, record_ids = recursion[key]
-            line_pool.write(cr, uid, record_ids, {
+            self.write(cr, uid, record_ids, {
                 'recursion': total,
                 }, context=context)
         
@@ -481,12 +478,12 @@ class trip_import_edi_wizard(osv.osv_memory):
         for key in order_info:
             if key == 'deleting':
                 if order_info['deleting']:
-                    line_pool.write(cr, uid, order_info['deleting'], {
+                    self.write(cr, uid, order_info['deleting'], {
                         'type': 'deleting',
                         }, context=context)
             elif key == 'anomaly':
                 if order_info['anomaly']:
-                    line_pool.write(cr, uid, order_info['anomaly'], {
+                    self.write(cr, uid, order_info['anomaly'], {
                         'type': 'anomaly',
                         }, context=context)
             else: # create
@@ -499,66 +496,8 @@ class trip_import_edi_wizard(osv.osv_memory):
             'type': 'ir.actions.act_window',
             'context': {'search_default_type_create': 1},
             }  
-
-    _columns = {
-        #'with_csv':fields.boolean('With CSV data', 
-        #    help='Load also CSV data for export status'),
-        'note': fields.text('Importation note'),
-        }
-    
-    _defaults = {
-        'note': lambda *x: "Import EDI files in a manageable list",
-        }
         
-class trip_import_edi_wizard(orm.Model):
-    ''' EDI file present in folder
-    '''
-    _name = 'trip.edi.line'
-    _description = 'EDI import line'
-    _order = 'timestamp'
 
-    # -------------------
-    # Override operation:
-    # -------------------
-    # TODO 
-    '''def unlink(self, cr, uid, ids, context=None):
-        """
-        Delete only type != create (for duplicated records)
-        (test also if user have right)    
-        @param cr: cursor to database
-        @param uid: id of current user
-        @param ids: list of record ids to be removed from table
-        @param context: context arguments, like lang, time zone
-        
-        @return: True on success, False otherwise
-        """    
-        if type(ids) not in (tuple, list):
-            ids = [ids]
-        
-        #TODO: process before delete resource
-        item_ids = self.search(cr, uid, ids, context=context)
-        item_proxy = self.browse(cr, uid, item_ids, context=context)
-        for item in item_proxy:
-            if item.type in ('delete', 'deleting'): # only this can remove
-                pass
-                # TODO
-                # Move file to history deleted elements folder:
-                # Save log of operation                         
-            else:
-                try:
-                    ids.remove(item.id) # Remove other elements (nothing to do)
-                except:
-                    pass # no error comunication    
-
-        if ids:        
-            res = super(trip_import_edi_wizard, self).unlink(
-                cr, uid, ids, context=context)
-        else:
-            res = True        
-
-        # TODO reload elements with wizard
-        return res'''
-    
     # -------------
     # Button event:
     # -------------
