@@ -230,9 +230,8 @@ class EdiSoapConnection(orm.Model):
         # Load parameters:
         parameter = self.browse(cr, uid, ids, context=context)[0]
         path = os.path.expanduser(parameter.server_root)
-        partner_code = os.path.expanduser(parameter.server_account_code)
-        partner_start = partner_code.split('|')
-        if not partner_code or path:
+        partner_start = parameter.server_account_code.split('|')
+        if not partner_start or not path:
             raise osv.except_osv(
                 _('Error'), 
                 _('Check parameter on SAOP Configuration!'),
@@ -244,29 +243,32 @@ class EdiSoapConnection(orm.Model):
         # Extra path:
         # ---------------------------------------------------------------------
         # Path used:
-        history_path = os.path(path, 'history')
-        after_path = os.path(path, 'after')
-        log_path = os.path(path, 'log')
+        history_path = os.path.join(path, 'history')
+        unsed_path = os.path.join(path, 'unsed')
+        log_path = os.path.join(path, 'log')
 
         # Create process:
-        for folder in (path, history_path, folder_path, log_path):
+        for folder in (path, history_path, unsed_path, log_path):
             os.system('mkdir -p %s' % folder)
         
         # ---------------------------------------------------------------------
         # Check folder for files:
         # ---------------------------------------------------------------------
-        log_f = open(os.path.join(log_path, 'invoice.log', 'w'))
+        log_f = open(os.path.join(log_path, 'invoice.log'), 'w')
         remove_list = []
+        import pdb; pdb.set_trace()
         for root, foldes, files in os.walk(path):
             for filename in files:
                 if filename[:partner_len] not in partner_start:
                     remove_list.append(filename)
+                    log_data(
+                        log_f, 'File removed: %s' % filename, mode='WARNING')
                     continue
                 log_data(
-                    log_f, 'File removed: %s' % filename, mode='WARNING')
+                    log_f, 'File checked: %s' % filename)
 
                 # Read file (last part)
-                fullname = os.path(root, filename)                
+                fullname = os.path.join(root, filename)                
                 data = { # Collect order data
                     'i': 0,
                     'text': '',
@@ -317,7 +319,7 @@ class EdiSoapConnection(orm.Model):
                         if line.startswith(separator): # Detail line
                             data['detail_text'] = line
                         elif line.startswith('PESO LORDO: '):
-                            data['detail'].append(data['detail_text'], line)
+                            data['detail'].append((data['detail_text'], line))
                             # TODO Check error (ex. 2 PESO LORDO line)
                         elif not line: # End detail block
                             data['detail_status'] = 'end'
@@ -343,7 +345,8 @@ class EdiSoapConnection(orm.Model):
                 # -------------------------------------------------------------
                 # Create ODOO Record:                
                 # -------------------------------------------------------------
-                name = '%s del %s' % (data['invoice'], data['invoice_date'])
+                import pdb; pdb.set_trace()
+                name = 'FT %s del %s' % (data['invoice'], data['invoice_date'])
                 logistic_ids = logistic_pool.search(cr, uid, [
                     ('name', '=', name),
                     ], context=context)
@@ -680,6 +683,8 @@ class EdiSoapLogistic(orm.Model):
 
     _columns = {
         'name': fields.char('Invoice reference', size=40, required=True),
+        'connection_id': fields.many2one(
+            'edi.soap.connection', 'Connection', required=True),
         'pallet': fields.integer('Pallet #'),
         'text': fields.text('File text', help='Account file as original'),
         'state': fields.selection([

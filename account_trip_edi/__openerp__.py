@@ -39,7 +39,6 @@
         'security/edi_group.xml',
         'security/ir.model.access.csv',
         'edi_view.xml',
-        'wizard/edi_view.xml',
         ],
     'active': False,
     'installable': True,
