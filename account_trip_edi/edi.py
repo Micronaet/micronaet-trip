@@ -90,7 +90,7 @@ class trip_import_edi_wizard(orm.Model):
 
         # Log operation:
         log_file = open(os.path.expanduser('~/refresh.edi.log'), 'w')
-        log_file.write('%s. Aggiornamento EDI, ID Utente: %s' % (
+        log_file.write('%s. Aggiornamento EDI, ID Utente: %s\n' % (
             today, uid, 
             ))
         log_file.close()
