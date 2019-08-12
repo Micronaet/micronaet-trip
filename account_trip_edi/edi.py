@@ -86,6 +86,15 @@ class trip_import_edi_wizard(orm.Model):
         edi_company_pool = self.pool.get('edi.company')
         partner_pool = self.pool.get('res.partner')
 
+        today = datetime.now()
+
+        # Log operation:
+        log_file = open(os.path.expanduser('~/refresh.edi.log'), 'w')
+        log_file.write('%s. Aggiornamento EDI, ID Utente: %s' % (
+            today, uid, 
+            ))
+        log_file.close()
+            
         order_info = {
             'create': {},   # last numer created
             'deleting': [], # list of order to deleting
@@ -95,7 +104,6 @@ class trip_import_edi_wizard(orm.Model):
         recursion = {}
         
         # Check period for importation (particular case)
-        today = datetime.now()
         if today.weekday() in (3, 4, 5):
             reference_date = (today + timedelta(days=5)).strftime(
                 DEFAULT_SERVER_DATE_FORMAT)
