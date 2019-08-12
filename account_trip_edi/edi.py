@@ -89,7 +89,7 @@ class trip_import_edi_wizard(orm.Model):
         today = datetime.now()
 
         # Log operation:
-        log_file = open(os.path.expanduser('~/refresh.edi.log'), 'w')
+        log_file = open(os.path.expanduser('~/refresh.edi.log'), 'a')
         log_file.write('%s. Inizio caricamento EDI, ID Utente: %s\n' % (
             today, uid, 
             ))
@@ -499,7 +499,7 @@ class trip_import_edi_wizard(orm.Model):
                 pass
                 
         # Log operation:
-        log_file = open(os.path.expanduser('~/refresh.edi.log'), 'w')
+        log_file = open(os.path.expanduser('~/refresh.edi.log'), 'a')
         log_file.write('%s. Fine caricamento EDI, ID Utente: %s\n' % (
             today, uid, 
             ))
