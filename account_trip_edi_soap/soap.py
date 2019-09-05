@@ -216,6 +216,14 @@ class EdiSoapConnection(orm.Model):
                 comment,
                 cr,
                 ))                
+        def get_weight(value):
+            ''' Clean weight text:
+            '''
+            try:
+                return float(
+                    value.lstrip('KG').lstrip('.').lstrip().replace(',', '.'))
+            except:
+                return 0.0 # TODO raise error        
 
         # Pool used:
         logistic_pool = self.pool.get('edi.soap.logistic')
@@ -227,6 +235,17 @@ class EdiSoapConnection(orm.Model):
         # ---------------------------------------------------------------------
         newline = '\r\n'
         separator = '|*|'
+        start = { # Start text on file:
+            'header': 'HEADER',
+            'detail': 'DETAIL',
+            'invoice': 3,
+            'invoice_date': 4,
+            'weight': 'PESO LORDO: ',
+            'order': 'N.ORDINE',
+            'lord': 'PESO LORDO',
+            'total': 'PESO TOTALE',
+            'pallet': 'BANCALI',
+            }
 
         # Load parameters:
         parameter = self.browse(cr, uid, ids, context=context)[0]
@@ -293,7 +312,7 @@ class EdiSoapConnection(orm.Model):
                     # ---------------------------------------------------------
                     # Check part of document:
                     # ---------------------------------------------------------
-                    if line.startswith('HEADER'):
+                    if line.startswith(start['header']):
                         data.update({
                             'header': line,
                             'i': 1, # Restart from 1
@@ -302,15 +321,15 @@ class EdiSoapConnection(orm.Model):
                             'detail': [],                 
                             'footer': {},
                             })
-                    elif line.startswith('DETAIL'):
+                    elif line.startswith(start['detail']):
                         data['detail_status'] = 'on'
 
                     # ---------------------------------------------------------
                     #                         Header data:
                     # ---------------------------------------------------------
-                    elif data['i'] == 3: # Invoice number
+                    elif data['i'] == start['invoice']: # Invoice number
                         data['invoice'] = line                        
-                    elif data['i'] == 4: # Invoice number
+                    elif data['i'] == start['invoice_date']: # Invoice date
                         data['invoice_date'] = line
 
                     # ---------------------------------------------------------
@@ -319,8 +338,11 @@ class EdiSoapConnection(orm.Model):
                     elif data['detail_status'] == 'on': # Start details
                         if line.startswith(separator): # Detail line
                             data['detail_text'] = line
-                        elif line.startswith('PESO LORDO: '):
-                            data['detail'].append((data['detail_text'], line))
+                        elif line.startswith(start['weight']):
+                            data['detail'].append((
+                                data['detail_text'], 
+                                get_weight(line[len(start['weight']):]),
+                                ))
                             # TODO Check error (ex. 2 PESO LORDO line)
                         elif not line: # End detail block
                             data['detail_status'] = 'end'
@@ -335,15 +357,14 @@ class EdiSoapConnection(orm.Model):
                     elif data['detail_status'] == 'end': # Start details
                         # CONSEGNA DEL:
                         # DESTINAZIONE: 
-                        if line.startswith('N.ORDINE'):
-                            pass # TODO 
-                        elif line.startswith('PESO LORDO'):
-                            pass # TODO 
-                        elif line.startswith('PESO TOTALE'):
-                            pass # TODO 
-                        
-                        elif line.startswith('BANCALI'):
-                            pass # TODO 
+                        if line.startswith(start['order']):
+                            pass # TODO
+                        elif line.startswith(start['lord']):
+                            pass # TODO
+                        elif line.startswith(start['total']):
+                            pass # TODO                        
+                        elif line.startswith(start['pallet']):
+                            pass # TODO
                            
                 # -------------------------------------------------------------
                 # Create ODOO Record:                

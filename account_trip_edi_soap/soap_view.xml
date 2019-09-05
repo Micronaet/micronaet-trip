@@ -182,13 +182,18 @@
                                   <page string="Detail">
                                      <group colspan="4" col="4">
                                          <separator string="Detail:" colspan="4"/>
-                                     </group>
-                                      
+                                         <field name="line_ids" nolabel="1">
+                                             <tree editable="bottom" string="Line">
+                                                 <field name="name" readonly="1"/>
+                                                 <field name="pallet_id" />
+                                             </tree>
+                                         </field>
+                                     </group>                                      
                                   </page>
                                   <page string="File">
                                      <group colspan="4" col="4">
                                          <separator string="Text:" colspan="4"/>
-                                         <field name="text" colspan="4" nolabel="1"/>
+                                         <field name="text" colspan="4" nolabel="1" readonly="1"/>
                                      </group>
                                   </page>
                               </notebook>
