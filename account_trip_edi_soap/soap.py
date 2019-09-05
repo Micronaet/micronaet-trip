@@ -67,23 +67,23 @@ class EdiSoapConnection(orm.Model):
     # Custom parameter
     # -------------------------------------------------------------------------
     _response_status = {
-            0: u'Nessun Errore',
-            1: u'Credenziali non valide',
-            2: u'Dati non disponibili',
-            3: u'Dati errati', # Campi con i dati errati
-            4: u'PON non esistente',
-            5: u'Numero Ordine non ammesso per il fornitore',
-            6: u'Dati acquisti - Ordine incompleto',
-            7: u'Dati acquisti - Righe non presenti in ordine', # Righe in più
-            8: u'Ordine non necessita di logistica',
-            9: u'Logistica già inviata a click',
-            10: u'Limite temporale superato',
-            11: u'File supera dimensione massima',
-            12: u'Errore nel salvataggio del file',
-            13: u'Token di accesso errato',
-            14: u'Token di accesso non più valido',
-            99: u'Internal Server Error',
-            }
+        0: u'Nessun Errore',
+        1: u'Credenziali non valide',
+        2: u'Dati non disponibili',
+        3: u'Dati errati', # Campi con i dati errati
+        4: u'PON non esistente',
+        5: u'Numero Ordine non ammesso per il fornitore',
+        6: u'Dati acquisti - Ordine incompleto',
+        7: u'Dati acquisti - Righe non presenti in ordine', # Righe in più
+        8: u'Ordine non necessita di logistica',
+        9: u'Logistica già inviata a click',
+        10: u'Limite temporale superato',
+        11: u'File supera dimensione massima',
+        12: u'Errore nel salvataggio del file',
+        13: u'Token di accesso errato',
+        14: u'Token di accesso non più valido',
+        99: u'Internal Server Error',
+        }
     
     # -------------------------------------------------------------------------
     # Utility function:
