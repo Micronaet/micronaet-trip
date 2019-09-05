@@ -333,6 +333,8 @@ class EdiSoapConnection(orm.Model):
                     #                       End of document part:
                     # ---------------------------------------------------------
                     elif data['detail_status'] == 'end': # Start details
+                        # CONSEGNA DEL:
+                        # DESTINAZIONE: 
                         if line.startswith('N.ORDINE'):
                             pass # TODO 
                         elif line.startswith('PESO LORDO'):
@@ -379,7 +381,7 @@ class EdiSoapConnection(orm.Model):
                     line_pool.create(cr, uid, {
                         'logistic_id': logistic_id,
                         'name': line_part[2],
-                        # TODO remain fileds
+                        # TODO remain fields
                         }, context=context)
                 
             break # only path folder
@@ -740,6 +742,22 @@ class EdiSoapLogistic(orm.Model):
         # TODO add extra fields
         'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order'),
         'pallet_id': fields.many2one('edi.soap.logistic.pallet', 'Pallet'),
+        # Doganale
+        # Collo
+        # EAN
+        # Peso Variabile
+        # Lotto
+        # Prevista
+        # Netto
+        # Lordo
+        # Colli
+        # Pezzi confez.
+        # Scadenza
+        # Paese origina
+        # Paese Provenienza
+        # DVCE
+        # DVCE Data
+        
         }
 
 class EdiSoapLogisticPallet(orm.Model):
