@@ -801,11 +801,12 @@ class EdiSoapLogistic(orm.Model):
             last = max([item.name for item in current_proxy.pallet_ids])        
         except:
             last = 0    
-                
-        remain = pallet - current_pallet
-        # Create remain pallet:
         
-        # TODO if is only one assign to all
+        # ---------------------------------------------------------------------
+        # If is only one assign to all
+        # ---------------------------------------------------------------------
+        # Create remain pallet:
+        remain = pallet - current_pallet
         pallet_id = 0
         for i in range(0, remain):            
             pallet_id = pallet_pool.create(cr, uid, {
