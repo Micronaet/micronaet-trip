@@ -229,8 +229,8 @@
 
                               <notebook colspan="4">
                                   <page string="Detail">
-                                      <group colspan="4" col="5">
-                                          <separator string="Detail:" colspan="6"/>
+                                      <group colspan="4" col="6">
+                                          <separator string="Detail:" colspan="4"/>
                                           <field name="select_pallet_id" />
                                           <button name="setup_pallet_id" string="Set pallet all" type="object" icon="gtk-refresh" help="Setup all line with this pallet"/>
                                           
