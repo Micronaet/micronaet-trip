@@ -234,6 +234,7 @@ class EdiSoapConnection(orm.Model):
         # Parameters:
         # ---------------------------------------------------------------------
         newline = '\r\n'
+        html_newline = '<br />'
         separator = '|*|'
         start = { # Start text on file:
             'header': 'HEADER',
@@ -307,12 +308,10 @@ class EdiSoapConnection(orm.Model):
                     data['i'] += 1
                     line = line.strip()
                     
-                    # Keep only last part of the file:    
-                    data['text'] += line + newline
-                    
                     # ---------------------------------------------------------
                     # Check part of document:
                     # ---------------------------------------------------------
+                    line_mode = 'normal'
                     if line.startswith(start['header']):
                         data.update({
                             'header': line,
@@ -344,6 +343,7 @@ class EdiSoapConnection(orm.Model):
                             if data['product_insert']:
                                 # Check error (ex. 2 PESO LORDO line)
                                 _logger.warning('Extra line: %s' % line)
+                                line_mode = 'error'
                             else: 
                                 data['detail'].append((
                                     data['detail_text'], 
@@ -372,6 +372,15 @@ class EdiSoapConnection(orm.Model):
                             pass # TODO                        
                         elif line.startswith(start['pallet']):
                             pass # TODO
+
+                    # ---------------------------------------------------------
+                    # Keep only last part of the file:    
+                    # ---------------------------------------------------------
+                    if line_mode == 'error':
+                        data['text'] += '<font color="red">%s</font><br/>' % (
+                            line, )  
+                    else:
+                        data['text'] += '%s<br />' % line
                            
                 # -------------------------------------------------------------
                 # Create ODOO Record:                
@@ -405,15 +414,36 @@ class EdiSoapConnection(orm.Model):
 
                 # B. Import order line:
                 sequence = 0
-                for row, weight in data['detail']:
+                for row, lord_qty in data['detail']:
                     sequence += 10
                     line_part = row.split(separator)
                     line_pool.create(cr, uid, {
-                        'sequence': sequence,
                         'logistic_id': logistic_id,
-                        'name': line_part[2],
-                        'weight': weight,
-                        # TODO remain fields
+
+                        'sequence': sequence,
+                        'name': line_part[4],
+                        
+                        'variable_weight': line_part[5],
+                        'lot': line_part[6],
+                        'confirmed_qty': line_part[7],
+                        'net_qty': line_part[8],
+                        'lord_qty': lord_qty,
+                        'parcel': line_part[10],
+                        'piece': line_part[11],
+                        'deadline': line_part[12],
+                        'origin_country': line_part[13],
+                        'provenance_country': line_part[14],
+
+                        'dvce': '',
+                        'dvce_date': '',
+                        'animo': '',
+                        'sif': '',
+                        'duty': '',
+                        
+                        'invoice': '',
+                        'invoice_date': '',
+
+                        'mrn': '',
                         }, context=context)
                 
             break # only path folder
@@ -769,29 +799,57 @@ class EdiSoapLogistic(orm.Model):
     _rec_name = 'name'
     _order = 'sequence, name'
 
+    def line_detail(self, cr, uid, ids, context=None):   
+        ''' Open detail line
+        '''
+        model_pool = self.pool.get('ir.model.data')
+        view_id = model_pool.get_object_reference(
+            cr, uid, 
+            'account_trip_edi_soap', 'view_edi_soap_logistic_line_form')[1]
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Line detail'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': ids[0],
+            'res_model': 'edi.soap.logistic.line',
+            'view_id': view_id, # False
+            'views': [(view_id, 'form')],
+            'domain': [],
+            'context': context,
+            'target': 'new',
+            'nodestroy': False,
+            }
+
     _columns = {
-        'sequence': fields.integer('Seq.'),
-        'name': fields.char('Article', size=40, required=True),
-        # TODO add extra fields
         'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order'),
         'pallet_id': fields.many2one('edi.soap.logistic.pallet', 'Pallet'),
-        # Doganale
-        # Collo
-        # EAN
-        # Peso Variabile
-        # Lotto
-        # Prevista
-        # Netto
-        'weight_net': fields.float('Net weight', digits=(16, 2)),
-        'weight': fields.float('Lord weight', digits=(16, 2)),
+
+        'sequence': fields.integer('Seq.'),
+        'name': fields.char('Article', size=40, required=True),
+
+        'variable_weight': fields.char('Variable weight', size=1),
+        'lot': fields.char('Lot', size=6),
+
+        'confirmed_qty': fields.float('Confirmed qty', digits=(16, 2)),
+        'net_qty': fields.float('Net qty', digits=(16, 2)),
+        'lord_qty': fields.float('Lord qty', digits=(16, 2)),
         'parcel': fields.integer('Parcel'),
-        # Pezzi confez.
-        # Scadenza
-        # Paese origina
-        # Paese Provenienza
-        # DVCE
-        # DVCE Data
-        
+        'piece': fields.integer('Piece'),
+
+        'deadline': fields.date('Deadline'),
+        'origin_country': fields.char('Origin country', size=4),
+        'provenance_country': fields.char('Provenance country', size=4),
+
+        'dvce': fields.char('DVCE' size=10, help='Not mandatory'),
+        'dvce_date': fields.date('DVCE Date', help='Not mandatory'),
+        'animo': fields.char('ANIMO', size=10, help='Not mandatory'),
+        'sif': fields.char('SIF', size=10, help='Not mandatory'),
+        'duty': fields.char('Duty', size=10, help='Not mandatory'),
+        'invoice': fields.char('Invoice number', size=10),
+        'invoice_date': fields.date('Invoice date'),
+        'mrn': fields.char('MRN', size=10, help='Not mandatory'),
         }
 
 class EdiSoapLogisticPallet(orm.Model):

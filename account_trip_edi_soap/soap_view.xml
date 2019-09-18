@@ -158,7 +158,52 @@
             <field name="domain">[]</field>
         </record>
         
-        <!--edi.soap.logistic-->
+        <!--edi.soap.logistic-->        
+        <record model="ir.ui.view" id="view_edi_soap_logistic_line_form">
+            <field name="name">edi.soap.logistic.line.form</field>
+            <field name="model">edi.soap.logistic.line</field>
+            <field name="arch" type="xml">
+                <form string="Line detail" version="7.0">        
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <field name="logistic_id" readonly="1"/>
+                            <field name="pallet_id" />
+                            
+                            <field name="sequence" readonly="1"/>
+                            <field name="name" readonly="1"/>
+                            
+                            <field name="variable_weight" readonly="1"/>
+                            <field name="lot" readonly="1"/>
+                            
+                            <field name="confirmed_qty" readonly="1"/>
+                            <field name="net_qty" readonly="1"/>
+                            
+                            <field name="lord_qty" readonly="1"/>
+                            <field name="parcel" readonly="1"/>
+                            
+                            <field name="piece" readonly="1"/>
+                            <field name="deadline" readonly="1"/>
+                            
+                            <field name="origin_country" readonly="1"/>
+                            <field name="provenance_country" readonly="1"/>
+                            
+                            <field name="dvce" readonly="1"/>
+                            <field name="dvce_date" readonly="1"/>
+                            
+                            <field name="animo" readonly="1"/>
+                            <field name="sif" readonly="1"/>
+                            
+                            <field name="duty" readonly="1"/>
+                            <field name="mrn" readonly="1"/>
+                            
+                            <field name="invoice" readonly="1"/>
+                            <field name="invoice_date" readonly="1"/>
+                        </group>
+                    </sheet>        
+                </form>
+            </field>
+        </record>
+        <!--edi.soap.logistic-->        
         <record model="ir.ui.view" id="view_edi_soap_logistic_tree">
             <field name="name">edi.soap.logistic.tree</field>
             <field name="model">edi.soap.logistic</field>
@@ -184,8 +229,12 @@
                                          <separator string="Detail:" colspan="4"/>
                                          <field name="line_ids" nolabel="1">
                                              <tree editable="bottom" string="Line">
+                                                 <button name="line_detail" string="Line detail" type="object" icon="gtk-index"/>
                                                  <field name="name" readonly="1"/>
-                                                 <field name="weight" readonly="1"/>
+                                                 <field name="lot" readonly="1"/>
+                                                 <field name="net_qty" readonly="1"/>
+                                                 <field name="lord_qty" readonly="1"/>
+                                                 <field name="deadline" readonly="1"/>
                                                  <field name="pallet_id" />
                                              </tree>
                                          </field>
@@ -194,7 +243,7 @@
                                   <page string="File">
                                      <group colspan="4" col="4">
                                          <separator string="Text:" colspan="4"/>
-                                         <field name="text" colspan="4" nolabel="1" readonly="1"/>
+                                         <field name="text" colspan="4" nolabel="1" readonly="1" widget="html"/>
                                      </group>
                                   </page>
                               </notebook>
