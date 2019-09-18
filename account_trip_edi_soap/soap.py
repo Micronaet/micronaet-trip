@@ -828,21 +828,17 @@ class EdiSoapLogistic(orm.Model):
 
         'sequence': fields.integer('Seq.'),
         'name': fields.char('Article', size=40, required=True),
-
         'variable_weight': fields.char('Variable weight', size=1),
         'lot': fields.char('Lot', size=6),
-
         'confirmed_qty': fields.float('Confirmed qty', digits=(16, 2)),
         'net_qty': fields.float('Net qty', digits=(16, 2)),
         'lord_qty': fields.float('Lord qty', digits=(16, 2)),
         'parcel': fields.integer('Parcel'),
         'piece': fields.integer('Piece'),
-
         'deadline': fields.date('Deadline'),
         'origin_country': fields.char('Origin country', size=4),
         'provenance_country': fields.char('Provenance country', size=4),
-
-        'dvce': fields.char('DVCE' size=10, help='Not mandatory'),
+        'dvce': fields.char('DVCE', size=10, help='Not mandatory'),
         'dvce_date': fields.date('DVCE Date', help='Not mandatory'),
         'animo': fields.char('ANIMO', size=10, help='Not mandatory'),
         'sif': fields.char('SIF', size=10, help='Not mandatory'),
