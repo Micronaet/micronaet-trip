@@ -412,6 +412,7 @@ class EdiSoapConnection(orm.Model):
                         'sequence': sequence,
                         'logistic_id': logistic_id,
                         'name': line_part[2],
+                        'weight': weight,
                         # TODO remain fields
                         }, context=context)
                 
@@ -725,7 +726,7 @@ class EdiSoapLogistic(orm.Model):
     _name = 'edi.soap.logistic'
     _description = 'EDI Soap Logistic'
     _rec_name = 'name'
-    _order = 'sequence, name'
+    _order = 'name'
 
     _columns = {
         'name': fields.char('Invoice reference', size=40, required=True),
@@ -766,7 +767,7 @@ class EdiSoapLogistic(orm.Model):
     _name = 'edi.soap.logistic.line'
     _description = 'EDI Soap Logistic Line'
     _rec_name = 'name'
-    _order = 'name'
+    _order = 'sequence, name'
 
     _columns = {
         'sequence': fields.integer('Seq.'),
@@ -781,8 +782,9 @@ class EdiSoapLogistic(orm.Model):
         # Lotto
         # Prevista
         # Netto
-        # Lordo
-        # Colli
+        'weight_net': fields.float('Net weight', digits=(16, 2)),
+        'weight': fields.float('Lord weight', digits=(16, 2)),
+        'parcel': fields.integer('Parcel'),
         # Pezzi confez.
         # Scadenza
         # Paese origina

@@ -185,6 +185,7 @@
                                          <field name="line_ids" nolabel="1">
                                              <tree editable="bottom" string="Line">
                                                  <field name="name" readonly="1"/>
+                                                 <field name="weight" readonly="1"/>
                                                  <field name="pallet_id" />
                                              </tree>
                                          </field>
