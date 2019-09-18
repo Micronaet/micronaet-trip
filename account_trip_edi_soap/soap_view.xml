@@ -230,9 +230,9 @@
                               <notebook colspan="4">
                                   <page string="Detail">
                                       <group colspan="4" col="6">
-                                          <separator string="Detail:" colspan="4"/>
-                                          <field name="select_pallet_id" />
-                                          <button name="setup_pallet_id" string="Set pallet all" type="object" icon="gtk-refresh" help="Setup all line with this pallet"/>
+                                          <separator string="Detail:" colspan="2"/>
+                                          <field name="select_pallet_id" widget="selection"/>
+                                          <button name="setup_pallet_id" string="Set pallet all" type="object" icon="gtk-refresh" help="Setup all line with this pallet" />
                                           
                                           <field name="line_ids" nolabel="1" colspan="6">
                                               <tree editable="bottom" string="Line">
@@ -242,7 +242,7 @@
                                                   <field name="net_qty" readonly="1"/>
                                                   <field name="lord_qty" readonly="1"/>
                                                   <field name="deadline" readonly="1"/>
-                                                  <field name="pallet_id" />
+                                                  <field name="pallet_id" widget="selection"/>
                                                </tree>
                                           </field>
                                      </group>                                      
@@ -251,11 +251,11 @@
                                      <group colspan="4" col="4">
                                          <separator string="Pallet:" colspan="4"/>
                                          <field name="pallet_ids" colspan="4" nolabel="1" readonly="1">
-                                            <tree string="Pallet" editable="bottom">
-                                                <field name="name" />
-                                                <field name="sscc" />
-                                            </tree>
-                                         <field>
+                                              <tree string="Pallet" editable="bottom">
+                                                   <field name="name" readonly="1"/>
+                                                   <field name="sscc" readonly="1"/>
+                                              </tree>
+                                         </field>
                                      </group>
                                   </page>
                                   <page string="File">

@@ -786,13 +786,13 @@ class EdiSoapLogistic(orm.Model):
         
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
         pallet = current_proxy.pallet
-        current_pallet = len(line_ids)
+        current_pallet = len(current_proxy.pallet_ids)
         if pallet == current_pallet:
             raise osv.except_osv(
                 _('Warning'), 
                 _('The %s pallet is yet created!') % pallet,
                 )
-        elif pallet < current_pallet:
+        elif pallet < current_pallet and current_pallet:
             raise osv.except_osv(
                 _('Warning'), 
                 _('Cannot remove, dont\'t use the wrong created!'),
