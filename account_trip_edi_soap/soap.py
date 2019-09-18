@@ -341,7 +341,7 @@ class EdiSoapConnection(orm.Model):
                             data['detail_text'] = line
                             data['product_insert'] = False
                         elif line.startswith(start['weight']):
-                            if data['product_insert']
+                            if data['product_insert']:
                                 # Check error (ex. 2 PESO LORDO line)
                                 _logger.warning('Extra line: %s' % line)
                             else: 
@@ -404,9 +404,12 @@ class EdiSoapConnection(orm.Model):
                     }, context=context)
 
                 # B. Import order line:
+                sequence = 0
                 for row, weight in data['detail']:
+                    sequence += 10
                     line_part = row.split(separator)
                     line_pool.create(cr, uid, {
+                        'sequence': sequence,
                         'logistic_id': logistic_id,
                         'name': line_part[2],
                         # TODO remain fields
@@ -766,6 +769,7 @@ class EdiSoapLogistic(orm.Model):
     _order = 'name'
 
     _columns = {
+        'sequence': fields.integer('Seq.'),
         'name': fields.char('Article', size=40, required=True),
         # TODO add extra fields
         'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order'),
