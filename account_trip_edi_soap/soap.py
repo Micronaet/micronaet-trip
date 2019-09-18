@@ -257,7 +257,7 @@ class EdiSoapConnection(orm.Model):
             'order': 'N.ORDINE',
             'lord': 'PESO LORDO',
             'total': 'PESO TOTALE',
-            'pallet': 'BANCALI',
+            'pallet': 'BANCALI N.',
             }
 
         # Load parameters:
@@ -310,6 +310,7 @@ class EdiSoapConnection(orm.Model):
                     'detail_text': '',
                     'error': False,
                     'error_comment': '',
+                    'pallet': 1,
                     
                     #'header': '',
                     #'detail': [],                 
@@ -383,7 +384,13 @@ class EdiSoapConnection(orm.Model):
                         elif line.startswith(start['total']):
                             pass # TODO                        
                         elif line.startswith(start['pallet']):
-                            pass # TODO
+                            try:
+                                data['pallet'] = int(
+                                    line.strip()[len(start['pallet']):])
+                            except:
+                                data['pallet'] = 0
+                                _logger.error(
+                                    'Cannot decode pallet: %s' % line)        
 
                     # ---------------------------------------------------------
                     # Keep only last part of the file:    
@@ -415,13 +422,14 @@ class EdiSoapConnection(orm.Model):
                         cr, uid, logistic_ids, context=context)
 
                 # Bug management:                
-                text = data['text'].replace('\xb0', ' ')
+                text = data['text'].replace('\xb0', ' ')                
                 
                 # A. Import order:
                 logistic_id = logistic_pool.create(cr, uid, {
                     'name': name,
                     'connection_id': ids[0],
                     'text': text,
+                    'pallet': data['pallet'],
                     }, context=context)
 
                 # B. Import order line:
@@ -466,6 +474,10 @@ class EdiSoapConnection(orm.Model):
                         'duty': '',
                         'mrn': '',
                         }, context=context)
+                
+                # C. Create pallet list:
+                logistic_pool.generate_pallet_list(
+                    cr, uid, [logistic_id], context=context)
                 
             break # only path folder
 
