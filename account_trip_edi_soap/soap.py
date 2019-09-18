@@ -216,6 +216,7 @@ class EdiSoapConnection(orm.Model):
                 comment,
                 cr,
                 ))                
+
         def get_weight(value):
             ''' Clean weight text:
             '''
@@ -224,6 +225,17 @@ class EdiSoapConnection(orm.Model):
                     value.lstrip('KG').lstrip('.').lstrip().replace(',', '.'))
             except:
                 return 0.0 # TODO raise error        
+
+        def get_last_day(month):
+            ''' Last day of the month
+            '''
+            if month == '02':
+                return '28'                
+            elif month in ('04', '06', '09', '11'):
+                return '30'
+            else:
+                return '31'
+                
 
         # Pool used:
         logistic_pool = self.pool.get('edi.soap.logistic')
@@ -417,6 +429,14 @@ class EdiSoapConnection(orm.Model):
                 for row, lord_qty in data['detail']:
                     sequence += 10
                     line_part = row.split(separator)
+                    
+                    # Deadline: 
+                    deadline = '20%-%s-%s' % (
+                        line_part[12][-2:],
+                        line_part[12][:2],                        
+                        get_last_day(line_part[12][:2]),
+                        )
+                    
                     line_pool.create(cr, uid, {
                         'logistic_id': logistic_id,
 
@@ -430,19 +450,20 @@ class EdiSoapConnection(orm.Model):
                         'lord_qty': lord_qty,
                         'parcel': line_part[10],
                         'piece': line_part[11],
-                        'deadline': line_part[12],
+                        'deadline': deadline,
                         'origin_country': line_part[13],
                         'provenance_country': line_part[14],
 
+                        # Header data:
+                        'invoice': data['invoice'],
+                        'invoice_date': data['invoice_date'],
+
+                        # Not mandatory:
                         'dvce': '',
                         'dvce_date': '',
                         'animo': '',
                         'sif': '',
                         'duty': '',
-                        
-                        'invoice': '',
-                        'invoice_date': '',
-
                         'mrn': '',
                         }, context=context)
                 
@@ -814,7 +835,7 @@ class EdiSoapLogistic(orm.Model):
             'view_mode': 'form',
             'res_id': ids[0],
             'res_model': 'edi.soap.logistic.line',
-            'view_id': view_id, # False
+            'view_id': view_id,
             'views': [(view_id, 'form')],
             'domain': [],
             'context': context,
