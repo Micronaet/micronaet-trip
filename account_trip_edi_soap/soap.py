@@ -293,6 +293,7 @@ class EdiSoapConnection(orm.Model):
                     'i': 0,
                     'text': '',
                     'detail_status': 'off',
+                    'product_insert': False, # for double weight
                     'detail_text': '',
                     'error': False,
                     'error_comment': '',
@@ -338,12 +339,18 @@ class EdiSoapConnection(orm.Model):
                     elif data['detail_status'] == 'on': # Start details
                         if line.startswith(separator): # Detail line
                             data['detail_text'] = line
+                            data['product_insert'] = False
                         elif line.startswith(start['weight']):
-                            data['detail'].append((
-                                data['detail_text'], 
-                                get_weight(line[len(start['weight']):]),
-                                ))
-                            # TODO Check error (ex. 2 PESO LORDO line)
+                            if data['product_insert']
+                                # Check error (ex. 2 PESO LORDO line)
+                                _logger.warning('Extra line: %s' % line)
+                            else: 
+                                data['detail'].append((
+                                    data['detail_text'], 
+                                    get_weight(line[len(start['weight']):]),
+                                    ))
+                                data['product_insert'] = True
+                            
                         elif not line: # End detail block
                             data['detail_status'] = 'end'
                         else:
@@ -511,7 +518,7 @@ class EdiSoapOrder(orm.Model):
             else:
                 _logger.warning('Order %s yet present' % po_number)                 
                 return False
-            
+
         header = {
             'connection_id': connection_id,
             'name': self._safe_get(order, 'poNumber'), # '2110479-FB04023'
