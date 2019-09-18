@@ -725,7 +725,7 @@ class EdiSoapLogistic(orm.Model):
     _name = 'edi.soap.logistic'
     _description = 'EDI Soap Logistic'
     _rec_name = 'name'
-    _order = 'name'
+    _order = 'sequence, name'
 
     _columns = {
         'name': fields.char('Invoice reference', size=40, required=True),
