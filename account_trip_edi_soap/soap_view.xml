@@ -223,21 +223,28 @@
                          <group colspan="4" col="4">
                               <field name="name" readonly="1"/>
                               <field name="connection_id" readonly="1"/>
+                              
+                              <field name="pallet" />
+                              <button name="generate_pallet_list" string="Generate pallet" type="object" icon="gtk-refresh"/>
+
                               <notebook colspan="4">
                                   <page string="Detail">
-                                     <group colspan="4" col="4">
-                                         <separator string="Detail:" colspan="4"/>
-                                         <field name="line_ids" nolabel="1">
-                                             <tree editable="bottom" string="Line">
-                                                 <button name="line_detail" string="Line detail" type="object" icon="gtk-index"/>
-                                                 <field name="name" readonly="1"/>
-                                                 <field name="lot" readonly="1"/>
-                                                 <field name="net_qty" readonly="1"/>
-                                                 <field name="lord_qty" readonly="1"/>
-                                                 <field name="deadline" readonly="1"/>
-                                                 <field name="pallet_id" />
-                                             </tree>
-                                         </field>
+                                      <group colspan="4" col="5">
+                                          <separator string="Detail:" colspan="6"/>
+                                          <field name="select_pallet_id" />
+                                          <button name="setup_pallet_id" string="Set pallet all" type="object" icon="gtk-refresh" help="Setup all line with this pallet"/>
+                                          
+                                          <field name="line_ids" nolabel="1" colspan="6">
+                                              <tree editable="bottom" string="Line">
+                                                  <button name="line_detail" string="Line detail" type="object" icon="gtk-index"/>
+                                                  <field name="name" readonly="1"/>
+                                                  <field name="lot" readonly="1"/>
+                                                  <field name="net_qty" readonly="1"/>
+                                                  <field name="lord_qty" readonly="1"/>
+                                                  <field name="deadline" readonly="1"/>
+                                                  <field name="pallet_id" />
+                                               </tree>
+                                          </field>
                                      </group>                                      
                                   </page>
                                   <page string="File">

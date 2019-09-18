@@ -779,11 +779,78 @@ class EdiSoapLogistic(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
+    def generate_pallet_list(self, cr, uid, ids, context=None):
+        ''' Generate list of pallet depend on pallet number
+        '''
+        pallet_pool = self.pool.get('edi.soap.logistic.pallet')
+        
+        current_proxy = self.browse(cr, uid, ids, context=context)[0]
+        pallet = current_proxy.pallet
+        current_pallet = len(line_ids)
+        if pallet == current_pallet:
+            raise osv.except_osv(
+                _('Warning'), 
+                _('The %s pallet is yet created!') % pallet,
+                )
+        elif pallet < current_pallet:
+            raise osv.except_osv(
+                _('Warning'), 
+                _('Cannot remove, dont\'t use the wrong created!'),
+                )
+        try:        
+            last = max([item.name for item in current_proxy.pallet_ids])        
+        except:
+            last = 0    
+                
+        remain = pallet - current_pallet
+        # Create remain pallet:
+        
+        # TODO if is only one assign to all
+        pallet_id = 0
+        for i in range(0, remain):            
+            pallet_id = pallet_pool.create(cr, uid, {
+                'name': last + i + 1,
+                'sscc': 'SSCC!!', # TODO generate new ID
+                'logistic_id': ids[0]
+                }, context=context)
+                
+        # ---------------------------------------------------------------------
+        # Assign if only one, use button procedure:
+        # ---------------------------------------------------------------------
+        if pallet == 1 and pallet_id:
+            self.write(cr, uid, ids, {
+                'select_pallet_id': pallet_id,
+                }, context=context)
+            self.setup_pallet_id(cr, uid, ids, context=context)
+        return True
+        
+    def setup_pallet_id(self, cr, uid, ids, context=None):
+        ''' Setup selected pallet in all lines
+        '''
+        line_pool = self.pool.get('edi.soap.logistic.line')
+        current_proxy = self.browse(cr, uid, ids, context=context)[0]
+        select_pallet_id = current_proxy.select_pallet_id.id
+        if not select_pallet_id:
+            raise osv.except_osv(
+                _('Errore'), 
+                _('Select before the pallet to setup, and click the button!'),
+                )
+
+        line_ids = line_pool.search(cr, uid, [
+            ('logistic_id', '=', ids[0]),
+            ], context=context)
+        return line_pool.write(cr, uid, line_ids, {
+            'pallet_id': select_pallet_id,
+            }, context=context)    
+        
     _columns = {
         'name': fields.char('Invoice reference', size=40, required=True),
         'connection_id': fields.many2one(
             'edi.soap.connection', 'Connection', required=True),
         'pallet': fields.integer('Pallet #'),
+        'select_pallet_id': fields.many2one(
+            'edi.soap.logistic.pallet', 'Select pallet', 
+            domain="[('logistic_id', '=', active_id)]", widget='selection'),
         'text': fields.text('File text', help='Account file as original'),
         'state': fields.selection([
             ('draft', 'Draft'), # To be worked
