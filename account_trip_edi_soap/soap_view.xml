@@ -247,6 +247,17 @@
                                           </field>
                                      </group>                                      
                                   </page>
+                                  <page string="Pallet">
+                                     <group colspan="4" col="4">
+                                         <separator string="Pallet:" colspan="4"/>
+                                         <field name="pallet_ids" colspan="4" nolabel="1" readonly="1">
+                                            <tree string="Pallet" editable="bottom">
+                                                <field name="name" />
+                                                <field name="sscc" />
+                                            </tree>
+                                         <field>
+                                     </group>
+                                  </page>
                                   <page string="File">
                                      <group colspan="4" col="4">
                                          <separator string="Text:" colspan="4"/>
