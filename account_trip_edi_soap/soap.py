@@ -652,9 +652,9 @@ class EdiSoapMapping(orm.Model):
         
     _columns = {
         'name': fields.char('Customer code', size=64, required=True),
-        'default_code': fields.char('Company code', size=64, required=True),        
+        'default_code': fields.char('Company code', size=64),
         'product_id': fields.many2one(
-            'product.product', 'Product'),
+            'product.product', 'Product', required=True),
             
         'connection_id': fields.many2one(
             'edi.soap.connection', 'Connection', required=True),
