@@ -217,13 +217,54 @@ class EdiSoapConnection(orm.Model):
                 cr,
                 ))                
 
+        def get_float(value):
+            ''' Clean weight text:
+            '''
+            value = value.strip()      
+            try:
+                return float(value.replace(',', '.'))
+            except:
+                _logger.error('Cannot parse float: %s' % value)
+                return 0.0 # TODO raise error        
+
+        def get_date(value):
+            ''' Clean weight text:
+            '''
+            value = value.strip()      
+            try:
+                if len(value) == 10:
+                    month = value[3:5]
+                elif len(value) == 8:
+                    month = value[2:4]
+                else:
+                    _logger.error('Cannot parse date: %s' % value)                
+                    return False
+                res = '%s-%s-%s' % (value[-4:], month, value[:2])
+                print value, res
+                return res
+
+            except:
+                _logger.error('Cannot parse date: %s' % value)
+                return False 
+
+        def get_int(value):
+            ''' Clean weight text:
+            '''
+            value = value.strip()      
+            try:
+                return int(value.replace(',', '.'))
+            except:
+                _logger.error('Cannot parse int: %s' % value)
+                return 0 # TODO raise error        
+
         def get_weight(value):
             ''' Clean weight text:
             '''
+            value = value.strip()      
             try:
-                return float(
-                    value.lstrip('KG').lstrip('.').lstrip().replace(',', '.'))
+                return float(value.split()[-1].replace(',', '.'))
             except:
+                _logger.error('Cannot parse float: %s' % value)
                 return 0.0 # TODO raise error        
 
         def get_last_day(month):
@@ -248,16 +289,21 @@ class EdiSoapConnection(orm.Model):
         newline = '\r\n'
         html_newline = '<br />'
         separator = '|*|'
-        start = { # Start text on file:
-            'header': 'HEADER',
-            'detail': 'DETAIL',
+        start = {
+            # Row number:
+            'customer_order': 2,
             'invoice': 3,
             'invoice_date': 4,
-            'weight': 'PESO LORDO: ',
+
+            # Start text:
+            'header': 'HEADER',
+            'detail': 'DETAIL',
+            'weight': 'PESO LORDO', #'PESO LORDO: ',
             'order': 'N.ORDINE',
             'lord': 'PESO LORDO',
             'total': 'PESO TOTALE',
             'pallet': 'BANCALI N.',
+            'delivery_date': 'CONSEGNA DEL ',
             }
 
         # Load parameters:
@@ -290,8 +336,12 @@ class EdiSoapConnection(orm.Model):
         log_f = open(os.path.join(log_path, 'invoice.log'), 'w')
         remove_list = []
         history_list = []
-        for root, foldes, files in os.walk(path):
+        for root, folders, files in os.walk(path):            
             for filename in files:
+                if not filename.lower().endswith('csv'):
+                    _logger.error('File not used: %s' % filename)
+                    continue
+
                 fullname = os.path.join(root, filename)                
                 if filename[:partner_len] not in partner_start:
                     remove_list.append(fullname)
@@ -316,8 +366,17 @@ class EdiSoapConnection(orm.Model):
                     #'detail': [],                 
                     #'footer': {},
                     }
-                    
+
+                # -------------------------------------------------------------
+                # Read all file and save always from header
+                # -------------------------------------------------------------
+                file_rows = []
                 for line in open(fullname):
+                    if line.startswith(start['header']):
+                        file_rows = [] # reset when find header!
+                    file_rows.append(line)    
+                    
+                for line in file_rows:
                     data['i'] += 1
                     line = line.strip()
                     
@@ -329,7 +388,7 @@ class EdiSoapConnection(orm.Model):
                         data.update({
                             'header': line,
                             'i': 1, # Restart from 1
-                            'text': line + newline, # Restart from here
+                            'text': '', #line + newline, # Restart from here
 
                             'detail': [],                 
                             'footer': {},
@@ -340,6 +399,8 @@ class EdiSoapConnection(orm.Model):
                     # ---------------------------------------------------------
                     #                         Header data:
                     # ---------------------------------------------------------
+                    elif data['i'] == start['customer_order']: # Customer order
+                        data['customer_order'] = line                        
                     elif data['i'] == start['invoice']: # Invoice number
                         data['invoice'] = line                        
                     elif data['i'] == start['invoice_date']: # Invoice date
@@ -357,10 +418,10 @@ class EdiSoapConnection(orm.Model):
                                 # Check error (ex. 2 PESO LORDO line)
                                 _logger.warning('Extra line: %s' % line)
                                 line_mode = 'error'
-                            else: 
+                            else:
                                 data['detail'].append((
                                     data['detail_text'], 
-                                    get_weight(line[len(start['weight']):]),
+                                    get_weight(line),
                                     ))
                                 data['product_insert'] = True
                             
@@ -376,13 +437,21 @@ class EdiSoapConnection(orm.Model):
                     # ---------------------------------------------------------
                     elif data['detail_status'] == 'end': # Start details
                         # CONSEGNA DEL:
+
                         # DESTINAZIONE: 
+
                         if line.startswith(start['order']):
                             pass # TODO
+
+                        if line.startswith(start['delivery_date']):
+                            data['delivery_date'] = get_date(line.split()[-1])
+
                         elif line.startswith(start['lord']):
                             pass # TODO
+
                         elif line.startswith(start['total']):
                             pass # TODO                        
+
                         elif line.startswith(start['pallet']):
                             try:
                                 data['pallet'] = int(
@@ -404,7 +473,7 @@ class EdiSoapConnection(orm.Model):
                 # -------------------------------------------------------------
                 # Create ODOO Record:                
                 # -------------------------------------------------------------
-                name = 'FT %s del %s' % (data['invoice'], data['invoice_date'])
+                name = '%s del %s' % (data['invoice'], data['invoice_date'])
                 logistic_ids = logistic_pool.search(cr, uid, [
                     ('name', '=', name),
                     ], context=context)
@@ -430,22 +499,26 @@ class EdiSoapConnection(orm.Model):
                     'connection_id': ids[0],
                     'text': text,
                     'pallet': data['pallet'],
+                    'delivery_date': data['delivery_date'],
+                    'customer_order': data['customer_order'],
+                    #'filename': 
                     }, context=context)
 
                 # B. Import order line:
                 sequence = 0
+                invoice_date = get_date(data['invoice_date'])
+
                 for row, lord_qty in data['detail']:
                     sequence += 10
                     line_part = row.split(separator)
                     
                     # Deadline: 
-                    deadline = '20%-%s-%s' % (
+                    deadline = '20%s-%s-%s' % (
                         line_part[12][-2:],
                         line_part[12][:2],                        
                         get_last_day(line_part[12][:2]),
                         )
-                    
-                    line_pool.create(cr, uid, {
+                    data = {
                         'logistic_id': logistic_id,
 
                         'sequence': sequence,
@@ -453,27 +526,28 @@ class EdiSoapConnection(orm.Model):
                         
                         'variable_weight': line_part[5],
                         'lot': line_part[6],
-                        'confirmed_qty': line_part[7],
-                        'net_qty': line_part[8],
+                        'confirmed_qty': get_float(line_part[7]),
+                        'net_qty': get_float(line_part[8]),
                         'lord_qty': lord_qty,
-                        'parcel': line_part[10],
-                        'piece': line_part[11],
+                        'parcel': get_int(line_part[10]),
+                        'piece': get_int(line_part[11]),
                         'deadline': deadline,
                         'origin_country': line_part[13],
                         'provenance_country': line_part[14],
 
                         # Header data:
                         'invoice': data['invoice'],
-                        'invoice_date': data['invoice_date'],
+                        'invoice_date': invoice_date,
 
                         # Not mandatory:
                         'dvce': '',
-                        'dvce_date': '',
+                        'dvce_date': False,
                         'animo': '',
                         'sif': '',
                         'duty': '',
                         'mrn': '',
-                        }, context=context)
+                        }
+                    line_pool.create(cr, uid, data, context=context)
                 
                 # C. Create pallet list:
                 logistic_pool.generate_pallet_list(
@@ -858,6 +932,8 @@ class EdiSoapLogistic(orm.Model):
         
     _columns = {
         'name': fields.char('Invoice reference', size=40, required=True),
+        'customer_order': fields.char('Cust. Number', size=40),
+        'delivery_date': fields.date('Delivery date'),
         'connection_id': fields.many2one(
             'edi.soap.connection', 'Connection', required=True),
         'pallet': fields.integer('Pallet #'),
