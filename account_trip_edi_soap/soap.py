@@ -619,7 +619,7 @@ class EdiSoapConnection(orm.Model):
         'detail_separator': lambda *x: '|*|',
         }
 
-"""class EdiSoapMapping(orm.Model):
+class EdiSoapMapping(orm.Model):
     ''' Soap Parameter for connection
     '''
     _name = 'edi.soap.mapping'
@@ -627,13 +627,38 @@ class EdiSoapConnection(orm.Model):
     _rec_name = 'name'
     _order = 'connection_id,default_code'
     
+    def onchange_default_code(self, cr, uid, ids, default_code, context=None):
+        ''' Update product from default_code
+        '''
+        res = {}
+        product_pool = self.pool.get('product.product')
+        product_ids = product_pool.search(cr, uid, [
+            ('default_code', 'ilike', default_code),
+            ], context=context)
+        if not product_ids:
+            return res
+        if len(product_ids) == 1:
+            res['value'] = {
+                'product_id': product_ids[0],
+                }
+            res['domain'] = {
+                'product_id': [],
+                }    
+        else:
+            res['domain'] = {
+                'product_id': [('id', 'in', product_ids)],
+                }
+        return res        
+        
     _columns = {
         'name': fields.char('Customer code', size=64, required=True),
-        'default_code': fields.char('Company code', size=64, required=True),
-        
+        'default_code': fields.char('Company code', size=64, required=True),        
+        'product_id': fields.many2one(
+            'product.product', 'Product'),
+            
         'connection_id': fields.many2one(
             'edi.soap.connection', 'Connection', required=True),
-        }"""
+        }
 
 class EdiSoapOrder(orm.Model):
     ''' Soap Soap Order
