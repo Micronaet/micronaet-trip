@@ -217,12 +217,22 @@ class EdiSoapConnection(orm.Model):
                 cr,
                 ))                
 
+        def clean_line(line):
+            ''' Clean line            
+            '''
+            remove_list = [('\xb0\xb0', '.'), ('\xc2\xb0', '.')]
+            
+            line = line.strip()
+            for item1, item2 in remove_list:
+                line = line.replace(item1, item2)
+            return line    
+
         def get_float(value):
             ''' Clean weight text:
             '''
-            value = value.strip()      
+            value = value.strip().replace('.', ' ')
             try:
-                return float(value.replace(',', '.'))
+                return float(value.split()[-1].replace(',', '.'))
             except:
                 _logger.error('Cannot parse float: %s' % value)
                 return 0.0 # TODO raise error        
@@ -257,16 +267,6 @@ class EdiSoapConnection(orm.Model):
                 _logger.error('Cannot parse int: %s' % value)
                 return 0 # TODO raise error        
 
-        def get_weight(value):
-            ''' Clean weight text:
-            '''
-            value = value.strip()      
-            try:
-                return float(value.split()[-1].replace(',', '.'))
-            except:
-                _logger.error('Cannot parse float: %s' % value)
-                return 0.0 # TODO raise error        
-
         def get_last_day(month):
             ''' Last day of the month
             '''
@@ -298,7 +298,7 @@ class EdiSoapConnection(orm.Model):
             # Start text:
             'header': 'HEADER',
             'detail': 'DETAIL',
-            'weight': 'PESO LORDO', #'PESO LORDO: ',
+            'weight': 'PESO LORDO',
             'order': 'N.ORDINE',
             'lord': 'PESO LORDO',
             'total': 'PESO TOTALE',
@@ -374,8 +374,8 @@ class EdiSoapConnection(orm.Model):
                 for line in open(fullname):
                     if line.startswith(start['header']):
                         file_rows = [] # reset when find header!
-                    file_rows.append(line)    
-                    
+                    file_rows.append(clean_line(line))
+
                 for line in file_rows:
                     data['i'] += 1
                     line = line.strip()
@@ -421,7 +421,7 @@ class EdiSoapConnection(orm.Model):
                             else:
                                 data['detail'].append((
                                     data['detail_text'], 
-                                    get_weight(line),
+                                    get_float(line),
                                     ))
                                 data['product_insert'] = True
                             
@@ -618,6 +618,22 @@ class EdiSoapConnection(orm.Model):
     _defaults = {
         'detail_separator': lambda *x: '|*|',
         }
+
+"""class EdiSoapMapping(orm.Model):
+    ''' Soap Parameter for connection
+    '''
+    _name = 'edi.soap.mapping'
+    _description = 'EDI Soap Mapping'
+    _rec_name = 'name'
+    _order = 'connection_id,default_code'
+    
+    _columns = {
+        'name': fields.char('Customer code', size=64, required=True),
+        'default_code': fields.char('Company code', size=64, required=True),
+        
+        'connection_id': fields.many2one(
+            'edi.soap.connection', 'Connection', required=True),
+        }"""
 
 class EdiSoapOrder(orm.Model):
     ''' Soap Soap Order
@@ -873,7 +889,7 @@ class EdiSoapLogistic(orm.Model):
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
         pallet = current_proxy.pallet
         current_pallet = len(current_proxy.pallet_ids)
-        if pallet == current_pallet:
+        if pallet == current_pallet and current_pallet:
             raise osv.except_osv(
                 _('Warning'), 
                 _('The %s pallet is yet created!') % pallet,
@@ -938,8 +954,7 @@ class EdiSoapLogistic(orm.Model):
             'edi.soap.connection', 'Connection', required=True),
         'pallet': fields.integer('Pallet #'),
         'select_pallet_id': fields.many2one(
-            'edi.soap.logistic.pallet', 'Select pallet', 
-            domain="[('logistic_id', '=', active_id)]", widget='selection'),
+            'edi.soap.logistic.pallet', 'Select pallet'),
         'text': fields.text('File text', help='Account file as original'),
         'state': fields.selection([
             ('draft', 'Draft'), # To be worked
