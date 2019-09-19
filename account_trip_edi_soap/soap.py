@@ -491,7 +491,7 @@ class EdiSoapConnection(orm.Model):
         for filename, history in history_list:
             shutil.move(filename, history)
             log_data(log_f, 'File history: %s > %s' % (filename, history))
-          
+
         log_f.close()
         return True
 
