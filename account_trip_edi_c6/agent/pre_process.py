@@ -45,8 +45,9 @@ def sort_line(row):
         return (4, code) # pasta
     else: # Error list
         # Log error:
-        f_error = ('./sort_error.log', 'w')
-        f_error.write('Char not found %s - %s\n' % (start_1, start_2))        
+        f_error = open('./sort_error.log', 'w')
+        f_error.write('Char not found %s - %s\n' % (start_1, start_2))
+        print 'Char not found %s - %s' % (start_1, start_2)
         f_error.close()
         return (5, code)
     
