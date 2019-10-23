@@ -711,7 +711,7 @@ class EdiSoapOrder(orm.Model):
         ''' Safe eval the field data
         ''' 
         try:
-            return eval("item[field] or default")
+            return eval('item[field] or default')
         except:    
             _logger.error('Cannot eval: field %s' % field)
             return default
@@ -719,6 +719,15 @@ class EdiSoapOrder(orm.Model):
     # -------------------------------------------------------------------------
     #                                    BUTTON:
     # -------------------------------------------------------------------------
+    def print_all_label(self, cr, uid, ids, context=None):    
+        ''' Print all label
+        '''
+        line_pool = self.pool.get('edi.soap.order.line')
+        if context is None:
+            context = []
+        context['order_id'] = ids[0]
+        return line_pool.print_label(cr, uid, False, context=context)
+
     def generate_pallet_list(self, cr, uid, ids, context=None):
         ''' Generate list of pallet from order weight
         '''
@@ -726,7 +735,6 @@ class EdiSoapOrder(orm.Model):
 
         # Pool used:        
         pallet_pool = self.pool.get('edi.soap.logistic.pallet')
-        
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
         pallet = current_proxy.total_pallet
         current_pallet = len(current_proxy.pallet_ids)
@@ -996,6 +1004,29 @@ class EdiSoapOrderLine(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
+    # -------------------------------------------------------------------------
+    # Button:
+    # -------------------------------------------------------------------------
+    def print_label(self, cr, uid, ids, context=None):    
+        ''' Print single label for pallet:
+        ''' 
+        if context is None:
+            context = {}       
+        report_name = 'sscc_pallet_label_report'
+        if not ids:     
+            order_id = context.get('order_id')
+            if not order_id:
+               raise osv.except_osv(
+                   _('Error'), 
+                   _('Cannot get order to print!'),
+                   )
+            ids = self.search(cr, uid, [
+                ('order_id', '=', order_id),
+                ], context=context)
+        
+        # TODO print report
+        return True
+        
     # -------------------------------------------------------------------------
     # Oncange:
     # -------------------------------------------------------------------------
