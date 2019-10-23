@@ -103,7 +103,7 @@
                     <field name="delivery_at" />
                     <field name="delivery_address" />     
                     <field name="filename" invisible="1" />               
-                    <button name="extract_order_csv_file" string="Export CSV" type="object" class="oe_highlight" attrs="{'invisible': [('filename','!=',False)]}"/>
+                    <button name="extract_order_csv_file" string="Export CSV" type="object" class="oe_highlight" attrs="{'invisible': [('filename','!=',False)]}" icon="gtk-execute"/>
                 </tree>
             </field>
         </record>
@@ -114,7 +114,7 @@
                 <form string="SOAP order" version="7.0">
                     <header>                        
                         <button name="reload_this_order" string="Reload order" type="object" icon="gtk-refresh" class="oe_highlight" />
-                        <button name="extract_order_csv_file" string="Export CSV" type="object" class="oe_highlight" attrs="{'invisible': [('filename','!=',False)]}"/>
+                        <button name="extract_order_csv_file" string="Export CSV" type="object" class="oe_highlight" attrs="{'invisible': [('filename','!=',False)]}" icon="gtk-execute"/>
                     </header>
                     <shell>
                         <group colspan="4" col="4">
@@ -168,8 +168,8 @@
                                         <field name="total_weight" readonly="1" />
                                         <field name="total_pallet" />
                                         <button name="generate_pallet_list" string="Generate pallet" type="object" colspan="1"/>
-                                         <separator string="Pallet:" colspan="4"/>
-                                         <field name="pallet_ids" colspan="4" nolabel="1" readonly="1">
+                                         <separator string="Pallet:" colspan="5"/>
+                                         <field name="pallet_ids" colspan="5" nolabel="1" readonly="1">
                                               <tree string="Pallet" editable="bottom">
                                                    <field name="name" readonly="1"/>
                                                    <field name="sscc" readonly="1"/>

@@ -42,6 +42,9 @@
 
         # Init setup:
         'data/connection_data.xml',
+        
+        # Report:
+        'report/sscc_label_report.xml',
         ],
     'active': False,
     'installable': True,
