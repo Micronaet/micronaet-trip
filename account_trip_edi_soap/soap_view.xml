@@ -47,11 +47,23 @@
                                 </page>
                                 <page string="Server">
                                     <group colspan="4" col="4">
-                                        <separator string="Server folder:" colspan="3"/>
+                                        <separator string="Order parameter:" colspan="4"/>
+                                        <field name="order_root" />
+                                        <field name="order_separator" />
+                                        
+                                        <field name="pallet_capability" />
+                                        <field name="uom_code" />
+                                        
+                                        <field name="csv_code" />
+
+                                        <separator string="Logistic parameter:" colspan="3"/>
                                         <button name="load_new_invoice" string="Load invoice" type="object" icon="STOCK_SAVE" class="oe_highlight" colspan="1" />
+                                        
                                         <field name="server_root" />
                                         <field name="detail_separator" />
-                                        <field name="server_account_code" colspan="4" />
+
+                                        <separator string="Account data:" colspan="4"/>                                        
+                                        <field name="server_account_code"  />
                                     </group>
                                 </page>
                             </notebook>
@@ -89,7 +101,9 @@
                     <field name="invoice_address" />
                     <field name="invoice_vatcode" />
                     <field name="delivery_at" />
-                    <field name="delivery_address" />                    
+                    <field name="delivery_address" />     
+                    <field name="filename" invisible="1" />               
+                    <button name="extract_order_csv_file" string="Export CSV" type="object" class="oe_highlight" attrs="{'invisible': [('filename','!=',False)]}"/>
                 </tree>
             </field>
         </record>
@@ -100,6 +114,7 @@
                 <form string="SOAP order" version="7.0">
                     <header>                        
                         <button name="reload_this_order" string="Reload order" type="object" icon="gtk-refresh" class="oe_highlight" />
+                        <button name="extract_order_csv_file" string="Export CSV" type="object" class="oe_highlight" attrs="{'invisible': [('filename','!=',False)]}"/>
                     </header>
                     <shell>
                         <group colspan="4" col="4">
@@ -115,18 +130,23 @@
                             
                             <field name="fullname" />
                             <field name="buyer_group" />
+
+                            <field name="filename" readonly="1"/>               
                             
                             <notebook colspan="4">
                                 <page string="Detail">
                                     <group colspan="4" col="4">
                                         <separator string="Detail:" colspan="4"/>
                                         <field name="line_ids" colspan="4" nolabel="1">
-                                            <tree string="Detail:" editable="bottom" colors="blue:ordered_qty!=confirmed_qty">
+                                            <tree string="Detail:" editable="bottom" colors="red:product_id==False or duty_code==False; blue:ordered_qty!=confirmed_qty">
+                                                <field name="order_id" invisible="1" />
                                                 <field name="name" readonly="1"/>
+                                                <field name="product_id" on_change="onchange_company_product_id(order_id, name, product_id)"/>                                                
+                                                <field name="duty_code" />
                                                 <field name="description" readonly="1" />
                                                 <field name="uom" readonly="1" />
-                                                <field name="ordered_qty" readonly="1" />
-                                                <field name="confirmed_qty" />
+                                                <field name="ordered_qty" readonly="1" sum="ordered_total"/>
+                                                <field name="confirmed_qty" sum="confirmed_qty"/>
                                             </tree>
                                         </field>
                                     </group>
@@ -141,6 +161,22 @@
                                         <field name="delivery_at" />
                                         
                                         <field name="delivery_address" />                    
+                                    </group>
+                                </page>
+                                <page string="Label">
+                                    <group colspan="4" col="5">
+                                        <field name="total_weight" readonly="1" />
+                                        <field name="total_pallet" />
+                                        <button name="generate_pallet_list" string="Generate pallet" type="object" colspan="1"/>
+                                         <separator string="Pallet:" colspan="4"/>
+                                         <field name="pallet_ids" colspan="4" nolabel="1" readonly="1">
+                                              <tree string="Pallet" editable="bottom">
+                                                   <field name="name" readonly="1"/>
+                                                   <field name="sscc" readonly="1"/>
+                                                   <field name="logistic_id" readonly="1" />
+                                              </tree>
+                                         </field>
+                                        
                                     </group>
                                 </page>
                             </notebook>
@@ -243,13 +279,13 @@
                                           
                                           <field name="line_ids" nolabel="1" colspan="6">
                                               <tree editable="bottom" string="Line">
-                                                  <button name="line_detail" string="Line detail" type="object" icon="gtk-index"/>
-                                                  <field name="name" readonly="1"/>
-                                                  <field name="lot" readonly="1"/>
-                                                  <field name="net_qty" readonly="1"/>
-                                                  <field name="lord_qty" readonly="1"/>
-                                                  <field name="deadline" readonly="1"/>
-                                                  <field name="pallet_id" widget="selection"/>
+                                                  <button name="line_detail" string="Line detail" type="object" icon="gtk-index" />
+                                                  <field name="name" readonly="1" />
+                                                  <field name="lot" readonly="1" />
+                                                  <field name="net_qty" readonly="1" />
+                                                  <field name="lord_qty" readonly="1" />
+                                                  <field name="deadline" readonly="1" />
+                                                  <field name="pallet_id" widget="selection" />
                                                </tree>
                                           </field>
                                      </group>                                      
@@ -291,11 +327,12 @@
             <field name="name">edi.soap.mapping.tree</field>
             <field name="model">edi.soap.mapping</field>
             <field name="arch" type="xml">
-                <tree string="Product mapping" editable="bottom">
+                <tree string="Product mapping" editable="bottom" colors="red:duty_code==False">
                      <field name="connection_id" />
                      <field name="name" />
                      <field name="default_code" on_change="onchange_default_code(default_code)" />
                      <field name="product_id" />
+                     <field name="duty_code" />
                 </tree>
             </field>
         </record>

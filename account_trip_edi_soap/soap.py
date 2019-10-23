@@ -597,26 +597,50 @@ class EdiSoapConnection(orm.Model):
         'token': fields.char('Soap token', size=180, 
             help='Token assigned and saved when updated'),
 
+        # ---------------------------------------------------------------------        
         # Soap connection:
+        # ---------------------------------------------------------------------        
         'username': fields.char('Username', size=40, required=True),
         'secret': fields.char('Secret', size=180, required=True),        
         'wsdl_root': fields.char('WSDL Root', size=180, required=True, 
             help='Example: https://example.com/pep/wsdl'),
         'namespace': fields.char('Namespace', size=40, required=True,
             help='Example: {it.example.soapws.ws}WsPortSoap11'),
-        
+
+        # ---------------------------------------------------------------------        
         # Server connection:    
-        'server_root': fields.char('Server Root', size=180, required=True, 
+        # ---------------------------------------------------------------------        
+        # Invoice:
+        'server_root': fields.char('Invoice Root', size=180, required=True, 
             help='Example: ~/account/invoice'),
+        'detail_separator': fields.char('Detail separator', size=5, 
+            required=True, help='Separator used for detail columns'),
+        
+        # Order:    
+        'order_root': fields.char('Order Root', size=180, required=True, 
+            help='Example: ~/account/order/in'),
+        'order_separator': fields.char('Detail separator', size=5, 
+            required=True, help='Separator used for detail columns'),
+        'csv_code': fields.char('Company code', size=5, 
+            required=True, help='Used for first field in CSV file'),
+
+        # Pallet:
+        'uom_code': fields.char('UOM code', size=5, 
+            help='Used for pallet total calc'),
+        'pallet_capability': fields.integer('Pallet capability',
+            help='Used for pallet total calc'),
+        
+        # Account:    
         'server_account_code': fields.char('Account code', size=180, 
             required=True, 
             help='Account ref. for partners, ex: 02.00001|02.00002'),
-        'detail_separator': fields.char('Detail separator', size=5, 
-            required=True, help='Separator used for detail columns'),
         }
     
     _defaults = {
         'detail_separator': lambda *x: '|*|',
+        'order_separator': lambda *x: '|',
+        'uom_code': lambda *x: 'KG',
+        'pallet_capability': lambda *x: 550,
         }
 
 class EdiSoapMapping(orm.Model):
@@ -658,7 +682,19 @@ class EdiSoapMapping(orm.Model):
             
         'connection_id': fields.many2one(
             'edi.soap.connection', 'Connection', required=True),
+        'duty_code': fields.related(
+            'product_id', 'duty_code', type='char', string='Duty code'),
         }
+
+class ProductProduct(orm.Model):
+    """ Model name: ProductProduct
+    """
+    
+    _inherit = 'product.product'
+    
+    _columns = {
+        'duty_code': fields.char('Dury code', size=20),
+    }
 
 class EdiSoapOrder(orm.Model):
     ''' Soap Soap Order
@@ -680,10 +716,60 @@ class EdiSoapOrder(orm.Model):
             _logger.error('Cannot eval: field %s' % field)
             return default
 
+    # -------------------------------------------------------------------------
+    #                                    BUTTON:
+    # -------------------------------------------------------------------------
+    def generate_pallet_list(self, cr, uid, ids, context=None):
+        ''' Generate list of pallet from order weight
+        '''
+        extra_pallet = 0 # TODO Param for print more labels
+
+        # Pool used:        
+        pallet_pool = self.pool.get('edi.soap.logistic.pallet')
+        
+        current_proxy = self.browse(cr, uid, ids, context=context)[0]
+        pallet = current_proxy.total_pallet
+        current_pallet = len(current_proxy.pallet_ids)
+        if current_pallet and pallet == current_pallet:
+            raise osv.except_osv(
+                _('Warning'), 
+                _('The %s pallet is yet created!') % pallet,
+                )
+        elif pallet < current_pallet and current_pallet:
+            raise osv.except_osv(
+                _('Warning'), 
+                _('Cannot remove, dont\'t use the wrong created!'),
+                )
+        try:        
+            last = max([item.name for item in current_proxy.pallet_ids])        
+        except:
+            last = 0
+        
+        # ---------------------------------------------------------------------
+        # If is only one assign to all
+        # ---------------------------------------------------------------------
+        # Create remain pallet:
+        remain = pallet - current_pallet
+        pallet_id = 0
+        for i in range(0, remain):            
+            pallet_id = pallet_pool.create(cr, uid, {
+                'name': last + i + 1,
+                'sscc': 'SSCC!!', # TODO generate new ID
+                'order_id': ids[0]
+                }, context=context)
+
     def create_new_order(self, cr, uid, connection_id, order, force=False, 
             context=None):
         ''' Create new order from order object
         '''        
+        print order # TODO remove
+        
+        # Parameter:
+        pallet_weight = 500
+        pallet_uom = 'KG'
+        
+        # Pool used:
+        mapping_pool = self.pool.get('edi.soap.mapping')
         line_pool = self.pool.get('edi.soap.order.line')
         po_number = self._safe_get(order, 'poNumber')        
         order_ids = self.search(cr, uid, [
@@ -751,25 +837,45 @@ class EdiSoapOrder(orm.Model):
         _logger.info('New Order %s' % po_number)                 
 
         # TODO load also file for ERP Management
-
+        weight = {}
         for line in order['orderLines']:
-            # -------------------------------------------------------------
+            # -----------------------------------------------------------------
             # Detail data:
-            # -------------------------------------------------------------
+            # -----------------------------------------------------------------
+            uom = self._safe_get(line, 'itemReceivingUnit') # 'KG'
+            confirmed_qty = float(self._safe_get(
+                    line, 'quantityConfirmed', 0.0)) # Decimal('230.00000'),                    
+            name = self._safe_get(line, 'itemCode') # 'F0000801'        
+
+            # Update total for pallet label calc:
+            if uom in weight:
+                weight[uom] += confirmed_qty
+            else:    
+                weight[uom] = confirmed_qty
+
+            # Search product mapping:
+            mapping_ids = mapping_pool.search(cr, uid, [
+                ('name', '=', name),
+                ], context=context)
+            if mapping_ids:
+                mapping_proxy = mapping_pool.browse(
+                    cr, uid, mapping_ids, context=context)[0]    
+                product_id = mapping_proxy.product_id.id    
+            else:
+                product_id = False    
+            
             line = {
                 'order_id': order_id,
-                'name': self._safe_get(
-                    line, 'itemCode'), # 'F0000801',
+                'name': name,
+                'product_id': product_id,
                 'description': self._safe_get(
                     line, 'itemDescription'), # 'CORN KERNEL WHOLE FRZ',
                 #'item_price': self._safe_get(
                 #    line, 'itemPrice'), # Decimal('0.93000'),
-                'uom': self._safe_get(
-                    line, 'itemReceivingUnit'), # 'KG',
+                'uom': uom,
                 'ordered_qty': float(self._safe_get(
                     line, 'quantityOrdered', 0.0)), # Decimal('230.00000'),
-                'confirmed_qty': float(self._safe_get(
-                    line, 'quantityConfirmed', 0.0)), # Decimal('230.00000'),                    
+                'confirmed_qty': confirmed_qty,
                 'logistic_qty': float(self._safe_get(
                     line, 'quantityLogistic', 0.0)), # None,
                 
@@ -787,11 +893,31 @@ class EdiSoapOrder(orm.Model):
                 #    line, 'flDogana'), # None
                 }                    
             line_pool.create(cr, uid, line, context=context)
+
+        weight = weight.get(pallet_uom, 0.0)
+        
+        if weight: 
+            self.write(cr, uid, [order_id], {
+                'total_weight': weight,
+                'total_pallet': (weight / pallet_weight) + \
+                    1 if weight % pallet_weight > 0 else 0
+                }, context=context)   
+        
         return order_id
 
-    # -------------------------------------------------------------------------
-    # Button events:
-    # -------------------------------------------------------------------------
+    def extract_order_csv_file(self, cr, uid, ids, context=None):
+        ''' Generate all pallet label from here
+        '''
+        # TODO 
+        order_proxy = self.browse(cr, uid, ids, context=context)[0]
+        connection = order_proxy.connection_id
+        path = connection.order_root
+        separator = connection.order_separator
+        csv_code = connection.csv_code
+        #account_code = connection.account_code
+        
+        return True
+        
     def reload_this_order(self, cr, uid, ids, context=None):
         ''' Reload this order
         '''
@@ -855,6 +981,11 @@ class EdiSoapOrder(orm.Model):
         #delivery_ship = order.get('deliveryShip', False)#: None,
         #logistic = order.get('logistic', False)# False,
         #requires_logistic = order.get('requiresLogistic', False)# None,
+        
+        'total_weight': fields.integer('Total weight'),
+        'total_pallet': fields.integer('Total pallet'),
+
+        'filename': fields.char('Filename CSV', size=40),
         }    
 
 class EdiSoapOrderLine(orm.Model):
@@ -865,11 +996,55 @@ class EdiSoapOrderLine(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
+    # -------------------------------------------------------------------------
+    # Oncange:
+    # -------------------------------------------------------------------------
+    def onchange_company_product_id(self, cr, uid, ids, order_id, name, 
+            product_id, context=None):
+        ''' Update mapped product
+        '''
+        res = {}
+        if not order_id and not product_id and not name:
+            return res
+            
+        order_pool = self.pool.get('edi.soap.order')
+        order_proxy = order_pool.browse(cr, uid, order_id, context=context)
+        connection_id = order_proxy.connection_id.id
+
+        # ---------------------------------------------------------------------
+        # Search mapping    
+        # ---------------------------------------------------------------------
+        mapping_pool = self.pool.get('edi.soap.mapping')
+        mapping_ids = mapping_pool.search(cr, uid, [
+            ('connection_id', '=', connection_id),
+            ('name', '=', name),
+            ], context=context)
+
+        if len(mapping_ids) > 1:
+           _logger.error('More than one mapping: %s' % name)
+               
+        # ---------------------------------------------------------------------
+        # Mapping operation:
+        # ---------------------------------------------------------------------
+        data = {
+            'connection_id': connection_id,
+            'name': name,
+            'product_id': product_id,
+            }
+        if mapping_ids:
+            mapping_pool.write(cr, uid, mapping_ids, data, context=context)            
+        else:
+            mapping_pool.create(cr, uid, data, context=context)                
+        return res
+        
     _columns = {
         'name': fields.char('Code', size=40, required=True),
         'order_id': fields.many2one('edi.soap.order', 'Order', 
             ondelete='cascade'),
+        'product_id': fields.many2one('product.product', 'Company product'),
 
+        'duty_code': fields.related(
+            'product_id', 'duty_code', type='char', string='Duty code'),
         'description': fields.char('Description', size=40),
         #'price': fields.char('', size=40),
         'uom': fields.char('UOM', size=10),
@@ -886,15 +1061,6 @@ class EdiSoapOrderLine(orm.Model):
         #'fl_dogana'
         }
 
-class EdiSoapOrder(orm.Model):
-    ''' Soap Parameter for connection
-    '''
-    _inherit = 'edi.soap.order'
-    
-    _columns = {
-        'line_ids': fields.one2many('edi.soap.order.line', 'order_id', 'Lines'),
-        }
-
 # -----------------------------------------------------------------------------
 #                              LOGISTIC ORDER:
 # -----------------------------------------------------------------------------
@@ -906,10 +1072,12 @@ class EdiSoapLogistic(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
+    # TODO move in edi.soap.order generation of pallet:
     def generate_pallet_list(self, cr, uid, ids, context=None):
         ''' Generate list of pallet depend on pallet number
         '''
-        pallet_pool = self.pool.get('edi.soap.logistic.pallet')
+        # TODO
+        """pallet_pool = self.pool.get('edi.soap.logistic.pallet')
         
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
         pallet = current_proxy.pallet
@@ -932,6 +1100,7 @@ class EdiSoapLogistic(orm.Model):
         # ---------------------------------------------------------------------
         # If is only one assign to all
         # ---------------------------------------------------------------------
+        # TODO user order pallet!
         # Create remain pallet:
         remain = pallet - current_pallet
         pallet_id = 0
@@ -949,7 +1118,7 @@ class EdiSoapLogistic(orm.Model):
             self.write(cr, uid, ids, {
                 'select_pallet_id': pallet_id,
                 }, context=context)
-            self.setup_pallet_id(cr, uid, ids, context=context)
+            self.setup_pallet_id(cr, uid, ids, context=context)"""
         return True
         
     def setup_pallet_id(self, cr, uid, ids, context=None):
@@ -1006,6 +1175,7 @@ class EdiSoapLogisticPallet(orm.Model):
         'name': fields.integer('#', required=True),
         'sscc': fields.char('SSCC Code', size=40, required=True),
         'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order'),
+        'order_id': fields.many2one('edi.soap.order', 'Sale order'),
         }        
 
 class EdiSoapLogistic(orm.Model):
@@ -1085,6 +1255,18 @@ class EdiSoapLogistic(orm.Model):
             'edi.soap.logistic.line', 'logistic_id', 'Lines'),
         'pallet_ids': fields.one2many(
             'edi.soap.logistic.pallet', 'logistic_id', 'Pallet'),
+        }    
+
+class EdiSoapOrder(orm.Model):
+    ''' Soap Parameter for connection
+    '''
+    _inherit = 'edi.soap.order'
+    
+    _columns = {
+        'line_ids': fields.one2many(
+            'edi.soap.order.line', 'order_id', 'Lines'),
+        'pallet_ids': fields.one2many(
+            'edi.soap.logistic.pallet', 'order_id', 'Pallet'),
         }    
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
