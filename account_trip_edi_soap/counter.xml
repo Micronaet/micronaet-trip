@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+	    <record model="ir.sequence.type" id="seq_sscc_counter_pallet">
+		    <field name="name">SSCC Pallet type</field>
+		    <field name="code">sscc.code.pallet.number</field>
+	    </record>
+	    <record model="ir.sequence" id="seq_sscc_counter_pallet_sequence">
+		    <field name="name">SSCC pallet code</field>
+		    <field name="code">sscc.code.pallet.number</field>
+		    <field name="prefix">30000000</field>
+		    <field name="padding">9</field>
+	    </record>
+    </data>
+</openerp>

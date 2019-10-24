@@ -768,7 +768,8 @@ class EdiSoapOrder(orm.Model):
         for i in range(0, remain):            
             pallet_id = pallet_pool.create(cr, uid, {
                 'name': last + i + 1,
-                'sscc': 'SSCC!!', # TODO generate new ID
+                'sscc': pallet_pool._generate_sscc_code_with_check(
+                    cr, uid, context=context),
                 'order_id': ids[0]
                 }, context=context)
 
@@ -1285,6 +1286,38 @@ class EdiSoapLogisticPallet(orm.Model):
     _inherit = 'edi.soap.logistic.pallet'
 
     # -------------------------------------------------------------------------
+    # Utility for syntax:
+    # -------------------------------------------------------------------------
+    def _sscc_check_digit(self, fixed):
+        ''' Generate check digit and return
+        '''
+        tot = 0
+        pos = 0
+        
+        for c in fixed:
+            pos+=1
+            number = int(c)
+            if pos % 2 == 0 :
+                tot += number
+            else:
+                tot += number*3
+        
+        remain = tot % 10
+        if remain:
+            return 10 - remain 
+        else: 
+            return 0
+    
+    def _generate_sscc_code_with_check(self, cr, uid, context=None):
+        ''' Generate partial code with counter and add check digit
+        '''
+        fixed = self.pool.get('ir.sequence').get(
+            cr, uid, 'sscc.code.pallet.number')
+            
+        return '%s%s' % (fixed, self._sscc_check_digit(fixed))
+            
+        
+    # -------------------------------------------------------------------------
     # Button:
     # -------------------------------------------------------------------------
     def print_label(self, cr, uid, ids, context=None):    
@@ -1307,7 +1340,45 @@ class EdiSoapLogisticPallet(orm.Model):
         # TODO print report
         return True
         
+    # -------------------------------------------------------------------------
+    # Field function:
+    # -------------------------------------------------------------------------
+    def _get_sscc_codebar_image(self, cr, uid, ids, field_name, arg, 
+            context=None):
+        ''' Get image from SSCC folder GIF image
+        '''
+        extension = 'gif'
+
+        pallet_proxy = self.browse(cr, uid, ids, context=context)[0]
+        connection = pallet_proxy.order_id.connection_id
+        sscc_path = os.path.join(
+            connection.server_root,
+            'sscc',
+            )
+        try:    
+            os.system('mkdir -p %s' % sscc_path)    
+        except:
+            raise osv.except_osv(
+                _('Error'), _('Errore generating SSCC path!'))
+
+        res = dict.fromkeys(ids, False)
+        for pallet in self.browse(cr, uid, ids, context=context):
+            try:
+                fullname = os.path.join(
+                    sscc_path, 
+                    '%s.%s' % (pallet.sscc, extension),
+                    )
+                f = open(fullname, 'rb')
+                res[code.id] = base64.encodestring(f.read())
+                f.close()
+            except:
+                _logger.error('Cannot load: %s' % fullname)
+        return res            
+
     _columns = {
+        'sscc_image': fields.function(
+            _get_sscc_codebar_image, type='binary', method=True),
+
         'line_ids': fields.one2many(
             'edi.soap.logistic.line', 'pallet_id', 'Lines'),
         }

@@ -39,6 +39,7 @@
 
         # View:
         'soap_view.xml',
+        'counter.xml',
 
         # Init setup:
         'data/connection_data.xml',
