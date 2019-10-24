@@ -777,7 +777,6 @@ class EdiSoapOrder(orm.Model):
         for pallet in pallet_pool.browse(cr, uid, pallet_ids, context=context):
             fullname = pallet_pool._get_sscc_fullname(
                 cr, uid, pallet, context=context)
-            import pdb; pdb.set_trace()
             image = treepoem.generate_barcode(
                 barcode_type='gs1-128', # One of the BWIPP supported codes.
                 data=pallet.sscc, #'(01)%s14-digit-product-code'
