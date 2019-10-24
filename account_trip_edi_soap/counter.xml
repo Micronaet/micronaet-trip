@@ -8,7 +8,7 @@
 	    <record model="ir.sequence" id="seq_sscc_counter_pallet_sequence">
 		    <field name="name">SSCC pallet code</field>
 		    <field name="code">sscc.code.pallet.number</field>
-		    <field name="prefix">30000000</field>
+		    <field name="prefix">(01)30000000</field>
 		    <field name="padding">9</field>
 	    </record>
     </data>

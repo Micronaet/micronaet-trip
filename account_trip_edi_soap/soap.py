@@ -25,6 +25,7 @@ import logging
 import openerp
 import shutil
 import re
+import treepoem
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
@@ -765,13 +766,26 @@ class EdiSoapOrder(orm.Model):
         # Create remain pallet:
         remain = pallet - current_pallet
         pallet_id = 0
+        pallet_ids = []
         for i in range(0, remain):            
-            pallet_id = pallet_pool.create(cr, uid, {
+            pallet_ids.append(pallet_pool.create(cr, uid, {
                 'name': last + i + 1,
-                'sscc': pallet_pool._generate_sscc_code_with_check(
+                'sscc': pallet_pool._generate_sscc_code(
                     cr, uid, context=context),
                 'order_id': ids[0]
-                }, context=context)
+                }, context=context))
+        for pallet in pallet_pool.browse(cr, uid, pallet_ids, context=context):
+            fullname = pallet_pool._get_sscc_fullname(
+                cr, uid, pallet, context=context)
+            import pdb; pdb.set_trace()
+            image = treepoem.generate_barcode(
+                barcode_type='gs1-128', # One of the BWIPP supported codes.
+                data=pallet.sscc, #'(01)%s14-digit-product-code'
+                )
+                 
+            image.convert('1').save(fullname)    
+            
+        return True        
 
     def create_new_order(self, cr, uid, connection_id, order, force=False, 
             context=None):
@@ -1288,7 +1302,7 @@ class EdiSoapLogisticPallet(orm.Model):
     # -------------------------------------------------------------------------
     # Utility for syntax:
     # -------------------------------------------------------------------------
-    def _sscc_check_digit(self, fixed):
+    """def _sscc_check_digit(self, fixed):
         ''' Generate check digit and return
         '''
         tot = 0
@@ -1306,16 +1320,15 @@ class EdiSoapLogisticPallet(orm.Model):
         if remain:
             return 10 - remain 
         else: 
-            return 0
+            return 0"""
     
-    def _generate_sscc_code_with_check(self, cr, uid, context=None):
+    def _generate_sscc_code(self, cr, uid, context=None):
         ''' Generate partial code with counter and add check digit
         '''
-        fixed = self.pool.get('ir.sequence').get(
+        return self.pool.get('ir.sequence').get(
             cr, uid, 'sscc.code.pallet.number')
             
-        return '%s%s' % (fixed, self._sscc_check_digit(fixed))
-            
+        #return '%s%s' % (fixed, self._sscc_check_digit(fixed))
         
     # -------------------------------------------------------------------------
     # Button:
@@ -1343,31 +1356,40 @@ class EdiSoapLogisticPallet(orm.Model):
     # -------------------------------------------------------------------------
     # Field function:
     # -------------------------------------------------------------------------
+    def _get_sscc_fullname(self, cr, uid, pallet, context=None):
+        ''' Get image name for SSCC image file crom current proxy obj
+        '''
+        extension = 'png'
+        connection = pallet.order_id.connection_id
+        
+        sscc_path = os.path.expanduser(os.path.join(
+            connection.server_root,
+            'sscc',
+            ))
+        try:    
+            os.system('mkdir -p %s' % sscc_path)    
+            return os.path.join(
+                sscc_path, 
+                '%s.%s' % (
+                    pallet.sscc.replace('(', '').replace(')', ''), # XXX clean 
+                    extension,
+                    ))
+        except:
+            raise osv.except_osv(
+                _('Error'), _('Errore generating SSCC path!'))
+        return False        
+        
     def _get_sscc_codebar_image(self, cr, uid, ids, field_name, arg, 
             context=None):
         ''' Get image from SSCC folder GIF image
         '''
-        extension = 'gif'
-
-        pallet_proxy = self.browse(cr, uid, ids, context=context)[0]
-        connection = pallet_proxy.order_id.connection_id
-        sscc_path = os.path.join(
-            connection.server_root,
-            'sscc',
-            )
-        try:    
-            os.system('mkdir -p %s' % sscc_path)    
-        except:
-            raise osv.except_osv(
-                _('Error'), _('Errore generating SSCC path!'))
+        pallet_proxy = self.browse(cr, uid, ids, context=context)
 
         res = dict.fromkeys(ids, False)
-        for pallet in self.browse(cr, uid, ids, context=context):
+        for pallet in pallet_proxy:
             try:
-                fullname = os.path.join(
-                    sscc_path, 
-                    '%s.%s' % (pallet.sscc, extension),
-                    )
+                fullname = self._get_sscc_fullname(
+                    cr, uid, pallet, context=context)
                 f = open(fullname, 'rb')
                 res[code.id] = base64.encodestring(f.read())
                 f.close()
