@@ -1024,7 +1024,7 @@ class EdiSoapOrderLine(orm.Model):
         product = product_pool.browse(cr, uid, product_id, context=context)
         if not product.chunk:
             try:
-                chunk = re.findall(r'\d*[xX]', product.name)[0][:-1]
+                chunk = re.findall(r'\d*[xX]', product.name)[0][:-1] or 1
             except:
                 chunk = 1    
             product_pool.write(cr, uid, [product_id], {
