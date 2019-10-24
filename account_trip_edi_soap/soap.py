@@ -495,9 +495,20 @@ class EdiSoapConnection(orm.Model):
                 # Bug management:                
                 text = data['text'].replace('\xb0', ' ')                
                 
+                order_pool = self.pool.get('edi.soap.order')
+                order_ids = order_pool.search(cr, uid, [
+                    ('name', '=', data['customer_order']),
+                    ], context=context)
+                if order_ids: 
+                    order_id = order_ids[0]    
+                else:
+                    _logger.error('Cannot link logistic to generator order!')
+                    order_id = False
+                
                 # A. Import order:
                 logistic_id = logistic_pool.create(cr, uid, {
                     'name': name,
+                    'order_id': order_id,
                     'connection_id': ids[0],
                     'text': text,
                     'pallet': data['pallet'],
@@ -812,7 +823,8 @@ class EdiSoapOrder(orm.Model):
             context=None):
         ''' Create new order from order object
         '''        
-        print order # TODO remove
+        
+        #print order # TODO remove
         
         # Pool used:
         connection_pool = self.pool.get('edi.soap.connection')
@@ -1262,6 +1274,8 @@ class EdiSoapLogistic(orm.Model):
         'delivery_date': fields.date('Delivery date'),
         'connection_id': fields.many2one(
             'edi.soap.connection', 'Connection', required=True),
+        'order_id': fields.many2one(
+            'edi.soap.order', 'Order', help='Generator order linked'),
         'pallet': fields.integer('Pallet #'),
         'select_pallet_id': fields.many2one(
             'edi.soap.logistic.pallet', 'Select pallet'),
