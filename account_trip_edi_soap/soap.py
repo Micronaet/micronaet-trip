@@ -835,6 +835,8 @@ class EdiSoapOrder(orm.Model):
 
         if order_ids:
             if force:
+                # TODO keep pallet created!
+
                 # Delete and recreate
                 _logger.warning('Order deleted for recreation: %s' % (
                     order_ids,
