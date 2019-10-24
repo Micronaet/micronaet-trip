@@ -19,7 +19,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
-
+import os
+import treepoem
 from report import report_sxw
 from report.report_sxw import rml_parse
 
@@ -27,7 +28,31 @@ class Parser(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
         super(Parser, self).__init__(cr, uid, name, context)
         self.localcontext.update({
-            
+            'get_objects': self.get_objects,        
             })
+            
+    def get_objects(self, data):
+        ''' Return single or multi label
+        '''
+        cr = self.cr
+        uid = self.uid        
+        ids = data.get('pallet_ids', [])
+        context = {}
+
+        pallet_pool = self.pool.get('edi.soap.logistic.pallet')
+        pallets = pallet_pool.browse(cr, uid, ids, context=context)
+        for pallet in pallets:
+            fullname = pallet_pool._get_sscc_fullname(
+                cr, uid, pallet, context=context)
+                
+            # Generate image during print (only first time)    
+            if not os.path.isfile(fullname):
+                image = treepoem.generate_barcode(
+                    barcode_type='gs1-128', # One of the BWIPP supported codes.
+                    data=pallet.sscc,
+                    )                 
+                image.convert('1').save(fullname)    
+
+        return pallets
     
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

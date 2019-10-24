@@ -774,16 +774,6 @@ class EdiSoapOrder(orm.Model):
                     cr, uid, context=context),
                 'order_id': ids[0]
                 }, context=context))
-        for pallet in pallet_pool.browse(cr, uid, pallet_ids, context=context):
-            fullname = pallet_pool._get_sscc_fullname(
-                cr, uid, pallet, context=context)
-            image = treepoem.generate_barcode(
-                barcode_type='gs1-128', # One of the BWIPP supported codes.
-                data=pallet.sscc, #'(01)%s14-digit-product-code'
-                )
-                 
-            image.convert('1').save(fullname)    
-            
         return True        
 
     def create_new_order(self, cr, uid, connection_id, order, force=False, 
@@ -929,8 +919,7 @@ class EdiSoapOrder(orm.Model):
                 }                    
             line_pool.create(cr, uid, line, context=context)
 
-        weight = weight.get(pallet_uom, 0.0)
-        
+        weight = weight.get(pallet_uom, 0.0)        
         if weight: 
             self.write(cr, uid, [order_id], {
                 'total_weight': weight,
@@ -943,14 +932,35 @@ class EdiSoapOrder(orm.Model):
     def extract_order_csv_file(self, cr, uid, ids, context=None):
         ''' Generate all pallet label from here
         '''
-        # TODO 
-        order_proxy = self.browse(cr, uid, ids, context=context)[0]
-        connection = order_proxy.connection_id
-        path = connection.order_root
+        order = self.browse(cr, uid, ids, context=context)[0]
+        
+        # Parameters:
+        newline = '\r\n'
+        connection = order.connection_id
         separator = connection.order_separator
         csv_code = connection.csv_code
-        #account_code = connection.account_code
+        path = os.path.expanduser(connection.order_root)
+        filename = '%s.csv' % order.name
+        fullname = os.path.join(path, filename)
         
+        file_csv = open(fullname, 'w')
+        for line in order.line_ids:
+            row = '%s%s%s%s%s%s' % (
+                csv_code,
+                separator,
+                line.name,
+                separator,
+                line.product_id.default_code,
+                newline,
+                # TODO
+                )
+            file_csv.write(row)
+
+        # Save file name (hide button):            
+        self.write(cr, uid, [order.id], {
+            'filename': filename,
+            }, context=context)
+            
         return True
         
     def reload_this_order(self, cr, uid, ids, context=None):
@@ -991,6 +1001,18 @@ class EdiSoapOrder(orm.Model):
             'nodestroy': False,
             }    
 
+    def _get_check_pre_export(self, cr, uid, ids, fields, args, context=None):
+        ''' Fields function for calculate export OK
+        '''
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context): 
+            res[order.id] = True
+            for line in order.line_ids:
+                if not (line.product_id and line.duty_code and line.chunk):
+                    res[order.id] = False
+                    break 
+        return res
+
     _columns = {
         'name': fields.char(
             'PO Number', size=40, required=True),
@@ -1021,6 +1043,11 @@ class EdiSoapOrder(orm.Model):
         'total_pallet': fields.integer('Total pallet'),
 
         'filename': fields.char('Filename CSV', size=40),
+        'check_pre_export': fields.function(
+            _get_check_pre_export, method=True, 
+            type='boolean', string='Check pre export', 
+            store=False), 
+                        
         }    
 
 class EdiSoapOrderLine(orm.Model):
@@ -1301,33 +1328,11 @@ class EdiSoapLogisticPallet(orm.Model):
     # -------------------------------------------------------------------------
     # Utility for syntax:
     # -------------------------------------------------------------------------
-    """def _sscc_check_digit(self, fixed):
-        ''' Generate check digit and return
-        '''
-        tot = 0
-        pos = 0
-        
-        for c in fixed:
-            pos+=1
-            number = int(c)
-            if pos % 2 == 0 :
-                tot += number
-            else:
-                tot += number*3
-        
-        remain = tot % 10
-        if remain:
-            return 10 - remain 
-        else: 
-            return 0"""
-    
     def _generate_sscc_code(self, cr, uid, context=None):
         ''' Generate partial code with counter and add check digit
         '''
         return self.pool.get('ir.sequence').get(
             cr, uid, 'sscc.code.pallet.number')
-            
-        #return '%s%s' % (fixed, self._sscc_check_digit(fixed))
         
     # -------------------------------------------------------------------------
     # Button:
@@ -1337,7 +1342,7 @@ class EdiSoapLogisticPallet(orm.Model):
         ''' 
         if context is None:
             context = {}       
-        report_name = 'sscc_pallet_label_report'
+
         if not ids:     
             order_id = context.get('order_id')
             if not order_id:
@@ -1348,9 +1353,16 @@ class EdiSoapLogisticPallet(orm.Model):
             ids = self.search(cr, uid, [
                 ('order_id', '=', order_id),
                 ], context=context)
-        
-        # TODO print report
-        return True
+
+        datas = {
+            'pallet_ids': ids, # single or list
+            }
+
+        return { # action report
+            'type': 'ir.actions.report.xml',
+            'report_name': 'sscc_pallet_label_report',
+            'datas': datas,
+            }            
         
     # -------------------------------------------------------------------------
     # Field function:
@@ -1390,7 +1402,7 @@ class EdiSoapLogisticPallet(orm.Model):
                 fullname = self._get_sscc_fullname(
                     cr, uid, pallet, context=context)
                 f = open(fullname, 'rb')
-                res[code.id] = base64.encodestring(f.read())
+                res[pallet.id] = base64.encodestring(f.read())
                 f.close()
             except:
                 _logger.error('Cannot load: %s' % fullname)

@@ -157,7 +157,7 @@ msgstr "Nome porto consegna"
 #. module: account_trip_edi_soap
 #: field:edi.soap.order,connection_id:0
 msgid "Connection"
-msgstr "Connezione"
+msgstr "Connessione"
 
 #. module: account_trip_edi_soap
 #: help:edi.soap.connection,namespace:0
