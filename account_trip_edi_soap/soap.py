@@ -24,6 +24,7 @@ import sys
 import logging
 import openerp
 import shutil
+import re
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
@@ -662,6 +663,7 @@ class EdiSoapMapping(orm.Model):
             ], context=context)
         if not product_ids:
             return res
+
         if len(product_ids) == 1:
             res['value'] = {
                 'product_id': product_ids[0],
@@ -685,6 +687,8 @@ class EdiSoapMapping(orm.Model):
             'edi.soap.connection', 'Connection', required=True),
         'duty_code': fields.related(
             'product_id', 'duty_code', type='char', string='Duty code'),
+        'chunk': fields.related(
+            'product_id', 'chunk', type='integer', string='Chunk per pack'),
         }
 
 class ProductProduct(orm.Model):
@@ -694,7 +698,8 @@ class ProductProduct(orm.Model):
     _inherit = 'product.product'
     
     _columns = {
-        'duty_code': fields.char('Dury code', size=20),
+        'duty_code': fields.char('Duty code', size=20),
+        'chunk': fields.char('Chunk per pack', size=20),
     }
 
 class EdiSoapOrder(orm.Model):
@@ -1012,6 +1017,21 @@ class EdiSoapOrderLine(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
+    def extract_chunk_from_name(self, cr, uid, product_id, context=None):
+        ''' Extract left part of X if decimal
+        '''
+        product_pool = self.pool.get('product.product')
+        product = product_pool.browse(cr, uid, product_id, context=context)
+        if not product.chunk:
+            try:
+                chunk = re.findall(r'\d*[xX]', product.name)[0][:-1]
+            except:
+                chunk = 1    
+            product_pool.write(cr, uid, [product_id], {
+                'chunk': chunk,
+                }, context=context)
+        return 
+
     # -------------------------------------------------------------------------
     # Oncange:
     # -------------------------------------------------------------------------
@@ -1020,17 +1040,21 @@ class EdiSoapOrderLine(orm.Model):
         ''' Update mapped product
         '''
         res = {}
-        if not order_id and not product_id and not name:
+        if not order_id or not product_id or not name:
             return res
             
         order_pool = self.pool.get('edi.soap.order')
+        mapping_pool = self.pool.get('edi.soap.mapping')
+        
         order_proxy = order_pool.browse(cr, uid, order_id, context=context)
         connection_id = order_proxy.connection_id.id
+
+        # Chunk setup:
+        self.extract_chunk_from_name(cr, uid, product_id, context=context)
 
         # ---------------------------------------------------------------------
         # Search mapping    
         # ---------------------------------------------------------------------
-        mapping_pool = self.pool.get('edi.soap.mapping')
         mapping_ids = mapping_pool.search(cr, uid, [
             ('connection_id', '=', connection_id),
             ('name', '=', name),
@@ -1038,7 +1062,8 @@ class EdiSoapOrderLine(orm.Model):
 
         if len(mapping_ids) > 1:
            _logger.error('More than one mapping: %s' % name)
-               
+        
+        
         # ---------------------------------------------------------------------
         # Mapping operation:
         # ---------------------------------------------------------------------
@@ -1061,6 +1086,9 @@ class EdiSoapOrderLine(orm.Model):
 
         'duty_code': fields.related(
             'product_id', 'duty_code', type='char', string='Duty code'),
+        'chunk': fields.related(
+            'product_id', 'chunk', type='integer', string='Chunk per pack'),
+
         'description': fields.char('Description', size=40),
         #'price': fields.char('', size=40),
         'uom': fields.char('UOM', size=10),

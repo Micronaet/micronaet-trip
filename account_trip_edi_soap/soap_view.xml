@@ -139,11 +139,12 @@
                                     <group colspan="4" col="4">
                                         <separator string="Detail:" colspan="4"/>
                                         <field name="line_ids" colspan="4" nolabel="1">
-                                            <tree string="Detail:" editable="bottom" colors="red:product_id==False or duty_code==False; blue:ordered_qty!=confirmed_qty">
+                                            <tree string="Detail:" editable="bottom" colors="red:product_id==False or duty_code==False or chunk == False; blue:ordered_qty!=confirmed_qty">
                                                 <field name="order_id" invisible="1" />
                                                 <field name="name" readonly="1"/>
                                                 <field name="product_id" on_change="onchange_company_product_id(order_id, name, product_id)"/>                                                
                                                 <field name="duty_code" />
+                                                <field name="chunk" />
                                                 <field name="description" readonly="1" />
                                                 <field name="uom" readonly="1" />
                                                 <field name="ordered_qty" readonly="1" sum="ordered_total"/>
@@ -337,6 +338,7 @@
                      <field name="name" />
                      <field name="default_code" on_change="onchange_default_code(default_code)" />
                      <field name="product_id" />
+                     <field name="chunk" />
                      <field name="duty_code" />
                 </tree>
             </field>
