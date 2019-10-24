@@ -52,8 +52,9 @@
                                         <field name="order_separator" />
                                         
                                         <field name="pallet_capability" />
-                                        <field name="uom_code" />
+                                        <field name="pallet_extra" />
                                         
+                                        <field name="uom_code" />                                        
                                         <field name="csv_code" />
 
                                         <separator string="Logistic parameter:" colspan="3"/>
@@ -165,15 +166,19 @@
                                 </page>
                                 <page string="Label">
                                     <group colspan="4" col="5">
-                                        <field name="total_weight" readonly="1" />
-                                        <field name="total_pallet" />
-                                        <button name="generate_pallet_list" string="Generate pallet" type="object" colspan="1"/>
-                                         <separator string="Pallet:" colspan="5"/>
+                                         <field name="total_weight" readonly="1" />
+                                         <field name="total_pallet" />
+                                         <button name="generate_pallet_list" string="Generate pallet" type="object" colspan="1"/>
+
+                                         <separator string="Pallet:" colspan="4"/>
+                                         <button name="print_all_label" string="Print all label" type="object" icon="gtk-print" class="oe_highlight" colspan="1"/>
+                                         
                                          <field name="pallet_ids" colspan="5" nolabel="1" readonly="1">
                                               <tree string="Pallet" editable="bottom">
                                                    <field name="name" readonly="1"/>
                                                    <field name="sscc" readonly="1"/>
                                                    <field name="logistic_id" readonly="1" />
+                                                   <button name="print_label" string="Print label" type="object" icon="gtk-print" class="oe_highlight" />
                                               </tree>
                                          </field>
                                         

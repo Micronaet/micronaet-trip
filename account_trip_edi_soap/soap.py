@@ -629,7 +629,8 @@ class EdiSoapConnection(orm.Model):
             help='Used for pallet total calc'),
         'pallet_capability': fields.integer('Pallet capability',
             help='Used for pallet total calc'),
-        
+        'pallet_extra': fields.integer('Pallet extra',
+            help='Used to print extra label if needed'),
         # Account:    
         'server_account_code': fields.char('Account code', size=180, 
             required=True, 
@@ -722,7 +723,7 @@ class EdiSoapOrder(orm.Model):
     def print_all_label(self, cr, uid, ids, context=None):    
         ''' Print all label
         '''
-        line_pool = self.pool.get('edi.soap.order.line')
+        line_pool = self.pool.get('edi.soap.logistic.pallet')
         if context is None:
             context = []
         context['order_id'] = ids[0]
@@ -772,13 +773,20 @@ class EdiSoapOrder(orm.Model):
         '''        
         print order # TODO remove
         
-        # Parameter:
-        pallet_weight = 500
-        pallet_uom = 'KG'
-        
         # Pool used:
+        connection_pool = self.pool.get('edi.soap.connection')
         mapping_pool = self.pool.get('edi.soap.mapping')
         line_pool = self.pool.get('edi.soap.order.line')
+
+        # ---------------------------------------------------------------------
+        # Parameter:
+        # ---------------------------------------------------------------------
+        connection = connection_pool.browse(
+            cr, uid, connection_id, context=context)
+        pallet_weight = connection.pallet_capability
+        pallet_uom = connection.uom_code
+        pallet_extra = connection.pallet_extra
+
         po_number = self._safe_get(order, 'poNumber')        
         order_ids = self.search(cr, uid, [
             ('name', '=', po_number),
@@ -907,7 +915,7 @@ class EdiSoapOrder(orm.Model):
         if weight: 
             self.write(cr, uid, [order_id], {
                 'total_weight': weight,
-                'total_pallet': (weight / pallet_weight) + \
+                'total_pallet': pallet_extra + (weight / pallet_weight) + \
                     1 if weight % pallet_weight > 0 else 0
                 }, context=context)   
         
@@ -1004,29 +1012,6 @@ class EdiSoapOrderLine(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
-    # -------------------------------------------------------------------------
-    # Button:
-    # -------------------------------------------------------------------------
-    def print_label(self, cr, uid, ids, context=None):    
-        ''' Print single label for pallet:
-        ''' 
-        if context is None:
-            context = {}       
-        report_name = 'sscc_pallet_label_report'
-        if not ids:     
-            order_id = context.get('order_id')
-            if not order_id:
-               raise osv.except_osv(
-                   _('Error'), 
-                   _('Cannot get order to print!'),
-                   )
-            ids = self.search(cr, uid, [
-                ('order_id', '=', order_id),
-                ], context=context)
-        
-        # TODO print report
-        return True
-        
     # -------------------------------------------------------------------------
     # Oncange:
     # -------------------------------------------------------------------------
@@ -1271,6 +1256,29 @@ class EdiSoapLogisticPallet(orm.Model):
     '''
     _inherit = 'edi.soap.logistic.pallet'
 
+    # -------------------------------------------------------------------------
+    # Button:
+    # -------------------------------------------------------------------------
+    def print_label(self, cr, uid, ids, context=None):    
+        ''' Print single label for pallet:
+        ''' 
+        if context is None:
+            context = {}       
+        report_name = 'sscc_pallet_label_report'
+        if not ids:     
+            order_id = context.get('order_id')
+            if not order_id:
+               raise osv.except_osv(
+                   _('Error'), 
+                   _('Cannot get order to print!'),
+                   )
+            ids = self.search(cr, uid, [
+                ('order_id', '=', order_id),
+                ], context=context)
+        
+        # TODO print report
+        return True
+        
     _columns = {
         'line_ids': fields.one2many(
             'edi.soap.logistic.line', 'pallet_id', 'Lines'),
