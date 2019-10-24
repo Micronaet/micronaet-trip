@@ -654,6 +654,23 @@ class EdiSoapMapping(orm.Model):
     _rec_name = 'name'
     _order = 'connection_id,default_code'
     
+    def onchange_product_id(self, cr, uid, ids, product_id, context=None):
+        ''' Onchange product check chunk data:
+        '''
+        if not product_id:
+           return False #{'value': {'chunk': False}}
+        # Update chunk if not present:
+        product_pool = self.pool.get('product.product')
+        product = product_pool.browse(cr, uid, product_id, context=context)
+        if product.chunk:
+            chunk = product.chunk
+        else:
+            chunk = product_pool.get_chunk(product)
+            product_pool.write(cr, uid, [product_id], {
+                'chunk': chunk,
+                }, context=context)
+        return False 
+
     def onchange_default_code(self, cr, uid, ids, default_code, context=None):
         ''' Update product from default_code
         '''
@@ -672,6 +689,9 @@ class EdiSoapMapping(orm.Model):
             res['domain'] = {
                 'product_id': [],
                 }    
+            # Call for update chunk:    
+            self.onchange_product_id(
+                cr, uid, ids, product_ids[0], context=context)    
         else:
             res['domain'] = {
                 'product_id': [('id', 'in', product_ids)],
@@ -697,6 +717,18 @@ class ProductProduct(orm.Model):
     """
     
     _inherit = 'product.product'
+
+    # -------------------------------------------------------------------------
+    # Utility:
+    # -------------------------------------------------------------------------
+    def get_chunk(self, product):
+        ''' Extract chunk from name
+        '''
+        try:
+            return re.findall(r'\d*[xX]', product.name)[0][:-1] or 1
+        except:
+            return 1    
+
     
     _columns = {
         'duty_code': fields.char('Duty code', size=20),
@@ -1064,10 +1096,7 @@ class EdiSoapOrderLine(orm.Model):
         product_pool = self.pool.get('product.product')
         product = product_pool.browse(cr, uid, product_id, context=context)
         if not product.chunk:
-            try:
-                chunk = re.findall(r'\d*[xX]', product.name)[0][:-1] or 1
-            except:
-                chunk = 1    
+            chunk = product_pool.get_chunk(product)
             product_pool.write(cr, uid, [product_id], {
                 'chunk': chunk,
                 }, context=context)
