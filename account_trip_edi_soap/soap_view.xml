@@ -141,7 +141,7 @@
                                     <group colspan="4" col="4">
                                         <separator string="Detail:" colspan="4"/>
                                         <field name="line_ids" colspan="4" nolabel="1">
-                                            <tree string="Detail:" editable="bottom" colors="red:product_id==False or duty_code==False or chunk == False; blue:ordered_qty!=confirmed_qty">
+                                            <tree string="Detail:" editable="bottom" colors="red:product_id==False or duty_code==False or chunk==False;blue:ordered_qty!=confirmed_qty">
                                                 <field name="order_id" invisible="1" />
                                                 <field name="name" readonly="1"/>
                                                 <field name="product_id" on_change="onchange_company_product_id(order_id, name, product_id)"/>                                                
@@ -204,6 +204,27 @@
         </record>
         
         <!--edi.soap.logistic-->        
+        <record model="ir.ui.view" id="view_edi_soap_logistic_line_tree">
+            <field name="name">edi.soap.logistic.line.tree</field>
+            <field name="model">edi.soap.logistic.line</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom" string="Line">
+                     <button name="line_detail" string="Line detail" type="object" icon="gtk-index" />
+                     <field name="sequence" readonly="1" />
+                     <field name="logistic_id" readonly="1" />
+                     <field name="order_id" readonly="1" />
+                     <field name="name" readonly="1" />
+                     <field name="lot" readonly="1" />
+                     <field name="piece" readonly="1" />
+                     <field name="net_qty" readonly="1" />
+                     <field name="lord_qty" readonly="1" />
+                     <field name="deadline" readonly="1" />
+                     <field name="pallet" on_change="onchange_pallet_code(logistic_id, pallet)"/>
+                     <field name="pallet_id" invisible="1" />
+                </tree>
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="view_edi_soap_logistic_line_form">
             <field name="name">edi.soap.logistic.line.form</field>
             <field name="model">edi.soap.logistic.line</field>
@@ -253,9 +274,11 @@
             <field name="name">edi.soap.logistic.tree</field>
             <field name="model">edi.soap.logistic</field>
             <field name="arch" type="xml">
-                <tree string="SOAP Logistic order"> 
-                    <field name="name" />
+                <tree string="SOAP Logistic order" colors="red:order_id==False"> 
                     <field name="connection_id" />
+                    <field name="name" />
+                    <field name="order_id" />
+                    <field name="delivery_date" />
                 </tree>
             </field>
         </record>
@@ -265,38 +288,42 @@
             <field name="arch" type="xml">
                 <form string="SOAP Logistic order" version="7.0"> 
                      <header>
-                         <button name="dummy_save" string="Save" type="object" class="oe_highlight" icon="gtk-save"/>
+                         <button name="send_logistic_2_soap" string="Send" type="object" class="oe_highlight" icon="gtk-save-as" attrs="{'invisible': [('soap_sent','=',True)]}"/>
                      </header>
                      <sheet>                     
                          <group colspan="4" col="4">
                               <field name="connection_id" readonly="1"/>
-                              <newline/>
+                              <field name="soap_sent" invisible="1"/>
                               
-                              <field name="customer_order" />
-                              <field name="order_id" />
+                              <field name="customer_order" readonly="1"/>
+                              <field name="order_id" readonly="1"/>
 
                               <field name="name" readonly="1"/>
-                              <field name="delivery_date" />
+                              <field name="delivery_date" readonly="1"/>
 
-                              <field name="pallet" />
-                              <button name="generate_pallet_list" string="Generate pallet" type="object" icon="gtk-refresh"/>
+                              <field name="pallet" readonly="1"/>
 
                               <notebook colspan="4">
                                   <page string="Detail">
-                                      <group colspan="4" col="6">
-                                          <separator string="Detail:" colspan="2"/>
+                                      <group colspan="4" col="4">
+                                          <separator string="Detail:" colspan="3"/>
+                                          <button name="open_logistic_lines" string="Open lines" type="object" class="oe_highlight" icon="gtk-justify-fill" colspan="1"/>
                                           <!--<field name="select_pallet_id" widget="selection" domain="[('logistic_id', '=', active_id)]"/>
                                           <button name="setup_pallet_id" string="Set pallet all" type="object" icon="gtk-refresh" help="Setup all line with this pallet" />-->
                                           
-                                          <field name="line_ids" nolabel="1" colspan="6">
+                                          <field name="line_ids" nolabel="1" colspan="6" context="{'default_logistic_id': active_id}">
                                               <tree editable="bottom" string="Line">
                                                   <button name="line_detail" string="Line detail" type="object" icon="gtk-index" />
+                                                  <field name="logistic_id" invisible="1" />
+                                                  <field name="sequence" readonly="1" />
                                                   <field name="name" readonly="1" />
                                                   <field name="lot" readonly="1" />
+                                                  <field name="piece" readonly="1" />
                                                   <field name="net_qty" readonly="1" />
                                                   <field name="lord_qty" readonly="1" />
                                                   <field name="deadline" readonly="1" />
-                                                  <field name="pallet_id" widget="selection" />
+                                                  <field name="pallet" on_change="onchange_pallet_code(logistic_id, pallet)"/>
+                                                  <field name="pallet_id" invisible="1" />
                                                </tree>
                                           </field>
                                      </group>                                      
@@ -308,6 +335,8 @@
                                               <tree string="Pallet" editable="bottom">
                                                    <field name="name" readonly="1"/>
                                                    <field name="sscc" readonly="1"/>
+                                                   <field name="total_line" readonly="1"/>
+                                                   <field name="total_weight" readonly="1"/>
                                               </tree>
                                          </field>
                                      </group>

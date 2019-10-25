@@ -314,9 +314,9 @@ class EdiSoapConnection(orm.Model):
         # Load parameters:
         parameter = self.browse(cr, uid, ids, context=context)[0]
         separator = parameter.detail_separator
-        path = os.path.expanduser(parameter.server_root)
+        invoice_path = os.path.expanduser(parameter.server_root)
         partner_start = parameter.server_account_code.split('|')
-        if not partner_start or not path:
+        if not partner_start or not invoice_path:
             raise osv.except_osv(
                 _('Error'), 
                 _('Check parameter on SAOP Configuration!'),
@@ -328,14 +328,16 @@ class EdiSoapConnection(orm.Model):
         # Extra path:
         # ---------------------------------------------------------------------
         # Path used:
-        history_path = os.path.join(path, 'csv', 'history')
-        unsed_path = os.path.join(path, 'csv', 'unsed')
-        log_path = os.path.join(path, 'csv', 'log')
-        pdf_path = os.path.join(path, 'pdf')
+        pdf_path = os.path.join(invoice_path, 'pdf')
+        path = os.path.join(invoice_path, 'csv')
         # Also SSCC but not generated here!
 
-        # Create process:
-        for folder in (path, history_path, unsed_path, log_path, pdf_path):
+        history_path = os.path.join(path, 'history')
+        unsed_path = os.path.join(path, 'unsed')
+        log_path = os.path.join(path, 'log')
+
+        # Create process (path not included!):
+        for folder in (history_path, unsed_path, log_path, pdf_path):
             os.system('mkdir -p %s' % folder)
         
         # ---------------------------------------------------------------------
@@ -504,7 +506,6 @@ class EdiSoapConnection(orm.Model):
                 # -------------------------------------------------------------
                 # Link to order                
                 # -------------------------------------------------------------
-                import pdb; pdb.set_trace()
                 order_ids = order_pool.search(cr, uid, [
                     ('name', '=', data['customer_order']),
                     ], context=context)
@@ -528,22 +529,25 @@ class EdiSoapConnection(orm.Model):
 
                 # B. Link pallet:
                 default_pallet_id = False
+                default_pallet = False
                 if order_id:
                     pallet_ids = pallet_pool.search(cr, uid, [
                         ('order_id', '=', order_id),
                         ], context=context)
                     pallet_pool.write(cr, uid, pallet_ids, {
                         'logistic_id': logistic_id,
-                        }, context=context
+                        }, context=context)
                     #if len(pallet_ids) == 1:    
                     default_pallet_id = pallet_ids[0] # TODO Check if first!
+                    default_pallet = pallet_pool.browse(
+                        cr, uid, default_pallet_id, context=context).name
 
                 # C. Import order line:
                 sequence = 0
                 invoice_date = get_date(data['invoice_date'])
 
                 for row, lord_qty in data['detail']:
-                    sequence += 10
+                    sequence += 1
                     line_part = row.split(separator)
                     
                     # Deadline: 
@@ -554,7 +558,8 @@ class EdiSoapConnection(orm.Model):
                         )
                     data = {
                         'logistic_id': logistic_id,
-                        'pallet_id': default_pallet_id,
+                        'pallet_id': default_pallet_id, # one2many
+                        'pallet': default_pallet, # code
 
                         'sequence': sequence,
                         'name': line_part[4],
@@ -840,9 +845,6 @@ class EdiSoapOrder(orm.Model):
             context=None):
         ''' Create new order from order object
         '''        
-        
-        #print order # TODO remove
-        
         # Pool used:
         connection_pool = self.pool.get('edi.soap.connection')
         mapping_pool = self.pool.get('edi.soap.mapping')
@@ -1217,53 +1219,41 @@ class EdiSoapLogistic(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
-    # TODO move in edi.soap.order generation of pallet:
-    def generate_pallet_list(self, cr, uid, ids, context=None):
-        ''' Generate list of pallet depend on pallet number
+    def open_logistic_lines(self, cr, uid, ids, context=None):
+        ''' Logisti line details
+        '''        
+        model_pool = self.pool.get('ir.model.data')
+        view_id = model_pool.get_object_reference(
+            cr, uid, 
+            'account_trip_edi_soap', 
+            'view_edi_soap_logistic_line_tree')[1]
+        
+        line_pool = self.pool.get('edi.soap.logistic.line')
+        line_ids = line_pool.search(cr, uid, [
+            ('logistic_id', '=', ids[0]),
+            ], context=context)
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Detail lines'),
+            'view_type': 'form',
+            'view_mode': 'tree',
+            #'res_id': 1,
+            'res_model': 'edi.soap.logistic.line',
+            'view_id': view_id, # False
+            'views': [(False, 'tree'), ],
+            'domain': [('id', 'in', line_ids)],
+            'context': context,
+            'target': 'current',
+            'nodestroy': False,
+            }
+        
+    def send_logistic_2_soap(self, cr, uid, ids, context=None):
+        ''' Send to SOAP platform logistic order
         '''
-        # TODO
-        """pallet_pool = self.pool.get('edi.soap.logistic.pallet')
-        
-        current_proxy = self.browse(cr, uid, ids, context=context)[0]
-        pallet = current_proxy.pallet
-        current_pallet = len(current_proxy.pallet_ids)
-        if pallet == current_pallet and current_pallet:
-            raise osv.except_osv(
-                _('Warning'), 
-                _('The %s pallet is yet created!') % pallet,
-                )
-        elif pallet < current_pallet and current_pallet:
-            raise osv.except_osv(
-                _('Warning'), 
-                _('Cannot remove, dont\'t use the wrong created!'),
-                )
-        try:        
-            last = max([item.name for item in current_proxy.pallet_ids])        
-        except:
-            last = 0    
-        
-        # ---------------------------------------------------------------------
-        # If is only one assign to all
-        # ---------------------------------------------------------------------
-        # TODO user order pallet!
-        # Create remain pallet:
-        remain = pallet - current_pallet
-        pallet_id = 0
-        for i in range(0, remain):            
-            pallet_id = pallet_pool.create(cr, uid, {
-                'name': last + i + 1,
-                'sscc': 'SSCC!!', # TODO generate new ID
-                'logistic_id': ids[0]
-                }, context=context)
-                
-        # ---------------------------------------------------------------------
-        # Assign if only one, use button procedure:
-        # ---------------------------------------------------------------------
-        if pallet == 1 and pallet_id:
-            self.write(cr, uid, ids, {
-                'select_pallet_id': pallet_id,
-                }, context=context)
-            self.setup_pallet_id(cr, uid, ids, context=context)"""
+        self.write(cr, uid, ids, {
+            'soap_sent': True,
+            }, context=context)
         return True
         
     def setup_pallet_id(self, cr, uid, ids, context=None):
@@ -1287,13 +1277,14 @@ class EdiSoapLogistic(orm.Model):
         
     _columns = {
         'name': fields.char('Invoice reference', size=40, required=True),
+        'soap_sent': fields.boolean('Soap sent'),
         'customer_order': fields.char('Cust. Number', size=40),
         'delivery_date': fields.date('Delivery date'),
         'connection_id': fields.many2one(
             'edi.soap.connection', 'Connection', required=True),
         'order_id': fields.many2one(
             'edi.soap.order', 'Order', help='Generator order linked'),
-        'pallet': fields.integer('Pallet #'),
+        'pallet': fields.integer('Pallet used'),
         'select_pallet_id': fields.many2one(
             'edi.soap.logistic.pallet', 'Select pallet'),
         'text': fields.text('File text', help='Account file as original'),
@@ -1318,11 +1309,33 @@ class EdiSoapLogisticPallet(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
+    def _get_pallet_totals(self, cr, uid, ids, fields, args, context=None):
+        ''' Fields function for calculate 
+        '''
+        res = {}
+        # TODO test!
+        for pallet in self.browse(cr, uid, ids, context=context):
+            res[pallet.id] = {
+                'total_line': 0,#len(pallet.line_ids),
+                'total_weight': 0.0,
+                #sum([
+                #    (line.piece * line.lord_qty) for line in pallet.line_ids])
+                }
+            
+        return res
+
     _columns = {
         'name': fields.integer('#', required=True),
         'sscc': fields.char('SSCC Code', size=40, required=True),
         'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order'),
         'order_id': fields.many2one('edi.soap.order', 'Sale order'),
+        'total_line': fields.function(
+            _get_pallet_totals, method=True, 
+            type='integer', string='Total line', multi=True), 
+        'total_weight': fields.function(
+            _get_pallet_totals, method=True, 
+            type='float', digits=(16, 3), string='Total line', multi=True), 
+        
         }        
 
 class EdiSoapLogistic(orm.Model):
@@ -1332,6 +1345,27 @@ class EdiSoapLogistic(orm.Model):
     _description = 'EDI Soap Logistic Line'
     _rec_name = 'name'
     _order = 'sequence, name'
+
+    #onchange:
+    def onchange_pallet_code(self, cr, uid, ids, logistic_id, pallet_code, 
+            context=None):
+        ''' Save correct element
+        '''
+        logistic_pool = self.pool.get('edi.soap.logistic')
+        logistic = logistic_pool.browse(cr, uid, logistic_id, context=context)
+        pallet_id = False
+        for pallet in logistic.pallet_ids:
+            if pallet_code == pallet.name:
+                pallet_id = pallet.id
+                break
+        if not pallet_id:
+            raise osv.except_osv(
+                _('Pallet error'), 
+                _('Pallet not found use code present in the list'),
+                )        
+        return {'value': {
+            'pallet_id': pallet_id,
+            }}        
 
     def line_detail(self, cr, uid, ids, context=None):   
         ''' Open detail line
@@ -1358,7 +1392,12 @@ class EdiSoapLogistic(orm.Model):
 
     _columns = {
         'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order'),
+        'pallet': fields.integer('Pallet'),
         'pallet_id': fields.many2one('edi.soap.logistic.pallet', 'Pallet'),
+        'order_id': fields.related(
+            'logistic_id', 'order_id', 
+            type='many2one', relation='edi.soap.order', 
+            string='Order'),
 
         'sequence': fields.integer('Seq.'),
         'name': fields.char('Article', size=40, required=True),
@@ -1475,7 +1514,7 @@ class EdiSoapLogisticPallet(orm.Model):
             _get_sscc_codebar_image, type='binary', method=True),
 
         'line_ids': fields.one2many(
-            'edi.soap.logistic.line', 'pallet_id', 'Lines'),
+            'edi.soap.logistic.line', 'pallet_id', 'Logistic Lines'),
         }
     
 class EdiSoapLogistic(orm.Model):

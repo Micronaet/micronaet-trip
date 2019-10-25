@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+       <!-- edi.logistic.line.split.wizard -->
+       <record id="edi_logistic_line_split_wizard_wizard_view" model="ir.ui.view">
+            <field name="name">Split wizard</field>
+            <field name="model">edi.logistic.line.split.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Wizard" version="7.0">
+                   <header>
+                       <button string="Cancel" special="cancel" />
+                       <button name="action_done" string="Split" type="object" icon="gtk-jump-to" class="oe_highlight" />
+                   </header>                   
+                   <group colspan="4" col="4">
+                        <field name="line_id" readonly="1" />
+                        <field name="new_quantity" />
+                        <field name="new_pallet_id" />
+                   </group>
+                </form>
+            </field>
+      </record>
+
+      <!--<record model="ir.actions.act_window" id="action_edi_logistic_line_split.wizard_wizard">
+          <field name="name">Split wizard</field>
+          <field name="res_model">edi.logistic.line.split.wizard</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">form</field>
+          <field name="target">new</field>
+          <field name="view_id" ref="edi_logistic_line_split_wizard_wizard_view"/>
+      </record>-->
+      <!--TODO action ?-->
+    </data>
+</openerp>

@@ -44,6 +44,8 @@
         # Init setup:
         'data/connection_data.xml',
         
+        'wizard/split_line_view.xml',
+        
         # Report:
         'report/sscc_label_report.xml',
         ],
