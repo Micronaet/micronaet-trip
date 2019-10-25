@@ -280,17 +280,20 @@ class EdiSoapConnection(orm.Model):
                 return '31'
                 
 
+        # ---------------------------------------------------------------------
         # Pool used:
+        # ---------------------------------------------------------------------
         logistic_pool = self.pool.get('edi.soap.logistic')
         line_pool = self.pool.get('edi.soap.logistic.line')
-        pallet_pool = self.pool.get('edi.soap.logistic.pallet')
-        
+        pallet_pool = self.pool.get('edi.soap.logistic.pallet')        
+        company_pool = self.pool.get('res.company')
+        order_pool = self.pool.get('edi.soap.order')
+
         # ---------------------------------------------------------------------
         # Parameters:
         # ---------------------------------------------------------------------
         newline = '\r\n'
         html_newline = '<br />'
-        separator = '|*|'
         start = {
             # Row number:
             'customer_order': 2,
@@ -310,6 +313,7 @@ class EdiSoapConnection(orm.Model):
 
         # Load parameters:
         parameter = self.browse(cr, uid, ids, context=context)[0]
+        separator = parameter.detail_separator
         path = os.path.expanduser(parameter.server_root)
         partner_start = parameter.server_account_code.split('|')
         if not partner_start or not path:
@@ -317,19 +321,21 @@ class EdiSoapConnection(orm.Model):
                 _('Error'), 
                 _('Check parameter on SAOP Configuration!'),
                 )
-
         partner_len = len(partner_start[0])
+
 
         # ---------------------------------------------------------------------
         # Extra path:
         # ---------------------------------------------------------------------
         # Path used:
-        history_path = os.path.join(path, 'history')
-        unsed_path = os.path.join(path, 'unsed')
-        log_path = os.path.join(path, 'log')
+        history_path = os.path.join(path, 'csv', 'history')
+        unsed_path = os.path.join(path, 'csv', 'unsed')
+        log_path = os.path.join(path, 'csv', 'log')
+        pdf_path = os.path.join(path, 'pdf')
+        # Also SSCC but not generated here!
 
         # Create process:
-        for folder in (path, history_path, unsed_path, log_path):
+        for folder in (path, history_path, unsed_path, log_path, pdf_path):
             os.system('mkdir -p %s' % folder)
         
         # ---------------------------------------------------------------------
@@ -494,8 +500,11 @@ class EdiSoapConnection(orm.Model):
 
                 # Bug management:                
                 text = data['text'].replace('\xb0', ' ')                
-                
-                order_pool = self.pool.get('edi.soap.order')
+
+                # -------------------------------------------------------------
+                # Link to order                
+                # -------------------------------------------------------------
+                import pdb; pdb.set_trace()
                 order_ids = order_pool.search(cr, uid, [
                     ('name', '=', data['customer_order']),
                     ], context=context)
@@ -504,7 +513,7 @@ class EdiSoapConnection(orm.Model):
                 else:
                     _logger.error('Cannot link logistic to generator order!')
                     order_id = False
-                
+                    
                 # A. Import order:
                 logistic_id = logistic_pool.create(cr, uid, {
                     'name': name,
@@ -517,7 +526,19 @@ class EdiSoapConnection(orm.Model):
                     #'filename': 
                     }, context=context)
 
-                # B. Import order line:
+                # B. Link pallet:
+                default_pallet_id = False
+                if order_id:
+                    pallet_ids = pallet_pool.search(cr, uid, [
+                        ('order_id', '=', order_id),
+                        ], context=context)
+                    pallet_pool.write(cr, uid, pallet_ids, {
+                        'logistic_id': logistic_id,
+                        }, context=context
+                    #if len(pallet_ids) == 1:    
+                    default_pallet_id = pallet_ids[0] # TODO Check if first!
+
+                # C. Import order line:
                 sequence = 0
                 invoice_date = get_date(data['invoice_date'])
 
@@ -533,6 +554,7 @@ class EdiSoapConnection(orm.Model):
                         )
                     data = {
                         'logistic_id': logistic_id,
+                        'pallet_id': default_pallet_id,
 
                         'sequence': sequence,
                         'name': line_part[4],
@@ -561,11 +583,6 @@ class EdiSoapConnection(orm.Model):
                         'mrn': '',
                         }
                     line_pool.create(cr, uid, data, context=context)
-                
-                # C. Create pallet list:
-                logistic_pool.generate_pallet_list(
-                    cr, uid, [logistic_id], context=context)
-                
             break # only path folder
 
         # ---------------------------------------------------------------------
