@@ -1009,10 +1009,91 @@ class EdiSoapOrder(orm.Model):
     def extract_order_csv_file(self, cr, uid, ids, context=None):
         ''' Generate all pallet label from here
         '''
+        # ---------------------------------------------------------------------
+        # Utility:
+        # ---------------------------------------------------------------------
+        def clean_text(text, length, uppercase=False, error=None, 
+                truncate=False):
+            ''' Return clean text with limit cut
+                Log in error if over length
+            '''
+            if error is None:
+                error = []
+
+            text = text.strip()
+            if len(text) > length:
+                if truncate:
+                    text = text[:length]
+                else:
+                    error.append('Text: %s > %s' % (text, length))
+            if uppercase:
+                return text.upper()
+            return text    
+
+        def clean_date(italian_date, separator='', out_format='iso', 
+                error=None):
+            ''' Return clean text with limit cut
+                Log in error if over length
+            '''
+            if error is None:
+                error = []
+            italian_date = italian_date.split(' ')[0] # remove hour block
+            if len(italian_date) != 10:
+                error.append('Error not italian date: %s' % italian_date)
+                # not stopped
+            if out_format == 'iso': 
+                return '%s%s%s%s%s' % (
+                    italian_date[-4:],
+                    separator,
+                    italian_date[3:5],
+                    separator,        
+                    italian_date[:2],
+                    )
+            elif out_format == 'italian': 
+                return '%s%s%s%s%s' % (
+                    italian_date[:2],
+                    separator,
+                    italian_date[3:5],
+                    separator,        
+                    italian_date[-4:],
+                    )
+            elif out_format == 'english': 
+                return '%s%s%s%s%s' % (
+                    italian_date[3:5],
+                    separator,
+                    italian_date[:2],
+                    separator,        
+                    italian_date[-4:],
+                    )
+            else: # incorrect format:        
+                return italian_date # nothing todo
+
+        def clean_float(value, length, decimal=3, separator='.', error=None):
+            ''' Clean float and return float format 
+            '''
+            if error is None:
+                error = []
+            try:    
+                value = value.replace(',', '.')    
+                float_value = float(value.strip())
+            except:
+                error.append('Not a float: %s' % value)
+                float_value = 0.0
+            
+            mask = '%%%s.%sf' % (length, decimal)
+            res = mask % float_value
+            res = res.replace('.', separator)
+            return res
+        
+        # ---------------------------------------------------------------------
+        #                           Export procedure:
+        # ---------------------------------------------------------------------        
         order = self.browse(cr, uid, ids, context=context)[0]
         
         # Parameters:
-        newline = '\r\n'
+        mask = '%3s|%-8s|%-9s|%-60s|%-60s|%-5s|%-60s|%-4s|%-10s|%-16s|%-16s|'+\
+            '%-60s|%-2s|%-15s|%-15s|%-15s|%-8s\r\n'
+
         connection = order.connection_id
         separator = connection.order_separator
         csv_code = connection.csv_code
@@ -1020,24 +1101,51 @@ class EdiSoapOrder(orm.Model):
         filename = '%s.csv' % order.name
         fullname = os.path.join(path, filename)
         
+        # Update separator
+        if separator != '|':
+            mask = mask.replace('|', separator)
+        
         file_csv = open(fullname, 'w')
+        error = ''
         for line in order.line_ids:
-            row = '%s%s%s%s%s%s' % (
-                csv_code,
-                separator,
-                line.name,
-                separator,
-                line.product_id.default_code,
-                newline,
-                # TODO
+            # Readability:
+            product = line.product_id
+            
+            date = ''# TODO create_date[:8] # From create date
+            deadline = ''# TODO clean_date(row[0], separator='', out_format='iso', 
+            #    error=error)
+
+
+            row = mask % (
+                csv_code, # Company
+                deadline,
+                '', # TODO clean_text(row[1], 9, error=error).#code,
+                '', # TODO clean_text(row[1], 9, error=error), #cook_center,
+                '', # TODO clean_text(row[3], 60, error=error),#address,
+                '', # TODO clean_text(row[4], 5, error=error), # XXX Check, cap,
+                '', # TODO clean_text(row[5], 60, error=error), # XXX Check, #city,
+                '', # TODO clean_text(row[6], 4, uppercase=True, error=error),#province,
+                '', # TODO clean_text(row[7], 10, error=error), #order,
+                clean_text(
+                    product.default_code, 16, uppercase=True, error=error),
+                '', # TODO clean_text(
+                #    row[9], 16, uppercase=True, error=error), #default_code_supplier,
+                clean_text(
+                    product.name, 60, error=error, truncate=True),
+                '', # TODO clean_text(row[11], 2, uppercase=True, error=error), # um,
+                '', # TODO clean_float(row[12], 15, 2, error=error), # quantity,
+                '', # TODO clean_float(row[13], 15, 3, error=error), # price,
+                '', # TODO clean_float(row[14], 15, 3, error=error), # cost,
+                date,
                 )
             file_csv.write(row)
+        file_csv.close()
 
         # Save file name (hide button):            
         self.write(cr, uid, [order.id], {
             'filename': filename,
             }, context=context)
-            
+        _logger.warning('Files %s exported!' % fullname)
         return True
         
     def reload_this_order(self, cr, uid, ids, context=None):
