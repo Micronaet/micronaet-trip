@@ -849,6 +849,7 @@ class EdiSoapOrder(orm.Model):
         connection_pool = self.pool.get('edi.soap.connection')
         mapping_pool = self.pool.get('edi.soap.mapping')
         line_pool = self.pool.get('edi.soap.order.line')
+        pallet_pool = self.pool.get('edi.soap.logistic.pallet')
 
         # ---------------------------------------------------------------------
         # Parameter:
@@ -864,11 +865,15 @@ class EdiSoapOrder(orm.Model):
             ('name', '=', po_number),
             ], context=context)
 
+        pallet_ids = False
         if order_ids:
             if force:
-                # TODO keep pallet created!
+                # Save previous pallet list:
+                current_order = self.browse(
+                    cr, uid, order_ids, context=context)[0]
+                pallet_ids = [pallet.id for pallet in current_order.pallet_ids]
 
-                # Delete and recreate
+                # Delete order before (so recreate)
                 _logger.warning('Order deleted for recreation: %s' % (
                     order_ids,
                     ))
@@ -992,6 +997,13 @@ class EdiSoapOrder(orm.Model):
                     1 if weight % pallet_weight > 0 else 0
                 }, context=context)   
         
+        # Pallet relinked to new order:
+        if pallet_ids:
+            _logger.warning('Pallet relinked to logistic order # %s' % len(
+                pallet_ids))
+            pallet_pool.write(cr, uid, pallet_ids, {
+                'order_id': order_id,
+                }, context=context)
         return order_id
 
     def extract_order_csv_file(self, cr, uid, ids, context=None):
