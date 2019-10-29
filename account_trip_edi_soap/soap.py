@@ -1218,8 +1218,8 @@ class EdiSoapOrder(orm.Model):
             'PO Number', size=40, required=True),
         'connection_id': fields.many2one(
             'edi.soap.connection', 'Connection', required=True),
-        'delivery_date': fields.date('Delivery date', required=True),
-        'po_create_date': fields.date('PO Create date', required=True),
+        'delivery_date': fields.date('Delivery date'), # required=True
+        'po_create_date': fields.date('PO Create date'), # required=True
         'entity_name': fields.char('Entity name', size=40),
         'delivery_port_nam': fields.char('Delivery Port Nam', size=40),
         'status': fields.char('Status', size=40),
