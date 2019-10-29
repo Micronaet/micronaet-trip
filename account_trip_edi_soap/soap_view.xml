@@ -130,6 +130,9 @@
                             <field name="status" readonly="1" />
                             <field name="currency" readonly="1" />
                             
+                            <field name="po_create_date" readonly="1" />
+                            <field name="delivery_date" readonly="1" />
+                            
                             <field name="fullname" readonly="1" />
                             <field name="buyer_group" readonly="1" />
 
@@ -149,6 +152,7 @@
                                                 <field name="chunk" />
                                                 <field name="description" readonly="1" />
                                                 <field name="uom" readonly="1" />
+                                                <field name="item_price" readonly="1" />
                                                 <field name="ordered_qty" readonly="1" sum="ordered_total"/>
                                                 <field name="confirmed_qty" sum="confirmed_qty"/>
                                             </tree>

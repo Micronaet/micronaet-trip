@@ -884,17 +884,18 @@ class EdiSoapOrder(orm.Model):
 
         header = {
             'connection_id': connection_id,
-            'name': self._safe_get(order, 'poNumber'), # '2110479-FB04023'
-            #'delivery_date': self._safe_get(
-            #    order, 'deliveryDate'), # None,
+            'name': self._safe_get(
+                order, 'poNumber'), # '2110479-FB04023'
+            'delivery_date': self._safe_get(
+                order, 'deliveryDate'), # None,
             'entity_name': self._safe_get(
                 order, 'entityName'),# 'MV Poesia',
             'delivery_port_nam': self._safe_get(
                 order, 'deliveryPortName'), # u'Wa\xfcnde',
             'status': self._safe_get(
                 order, 'status'),# 'Emitted',
-            #'po_create_date': self._safe_get(
-            #    order, 'createDate'),# None,
+            'po_create_date': self._safe_get(
+                order, 'createDate'),# None,
             'currency': self._safe_get(
                 order, 'currency'),# 'EUR',
             'fullname': self._safe_get(
@@ -965,8 +966,8 @@ class EdiSoapOrder(orm.Model):
                 'product_id': product_id,
                 'description': self._safe_get(
                     line, 'itemDescription'), # 'CORN KERNEL WHOLE FRZ',
-                #'item_price': self._safe_get(
-                #    line, 'itemPrice'), # Decimal('0.93000'),
+                'item_price': self._safe_get(
+                    line, 'itemPrice'), # Decimal('0.93000'),
                 'uom': uom,
                 'ordered_qty': float(self._safe_get(
                     line, 'quantityOrdered', 0.0)), # Decimal('230.00000'),
@@ -1073,9 +1074,12 @@ class EdiSoapOrder(orm.Model):
             '''
             if error is None:
                 error = []
-            try:    
-                value = value.replace(',', '.')    
-                float_value = float(value.strip())
+            try:
+                if type(value) == str:
+                    value = value.replace(',', '.')    
+                    float_value = float(value.strip())
+                else: # float
+                    float_value = value    
             except:
                 error.append('Not a float: %s' % value)
                 float_value = 0.0
@@ -1092,7 +1096,7 @@ class EdiSoapOrder(orm.Model):
         
         # Parameters:
         mask = '%3s|%-8s|%-9s|%-60s|%-60s|%-5s|%-60s|%-4s|%-10s|%-16s|%-16s|'+\
-            '%-60s|%-2s|%-15s|%-15s|%-15s|%-8s\r\n'
+            '%-60s|%-2s|%-15s|%-15s|%-15s|%-8s|%-8s\r\n'
 
         connection = order.connection_id
         separator = connection.order_separator
@@ -1105,38 +1109,49 @@ class EdiSoapOrder(orm.Model):
         if separator != '|':
             mask = mask.replace('|', separator)
         
+        # Header data:
+        date = order.po_create_date.replace('-', '')
+        deadline = order.delivery_date.replace('-', '')
+        today = datetime.now().strftime(
+            DEFAULT_SERVER_DATE_FORMAT).replace('-', '')
+        address = order.delivery_address.split('\n')
+            
         file_csv = open(fullname, 'w')
-        error = ''
+        error = []
         for line in order.line_ids:
             # Readability:
             product = line.product_id
-            
-            date = ''# TODO create_date[:8] # From create date
-            deadline = ''# TODO clean_date(row[0], separator='', out_format='iso', 
-            #    error=error)
-
+            subtotal = line.confirmed_qty * line.item_price
 
             row = mask % (
                 csv_code, # Company
-                deadline,
-                '', # TODO clean_text(row[1], 9, error=error).#code,
-                '', # TODO clean_text(row[1], 9, error=error), #cook_center,
-                '', # TODO clean_text(row[3], 60, error=error),#address,
-                '', # TODO clean_text(row[4], 5, error=error), # XXX Check, cap,
-                '', # TODO clean_text(row[5], 60, error=error), # XXX Check, #city,
-                '', # TODO clean_text(row[6], 4, uppercase=True, error=error),#province,
-                '', # TODO clean_text(row[7], 10, error=error), #order,
-                clean_text(
-                    product.default_code, 16, uppercase=True, error=error),
-                '', # TODO clean_text(
-                #    row[9], 16, uppercase=True, error=error), #default_code_supplier,
+                deadline, # 
+                '', # TODO clean_text(row[1], 9, error=error), # center cost,
+                '', # TODO clean_text(row[3], 60, error=error),# destination,
+                clean_text( # address: street
+                    address[0], 60, error=error), 
+                '', # TODO clean_text(row[4], 5, error=error), # zip
+                clean_text( # address: city
+                    address[1:2][0], 60, error=error), 
+                '', # TODO clean_text(row[6], 4, uppercase=True, error=error),# province,
+                clean_text( # order number
+                    order.name, 25, error=error), 
+                clean_text( # Supplier code
+                    line.name, 16, uppercase=True, error=error),
+                clean_text( # Company code
+                    product.default_code, 16, uppercase=True, error=error), 
                 clean_text(
                     product.name, 60, error=error, truncate=True),
-                '', # TODO clean_text(row[11], 2, uppercase=True, error=error), # um,
-                '', # TODO clean_float(row[12], 15, 2, error=error), # quantity,
-                '', # TODO clean_float(row[13], 15, 3, error=error), # price,
-                '', # TODO clean_float(row[14], 15, 3, error=error), # cost,
+                clean_text( # UOM
+                    line.uom, 2, uppercase=True, error=error), 
+                clean_float( # quantity
+                    line.confirmed_qty, 15, 2, error=error), 
+                clean_float( # price
+                    line.item_price, 15, 3, error=error), 
+                clean_float( # subtotal
+                    subtotal, 15, 3, error=error), 
                 date,
+                today,
                 )
             file_csv.write(row)
         file_csv.close()
@@ -1203,11 +1218,11 @@ class EdiSoapOrder(orm.Model):
             'PO Number', size=40, required=True),
         'connection_id': fields.many2one(
             'edi.soap.connection', 'Connection', required=True),
-        # delivery_date = order.get('deliveryDate', False) # None,
+        'delivery_date': fields.date('Delivery date', required=True),
+        'po_create_date': fields.date('PO Create date', required=True),
         'entity_name': fields.char('Entity name', size=40),
         'delivery_port_nam': fields.char('Delivery Port Nam', size=40),
         'status': fields.char('Status', size=40),
-        # create_date = order.get('createDate', False)# None,
         'currency': fields.char('currency', size=10),
         'fullname': fields.char('Full name', size=40),
         #document_value = order.get('documentValue', False)#: 234.20000,
@@ -1319,7 +1334,7 @@ class EdiSoapOrderLine(orm.Model):
         'confirmed_qty': fields.float('Confirmed', digits=(16, 3)),
         'logistic_qty': fields.float('Logistic', digits=(16, 3)),
 
-        #'item_price'
+        'item_price': fields.float('Price', digits=(16, 5)),
         #'cd_gtin'
         #'cd_voce_doganale'
         #'nr_pz_conf'
