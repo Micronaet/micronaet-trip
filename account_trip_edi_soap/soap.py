@@ -1095,7 +1095,7 @@ class EdiSoapOrder(orm.Model):
         order = self.browse(cr, uid, ids, context=context)[0]
         
         # Parameters:
-        mask = '%3s|%-8s|%-9s|%-60s|%-60s|%-5s|%-60s|%-4s|%-10s|%-16s|'+\
+        mask = '%3s|%-8s|%-9s|%-60s|%-60s|%-5s|%-60s|%-4s|%-10s|%-16s|' + \
             '%-16s|%-60s|%-2s|%-15s|%-15s|%-15s|%-8s|%-8s\r\n'
 
         connection = order.connection_id
