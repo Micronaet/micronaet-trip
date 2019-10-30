@@ -1444,6 +1444,24 @@ class EdiSoapLogisticPallet(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
+    # -------------------------------------------------------------------------
+    # Button:
+    # -------------------------------------------------------------------------
+    def all_this_pallet(self, cr, uid, ids, context=None):
+        ''' Set this pallet to all the line
+        '''
+        pallet = self.browse(cr, uid, ids, context=context)[0]
+        
+        line_pool = self.pool.get('edi.soap.logistic.line')
+        line_ids = line_pool.search(cr, uid, [
+            ('logistic_id', '=', pallet.logistic_id.id),
+            ], context=context)
+
+        return line_pool.write(cr, uid, line_ids, {
+            'pallet': pallet.name,
+            'pallet_id': pallet.id,
+            }, context=context)
+        
     def _get_pallet_totals(self, cr, uid, ids, fields, args, context=None):
         ''' Fields function for calculate 
         '''

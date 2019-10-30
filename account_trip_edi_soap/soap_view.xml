@@ -341,6 +341,7 @@
                                                    <field name="sscc" readonly="1"/>
                                                    <field name="total_line" readonly="1"/>
                                                    <field name="total_weight" readonly="1"/>
+                                                  <button name="all_this_pallet" string="Set to all" type="object" icon="gtk-execute" />
                                               </tree>
                                          </field>
                                      </group>
