@@ -1451,28 +1451,38 @@ class EdiSoapLogisticPallet(orm.Model):
         ''' Set this pallet to all the line
         '''
         pallet = self.browse(cr, uid, ids, context=context)[0]
-        
+
         line_pool = self.pool.get('edi.soap.logistic.line')
         line_ids = line_pool.search(cr, uid, [
             ('logistic_id', '=', pallet.logistic_id.id),
             ], context=context)
 
-        return line_pool.write(cr, uid, line_ids, {
+        line_pool.write(cr, uid, line_ids, {
             'pallet': pallet.name,
             'pallet_id': pallet.id,
             }, context=context)
-        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+            }
     def _get_pallet_totals(self, cr, uid, ids, fields, args, context=None):
         ''' Fields function for calculate 
         '''
         res = {}
-        # TODO test!
+
         for pallet in self.browse(cr, uid, ids, context=context):
+            # Search line linked:
+            line_pool = self.pool.get('edi.soap.logistic.line')
+            line_ids = line_pool.search(cr, uid, [
+                ('logistic_id', '=', pallet.logistic_id.id),
+                ('pallet_id', '=', pallet.id)
+                ], context=context)
+            lines = line_pool.browse(cr, uid, line_ids, context=context)
+            
             res[pallet.id] = {
-                'total_line': 0,#len(pallet.line_ids),
-                'total_weight': 0.0,
-                #sum([
-                #    (line.piece * line.lord_qty) for line in pallet.line_ids])
+                'total_line': len(line_ids),
+                'total_weight': sum([
+                    (line.piece * line.lord_qty) for line in lines])
                 }
             
         return res
@@ -1665,7 +1675,7 @@ class EdiSoapLogisticPallet(orm.Model):
     _columns = {
         'sscc_image': fields.function(
             _get_sscc_codebar_image, type='binary', method=True),
-
+        # TODO remove:
         'line_ids': fields.one2many(
             'edi.soap.logistic.line', 'pallet_id', 'Logistic Lines'),
         }

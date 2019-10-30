@@ -336,11 +336,11 @@
                                      <group colspan="4" col="4">
                                          <separator string="Pallet:" colspan="4"/>
                                          <field name="pallet_ids" colspan="4" nolabel="1" readonly="1">
-                                              <tree string="Pallet" editable="bottom">
+                                              <tree string="Pallet" editable="bottom" colors="red:total_line == 0">
                                                    <field name="name" readonly="1"/>
                                                    <field name="sscc" readonly="1"/>
-                                                   <field name="total_line" readonly="1"/>
-                                                   <field name="total_weight" readonly="1"/>
+                                                   <field name="total_line" readonly="1" sum="total_q"/>
+                                                   <field name="total_weight" readonly="1" sum="total"/>
                                                   <button name="all_this_pallet" string="Set to all" type="object" icon="gtk-execute" />
                                               </tree>
                                          </field>
