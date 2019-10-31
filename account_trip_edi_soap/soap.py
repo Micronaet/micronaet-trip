@@ -845,6 +845,8 @@ class EdiSoapOrder(orm.Model):
             context=None):
         ''' Create new order from order object
         '''        
+        print order
+
         # Pool used:
         connection_pool = self.pool.get('edi.soap.connection')
         mapping_pool = self.pool.get('edi.soap.mapping')
@@ -900,16 +902,16 @@ class EdiSoapOrder(orm.Model):
                 order, 'currency'),# 'EUR',
             'fullname': self._safe_get(
                 order, 'fullName'),# 'xxx yyy',
-            #'document_value': self._safe_get(
-            #    order, 'documentValue'),#: Decimal('234.20000')
+            'document_value': self._safe_get(
+                order, 'documentValue'),#: Decimal('234.20000')
             'buyer_group': self._safe_get(
                 order, 'buyerGroup'),#: 'Buyers',
-            #'delivery_terms': self._safe_get(
-            #    order, 'deliveryTerms'),#: None,
-            #'info_container': self._safe_get(
-            #    order, 'infoContainer'),#: None,
-            #'document_comment': self._safe_get(
-            #    order, 'documentComment'),#: None,
+            'delivery_terms': self._safe_get(
+                order, 'deliveryTerms'),#: None,
+            'info_container': self._safe_get(
+                order, 'infoContainer'),#: None,
+            'document_comment': self._safe_get(
+                order, 'documentComment'),#: None,
             'invoice_holder': self._safe_get(
                 order, 'invoiceHolder'),#: 'Cruises',
             'invoice_address': self._safe_get(
@@ -920,12 +922,12 @@ class EdiSoapOrder(orm.Model):
                 order, 'deliveryAt'),# 'Comando nave',
             'delivery_address': self._safe_get(
                 order, 'deliveryAddress'),# 'Via X 91 Genova 16162 Italy',
-            #'delivery_ship': self._safe_get(
-            #    order, 'deliveryShip'),#: None,
-            #'logistic': self._safe_get(
-            #    order, 'logistic'),# False,
-            #'requires_logistic': self._safe_get(
-            #    order, 'requiresLogistic'),# None,
+            'delivery_ship': self._safe_get(
+                order, 'deliveryShip'),#: None,
+            'logistic': self._safe_get(
+                order, 'logistic'),# False,
+            'requires_logistic': self._safe_get(
+                order, 'requiresLogistic'),# None,
             }            
 
         # Create order not present:    
@@ -975,18 +977,18 @@ class EdiSoapOrder(orm.Model):
                 'logistic_qty': float(self._safe_get(
                     line, 'quantityLogistic', 0.0)), # None,
                 
-                #'cd_gtin': self._safe_get(
-                #    line, 'cdGtin'), # None,
-                #'cd_voce_doganale': self._safe_get(
-                #    line, 'cdVoceDoganale'), # None,
-                #'nr_pz_conf': self._safe_get(
-                #    line, 'nrPzConf'), # None,
-                #'cd_paese_origine': self._safe_get(
-                #    line, 'cdPaeseOrigine'), # None,
-                #'cd_paese_provenienza': self._safe_get(
-                #    line, 'cdPaeseProvenienza'), # None,
-                #'fl_dogana': self._safe_get(
-                #    line, 'flDogana'), # None
+                'cd_gtin': self._safe_get(
+                    line, 'cdGtin'), # None,
+                'cd_voce_doganale': self._safe_get(
+                    line, 'cdVoceDoganale'), # None,
+                'nr_pz_conf': self._safe_get(
+                    line, 'nrPzConf'), # None,
+                'cd_paese_origine': self._safe_get(
+                    line, 'cdPaeseOrigine'), # None,
+                'cd_paese_provenienza': self._safe_get(
+                    line, 'cdPaeseProvenienza'), # None,
+                'fl_dogana': self._safe_get(
+                    line, 'flDogana'), # None
                 }                    
             line_pool.create(cr, uid, line, context=context)
 
@@ -1236,19 +1238,22 @@ class EdiSoapOrder(orm.Model):
         'status': fields.char('Status', size=40),
         'currency': fields.char('currency', size=10),
         'fullname': fields.char('Full name', size=40),
-        #document_value = order.get('documentValue', False)#: 234.20000,
         'buyer_group': fields.char('Buyer Group', size=30),
-        #delivery_terms = order.get('deliveryTerms', False)#: None,
-        #info_container = order.get('infoContainer', False)#: None,
-        #document_comment = order.get('documentComment', False)#: None,
+        
+        'document_value': fields.float('Document value', digits=(16, 3)), #documentValue #: 234.20000,
+        'delivery_terms': fields.char('Delivery Terms', size=30), # deliveryTerms # None
+        'info_container': fields.char('Info container', size=40), # infoContainer # None
+        'document_comment': fields.char('Document Comment', size=30), # documentComment #: None
+        
         'invoice_holder': fields.char('Invoice Holder', size=40),
         'invoice_address': fields.char('Invoice Address', size=60),
         'invoice_vatcode': fields.char('Invoice VAT code', size=40),
         'delivery_at': fields.char('Delivery at', size=40),
         'delivery_address': fields.char('Delivery Address', size=40),
-        #delivery_ship = order.get('deliveryShip', False)#: None,
-        #logistic = order.get('logistic', False)# False,
-        #requires_logistic = order.get('requiresLogistic', False)# None,
+        
+        'delivery_ship': fields.char('Delivery ship', size=50), # deliveryShip # None
+        'logistic': fields.boolean('Invoice VAT code'), # logistic # False
+        'requires_logistic': fields.char('Requires logistic', size=50), # requiresLogistic # None
         
         'total_weight': fields.integer('Total weight'),
         'total_pallet': fields.integer('Total pallet'),
@@ -1269,6 +1274,29 @@ class EdiSoapOrderLine(orm.Model):
     _description = 'EDI Soap Order line'
     _rec_name = 'name'
     _order = 'name'
+
+    def order_line_detail(self, cr, uid, ids, context=None):   
+        ''' Open detail line
+        '''
+        model_pool = self.pool.get('ir.model.data')
+        view_id = model_pool.get_object_reference(
+            cr, uid, 
+            'account_trip_edi_soap', 'view_edi_soap_order_line_form')[1]
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Line detail'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': ids[0],
+            'res_model': 'edi.soap.order.line',
+            'view_id': view_id,
+            'views': [(view_id, 'form')],
+            'domain': [],
+            'context': context,
+            'target': 'new',
+            'nodestroy': False,
+            }
 
     def extract_chunk_from_name(self, cr, uid, product_id, context=None):
         ''' Extract left part of X if decimal
@@ -1339,20 +1367,20 @@ class EdiSoapOrderLine(orm.Model):
         'chunk': fields.related(
             'product_id', 'chunk', type='integer', string='Chunk per pack'),
 
-        'description': fields.char('Description', size=40),
-        #'price': fields.char('', size=40),
+        'description': fields.char('Description', size=40), # itemDescription
         'uom': fields.char('UOM', size=10),
         'ordered_qty': fields.float('Ordered', digits=(16, 3)),
         'confirmed_qty': fields.float('Confirmed', digits=(16, 3)),
         'logistic_qty': fields.float('Logistic', digits=(16, 3)),
 
         'item_price': fields.float('Price', digits=(16, 5)),
-        #'cd_gtin'
-        #'cd_voce_doganale'
-        #'nr_pz_conf'
-        #'cd_paese_origine'
-        #'cd_paese_provenienza'
-        #'fl_dogana'
+        
+        'cd_gtin': fields.char('GTIN', size=40), # cdGtin
+        'cd_voce_doganale': fields.char('Duty code', size=40), #cdVoceDoganale
+        'nr_pz_conf': fields.char('Q. x pack', size=5), # nrPxConf
+        'cd_paese_origine': fields.char('Origin', size=40), # cdPaeseOrigine
+        'cd_paese_provenienza': fields.char('Derived', size=40), # cdPaeseProvenienza
+        'fl_dogana': fields.char('Duty', size=20), # Duty code
         }
 
 # -----------------------------------------------------------------------------
