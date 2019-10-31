@@ -93,6 +93,7 @@
                     <field name="check_pre_export" invisible="1"/>
                     <field name="name" />
                     <field name="connection_id" />
+                    <field name="destination_id" />
                     <field name="entity_name" />
                     <field name="delivery_port_nam" />
                     <field name="status" />
@@ -138,6 +139,8 @@
 
                             <field name="filename" readonly="1"/>               
                             <field name="check_pre_export" invisible="1"/>
+
+                            <field name="destination_id" />
                             
                             <notebook colspan="4">
                                 <page string="Detail">
@@ -191,6 +194,9 @@
                                         
                                     </group>
                                 </page>
+                                
+                                <separator string="Note:" colspan="4"/>
+                                <field name="note" colspan="4" nolabel="1"/>
                             </notebook>
                         </group>
                     </shell>

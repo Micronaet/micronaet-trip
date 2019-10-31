@@ -1095,8 +1095,9 @@ class EdiSoapOrder(orm.Model):
         order = self.browse(cr, uid, ids, context=context)[0]
         
         # Parameters:
-        mask = '%3s|%-8s|%-9s|%-60s|%-60s|%-5s|%-60s|%-4s|%-10s|%-16s|' + \
+        mask = '%3s|%-8s|%-8s|%-10s|%-16s|' + \
             '%-16s|%-60s|%-2s|%-15s|%-15s|%-15s|%-8s|%-8s\r\n'
+        #'%-9s|%-60s|%-60s|%-5s|%-60s|%-4s|'
 
         connection = order.connection_id
         separator = connection.order_separator
@@ -1114,7 +1115,9 @@ class EdiSoapOrder(orm.Model):
         deadline = order.delivery_date.replace('-', '')
         today = datetime.now().strftime(
             DEFAULT_SERVER_DATE_FORMAT).replace('-', '')
-        address = order.delivery_address.split('\n')
+        #address = order.delivery_address.split('\n')
+        destination_code = order.destination_id.sql_destination_code or ''
+        
             
         file_csv = open(fullname, 'w')
         error = []
@@ -1126,14 +1129,18 @@ class EdiSoapOrder(orm.Model):
             row = mask % (
                 csv_code, # Company
                 deadline, # 
-                '', # TODO clean_text(row[1], 9, error=error), # center cost,
-                '', # TODO clean_text(row[3], 60, error=error),# destination,
                 clean_text( # address: street
                     address[0], 60, error=error), 
-                '', # TODO clean_text(row[4], 5, error=error), # zip
-                clean_text( # address: city
-                    address[1:2][0], 60, error=error), 
-                '', # TODO clean_text(row[6], 4, uppercase=True, error=error),# province,
+                
+                #'', # TODO clean_text(row[1], 9, error=error), # center cost,
+                #'', # TODO clean_text(row[3], 60, error=error),# destination,
+                #clean_text( # address: street
+                #    address[0], 60, error=error), 
+                #'', # TODO clean_text(row[4], 5, error=error), # zip
+                #clean_text( # address: city
+                #    address[1:2][0], 60, error=error), 
+                #'', # TODO clean_text(row[6], 4, uppercase=True, error=error),# province,
+                
                 clean_text( # order number
                     order.name, 25, error=error), 
                 clean_text( # Supplier code
@@ -1218,6 +1225,10 @@ class EdiSoapOrder(orm.Model):
             'PO Number', size=40, required=True),
         'connection_id': fields.many2one(
             'edi.soap.connection', 'Connection', required=True),
+        'destination_id': fields.many2one(
+            'res.partner', 'Destination', 
+            domain='[("sql_destination_code", "!=", False)]'), 
+         
         'delivery_date': fields.date('Delivery date'), # required=True
         'po_create_date': fields.date('PO Create date'), # required=True
         'entity_name': fields.char('Entity name', size=40),
@@ -1241,6 +1252,7 @@ class EdiSoapOrder(orm.Model):
         
         'total_weight': fields.integer('Total weight'),
         'total_pallet': fields.integer('Total pallet'),
+        'note': fields.text('Note'),
 
         'filename': fields.char('Filename CSV', size=40),
         'check_pre_export': fields.function(
