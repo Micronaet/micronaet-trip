@@ -33,21 +33,36 @@ def sort_line(row):
     code = row.split('|')[11].upper()
     start_1 = code[:1]
     start_2 = code[:2]
+    start_3 = code[:3]
 
-    # Test based on 1 or 2 start char:
-    if start_1 in 'HO' or start_2 == 'SP': # XXX has S - SP problem so first
-        return (3, code) # dry
-    elif start_1 in 'CDFPSV': # XXX has S - SP problem so second test
+    # -------------------------------------------------------------------------
+    # 3 char test start:
+    # -------------------------------------------------------------------------
+    if start_3 == 'SPA':
+        return (4, code) # pasta
+    
+    # -------------------------------------------------------------------------
+    # 2 char test start:
+    # -------------------------------------------------------------------------
+    if start_2 in ('SP', 'SS'):
+        return (1, code) # freeze
+        
+    # -------------------------------------------------------------------------
+    # 1 char test start:
+    # -------------------------------------------------------------------------
+    if start_1 in 'CDFPSV':
         return (1, code) # freeze
     elif start_1 in 'BILT': 
         return (2, code) # fresh
+    elif start_1 in 'HO':
+        return (3, code) # dry
     elif start_1 in 'G': 
         return (4, code) # pasta
     else: # Error list
-        # Log error:
         f_error = open('./sort_error.log', 'w')
-        f_error.write('Char not found %s - %s\n' % (start_1, start_2))
-        print 'Char not found %s - %s' % (start_1, start_2)
+        f_error.write(
+            'Char not found %s - %s -%s\n' % (start_1, start_2, start_3))
+        print 'Char not found %s - %s - %s' % (start_1, start_2, start_3)
         f_error.close()
         return (5, code)
     
