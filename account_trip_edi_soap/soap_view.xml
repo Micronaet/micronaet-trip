@@ -392,9 +392,9 @@
                                                   <field name="sequence" readonly="1" />
                                                   <field name="name" readonly="1" />
                                                   <field name="product_id" readonly="1" />
-                                                  <field name="chunk" readonly="1" />
-                                                  <field name="lot" readonly="1" />
+                                                  <!--<field name="chunk" readonly="1" />-->
                                                   <!--<field name="piece" readonly="1" />-->
+                                                  <field name="lot" readonly="1" />
                                                   <field name="net_qty" readonly="1" />
                                                   <field name="lord_qty" readonly="1" />
                                                   <field name="deadline" readonly="1" />
