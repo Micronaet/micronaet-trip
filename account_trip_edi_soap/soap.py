@@ -1497,11 +1497,11 @@ class EdiSoapLogistic(orm.Model):
         service = connection_pool._get_soap_service(
             cr, uid, [logistic.connection_id.id], context=context)
 
-        import pdb; pdb.set_trace()    
         res = service.createNewPLot(
             accessToken=connection_pool.get_token(
-                cr, uid, ids, context=context),            
+                cr, uid, [logistic.connection_id.id], context=context),  
             )
+        import pdb; pdb.set_trace()    
         confirmed = False
         
         # ---------------------------------------------------------------------
