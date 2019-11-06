@@ -25,7 +25,6 @@ import logging
 import openerp
 import shutil
 import re
-import treepoem
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
@@ -1620,11 +1619,40 @@ class EdiSoapLogisticPallet(orm.Model):
     # -------------------------------------------------------------------------
     # Utility for syntax:
     # -------------------------------------------------------------------------
-    def _generate_sscc_code(self, cr, uid, context=None):
+    def _sscc_check_digit(self, fixed):
+        ''' Generate check digit and return
+        '''
+        tot = 0
+        pos = 0
+        
+        for c in fixed:
+            pos+=1
+            number = int(c)
+            if pos % 2 == 0 :
+                tot += number
+            else:
+                tot += number*3
+        
+        remain = tot % 10
+        if remain:
+            return 10 - remain 
+        else: 
+            return 0
+    
+    # -------------------------------------------------------------------------
+    # Utility for syntax:
+    # -------------------------------------------------------------------------
+    def get_sscc_formatted(self, sscc):
+        ''' Return in format (00) XXXX...
+        '''
+        return '(%s)%s' % (sscc[:2], sscc[2:])
+        
+    def _generate_sscc_code(self, cr, uid, raw=True, context=None):
         ''' Generate partial code with counter and add check digit
         '''
-        return self.pool.get('ir.sequence').get(
+        fixed = self.pool.get('ir.sequence').get(
             cr, uid, 'sscc.code.pallet.number')
+        return '%s%s' % (fixed, self._sscc_check_digit(fixed))
         
     # -------------------------------------------------------------------------
     # Button:
@@ -1674,7 +1702,7 @@ class EdiSoapLogisticPallet(orm.Model):
             return os.path.join(
                 sscc_path, 
                 '%s.%s' % (
-                    pallet.sscc.replace('(', '').replace(')', ''), # XXX clean 
+                    pallet.sscc,
                     extension,
                     ))
         except:
@@ -1684,7 +1712,7 @@ class EdiSoapLogisticPallet(orm.Model):
         
     def _get_sscc_codebar_image(self, cr, uid, ids, field_name, arg, 
             context=None):
-        ''' Get image from SSCC folder GIF image
+        ''' Get image from SSCC folder image
         '''
         pallet_proxy = self.browse(cr, uid, ids, context=context)
 

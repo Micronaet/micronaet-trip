@@ -49,10 +49,9 @@ class Parser(report_sxw.rml_parse):
             if not os.path.isfile(fullname):
                 image = treepoem.generate_barcode(
                     barcode_type='gs1-128', # One of the BWIPP supported codes.
-                    data=pallet.sscc,
+                    data=pallet_pool.get_sscc_formatted(pallet.sscc),
                     )                 
-                image.convert('1').save(fullname)    
-
+                image.convert('1').save(fullname)
         return pallets
     
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
