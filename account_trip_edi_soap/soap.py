@@ -490,6 +490,7 @@ class EdiSoapConnection(orm.Model):
                             line, start, 'delivery_date')
                         #lord_line = check_startwith(line, start, 'lord')
                         #total_line = check_startwith(line, start, 'total')
+                        import pdb; pdb.set_trace()
                         pallet_line = check_startwith(
                             line, start, 'pallet')
                         
@@ -513,7 +514,6 @@ class EdiSoapConnection(orm.Model):
                             try:
                                 data['pallet'] = int(pallet_line)
                             except:
-                                import pdb; pdb.set_trace()
                                 data['pallet'] = 0
                                 _logger.error(
                                     'Cannot decode pallet: %s' % line)        
