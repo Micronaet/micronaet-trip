@@ -334,13 +334,14 @@ class EdiSoapConnection(orm.Model):
         separator = parameter.detail_separator
         invoice_path = os.path.expanduser(parameter.server_root)
         partner_start = parameter.server_account_code.split('|')
-        if not partner_start or not invoice_path:
+        pon_code = parameter.server_pon_code
+        
+        if not partner_start or not invoice_path or not pon_code:
             raise osv.except_osv(
                 _('Error'), 
                 _('Check parameter on SAOP Configuration!'),
                 )
         partner_len = len(partner_start[0])
-
 
         # ---------------------------------------------------------------------
         # Extra path:
@@ -551,6 +552,15 @@ class EdiSoapConnection(orm.Model):
                 # -------------------------------------------------------------
                 # Link to order                
                 # -------------------------------------------------------------
+                customer_order = data['customer_order']
+
+                # Update order if is full name or partial:
+                if customer_order.split('-')[-1] != pon_code:
+                    customer_order = '%s-%s' % (
+                        customer_order,
+                        pon_code,
+                        )
+                        
                 order_ids = order_pool.search(cr, uid, [
                     ('name', '=', data['customer_order']),
                     ], context=context)
@@ -711,6 +721,9 @@ class EdiSoapConnection(orm.Model):
         'server_account_code': fields.char('Account code', size=180, 
             required=True, 
             help='Account ref. for partners, ex: 02.00001|02.00002'),
+        'server_pon_code': fields.char('PON partner code', size=15, 
+            required=True, 
+            help='Right part of the order: ORDER-PONCODE >> PONCODE'),
         }
     
     _defaults = {

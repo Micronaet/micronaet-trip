@@ -65,6 +65,7 @@
 
                                         <separator string="Account data:" colspan="4"/>                                        
                                         <field name="server_account_code"  />
+                                        <field name="server_pon_code" />
                                     </group>
                                 </page>
                             </notebook>
