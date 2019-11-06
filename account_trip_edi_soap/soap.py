@@ -614,6 +614,7 @@ class EdiSoapConnection(orm.Model):
                         line_part[12][:2],                        
                         get_last_day(line_part[12][:2]),
                         )
+
                     default_code = line_part[4]
                     product_ids = product_pool.search(cr, uid, [
                         ('default_code', '=', default_code),
@@ -621,8 +622,8 @@ class EdiSoapConnection(orm.Model):
                     if product_ids:
                         product_id = product_ids[0]    
                     else:
+                        _logger.error('Not found: %s' % default_code)
                         product_id = False    
-                    
                     data = {
                         'logistic_id': logistic_id,
                         'pallet_id': default_pallet_id, # one2many
