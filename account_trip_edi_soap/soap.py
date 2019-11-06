@@ -457,7 +457,7 @@ class EdiSoapConnection(orm.Model):
                         if line.startswith(separator): # Detail line
                             data['detail_text'] = line
                             data['product_insert'] = False
-                        elif line.startswith(start['weight']):
+                        elif start['weight'] in line: # weigh line (second)
                             if data['product_insert']:
                                 # Check error (ex. 2 PESO LORDO line)
                                 _logger.warning('Extra line: %s' % line)
