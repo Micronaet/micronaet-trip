@@ -1537,21 +1537,21 @@ class EdiSoapLogistic(orm.Model):
             }    
         res = service.createNewPLot(
             accessToken=token, plotToCreate=plotToCreate)
-        import pdb; pdb.set_trace()
-        # res['OperationOutcome'] >> statusCode, message, errorsList
+
+        # res['operationOutcome'] >> statusCode, message, errorsList
             
         # XXX ? res['ricevuta']  # file (base64) filename 
 
         # ---------------------------------------------------------------------
         # Check response:
         # ---------------------------------------------------------------------
-        if res['OperationOutcome']['statusCode']:
+        if res['operationOutcome']['statusCode']:
             _logger.error('Error: %s [%s]' % (
-                res['OperationOutcome']['message'],
+                res['operationOutcome']['message'],
                 ','.join(res['OperationOutcome']['errorsList'])
                 ))
         else:
-            # res['OPerationOutcome']['logistic']
+            # res['operationOutcome']['logistic']
             self.write(cr, uid, ids, {
                 'soap_sent': True,
                 }, context=context)
