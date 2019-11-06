@@ -1509,7 +1509,7 @@ class EdiSoapLogistic(orm.Model):
             }    
         res = service.createNewPLot(accessToken=token, plotToCreate=data)
         confirmed = False
-        
+        import pdb; pdb.set_trace()
         # ---------------------------------------------------------------------
         # Check response:
         # ---------------------------------------------------------------------
