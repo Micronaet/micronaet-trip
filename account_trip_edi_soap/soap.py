@@ -374,7 +374,7 @@ class EdiSoapConnection(orm.Model):
         # ---------------------------------------------------------------------
         log_f = open(os.path.join(log_path, 'invoice.log'), 'w')
         history_list = []
-        import pdb; pdb.set_trace()
+
         for root, folders, files in os.walk(path):            
             for filename in files:
                 if not filename.lower().endswith('csv'):
@@ -399,7 +399,9 @@ class EdiSoapConnection(orm.Model):
                     'detail_text': '',
                     'error': False,
                     'error_comment': '',
+
                     'pallet': 1,
+                    'delivery_date': False,
                     
                     #'header': '',
                     #'detail': [],                 
