@@ -128,8 +128,6 @@
                             <field name="entity_name" readonly="1" />
                             <field name="delivery_port_nam" readonly="1" />
                             
-                            <field name="status" readonly="1" />
-                            <field name="currency" readonly="1" />
                             
                             <field name="po_create_date" readonly="1" />
                             <field name="delivery_date" readonly="1" />
@@ -137,10 +135,15 @@
                             <field name="fullname" readonly="1" />
                             <field name="buyer_group" readonly="1" />
 
+                            <field name="delivery_at" readonly="1" />                                        
+                            <field name="delivery_address" readonly="1" />                    
+
                             <field name="destination_id" required="1" domain="[('connection_id', '=', connection_id')]"/>
                             <field name="document_value" readonly="1" />
 
                             <field name="filename" readonly="1"/>               
+                            <field name="status"  />
+
                             <field name="check_pre_export" invisible="1"/>
                             
                             <notebook colspan="4">
@@ -175,12 +178,9 @@
                                         <field name="document_comment" readonly="1" />
 
                                         <field name="invoice_vatcode" readonly="1" />
-                                        <newline/>
+                                        <field name="currency" readonly="1" />
                                         
                                         <separator string="Delivery:" colspan="4"/>
-                                        <field name="delivery_at" readonly="1" />                                        
-                                        <field name="delivery_address" readonly="1" />                    
-
                                         <field name="delivery_terms" readonly="1" />   
                                         <field name="delivery_ship" readonly="1"/>                                     
                                         
