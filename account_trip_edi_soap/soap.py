@@ -1499,9 +1499,11 @@ class EdiSoapLogistic(orm.Model):
 
         token = connection_pool.get_token(
             cr, uid, [logistic.connection_id.id], context=context),
-        data = [{
-            'poNumber': logistic.order_id.name,
-            }]
+        data = {
+            'plotToCreate': {
+                'poNumber': logistic.order_id.name,
+                },
+            }    
         res = service.createNewPLot(accessToken=token, plotToCreate=data)
         confirmed = False
         
