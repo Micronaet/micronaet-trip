@@ -1739,11 +1739,8 @@ class ResPartner(orm.Model):
     _inherit = 'res.partner'
     
     def res_partner_destination_detail(self, cr, uid, ids, context=None):
+        ''' Detail partner
         '''
-        '''
-        #model_pool = self.pool.get('ir.model.data')
-        #view_id = model_pool.get_object_reference('module_name', 'view_name')[1]
-        
         return {
             'type': 'ir.actions.act_window',
             'name': _('Destination'),
@@ -1751,11 +1748,11 @@ class ResPartner(orm.Model):
             'view_mode': 'form,tree',
             'res_id': ids[0],
             'res_model': 'res.partner',
-            'view_id': False, # view_id, # False
+            'view_id': False,
             'views': [(False, 'form'), (False, 'tree')],
             'domain': [],
             'context': context,
-            'target': 'current', # 'new'
+            'target': 'current',
             'nodestroy': False,
             }
             
