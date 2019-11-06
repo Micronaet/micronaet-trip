@@ -365,8 +365,8 @@ class EdiSoapConnection(orm.Model):
             for root, folders, files in os.walk(check_path):
                 for filename in files:
                     if filename[:partner_len] not in partner_start:
-                        os.remove(os.path.join(root, f))
-                        _logger.warning('Remove file not used: %s' % f)
+                        os.remove(os.path.join(root, filename))
+                        _logger.warning('Remove file not used: %s' % filename)
                 break # No subfolder check
         return True # XXX REMOVE
         
