@@ -1097,9 +1097,8 @@ class EdiSoapOrder(orm.Model):
         order = self.browse(cr, uid, ids, context=context)[0]
         
         # Parameters:
-        mask = '%3s|%-8s|%-8s|%-10s|%-16s|' + \
+        mask = '%3s|%-8s|%-8s|%-25s|%-16s|' + \
             '%-16s|%-60s|%-2s|%-15s|%-15s|%-15s|%-8s|%-8s\r\n'
-        #'%-9s|%-60s|%-60s|%-5s|%-60s|%-4s|'
 
         connection = order.connection_id
         separator = connection.order_separator
@@ -1117,9 +1116,7 @@ class EdiSoapOrder(orm.Model):
         deadline = order.delivery_date.replace('-', '')
         today = datetime.now().strftime(
             DEFAULT_SERVER_DATE_FORMAT).replace('-', '')
-        #address = order.delivery_address.split('\n')
         destination_code = order.destination_id.sql_destination_code or ''
-        
             
         file_csv = open(fullname, 'w')
         error = []
@@ -1129,29 +1126,19 @@ class EdiSoapOrder(orm.Model):
             subtotal = line.confirmed_qty * line.item_price
 
             row = mask % (
-                csv_code, # Company
-                deadline, # 
-                clean_text( # address: street
-                    address[0], 60, error=error), 
-                
-                #'', # TODO clean_text(row[1], 9, error=error), # center cost,
-                #'', # TODO clean_text(row[3], 60, error=error),# destination,
-                #clean_text( # address: street
-                #    address[0], 60, error=error), 
-                #'', # TODO clean_text(row[4], 5, error=error), # zip
-                #clean_text( # address: city
-                #    address[1:2][0], 60, error=error), 
-                #'', # TODO clean_text(row[6], 4, uppercase=True, error=error),# province,
-                
-                clean_text( # order number
+                csv_code, # 3 Company
+                deadline, 
+                clean_text(
+                    destination_code, 8, error=error), 
+                clean_text(
                     order.name, 25, error=error), 
-                clean_text( # Supplier code
+                clean_text(
                     line.name, 16, uppercase=True, error=error),
-                clean_text( # Company code
+                clean_text(
                     product.default_code, 16, uppercase=True, error=error), 
                 clean_text(
                     product.name, 60, error=error, truncate=True),
-                clean_text( # UOM
+                clean_text(
                     line.uom, 2, uppercase=True, error=error), 
                 clean_float( # quantity
                     line.confirmed_qty, 15, 2, error=error), 
@@ -1229,7 +1216,8 @@ class EdiSoapOrder(orm.Model):
             'edi.soap.connection', 'Connection', required=True),
         'destination_id': fields.many2one(
             'res.partner', 'Destination', 
-            domain='[("sql_destination_code", "!=", False)]'), 
+            #domain='[("sql_destination_code", "!=", False)]'
+            ), 
          
         'delivery_date': fields.date('Delivery date'), # required=True
         'po_create_date': fields.date('PO Create date'), # required=True
@@ -1743,5 +1731,16 @@ class EdiSoapOrder(orm.Model):
         'pallet_ids': fields.one2many(
             'edi.soap.logistic.pallet', 'order_id', 'Pallet'),
         }    
+
+class ResPartner(orm.Model):
+    """ Model name: Res partner
+    """
+    
+    _inherit = 'res.partner'
+    
+    _columns = {
+        'connection_id': fields.many2one(
+            'edi.soap.connection', 'Connection'),        
+        }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
