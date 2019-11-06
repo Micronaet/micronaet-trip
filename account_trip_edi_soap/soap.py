@@ -513,6 +513,7 @@ class EdiSoapConnection(orm.Model):
                             try:
                                 data['pallet'] = int(pallet_line)
                             except:
+                                import pdb; pdb.set_trace()
                                 data['pallet'] = 0
                                 _logger.error(
                                     'Cannot decode pallet: %s' % line)        
