@@ -1537,6 +1537,7 @@ class EdiSoapLogistic(orm.Model):
             }    
         res = service.createNewPLot(
             accessToken=token, plotToCreate=plotToCreate)
+        print res    
         # res['OperationOutcome'] >> statusCode, message, errorsList
             
         # XXX ? res['ricevuta']  # file (base64) filename 
