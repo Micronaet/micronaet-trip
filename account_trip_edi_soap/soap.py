@@ -452,6 +452,7 @@ class EdiSoapConnection(orm.Model):
                     #                         Detail data:
                     # ---------------------------------------------------------
                     elif data['detail_status'] == 'on': # Start details
+                        import pdb; pdb.set_trace()
                         if line.startswith(separator): # Detail line
                             data['detail_text'] = line
                             data['product_insert'] = False
