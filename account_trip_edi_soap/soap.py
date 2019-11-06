@@ -1499,26 +1499,62 @@ class EdiSoapLogistic(orm.Model):
 
         token = connection_pool.get_token(
             cr, uid, [logistic.connection_id.id], context=context),
-        data = {
+        plotToCreate = {
             'ponumber': logistic.order_id.name,
             'dfDocIngresso': '',
             'dtEmissione': '',
             'dtIngresso': '',
             
-            'pLotLinesData': [],
+            'pLotLinesData': [{
+                'cdArticolo': '', # MSC
+                'cdVoceDoganale': '', 
+                'cdCollo': '', # SSCC
+                'cdGtin': '', # Company code or EAN
+                'flPesoVariabile': '', # 1 or 0
+                'nrLotto': '',
+                'qtPrevista': '', # Company confirmed
+                
+                'cdMisura': '', # ??
+                'nrRiga': '', # ??
+                
+                'nrNetto': '',
+                'nrLordo': '',
+                'nrColli': '',
+                'nrPzConf': '', # or nrPezziConf?
+                'dtScadenza': '',
+                'cdPaeseOrigine': '',
+                'cdPaeseProvenienza': '',
+                
+                'dfDvce': '',
+                'dtDvce': '',
+                'dfAnimo': '',
+                'dfSif': '',
+                'flDogana': '',
+                'dfMrn': '',
+                'dfFattura': '', # Number
+                'dtFattura': '', # Date
+                }],
             }    
-        res = service.createNewPLot(accessToken=token, plotToCreate=data)
-        confirmed = False
-        import pdb; pdb.set_trace()
+        res = service.createNewPLot(
+            accessToken=token, plotToCreate=plotToCreate)
+        # res['OperationOutcome'] >> statusCode, message, errorsList
+            
+        # XXX ? res['ricevuta']  # file (base64) filename 
+
         # ---------------------------------------------------------------------
         # Check response:
         # ---------------------------------------------------------------------
-        
-        # TODO Manage token problem
-        if confirmed:
+        if res['OperationOutcome']['statusCode']:
+            _logger.error('Error: %s [%s]' % (
+                res['OperationOutcome']['message'],
+                ','.join(res['OperationOutcome']['errorsList'])
+                ))
+        else:
+            # res['OPerationOutcome']['logistic']
             self.write(cr, uid, ids, {
                 'soap_sent': True,
                 }, context=context)
+                
         return True
         
     def setup_pallet_id(self, cr, uid, ids, context=None):
