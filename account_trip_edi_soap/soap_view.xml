@@ -458,7 +458,8 @@
             <field name="model">res.partner</field>
             <field name="priority" eval="40" />
             <field name="arch" type="xml">
-                <tree string="Partner filter" editable="bottom" colors="grey:connection_id != False">
+                <tree string="Partner filter" editable="bottom" colors="green:connection_id != False">
+                    <button name="res_partner_destination_detail" string="Detail" type="object" icon="gtk-index" />
                     <field name="name" readonly="1"/>
                     <field name="street" readonly="1" />
                     <field name="city" readonly="1" />
