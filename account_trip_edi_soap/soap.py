@@ -1584,7 +1584,7 @@ class EdiSoapLogisticPallet(orm.Model):
             res[pallet.id] = {
                 'total_line': len(line_ids),
                 'total_weight': sum([
-                    (float(line.product_id.chunk) * line.lord_qty) \
+                    (float(line.product_id.chunk or 1) * line.lord_qty) \
                         for line in lines])
                 }
             
