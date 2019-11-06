@@ -1493,7 +1493,7 @@ class EdiSoapLogistic(orm.Model):
         # ---------------------------------------------------------------------
         # Send logistic order:
         # ---------------------------------------------------------------------
-        logistic = self.browse(cr, uid, ids, context=context)
+        logistic = self.browse(cr, uid, ids, context=context)[0]
         service = connection_pool._get_soap_service(
             cr, uid, [logistic.connection_id.id], context=context)
 
