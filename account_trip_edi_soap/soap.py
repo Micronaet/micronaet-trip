@@ -1500,7 +1500,7 @@ class EdiSoapLogistic(orm.Model):
         token = connection_pool.get_token(
             cr, uid, [logistic.connection_id.id], context=context),
         data = {
-            'poNumber', logistic.order_id.name,
+            'poNumber': logistic.order_id.name,
             }
         import pdb; pdb.set_trace()    
         res = service.createNewPLot(accessToken=token, plotToCreate=data)
