@@ -279,8 +279,11 @@
                      <field name="logistic_id" readonly="1" />
                      <field name="order_id" readonly="1" />
                      <field name="name" readonly="1" />
+                     <field name="product_id" readonly="1" />
+                     <field name="chunk" readonly="1" />
+                     <field name="duty_code" readonly="1" />
                      <field name="lot" readonly="1" />
-                     <field name="piece" readonly="1" />
+                     <!--<field name="piece" readonly="1" />-->
                      <field name="net_qty" readonly="1" />
                      <field name="lord_qty" readonly="1" />
                      <field name="deadline" readonly="1" />
@@ -299,9 +302,16 @@
                         <group col="4" colspan="4">
                             <field name="logistic_id" readonly="1"/>
                             <field name="pallet_id" />
-                            
-                            <field name="sequence" readonly="1"/>
+
                             <field name="name" readonly="1"/>
+                            <field name="product_id" readonly="1" />
+
+                             <!--<field name="piece" readonly="1" />-->
+                            <field name="chunk" readonly="1" />
+                            <field name="duty_code" readonly="1" />
+
+                            <field name="lot" readonly="1" />
+                            <field name="sequence" readonly="1"/>
                             
                             <field name="variable_weight" readonly="1"/>
                             <field name="lot" readonly="1"/>
@@ -312,7 +322,6 @@
                             <field name="lord_qty" readonly="1"/>
                             <field name="parcel" readonly="1"/>
                             
-                            <field name="piece" readonly="1"/>
                             <field name="deadline" readonly="1"/>
                             
                             <field name="origin_country" readonly="1"/>
@@ -382,8 +391,10 @@
                                                   <field name="logistic_id" invisible="1" />
                                                   <field name="sequence" readonly="1" />
                                                   <field name="name" readonly="1" />
+                                                  <field name="product_id" readonly="1" />
+                                                  <field name="chunk" readonly="1" />
                                                   <field name="lot" readonly="1" />
-                                                  <field name="piece" readonly="1" />
+                                                  <!--<field name="piece" readonly="1" />-->
                                                   <field name="net_qty" readonly="1" />
                                                   <field name="lord_qty" readonly="1" />
                                                   <field name="deadline" readonly="1" />

@@ -306,6 +306,7 @@ class EdiSoapConnection(orm.Model):
         pallet_pool = self.pool.get('edi.soap.logistic.pallet')        
         company_pool = self.pool.get('res.company')
         order_pool = self.pool.get('edi.soap.order')
+        product_pool = self.pool.get('product.product')
 
         # ---------------------------------------------------------------------
         # Parameters:
@@ -613,13 +614,23 @@ class EdiSoapConnection(orm.Model):
                         line_part[12][:2],                        
                         get_last_day(line_part[12][:2]),
                         )
+                    default_code = line_part[4]
+                    product_ids = product_pool.search(cr, uid, [
+                        ('default_code', '=', default_code),
+                        ], context=context)
+                    if product_ids:
+                        product_id = product_ids[0]    
+                    else:
+                        product_id = False    
+                    
                     data = {
                         'logistic_id': logistic_id,
                         'pallet_id': default_pallet_id, # one2many
                         'pallet': default_pallet, # code
+                        'product_id': product_id,
 
                         'sequence': sequence,
-                        'name': line_part[4],
+                        'name': default_code,
                         
                         'variable_weight': line_part[5],
                         'lot': line_part[6],
@@ -627,7 +638,7 @@ class EdiSoapConnection(orm.Model):
                         'net_qty': get_float(line_part[8]),
                         'lord_qty': lord_qty,
                         'parcel': get_int(line_part[10]),
-                        'piece': get_int(line_part[11]),
+                        'piece': get_int(line_part[11]), # XXX not used!
                         'deadline': deadline,
                         'origin_country': line_part[13],
                         'provenance_country': line_part[14],
@@ -1651,6 +1662,11 @@ class EdiSoapLogistic(orm.Model):
             'logistic_id', 'order_id', 
             type='many2one', relation='edi.soap.order', 
             string='Order'),
+        'product_id': fields.many2one('product.product', 'Product'),
+        'duty_code': fields.related(
+            'product_id', 'duty_code', type='char', string='Duty code'),
+        'chunk': fields.related(
+            'product_id', 'chunk', type='integer', string='Chunk per pack'),
 
         'sequence': fields.integer('Seq.'),
         'name': fields.char('Article', size=40, required=True),
