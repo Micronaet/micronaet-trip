@@ -368,24 +368,26 @@ class EdiSoapConnection(orm.Model):
                         os.remove(os.path.join(root, filename))
                         _logger.warning('Remove file not used: %s' % filename)
                 break # No subfolder check
-        return True # XXX REMOVE
         
         # ---------------------------------------------------------------------
         # Check folder for files:
         # ---------------------------------------------------------------------
         log_f = open(os.path.join(log_path, 'invoice.log'), 'w')
-        remove_list = []
         history_list = []
         for root, folders, files in os.walk(path):            
             for filename in files:
+                # XXX REMOVE
+                if filename != '06.02664_04_013092.csv':
+                    continue
+
                 if not filename.lower().endswith('csv'):
                     _logger.error('File not used: %s' % filename)
                     continue
 
                 fullname = os.path.join(root, filename)                
                 if filename[:partner_len] not in partner_start:
-                    remove_list.append(fullname)
-                    continue
+                    continue # jump unused files
+
                 history_list.append(
                     (fullname, os.path.join(history_path, filename)))
 
@@ -637,10 +639,6 @@ class EdiSoapConnection(orm.Model):
         # ---------------------------------------------------------------------
         # Remove unused file:        
         # ---------------------------------------------------------------------
-        for fullname in remove_list:
-            os.remove(fullname)
-            log_data(log_f, 'File removed: %s' % filename, 
-                mode='WARNING')
         for filename, history in history_list:
             shutil.move(filename, history)
             log_data(log_f, 'File history: %s > %s' % (filename, history))
