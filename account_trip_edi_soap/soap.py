@@ -553,6 +553,7 @@ class EdiSoapConnection(orm.Model):
                 # Link to order                
                 # -------------------------------------------------------------
                 customer_order = data['customer_order']
+                import pdb; pdb.set_trace()
 
                 # Update order if is full name or partial:
                 if customer_order.split('-')[-1] != pon_code:
