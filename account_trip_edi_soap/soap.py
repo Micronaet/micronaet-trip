@@ -617,7 +617,7 @@ class EdiSoapConnection(orm.Model):
 
                     default_code = line_part[4]
                     product_ids = product_pool.search(cr, uid, [
-                        ('default_code', '=', default_code),
+                        ('default_code', '=', default_code[:11]),
                         ], context=context)
                     if product_ids:
                         product_id = product_ids[0]    
