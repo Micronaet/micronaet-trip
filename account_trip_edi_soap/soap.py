@@ -579,7 +579,7 @@ class EdiSoapConnection(orm.Model):
                     'text': text,
                     'pallet': data['pallet'],
                     'delivery_date': data['delivery_date'],
-                    'customer_order': data['customer_order'],
+                    'customer_order': customer_order,
                     #'filename': 
                     }, context=context)
 
