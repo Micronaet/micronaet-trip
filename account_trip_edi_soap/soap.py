@@ -1548,7 +1548,7 @@ class EdiSoapLogistic(orm.Model):
         if res['operationOutcome']['statusCode']:
             _logger.error('Error: %s [%s]' % (
                 res['operationOutcome']['message'],
-                ','.join(res['OperationOutcome']['errorsList'])
+                ','.join(res['operationOutcome']['errorsList'])
                 ))
         else:
             # res['operationOutcome']['logistic']
