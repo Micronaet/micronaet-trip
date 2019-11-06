@@ -142,7 +142,7 @@
                             <field name="document_value" readonly="1" />
 
                             <field name="filename" readonly="1"/>               
-                            <field name="status"  />
+                            <field name="status" readonly="1"/>
 
                             <field name="check_pre_export" invisible="1"/>
                             
