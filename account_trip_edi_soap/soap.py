@@ -286,7 +286,8 @@ class EdiSoapConnection(orm.Model):
             if key not in start:
                 _logger.error('Key %s not in Start %s' % (key, start))
                 return False
-                
+            
+            key = start[key] # Read list of keys form start             
             text = text.strip()                
             if type(key) in (tuple, list): # multiple
                 for item in key:
@@ -490,7 +491,7 @@ class EdiSoapConnection(orm.Model):
                             line, start, 'delivery_date')
                         #lord_line = check_startwith(line, start, 'lord')
                         #total_line = check_startwith(line, start, 'total')
-                        import pdb; pdb.set_trace()
+
                         pallet_line = check_startwith(
                             line, start, 'pallet')
                         
