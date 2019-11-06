@@ -1488,9 +1488,30 @@ class EdiSoapLogistic(orm.Model):
     def send_logistic_2_soap(self, cr, uid, ids, context=None):
         ''' Send to SOAP platform logistic order
         '''
-        self.write(cr, uid, ids, {
-            'soap_sent': True,
-            }, context=context)
+        connection_pool = self.pool.get('edi.soap.connection')
+
+        # ---------------------------------------------------------------------
+        # Send logistic order:
+        # ---------------------------------------------------------------------
+        logistic = self.browse(cr, uid, ids, context=context)
+        service = connectionpool._get_soap_service(
+            cr, uid, [logistic.connection_id.id], context=context)
+
+        res = service.createNewPLotRequest(
+            accessToken=self.get_token(cr, uid, ids, context=context),            
+            )
+        import pdb; pdb.set_trace()    
+        confirmed = False
+        
+        # ---------------------------------------------------------------------
+        # Check response:
+        # ---------------------------------------------------------------------
+        
+        # TODO Manage token problem
+        if confirmed:
+            self.write(cr, uid, ids, {
+                'soap_sent': True,
+                }, context=context)
         return True
         
     def setup_pallet_id(self, cr, uid, ids, context=None):
@@ -1581,6 +1602,7 @@ class EdiSoapLogisticPallet(orm.Model):
                 ], context=context)
             lines = line_pool.browse(cr, uid, line_ids, context=context)
             
+            # XXX check chunk?
             res[pallet.id] = {
                 'total_line': len(line_ids),
                 'total_weight': sum([
