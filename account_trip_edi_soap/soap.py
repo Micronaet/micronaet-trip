@@ -374,12 +374,9 @@ class EdiSoapConnection(orm.Model):
         # ---------------------------------------------------------------------
         log_f = open(os.path.join(log_path, 'invoice.log'), 'w')
         history_list = []
+        import pdb; pdb.set_trace()
         for root, folders, files in os.walk(path):            
             for filename in files:
-                # XXX REMOVE
-                if filename != '06.02664_04_013092.csv':
-                    continue
-
                 if not filename.lower().endswith('csv'):
                     _logger.error('File not used: %s' % filename)
                     continue
