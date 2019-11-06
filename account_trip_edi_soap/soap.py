@@ -553,7 +553,6 @@ class EdiSoapConnection(orm.Model):
                 # Link to order                
                 # -------------------------------------------------------------
                 customer_order = data['customer_order']
-                import pdb; pdb.set_trace()
 
                 # Update order if is full name or partial:
                 if customer_order.split('-')[-1] != pon_code:
@@ -563,7 +562,7 @@ class EdiSoapConnection(orm.Model):
                         )
                         
                 order_ids = order_pool.search(cr, uid, [
-                    ('name', '=', data['customer_order']),
+                    ('name', '=', customer_order),
                     ], context=context)
                 if order_ids: 
                     order_id = order_ids[0]    
@@ -572,6 +571,7 @@ class EdiSoapConnection(orm.Model):
                     order_id = False
                     
                 # A. Import order:
+                import pdb; pdb.set_trace()
                 logistic_id = logistic_pool.create(cr, uid, {
                     'name': name,
                     'order_id': order_id,
