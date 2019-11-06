@@ -1502,8 +1502,8 @@ class EdiSoapLogistic(orm.Model):
         data = {
             'poNumber', logistic.order_id.name,
             }
-        res = service.createNewPLot(accessToken=token, plotToCreate=data)
         import pdb; pdb.set_trace()    
+        res = service.createNewPLot(accessToken=token, plotToCreate=data)
         confirmed = False
         
         # ---------------------------------------------------------------------
