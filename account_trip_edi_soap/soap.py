@@ -436,7 +436,6 @@ class EdiSoapConnection(orm.Model):
                             'footer': {},
                             })
                     elif line.startswith(start['detail']):
-                        import pdb; pdb.set_trace()
                         data['detail_status'] = 'on'
 
                     # ---------------------------------------------------------
