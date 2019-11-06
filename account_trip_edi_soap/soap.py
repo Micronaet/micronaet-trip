@@ -452,7 +452,6 @@ class EdiSoapConnection(orm.Model):
                     #                         Detail data:
                     # ---------------------------------------------------------
                     elif data['detail_status'] == 'on': # Start details
-                        import pdb; pdb.set_trace()
                         if line.startswith(separator): # Detail line
                             data['detail_text'] = line
                             data['product_insert'] = False
@@ -572,7 +571,6 @@ class EdiSoapConnection(orm.Model):
                     order_id = False
                     
                 # A. Import order:
-                import pdb; pdb.set_trace()
                 logistic_id = logistic_pool.create(cr, uid, {
                     'name': name,
                     'order_id': order_id,
