@@ -277,8 +277,26 @@ class EdiSoapConnection(orm.Model):
                 return '30'
             else:
                 return '31'
-                
 
+        def check_startwith(text, start, key):
+            ''' Check if element passed start with key of start DB 
+                (could be a list)
+                @return extra part on the right
+            '''
+            if key not in start:
+                _logger.error('Key %s not in Start %s' % (key, start))
+                return False
+                
+            text = text.strip()                
+            if type(key) in (tuple, list): # multiple
+                for item in key:
+                    if text.startswith(item): 
+                        return text[len(item):].strip()
+                return False # not found 
+            else: # single
+                if text.startswith(key):
+                    return text[len(key):].strip()   
+                
         # ---------------------------------------------------------------------
         # Pool used:
         # ---------------------------------------------------------------------
@@ -303,11 +321,12 @@ class EdiSoapConnection(orm.Model):
             'header': 'HEADER',
             'detail': 'DETAIL',
             'weight': 'PESO LORDO',
-            'order': 'N.ORDINE',
-            'lord': 'PESO LORDO',
-            'total': 'PESO TOTALE',
-            'pallet': 'BANCALI N.',
-            'delivery_date': 'CONSEGNA DEL ',
+            
+            #'order': ('P.O.N.', 'N.ORDINE', 'PON'),
+            #'lord': ('PESO LORDO KG:', 'PESO LORDO'),
+            #'total': ('PESO LORDO KG:', 'PESO TOTALE'),
+            'pallet': ('BANCALI NR:', 'BANCALI N.', 'BANCALI PVC NR:'),
+            'delivery_date': 'CONSEGNA DEL',
             }
 
         # Load parameters:
@@ -339,6 +358,17 @@ class EdiSoapConnection(orm.Model):
         for folder in (history_path, unsed_path, log_path, pdf_path):
             os.system('mkdir -p %s' % folder)
         
+        # ---------------------------------------------------------------------
+        # Clean operation:
+        # ---------------------------------------------------------------------
+        for check_path in (path, pdf_path):
+            for root, folders, files in os.walk(check_path):
+                for filename in files:
+                    if filename[:partner_len] not in partner_start:
+                        os.remove(os.path.join(root, f))
+                        _logger.warning('Remove file not used: %s' % f)
+                break # No subfolder check
+
         # ---------------------------------------------------------------------
         # Check folder for files:
         # ---------------------------------------------------------------------
@@ -449,22 +479,36 @@ class EdiSoapConnection(orm.Model):
 
                         # DESTINAZIONE: 
 
-                        if line.startswith(start['order']):
-                            pass # TODO
+                        # -----------------------------------------------------
+                        # Extract remain line:
+                        # -----------------------------------------------------
+                        #order_line = check_startwith(line, start, 'order')
+                        delivery_line = check_startwith(
+                            line, start, 'delivery_date')
+                        #lord_line = check_startwith(line, start, 'lord')
+                        #total_line = check_startwith(line, start, 'total')
+                        pallet_line = check_startwith(
+                            line, start, 'pallet')
+                        
+                        # -----------------------------------------------------
+                        # Extract needed data:
+                        # -----------------------------------------------------
+                        #if order_line:
+                        #    pass # XXX get in first line of file no needed
 
-                        if line.startswith(start['delivery_date']):
-                            data['delivery_date'] = get_date(line.split()[-1])
+                        if delivery_line:
+                            data['delivery_date'] = get_date(
+                                delivery_line.split()[-1])
 
-                        elif line.startswith(start['lord']):
-                            pass # TODO
+                        #elif lord_line:
+                        #    pass # XXX needed?
 
-                        elif line.startswith(start['total']):
-                            pass # TODO                        
-
-                        elif line.startswith(start['pallet']):
+                        #elif total_line:
+                        #    pass # XXX needed?
+                        
+                        elif pallet_line:
                             try:
-                                data['pallet'] = int(
-                                    line.strip()[len(start['pallet']):])
+                                data['pallet'] = int(pallet_line)
                             except:
                                 data['pallet'] = 0
                                 _logger.error(
