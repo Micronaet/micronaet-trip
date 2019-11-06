@@ -873,6 +873,7 @@ class EdiSoapOrder(orm.Model):
                 current_order = self.browse(
                     cr, uid, order_ids, context=context)[0]
                 pallet_ids = [pallet.id for pallet in current_order.pallet_ids]
+                destination_id = current_order.destination_id.id
 
                 # Delete order before (so recreate)
                 _logger.warning('Order deleted for recreation: %s' % (
@@ -998,6 +999,11 @@ class EdiSoapOrder(orm.Model):
                 'total_pallet': pallet_extra + (weight / pallet_weight) + \
                     1 if weight % pallet_weight > 0 else 0
                 }, context=context)   
+
+        if destination_id: 
+            self.write(cr, uid, [order_id], {
+                'destination_id': destination_id,
+                }, context=context)
         
         # Pallet relinked to new order:
         if pallet_ids:
