@@ -368,7 +368,8 @@ class EdiSoapConnection(orm.Model):
                         os.remove(os.path.join(root, f))
                         _logger.warning('Remove file not used: %s' % f)
                 break # No subfolder check
-
+        return True # XXX REMOVE
+        
         # ---------------------------------------------------------------------
         # Check folder for files:
         # ---------------------------------------------------------------------
