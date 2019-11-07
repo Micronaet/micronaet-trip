@@ -656,7 +656,10 @@ class EdiSoapConnection(orm.Model):
                         'duty': '',
                         'mrn': '',
                         }
-                    line_pool.create(cr, uid, data, context=context)
+                    try:    
+                        line_pool.create(cr, uid, data, context=context)
+                    except:
+                        import pdb; pdb.set_trace()    
             break # only path folder
 
         # ---------------------------------------------------------------------
