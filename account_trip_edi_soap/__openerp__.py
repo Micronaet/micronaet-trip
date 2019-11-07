@@ -37,6 +37,9 @@
         'security/soap_group.xml',
         'security/ir.model.access.csv',
 
+        # Wizard:
+        'wizard/split_line_view.xml',
+
         # View:
         'soap_view.xml',
         'counter.xml',
@@ -44,7 +47,6 @@
         # Init setup:
         'data/connection_data.xml',
         
-        'wizard/split_line_view.xml',
         
         # Report:
         'report/sscc_label_report.xml',

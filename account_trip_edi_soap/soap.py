@@ -1536,7 +1536,6 @@ class EdiSoapLogistic(orm.Model):
                 'dtFattura': '', # Date
                 }],
             }  
-        import pdb; pdb.set_trace()  
         res = service.createNewPLot(
             accessToken=token, plotToCreate=plotToCreate)
 
@@ -1682,7 +1681,9 @@ class EdiSoapLogistic(orm.Model):
     _rec_name = 'name'
     _order = 'sequence, name'
 
-    #onchange:
+    # -------------------------------------------------------------------------
+    # Onchange:
+    # -------------------------------------------------------------------------
     def onchange_pallet_code(self, cr, uid, ids, logistic_id, pallet_code, 
             context=None):
         ''' Save correct element
@@ -1727,6 +1728,8 @@ class EdiSoapLogistic(orm.Model):
             }
 
     _columns = {
+        # ---------------------------------------------------------------------
+        # XXX Remember duplication wizard when add fields!!!
         'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order'),
         'pallet': fields.integer('Pallet'),
         'pallet_id': fields.many2one('edi.soap.logistic.pallet', 'Pallet'),
@@ -1760,6 +1763,8 @@ class EdiSoapLogistic(orm.Model):
         'invoice': fields.char('Invoice number', size=10),
         'invoice_date': fields.date('Invoice date'),
         'mrn': fields.char('MRN', size=10, help='Not mandatory'),
+        # XXX Remember duplication wizard when add fields!!!
+        # ---------------------------------------------------------------------
         }
 
 class EdiSoapLogisticPallet(orm.Model):

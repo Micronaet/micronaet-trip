@@ -46,28 +46,162 @@ class EdiLogisticLineSplitWizard(orm.TransientModel):
     _name = 'edi.logistic.line.split.wizard'
 
     # -------------------------------------------------------------------------
+    # Onchange:
+    # -------------------------------------------------------------------------
+    def onchange_quantity(self, cr, uid, ids, line_id, new_quantity, 
+            context=None):
+        ''' Check quantity
+        '''   
+        res = {}
+        line_pool = self.pool.get('edi.soap.logistic.line')
+        line = line_pool.browse(cr, uid, line_id, context=context)
+        if new_quantity >= line.net_qty:
+            return {
+                'warning': {
+                    'title': _('Quantity error'), 
+                    'message': _('New q. %s >= total q.: %s') % (
+                        new_quantity,
+                        line.net_qty,
+                        ),
+                    }}
+        return res   
+        
+    def onchange_pallet_code(self, cr, uid, ids, line_id, new_pallet, 
+            context=None):
+        ''' Save correct element
+        '''
+        line_pool = self.pool.get('edi.soap.logistic.line')
+        line = line_pool.browse(cr, uid, line_id, context=context)
+        pallet_id = False
+        for pallet in line.logistic_id.pallet_ids:
+            if new_pallet == pallet.name:
+                pallet_id = pallet.id
+                break
+        if not pallet_id:
+            raise osv.except_osv(
+                _('Pallet error'), 
+                _('Pallet not found use code present in the list'),
+                )        
+        return {'value': {
+            'new_pallet_id': pallet_id,
+            }}        
+
+    # -------------------------------------------------------------------------
     # Wizard button event:
     # -------------------------------------------------------------------------
-    def action_done(self, cr, uid, ids, context=None):
+    def action_split(self, cr, uid, ids, context=None):
         ''' Event for button done
         '''
+        logistic_pool = self.pool.get('edi.soap.logistic')
+        line_pool = self.pool.get('edi.soap.logistic.line')
         if context is None: 
             context = {}        
 
-        wiz_browse = self.browse(cr, uid, ids, context=context)[0]
+        # Get wizard data:
+        wiz_browse = self.browse(cr, uid, ids, context=context)[0]        
         
-        return {
-            'type': 'ir.actions.act_window_close'
-            }
+        line = wiz_browse.line_id
+        new_pallet = wiz_browse.new_pallet
+        new_pallet_id = wiz_browse.new_pallet_id.id
+        new_net_qty = wiz_browse.new_quantity
+
+        # Get old data:        
+        old_net_qty = line.net_qty
+        old_lord_qty = line.lord_qty
+        old_parcel = line.parcel
+        
+        # New data:
+        # TODO: 
+        confirmed_qty = 0
+        lort_qty = 0
+        parcel = 0
+
+        # ---------------------------------------------------------------------
+        # Split line:
+        # ---------------------------------------------------------------------
+
+        line_pool.create(cr, uid, {
+            'logistic_id': line.logistic_id.id,
+            'pallet': new_pallet,
+            'pallet_id': new_pallet_id,
+            'product_id': line.product_id.id,
+            'sequence': line.sequence,
+            'name': line.name,
+            'variable_weight': line.variable_weight,
+            'lot': line.lot,
+            'confirmed_qty': confirmed_qty,
+            'net_qty': new_net_qty,
+            'lord_qty': lord_qty,
+            'parcel': parcel,
+            'piece': line.piece,
+            'deadline': line.deadline,
+            'origin_country': line.origin_country,
+            'provenance_country': line.provenance_country,
+            'dvce': line.dvce,
+            'dvce_date': line.dvce_date,
+            'animo': line.animo,
+            'sif': line.sif,
+            'duty': line.duty,
+            'invoice': line.invoice,
+            'invoice_date': line.invoice_date,
+            'mrn': line.mrn,
+            # Related (not used):
+            #'order_id': 
+            #'duty_code': 
+            #'chunk': 
+            }, context=context)
+
+        # ---------------------------------------------------------------------
+        # Return view updated:
+        # ---------------------------------------------------------------------
+        print context
+        if context.get('return_logistic'):
+            return { # for speed instead of reload
+                'type': 'ir.actions.act_window',
+                'name': _('Order splitted'),
+                'view_type': 'form',
+                'view_mode': 'form,tree',
+                'res_id': line.logistic_id.id,
+                'res_model': 'edi.soap.logistic',
+                'view_id': False, #view_id, 
+                'views': [(False, 'form'), (False, 'tree')],
+                'domain': [],
+                'context': context,
+                'target': 'current', # 'new'
+                'nodestroy': False,
+                }
+        else:
+            res = logistic_pool.open_logistic_lines(
+                cr, uid, [line.logistic_id.id], context=context)
+            print res    
+            return res    
+
+    # -------------------------------------------------------------------------
+    # Default function:            
+    # -------------------------------------------------------------------------
+    def get_default_line_id(self, cr, uid, context=None):
+        ''' Get active_ids extract current
+        '''
+        if context is None:
+            raise osv.except_osv(
+                _('Error'), 
+                _('Cannot select origin line'),
+                )
+        return context.get('active_id')
 
     _columns = {
         'line_id': fields.many2one(
             'edi.soap.logistic.line', 'Line', help='Line selected'),
         'new_quantity': fields.float('New quantity', digits=(16, 2), 
             required=True),
+        'new_pallet': fields.integer('New pallet', required=True),    
         'new_pallet_id': fields.many2one('edi.soap.logistic.pallet', 
-            'New pallet', required=True),
+            'New pallet'),
         }
+    
+    _defaults = {
+        'line_id': lambda s, cr, uid, ctx: s.get_default_line_id(cr, uid, ctx),
+        }    
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 
 

@@ -289,6 +289,7 @@
                      <field name="deadline" readonly="1" />
                      <field name="pallet" on_change="onchange_pallet_code(logistic_id, pallet)"/>
                      <field name="pallet_id" invisible="1" />
+                     <button name="%(account_trip_edi_soap.action_edi_logistic_line_split_wizard)d" string="Split line" type="action" icon="gtk-copy" context="{'return_logistic': False}"/>
                 </tree>
             </field>
         </record>
@@ -296,8 +297,11 @@
         <record model="ir.ui.view" id="view_edi_soap_logistic_line_form">
             <field name="name">edi.soap.logistic.line.form</field>
             <field name="model">edi.soap.logistic.line</field>
-            <field name="arch" type="xml">
+            <field name="arch" type="xml">                
                 <form string="Line detail" version="7.0">        
+                    <header> 
+                          <button name="%(account_trip_edi_soap.action_edi_logistic_line_split_wizard)d" string="Split line" type="action" icon="gtk-copy" context="{'return_logistic': False}"/>
+                    </header>
                     <sheet>
                         <group col="4" colspan="4">
                             <field name="logistic_id" readonly="1"/>
@@ -400,6 +404,7 @@
                                                   <field name="deadline" readonly="1" />
                                                   <field name="pallet" on_change="onchange_pallet_code(logistic_id, pallet)"/>
                                                   <field name="pallet_id" invisible="1" />
+                                                  <button name="%(account_trip_edi_soap.action_edi_logistic_line_split_wizard)d" string="Split line" type="action" icon="gtk-copy" context="{'return_logistic': True}"/>
                                                </tree>
                                           </field>
                                      </group>                                      
