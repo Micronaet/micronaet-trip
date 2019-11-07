@@ -1501,13 +1501,20 @@ class EdiSoapLogistic(orm.Model):
         token = connection_pool.get_token(
             cr, uid, [logistic.connection_id.id], context=context)
         
-        # Header:    
+        # Header:
+        try:
+            first_line = logistic.line_ids[0]
+        except:
+            raise osv.except_osv(
+                _('Error'), 
+                _('No lines!'),
+                )
         plotToCreate = {
             'ponumber': logistic.order_id.name or \
                 logistic.customer_order,
-            'dfDocIngresso': '',
-            'dtEmissione': '',
-            'dtIngresso': '',
+            'dfDocIngresso': first_line.invoice,
+            'dtEmissione': first_line.invoice_date,
+            'dtIngresso': logistic.delivery_date,
             
             'pLotLinesData': [],
             }
