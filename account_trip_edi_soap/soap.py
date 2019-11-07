@@ -1489,6 +1489,7 @@ class EdiSoapLogistic(orm.Model):
         ''' Send to SOAP platform logistic order
         '''
         connection_pool = self.pool.get('edi.soap.connection')
+        mapping_pool = self.pool.get('edi.soap.mapping')
 
         # ---------------------------------------------------------------------
         # Send logistic order:
@@ -1515,13 +1516,24 @@ class EdiSoapLogistic(orm.Model):
         plot_lines_data = plotToCreate['pLotLinesData']
         for line in logistic.line_ids: 
             product = line.product_id
+            mapping_ids = mapping_pool.search(cr, uid, [
+                ('product_id', '=', product.id),                
+                ], context=context)
+            if mapping_ids:
+                mapping = mapping_pool.browse(
+                    cr, uid, mapping_ids, context=context)[0]
+                customer_code = mapping.name
+            else: 
+                _logger.error('No mapping code for %s' % product.default_code)
+                customer_code = ''        
+                
             plot_lines_data.append({
                 'cdArticolo': '', # TODO MSC code
                 'cdVoceDoganale': product.duty_code or '', 
                 'cdCollo': line.pallet_id.name or '', # SSCC
                 'cdGtin': product.default_code, # Company code or EAN
                 'flPesoVariabile': '', # 1 or 0
-                'nrLotto': line.lot'',
+                'nrLotto': line.lot or '',
                 'qtPrevista': line.confirmed_qty, # Company confirmed
                 
                 'cdMisura': '', # TODO
@@ -1543,8 +1555,7 @@ class EdiSoapLogistic(orm.Model):
                 'dfMrn': line.mrn or '',
                 'dfFattura': line.invoice or '', # Number
                 'dtFattura': line.invoice_date or '', # Date
-                }],
-            }  
+                })
         print plotToCreate
         import pdb; pdb.set_trace()    
         res = service.createNewPLot(
