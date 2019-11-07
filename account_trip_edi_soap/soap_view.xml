@@ -435,6 +435,13 @@
                                          <field name="text" colspan="4" nolabel="1" readonly="1" widget="html"/>
                                      </group>
                                   </page>
+                                  <page string="SOAP" attrs="{'invisible': [('soap_sent','=',False)]}">
+                                     <group colspan="4" col="4">
+                                         <separator string="SOAP response:" colspan="4"/>
+                                         <field name="soap_sent" />
+                                         <field name="soap_message" />
+                                     </group>
+                                  </page>
                               </notebook>
                          </group>     
                      </sheet>

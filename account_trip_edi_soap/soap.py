@@ -1537,7 +1537,7 @@ class EdiSoapLogistic(orm.Model):
             plot_lines_data.append({
                 'cdArticolo': customer_code or '', # MSC code
                 'cdVoceDoganale': product.duty_code or '', 
-                'cdCollo': line.pallet_id.name or '', # SSCC
+                'cdCollo': line.pallet_id.sscc or '', # SSCC
                 'cdGtin': product.default_code, # Company code or EAN
                 'flPesoVariabile': '', # 1 or 0
                 'nrLotto': line.lot or '',
@@ -1549,7 +1549,7 @@ class EdiSoapLogistic(orm.Model):
                 'nrNetto': line.net_qty, 
                 'nrLordo': line.lord_qty,
                 'nrColli': line.parcel or '',
-                'nrPzConf': product.chunk or '', # or nrPezziConf?
+                'nrPzConf': product.chunk or '1', # XXX or nrPezziConf?
                 'dtScadenza': line.deadline, # Lot?
                 'cdPaeseOrigine': line.origin_country or '',
                 'cdPaeseProvenienza': line.provenance_country or '',
@@ -1581,13 +1581,11 @@ class EdiSoapLogistic(orm.Model):
                     plotToCreate,
                 ))
         else:
-            # res['operationOutcome']['logistic']
-            print res
-            import pdb; pdb.set_trace()
             self.write(cr, uid, ids, {
                 'soap_sent': True,
-                }, context=context)
-                
+                'soap_message': res['operationOutcome']['message'],
+                'soap_detail': res['logistic'],
+                }, context=context)                
         return True
         
     def setup_pallet_id(self, cr, uid, ids, context=None):
@@ -1612,6 +1610,8 @@ class EdiSoapLogistic(orm.Model):
     _columns = {
         'name': fields.char('Invoice reference', size=40, required=True),
         'soap_sent': fields.boolean('Soap sent'),
+        'soap_message': fields.char('Returned message', size=100),
+        'soap_detail': fields.text('Returned detail'),
         'customer_order': fields.char('Cust. Number', size=40),
         'delivery_date': fields.date('Delivery date'),
         'connection_id': fields.many2one(
