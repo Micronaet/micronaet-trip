@@ -1528,7 +1528,7 @@ class EdiSoapLogistic(orm.Model):
                 customer_code = ''        
                 
             plot_lines_data.append({
-                'cdArticolo': '', # TODO MSC code
+                'cdArticolo': customer_code or '', # MSC code
                 'cdVoceDoganale': product.duty_code or '', 
                 'cdCollo': line.pallet_id.name or '', # SSCC
                 'cdGtin': product.default_code, # Company code or EAN
@@ -1553,6 +1553,7 @@ class EdiSoapLogistic(orm.Model):
                 'dfSif': line.sif or '',
                 'flDogana': line.duty or '',# 0 or 1 (duty document needed)
                 'dfMrn': line.mrn or '',
+                
                 'dfFattura': line.invoice or '', # Number
                 'dtFattura': line.invoice_date or '', # Date
                 })
