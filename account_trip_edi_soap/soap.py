@@ -609,11 +609,14 @@ class EdiSoapConnection(orm.Model):
                     line_part = row.split(separator)
                     
                     # Deadline: 
-                    deadline = '20%s-%s-%s' % (
-                        line_part[12][-2:],
-                        line_part[12][:2],                        
-                        get_last_day(line_part[12][:2]),
-                        )
+                    if line_part[12]:
+                        deadline = '20%s-%s-%s' % (
+                            line_part[12][-2:],
+                            line_part[12][:2],                        
+                            get_last_day(line_part[12][:2]),
+                            )
+                    else:
+                        deadline = False        
 
                     default_code = line_part[4]
                     product_ids = product_pool.search(cr, uid, [
