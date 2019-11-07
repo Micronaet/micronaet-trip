@@ -285,6 +285,7 @@
                      <field name="duty_code" readonly="1" />
                      <field name="lot" readonly="1" />
                      <!--<field name="piece" readonly="1" />-->
+                     <field name="parcel" readonly="1" />
                      <field name="net_qty" readonly="1" />
                      <field name="lord_qty" readonly="1" />
                      <field name="deadline" readonly="1" />
@@ -403,6 +404,7 @@
                                                   <!--<field name="chunk" readonly="1" />-->
                                                   <!--<field name="piece" readonly="1" />-->
                                                   <field name="lot" readonly="1" />
+                                                  <field name="parcel" readonly="1" />
                                                   <field name="net_qty" readonly="1" />
                                                   <field name="lord_qty" readonly="1" />
                                                   <field name="deadline" readonly="1" />
