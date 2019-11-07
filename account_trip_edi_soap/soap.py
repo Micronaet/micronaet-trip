@@ -1567,8 +1567,6 @@ class EdiSoapLogistic(orm.Model):
         res = service.createNewPLot(
             accessToken=token, plotToCreate=plotToCreate)
 
-        # res['operationOutcome'] >> statusCode, message, errorsList
-            
         # XXX ? res['ricevuta']  # file (base64) filename 
 
         # ---------------------------------------------------------------------
@@ -1577,12 +1575,15 @@ class EdiSoapLogistic(orm.Model):
         if res['operationOutcome']['statusCode']:
             raise osv.except_osv(
                 _('SOAP Error'), 
-                _('Message: %s [%s]') % (
+                _('Message: %s [%s] {%s}') % (
                     res['operationOutcome']['message'],
                     ','.join(res['operationOutcome']['errorsList'])
+                    plotToCreate,
                 ))
         else:
             # res['operationOutcome']['logistic']
+            print res
+            import pdb; pdb.set_trace()
             self.write(cr, uid, ids, {
                 'soap_sent': True,
                 }, context=context)
