@@ -1499,7 +1499,7 @@ class EdiSoapLogistic(orm.Model):
             cr, uid, [logistic.connection_id.id], context=context)
 
         token = connection_pool.get_token(
-            cr, uid, [logistic.connection_id.id], context=context),
+            cr, uid, [logistic.connection_id.id], context=context)
         
         # Header:    
         plotToCreate = {
@@ -1557,8 +1557,6 @@ class EdiSoapLogistic(orm.Model):
                 'dfFattura': line.invoice or '', # Number
                 'dtFattura': line.invoice_date or '', # Date
                 })
-        print plotToCreate
-        import pdb; pdb.set_trace()    
         res = service.createNewPLot(
             accessToken=token, plotToCreate=plotToCreate)
 

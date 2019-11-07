@@ -124,6 +124,7 @@ class EdiLogisticLineSplitWizard(orm.TransientModel):
             #'lord_qty': lord_qty,
             #'parcel': parcel,
             }, context=context)
+
         # ---------------------------------------------------------------------
         # Split line:
         # ---------------------------------------------------------------------
