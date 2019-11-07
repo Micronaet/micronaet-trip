@@ -440,6 +440,8 @@
                                          <separator string="MSC response:" colspan="4"/>
                                          <field name="soap_sent" />
                                          <field name="soap_message" />
+                                         <separator string="Detail:" colspan="4"/>
+                                         <field name="soap_detail" nolabel="1" colspan="4"/>
                                      </group>
                                   </page>
                               </notebook>
