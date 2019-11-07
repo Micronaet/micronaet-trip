@@ -1499,6 +1499,8 @@ class EdiSoapLogistic(orm.Model):
 
         token = connection_pool.get_token(
             cr, uid, [logistic.connection_id.id], context=context),
+        
+        # Header:    
         plotToCreate = {
             'ponumber': logistic.order_id.name or \
                 logistic.customer_order,
@@ -1506,36 +1508,45 @@ class EdiSoapLogistic(orm.Model):
             'dtEmissione': '',
             'dtIngresso': '',
             
-            'pLotLinesData': [{
-                'cdArticolo': '', # MSC
-                'cdVoceDoganale': '', 
-                'cdCollo': '', # SSCC
-                'cdGtin': '', # Company code or EAN
+            'pLotLinesData': [],
+            }
+            
+        # Lines:
+        plot_lines_data = plotToCreate['pLotLinesData']
+        for line in logistic.line_ids: 
+            product = line.product_id
+            plot_lines_data.append({
+                'cdArticolo': '', # TODO MSC code
+                'cdVoceDoganale': product.duty_code or '', 
+                'cdCollo': line.pallet_id.name or '', # SSCC
+                'cdGtin': product.default_code, # Company code or EAN
                 'flPesoVariabile': '', # 1 or 0
-                'nrLotto': '',
-                'qtPrevista': '', # Company confirmed
+                'nrLotto': line.lot'',
+                'qtPrevista': line.confirmed_qty, # Company confirmed
                 
-                'cdMisura': '', # ??
-                'nrRiga': '', # ??
+                'cdMisura': '', # TODO
+                'nrRiga': line.sequence, # 1 x or 10 x?
                 
-                'nrNetto': '',
-                'nrLordo': '',
-                'nrColli': '',
-                'nrPzConf': '', # or nrPezziConf?
-                'dtScadenza': '',
-                'cdPaeseOrigine': '',
-                'cdPaeseProvenienza': '',
+                'nrNetto': line.net_qty, 
+                'nrLordo': line.lord_qty,
+                'nrColli': line.parcel or '',
+                'nrPzConf': product.chunk or '', # or nrPezziConf?
+                'dtScadenza': line.deadline, # Lot?
+                'cdPaeseOrigine': line.origin_country or '',
+                'cdPaeseProvenienza': line.provenance_country or '',
                 
-                'dfDvce': '',
-                'dtDvce': '',
-                'dfAnimo': '',
-                'dfSif': '',
-                'flDogana': '',
-                'dfMrn': '',
-                'dfFattura': '', # Number
-                'dtFattura': '', # Date
+                'dfDvce': line.dvce or '',
+                'dtDvce': line.dvce_date or '',
+                'dfAnimo': line.animo or '',
+                'dfSif': line.sif or '',
+                'flDogana': line.duty or '',# 0 or 1 (duty document needed)
+                'dfMrn': line.mrn or '',
+                'dfFattura': line.invoice or '', # Number
+                'dtFattura': line.invoice_date or '', # Date
                 }],
             }  
+        print plotToCreate
+        import pdb; pdb.set_trace()    
         res = service.createNewPLot(
             accessToken=token, plotToCreate=plotToCreate)
 
@@ -1669,8 +1680,7 @@ class EdiSoapLogisticPallet(orm.Model):
             type='integer', string='Total line', multi=True), 
         'total_weight': fields.function(
             _get_pallet_totals, method=True, 
-            type='float', digits=(16, 3), string='Total line', multi=True), 
-        
+            type='float', digits=(16, 3), string='Total line', multi=True),        
         }        
 
 class EdiSoapLogistic(orm.Model):
@@ -1679,7 +1689,7 @@ class EdiSoapLogistic(orm.Model):
     _name = 'edi.soap.logistic.line'
     _description = 'EDI Soap Logistic Line'
     _rec_name = 'name'
-    _order = 'sequence, name'
+    _order = 'sequence, name, splitted desc'
 
     # -------------------------------------------------------------------------
     # Onchange:
@@ -1763,6 +1773,7 @@ class EdiSoapLogistic(orm.Model):
         'invoice': fields.char('Invoice number', size=10),
         'invoice_date': fields.date('Invoice date'),
         'mrn': fields.char('MRN', size=10, help='Not mandatory'),
+        'splitted': fields.boolean('Splitted'),
         # XXX Remember duplication wizard when add fields!!!
         # ---------------------------------------------------------------------
         }

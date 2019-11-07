@@ -113,7 +113,7 @@ class EdiLogisticLineSplitWizard(orm.TransientModel):
         # New data:
         # TODO: 
         confirmed_qty = 0
-        lort_qty = 0
+        lord_qty = 0
         parcel = 0
 
         # ---------------------------------------------------------------------
@@ -149,6 +149,7 @@ class EdiLogisticLineSplitWizard(orm.TransientModel):
             #'order_id': 
             #'duty_code': 
             #'chunk': 
+            'splitted': True,
             }, context=context)
 
         # ---------------------------------------------------------------------
