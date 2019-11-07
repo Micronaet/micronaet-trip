@@ -116,10 +116,17 @@ class EdiLogisticLineSplitWizard(orm.TransientModel):
         lord_qty = 0
         parcel = 0
 
+        # Update previous line:
+        line_pool.write(cr, uid, [line.id], {
+            # TODO
+            'net_qty': old_net_qty - new_net_qty,
+            #'confirmed_qty': confirmed_qty,
+            #'lord_qty': lord_qty,
+            #'parcel': parcel,
+            }, context=context)
         # ---------------------------------------------------------------------
         # Split line:
         # ---------------------------------------------------------------------
-
         line_pool.create(cr, uid, {
             'logistic_id': line.logistic_id.id,
             'pallet': new_pallet,
