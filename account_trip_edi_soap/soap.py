@@ -1609,7 +1609,7 @@ class EdiSoapLogistic(orm.Model):
         
     _columns = {
         'name': fields.char('Invoice reference', size=40, required=True),
-        'soap_sent': fields.boolean('Soap sent'),
+        'soap_sent': fields.boolean('MSC sent'),
         'soap_message': fields.char('Returned message', size=100),
         'soap_detail': fields.text('Returned detail'),
         'customer_order': fields.char('Cust. Number', size=40),
