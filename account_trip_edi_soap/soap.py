@@ -251,7 +251,6 @@ class EdiSoapConnection(orm.Model):
                     _logger.error('Cannot parse date: %s' % value)                
                     return False
                 res = '%s-%s-%s' % (value[-4:], month, value[:2])
-                print value, res
                 return res
 
             except:
@@ -659,10 +658,7 @@ class EdiSoapConnection(orm.Model):
                         'duty': '',
                         'mrn': '',
                         }
-                    try:    
-                        line_pool.create(cr, uid, data, context=context)
-                    except:
-                        import pdb; pdb.set_trace()    
+                    line_pool.create(cr, uid, data, context=context)
             break # only path folder
 
         # ---------------------------------------------------------------------
@@ -919,8 +915,6 @@ class EdiSoapOrder(orm.Model):
             context=None):
         ''' Create new order from order object
         '''        
-        print order
-
         # Pool used:
         connection_pool = self.pool.get('edi.soap.connection')
         mapping_pool = self.pool.get('edi.soap.mapping')
