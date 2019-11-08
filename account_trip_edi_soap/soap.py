@@ -1573,7 +1573,11 @@ class EdiSoapLogistic(orm.Model):
         # Check response:
         # ---------------------------------------------------------------------
         print res
-        print res.get('operationOutcome')
+        if not res:
+            raise osv.except_osv(
+                _('SOAP Error'), 
+                _('No reply!'),
+                )
         if res['operationOutcome']['statusCode']:
             raise osv.except_osv(
                 _('SOAP Error'), 
