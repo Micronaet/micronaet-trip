@@ -307,9 +307,9 @@
                      <field name="duty_code" readonly="1" />
                      <field name="lot" readonly="1" />
                      <!--<field name="piece" readonly="1" />-->
-                     <field name="parcel" readonly="1" />
-                     <field name="net_qty" readonly="1" />
-                     <field name="lord_qty" readonly="1" />
+                     <field name="parcel" readonly="1" sum="total"/>
+                     <field name="net_qty" readonly="1" sum="total"/>
+                     <field name="lord_qty" readonly="1" sum="total"/>
                      <field name="deadline" readonly="1" />
                      <field name="pallet" on_change="onchange_pallet_code(logistic_id, pallet)"/>
                      <field name="pallet_id" invisible="1" />
