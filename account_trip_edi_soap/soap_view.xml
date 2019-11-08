@@ -268,7 +268,27 @@
             </field>
         </record>
 
-        <!--edi.soap.logistic.line-->        
+        <!--edi.soap.logistic.line-->    
+        <record model="ir.ui.view" id="view_edi_soap_logistic_line_search">
+            <field name="name">edi.soap.logistic.line.search</field>
+            <field name="model">edi.soap.logistic.line</field>
+            <field name="arch" type="xml">
+                <search string="Line" version="7.0">        
+                    <field name="name" />
+                    <field name="customer_code" />
+                    <field name="product_id" filter_domain="[('product_id','=',self)]"/>
+                    <field name="pallet_id" filter_domain="[('pallet_id','=',self)]"/>
+
+                    <filter name="origin_line" string="Original" domain="[('splitted_from_id','=',False)]"/>
+                    <filter name="splitted_line" string="Splitted" domain="[('splitted_from_id','!=',False)]"/>
+
+                    <group expand="0" string="Group By...">
+                        <filter name="group_product" string="Product" context="{'group_by': 'product_id'}"/>
+                        <filter name="group_pallet_id" string="Pallet" context="{'group_by': 'pallet_id'}"/>
+                    </group>                
+                </search>
+            </field>
+        </record>    
         <record model="ir.ui.view" id="view_edi_soap_logistic_line_tree">
             <field name="name">edi.soap.logistic.line.tree</field>
             <field name="model">edi.soap.logistic.line</field>
