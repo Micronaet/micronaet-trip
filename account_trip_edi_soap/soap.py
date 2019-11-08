@@ -1572,6 +1572,8 @@ class EdiSoapLogistic(orm.Model):
         # ---------------------------------------------------------------------
         # Check response:
         # ---------------------------------------------------------------------
+        print res
+        print res.get('operationOutcome')
         if res['operationOutcome']['statusCode']:
             raise osv.except_osv(
                 _('SOAP Error'), 
@@ -1582,7 +1584,6 @@ class EdiSoapLogistic(orm.Model):
                     plotToCreate,
                 ))
         else:
-            print res
             import pdb; pdb.set_trace()
             self.write(cr, uid, ids, {
                 'soap_sent': True,
