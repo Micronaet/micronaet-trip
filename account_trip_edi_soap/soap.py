@@ -1581,10 +1581,13 @@ class EdiSoapLogistic(orm.Model):
                     plotToCreate,
                 ))
         else:
+            print res
+            import pdb; pdb.set_trace()
             self.write(cr, uid, ids, {
                 'soap_sent': True,
-                'soap_message': res['operationOutcome']['message'],
-                'soap_detail': res['logistic'],
+                'soap_message': res.get(
+                    'operationOutcome', {}).get(['message']),
+                'soap_detail': res.get('logistic'),
                 }, context=context)                
         return True
         
