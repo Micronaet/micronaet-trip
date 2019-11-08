@@ -940,7 +940,7 @@ class EdiSoapOrder(orm.Model):
             ('name', '=', po_number),
             ], context=context)
 
-        pallet_ids = False
+        pallet_ids = destination_id = False
         if order_ids:
             if force:
                 # Save previous pallet list:
