@@ -1604,7 +1604,7 @@ class EdiSoapLogistic(orm.Model):
                     message,
                     error_list,
                     plotToCreate,
-                    )))
+                    ))
         else:
             self.write(cr, uid, ids, {
                 'soap_sent': True,
