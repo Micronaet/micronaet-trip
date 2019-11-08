@@ -426,9 +426,9 @@
                                                   <!--<field name="chunk"  />-->
                                                   <!--<field name="piece"  />-->
                                                   <field name="lot"  />
-                                                  <field name="parcel"  />
-                                                  <field name="net_qty"  />
-                                                  <field name="lord_qty"  />
+                                                  <field name="parcel" sum="total"/>
+                                                  <field name="net_qty" sum="total" />
+                                                  <field name="lord_qty" sum="total" />
                                                   <field name="deadline"  />
                                                   <field name="pallet" on_change="onchange_pallet_code(logistic_id, pallet)"/>
                                                   <field name="pallet_id" invisible="1" />
