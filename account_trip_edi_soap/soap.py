@@ -1586,6 +1586,7 @@ class EdiSoapLogistic(orm.Model):
                 )
         
         try:
+            import pdb; pdb.set_trace()
             message = res['operationOutcome']['message']
             error_list = ','.join(res['operationOutcome']['errorsList'])
         except:
