@@ -1586,7 +1586,7 @@ class EdiSoapLogistic(orm.Model):
                     ','.join(
                         res.get('operationOutcome', {}).get('errorsList'),
                     plotToCreate,
-                ))
+                    )))
         else:
             import pdb; pdb.set_trace()
             self.write(cr, uid, ids, {
