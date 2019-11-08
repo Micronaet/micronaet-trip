@@ -1740,7 +1740,7 @@ class EdiSoapLogistic(orm.Model):
     _name = 'edi.soap.logistic.line'
     _description = 'EDI Soap Logistic Line'
     _rec_name = 'name'
-    _order = 'sequence, name, splitted_from_id'
+    _order = 'sequence, name, splitted_from_id desc'
 
     # -------------------------------------------------------------------------
     # Onchange:

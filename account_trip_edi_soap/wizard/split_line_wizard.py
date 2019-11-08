@@ -79,12 +79,12 @@ class EdiLogisticLineSplitWizard(orm.TransientModel):
         '''   
         res = {}
         line = self.browse(cr, uid, ids, context=context)[0]
-        if new_quantity >= line.net_qty:
+        if new_quantity >= line.parcel:
             return {'warning': {
                 'title': _('Quantity error'), 
                 'message': _('New q. %s >= total q.: %s') % (
                     new_quantity,
-                    line.net_qty,
+                    line.parcel,
                     ),
                 }}
         return res   
@@ -95,6 +95,7 @@ class EdiLogisticLineSplitWizard(orm.TransientModel):
     def action_split(self, cr, uid, ids, context=None):
         ''' Event for button done
         '''
+        logistic_pool = self.pool.get('edi.soap.logistic')
         if context is None: 
             context = {}        
 
@@ -120,7 +121,7 @@ class EdiLogisticLineSplitWizard(orm.TransientModel):
         old_lord_qty = line.lord_qty
         old_parcel = line.parcel
 
-        if new_pallet_id == pallet_id:
+        if new_pallet_id == line.pallet_id.id:
             raise osv.except_osv(
                 _('Error'), 
                 _('Cannot split, same pallet!'),
@@ -144,7 +145,7 @@ class EdiLogisticLineSplitWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         # Update previous line:
         # ---------------------------------------------------------------------
-        line_pool.write(cr, uid, [line.id], {
+        self.write(cr, uid, ids, {
             'net_qty': old_net_qty - new_net_qty,
             'confirmed_qty': old_confirmed_qty - new_confirmed_qty,
             'lord_qty': old_lord_qty - new_lord_qty,
@@ -154,7 +155,7 @@ class EdiLogisticLineSplitWizard(orm.TransientModel):
         # ---------------------------------------------------------------------
         # Split line:
         # ---------------------------------------------------------------------
-        line_pool.create(cr, uid, {
+        self.create(cr, uid, {
             'splitted_from_id': line.id,
 
             'logistic_id': line.logistic_id.id,
