@@ -1577,7 +1577,8 @@ class EdiSoapLogistic(orm.Model):
                 _('SOAP Error'), 
                 _('Message: %s [%s] {%s}') % (
                     res['operationOutcome']['message'],
-                    ','.join(res['operationOutcome']['errorsList']),
+                    ','.join(
+                        res.get('operationOutcome'], {}).get('errorsList'),
                     plotToCreate,
                 ))
         else:
