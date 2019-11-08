@@ -279,6 +279,7 @@
                      <field name="sequence" readonly="1" />
                      <field name="logistic_id" readonly="1" />
                      <field name="order_id" readonly="1" />
+                     <field name="customer_code" readonly="1" />
                      <field name="name" readonly="1" />
                      <field name="product_id" readonly="1" />
                      <field name="chunk" readonly="1" />
