@@ -1495,6 +1495,7 @@ class EdiSoapLogistic(orm.Model):
         '''
         connection_pool = self.pool.get('edi.soap.connection')
         mapping_pool = self.pool.get('edi.soap.mapping')
+        product_pool = self.pool.get('product.product')
 
         # ---------------------------------------------------------------------
         # Send logistic order:
@@ -1540,6 +1541,10 @@ class EdiSoapLogistic(orm.Model):
                 else: 
                     _logger.error(
                         'No mapping code for %s' % product.default_code)
+            chunk = product.chunk
+            if not chunk:
+                chunk = product_pool.get_chunk(product)
+                # not saved only for this send!
                 
             plot_lines_data.append({
                 'cdArticolo': customer_code or '', # MSC code
@@ -1556,7 +1561,7 @@ class EdiSoapLogistic(orm.Model):
                 'nrNetto': line.net_qty, 
                 'nrLordo': line.lord_qty,
                 'nrColli': line.parcel or '',
-                'nrPzConf': product.chunk or '1', # XXX or nrPezziConf?
+                'nrPzConf': chunk,
                 'dtScadenza': line.deadline, # Lot?
                 'cdPaeseOrigine': line.origin_country or '',
                 'cdPaeseProvenienza': line.provenance_country or '',
