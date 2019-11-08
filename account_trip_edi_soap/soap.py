@@ -1579,28 +1579,37 @@ class EdiSoapLogistic(orm.Model):
         # ---------------------------------------------------------------------
         # Check response:
         # ---------------------------------------------------------------------
-        print res
         if not res:
             raise osv.except_osv(
                 _('SOAP Error'), 
                 _('No reply!'),
                 )
+        
+        try:
+            message = res['operationOutcome']['message']
+            error_list = ','.join(res['operationOutcome']['errorsList'])
+        except:
+            message = 'Cannot get message'
+            error_list = 'Cannot get error list'
+        
+        try:
+            message_logistic = res['logistic']
+        except:
+            message_logistic = 'No logistic response'
+                
         if res['operationOutcome']['statusCode']:
             raise osv.except_osv(
                 _('SOAP Error'), 
                 _('Message: %s [%s] {%s}') % (
-                    res['operationOutcome']['message'],
-                    ','.join(
-                        res.get('operationOutcome', {}).get('errorsList'),
+                    message,
+                    error_list,
                     plotToCreate,
                     )))
         else:
-            import pdb; pdb.set_trace()
             self.write(cr, uid, ids, {
                 'soap_sent': True,
-                'soap_message': res.get(
-                    'operationOutcome', {}).get(['message']),
-                'soap_detail': res.get('logistic'),
+                'soap_message': message,
+                'soap_detail': res.get['logistic'],
                 }, context=context)                
         return True
         
