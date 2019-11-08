@@ -1609,7 +1609,7 @@ class EdiSoapLogistic(orm.Model):
             self.write(cr, uid, ids, {
                 'soap_sent': True,
                 'soap_message': message,
-                'soap_detail': res.get['logistic'],
+                'soap_detail': res['logistic'],
                 }, context=context)                
         return True
         
