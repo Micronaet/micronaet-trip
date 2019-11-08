@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-       <!-- edi.logistic.line.split.wizard -->
-       <record id="edi_logistic_line_split_wizard_wizard_view" model="ir.ui.view">
+       <!-- edi.soap.logistic.line -->
+       <record id="edi_soap_logistic_line_split_wizard_view" model="ir.ui.view">
             <field name="name">Split wizard</field>
-            <field name="model">edi.logistic.line.split.wizard</field>
+            <field name="model">edi.soap.logistic.line</field>
+            <field name="priority" eval="40" />
             <field name="arch" type="xml">
                 <form string="Wizard" version="7.0">
                    <header>
@@ -12,23 +13,28 @@
                        <button name="action_split" string="Split" type="object" icon="gtk-jump-to" class="oe_highlight" />
                    </header>                   
                    <group colspan="4" col="4">
-                        <field name="line_id" readonly="1" />
                         <field name="new_pallet_id" invisible="1"/>
+                        <field name="logistic_id" invisible="1"/>
 
-                        <field name="new_quantity" on_change="onchange_quantity(line_id, new_quantity)"/>
-                        <field name="new_pallet" on_change="onchange_pallet_code(line_id, new_pallet)"/>
+                        <field name="new_quantity" on_change="onchange_quantity(new_quantity)" required="1"/>
+                        <field name="new_pallet" on_change="onchange_pallet_code(logistic_id, new_pallet, 'new_pallet_id')" required="1"/>
+
+                        <separator string="Origin detail:" colspan="4"/>
+                        <field name="parcel" readonly="1" />
+                        <field name="pallet" readonly="1" />
+
+                        <separator string="Other detail:" colspan="4"/>
+                        <field name="product_id" readonly="1" />
+                        <field name="customer_code" readonly="1"/>
+                        
+                        <field name="confirmed_qty" readonly="1" />
+                        <field name="chunk" readonly="1" />
+
+                        <field name="net_qty" readonly="1" />
+                        <field name="lord_qty" readonly="1" />
                    </group>
                 </form>
             </field>
-      </record>
-
-      <record model="ir.actions.act_window" id="action_edi_logistic_line_split_wizard">
-          <field name="name">Split line wizard</field>
-          <field name="res_model">edi.logistic.line.split.wizard</field>
-          <field name="view_type">form</field>
-          <field name="view_mode">form</field>
-          <field name="target">new</field>
-          <field name="view_id" ref="edi_logistic_line_split_wizard_wizard_view"/>
       </record>
     </data>
 </openerp>

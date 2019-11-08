@@ -273,9 +273,9 @@
             <field name="name">edi.soap.logistic.line.tree</field>
             <field name="model">edi.soap.logistic.line</field>
             <field name="arch" type="xml">
-                <tree editable="bottom" string="Line" colors="blue:splitted==True">
+                <tree editable="bottom" string="Line" colors="blue:splitted_from_id!=False">
                      <button name="line_detail" string="Line detail" type="object" icon="gtk-index" />
-                     <field name="splitted" invisible="1" />
+                     <field name="splitted_from_id" invisible="1" />
                      <field name="sequence" readonly="1" />
                      <field name="logistic_id" readonly="1" />
                      <field name="order_id" readonly="1" />
@@ -292,7 +292,7 @@
                      <field name="deadline" readonly="1" />
                      <field name="pallet" on_change="onchange_pallet_code(logistic_id, pallet)"/>
                      <field name="pallet_id" invisible="1" />
-                     <button name="%(account_trip_edi_soap.action_edi_logistic_line_split_wizard)d" string="Split line" type="action" icon="gtk-copy" context="{'return_logistic': False}"/>
+                     <button name="open_edi_logistic_line_split_wizard" string="Split line" type="object" icon="gtk-copy" context="{'return_logistic': False}"/>
                 </tree>
             </field>
         </record>
@@ -303,7 +303,7 @@
             <field name="arch" type="xml">                
                 <form string="Line detail" version="7.0">        
                     <header> 
-                          <button name="%(account_trip_edi_soap.action_edi_logistic_line_split_wizard)d" string="Split line" type="action" icon="gtk-copy" context="{'return_logistic': False}"/>
+                          <button name="open_edi_logistic_line_split_wizard" string="Split line" type="object" icon="gtk-copy" context="{'return_logistic': False}"/>
                     </header>
                     <sheet>
                         <group col="4" colspan="4">
@@ -346,7 +346,7 @@
                             <field name="invoice" readonly="1"/>
                             <field name="invoice_date" readonly="1"/>
 
-                            <field name="splitted" readonly="1" />
+                            <field name="splitted_from_id" readonly="1" />
                         </group>
                     </sheet>        
                 </form>
@@ -394,23 +394,24 @@
                                           <button name="setup_pallet_id" string="Set pallet all" type="object" icon="gtk-refresh" help="Setup all line with this pallet" />-->
                                           
                                           <field name="line_ids" nolabel="1" colspan="6" context="{'default_logistic_id': active_id}">
-                                              <tree editable="bottom" string="Line" colors="blue:splitted==True">
-                                                  <field name="splitted" invisible="1" />
+                                              <tree editable="bottom" string="Line" colors="blue:splitted_from_id!=False">
+                                                  <field name="splitted_from_id" invisible="1" />
                                                   <button name="line_detail" string="Line detail" type="object" icon="gtk-index" />
                                                   <field name="logistic_id" invisible="1" />
-                                                  <field name="sequence" readonly="1" />
-                                                  <field name="name" readonly="1" />
-                                                  <field name="product_id" readonly="1" />
-                                                  <!--<field name="chunk" readonly="1" />-->
-                                                  <!--<field name="piece" readonly="1" />-->
-                                                  <field name="lot" readonly="1" />
-                                                  <field name="parcel" readonly="1" />
-                                                  <field name="net_qty" readonly="1" />
-                                                  <field name="lord_qty" readonly="1" />
-                                                  <field name="deadline" readonly="1" />
+                                                  <field name="sequence" string="#"/>
+                                                  <field name="customer_code" />
+                                                  <field name="name" />
+                                                  <field name="product_id" />
+                                                  <!--<field name="chunk"  />-->
+                                                  <!--<field name="piece"  />-->
+                                                  <field name="lot"  />
+                                                  <field name="parcel"  />
+                                                  <field name="net_qty"  />
+                                                  <field name="lord_qty"  />
+                                                  <field name="deadline"  />
                                                   <field name="pallet" on_change="onchange_pallet_code(logistic_id, pallet)"/>
                                                   <field name="pallet_id" invisible="1" />
-                                                  <button name="%(account_trip_edi_soap.action_edi_logistic_line_split_wizard)d" string="Split line" type="action" icon="gtk-copy" context="{'return_logistic': True}"/>
+                                                  <button name="open_edi_logistic_line_split_wizard" string="Split line" type="object" icon="gtk-copy" context="{'return_logistic': True}"/>
                                                </tree>
                                           </field>
                                      </group>                                      

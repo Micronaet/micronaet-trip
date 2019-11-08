@@ -40,107 +40,136 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+# Wizard is not a really wizard but a line extension used for duplication
 class EdiLogisticLineSplitWizard(orm.TransientModel):
     ''' Wizard for for split line
     '''
-    _name = 'edi.logistic.line.split.wizard'
+    _inherit = 'edi.soap.logistic.line'
+
+    def open_edi_logistic_line_split_wizard(self, cr, uid, ids, context=None):
+        '''
+        '''
+        model_pool = self.pool.get('ir.model.data')
+        view_id = model_pool.get_object_reference(
+            cr, uid, 
+            'account_trip_edi_soap', 
+            'edi_soap_logistic_line_split_wizard_view')[1]
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Split line'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': ids[0],
+            'res_model': 'edi.soap.logistic.line',
+            'view_id': view_id, 
+            'views': [(view_id, 'form')],
+            'domain': [],
+            'context': context,
+            'target': 'new',
+            'nodestroy': False,
+            }
 
     # -------------------------------------------------------------------------
     # Onchange:
     # -------------------------------------------------------------------------
-    def onchange_quantity(self, cr, uid, ids, line_id, new_quantity, 
+    def onchange_quantity(self, cr, uid, ids, new_quantity, 
             context=None):
         ''' Check quantity
         '''   
         res = {}
-        line_pool = self.pool.get('edi.soap.logistic.line')
-        line = line_pool.browse(cr, uid, line_id, context=context)
+        line = self.browse(cr, uid, ids, context=context)[0]
         if new_quantity >= line.net_qty:
-            return {
-                'warning': {
-                    'title': _('Quantity error'), 
-                    'message': _('New q. %s >= total q.: %s') % (
-                        new_quantity,
-                        line.net_qty,
-                        ),
-                    }}
+            return {'warning': {
+                'title': _('Quantity error'), 
+                'message': _('New q. %s >= total q.: %s') % (
+                    new_quantity,
+                    line.net_qty,
+                    ),
+                }}
         return res   
         
-    def onchange_pallet_code(self, cr, uid, ids, line_id, new_pallet, 
-            context=None):
-        ''' Save correct element
-        '''
-        line_pool = self.pool.get('edi.soap.logistic.line')
-        line = line_pool.browse(cr, uid, line_id, context=context)
-        pallet_id = False
-        for pallet in line.logistic_id.pallet_ids:
-            if new_pallet == pallet.name:
-                pallet_id = pallet.id
-                break
-        if not pallet_id:
-            raise osv.except_osv(
-                _('Pallet error'), 
-                _('Pallet not found use code present in the list'),
-                )        
-        return {'value': {
-            'new_pallet_id': pallet_id,
-            }}        
-
     # -------------------------------------------------------------------------
     # Wizard button event:
     # -------------------------------------------------------------------------
     def action_split(self, cr, uid, ids, context=None):
         ''' Event for button done
         '''
-        logistic_pool = self.pool.get('edi.soap.logistic')
-        line_pool = self.pool.get('edi.soap.logistic.line')
         if context is None: 
             context = {}        
 
-        # Get wizard data:
-        wiz_browse = self.browse(cr, uid, ids, context=context)[0]        
-        
-        line = wiz_browse.line_id
-        new_pallet = wiz_browse.new_pallet
-        new_pallet_id = wiz_browse.new_pallet_id.id
-        new_net_qty = wiz_browse.new_quantity
+        # ---------------------------------------------------------------------
+        # New data:
+        # ---------------------------------------------------------------------
+        line = self.browse(cr, uid, ids, context=context)[0]        
+        new_pallet = line.new_pallet
+        new_pallet_id = line.new_pallet_id.id
+        new_parcel = float(line.new_quantity)
 
-        # Get old data:        
+        if not new_parcel:
+            raise osv.except_osv(
+                _('Error'), 
+                _('Cannot split, no parcel selected!'),
+                )
+
+        # ---------------------------------------------------------------------
+        # Old data:        
+        # ---------------------------------------------------------------------
+        old_confirmed_qty = line.confirmed_qty
         old_net_qty = line.net_qty
         old_lord_qty = line.lord_qty
         old_parcel = line.parcel
-        
-        # New data:
-        # TODO: 
-        confirmed_qty = 0
-        lord_qty = 0
-        parcel = 0
 
+        if new_pallet_id == pallet_id:
+            raise osv.except_osv(
+                _('Error'), 
+                _('Cannot split, same pallet!'),
+                )
+        
+        # ---------------------------------------------------------------------
+        # Calculated new data:
+        # ---------------------------------------------------------------------
+        if not old_parcel:
+            raise osv.except_osv(
+                _('Error'), 
+                _('Cannot split, no parcel in original line!'),
+                )
+
+        # New calculated (depend on parcel rate):
+        new_rate = new_parcel / old_parcel
+        new_confirmed_qty = old_confirmed_qty * new_rate
+        new_net_qty = old_net_qty * new_rate
+        new_lord_qty = old_lord_qty * new_rate
+
+        # ---------------------------------------------------------------------
         # Update previous line:
+        # ---------------------------------------------------------------------
         line_pool.write(cr, uid, [line.id], {
-            # TODO
             'net_qty': old_net_qty - new_net_qty,
-            #'confirmed_qty': confirmed_qty,
-            #'lord_qty': lord_qty,
-            #'parcel': parcel,
+            'confirmed_qty': old_confirmed_qty - new_confirmed_qty,
+            'lord_qty': old_lord_qty - new_lord_qty,
+            'parcel': old_parcel - new_parcel,
             }, context=context)
 
         # ---------------------------------------------------------------------
         # Split line:
         # ---------------------------------------------------------------------
         line_pool.create(cr, uid, {
+            'splitted_from_id': line.id,
+
             'logistic_id': line.logistic_id.id,
             'pallet': new_pallet,
             'pallet_id': new_pallet_id,
             'product_id': line.product_id.id,
             'sequence': line.sequence,
             'name': line.name,
+            'customer_code': line.customer_code,
             'variable_weight': line.variable_weight,
             'lot': line.lot,
-            'confirmed_qty': confirmed_qty,
+            'confirmed_qty': new_confirmed_qty,
             'net_qty': new_net_qty,
-            'lord_qty': lord_qty,
-            'parcel': parcel,
+            'lord_qty': new_lord_qty,
+            'parcel': new_parcel,
             'piece': line.piece,
             'deadline': line.deadline,
             'origin_country': line.origin_country,
@@ -157,13 +186,11 @@ class EdiLogisticLineSplitWizard(orm.TransientModel):
             #'order_id': 
             #'duty_code': 
             #'chunk': 
-            'splitted': True,
             }, context=context)
 
         # ---------------------------------------------------------------------
         # Return view updated:
         # ---------------------------------------------------------------------
-        print context
         if context.get('return_logistic'):
             return { # for speed instead of reload
                 'type': 'ir.actions.act_window',
@@ -180,37 +207,14 @@ class EdiLogisticLineSplitWizard(orm.TransientModel):
                 'nodestroy': False,
                 }
         else:
-            res = logistic_pool.open_logistic_lines(
+            return logistic_pool.open_logistic_lines(
                 cr, uid, [line.logistic_id.id], context=context)
-            print res    
-            return res    
-
-    # -------------------------------------------------------------------------
-    # Default function:            
-    # -------------------------------------------------------------------------
-    def get_default_line_id(self, cr, uid, context=None):
-        ''' Get active_ids extract current
-        '''
-        if context is None:
-            raise osv.except_osv(
-                _('Error'), 
-                _('Cannot select origin line'),
-                )
-        return context.get('active_id')
 
     _columns = {
-        'line_id': fields.many2one(
-            'edi.soap.logistic.line', 'Line', help='Line selected'),
-        'new_quantity': fields.float('New quantity', digits=(16, 2), 
-            required=True),
-        'new_pallet': fields.integer('New pallet', required=True),    
+        'new_quantity': fields.integer('New parcel', digits=(16, 2)),
+            
+        'new_pallet': fields.integer('New pallet'),    
         'new_pallet_id': fields.many2one('edi.soap.logistic.pallet', 
-            'New pallet'),
+            'New pallet'),       
         }
-    
-    _defaults = {
-        'line_id': lambda s, cr, uid, ctx: s.get_default_line_id(cr, uid, ctx),
-        }    
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-
-

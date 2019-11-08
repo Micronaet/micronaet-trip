@@ -1740,18 +1740,20 @@ class EdiSoapLogistic(orm.Model):
     _name = 'edi.soap.logistic.line'
     _description = 'EDI Soap Logistic Line'
     _rec_name = 'name'
-    _order = 'sequence, name, splitted desc'
+    _order = 'sequence, name, splitted_from_id'
 
     # -------------------------------------------------------------------------
     # Onchange:
     # -------------------------------------------------------------------------
     def onchange_pallet_code(self, cr, uid, ids, logistic_id, pallet_code, 
-            context=None):
+            field_name='pallet_id', context=None):
         ''' Save correct element
+            Called also from wizard new_pallet reference
         '''
         logistic_pool = self.pool.get('edi.soap.logistic')
         logistic = logistic_pool.browse(cr, uid, logistic_id, context=context)
         pallet_id = False
+        
         for pallet in logistic.pallet_ids:
             if pallet_code == pallet.name:
                 pallet_id = pallet.id
@@ -1762,7 +1764,7 @@ class EdiSoapLogistic(orm.Model):
                 _('Pallet not found use code present in the list'),
                 )        
         return {'value': {
-            'pallet_id': pallet_id,
+            field_name: pallet_id, 
             }}        
 
     def line_detail(self, cr, uid, ids, context=None):   
@@ -1825,7 +1827,8 @@ class EdiSoapLogistic(orm.Model):
         'invoice': fields.char('Invoice number', size=10),
         'invoice_date': fields.date('Invoice date'),
         'mrn': fields.char('MRN', size=10, help='Not mandatory'),
-        'splitted': fields.boolean('Splitted'),
+        'splitted_from_id': fields.many2one(
+            'edi.soap.logistic.line', 'Splitted origin'),
         # XXX Remember duplication wizard when add fields!!!
         # ---------------------------------------------------------------------
         }
