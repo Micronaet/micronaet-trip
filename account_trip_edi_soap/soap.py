@@ -465,6 +465,7 @@ class EdiSoapConnection(orm.Model):
                                 data['detail'].append((
                                     data['detail_text'], 
                                     get_float(line),
+                                    line.split()[0], # customer code
                                     ))
                                 data['product_insert'] = True
                             
@@ -603,10 +604,13 @@ class EdiSoapConnection(orm.Model):
                 sequence = 0
                 invoice_date = get_date(data['invoice_date'])
 
-                for row, lord_qty in data['detail']:
+                for row, lord_qty, customer_code in data['detail']:
                     sequence += 1
                     line_part = row.split(separator)
                     
+                    if not customer_code.startswith('F'):
+                        customer_code = ''
+                        
                     # Deadline: 
                     if line_part[12]:
                         deadline = '20%s-%s-%s' % (
@@ -634,6 +638,7 @@ class EdiSoapConnection(orm.Model):
 
                         'sequence': sequence,
                         'name': default_code,
+                        'customer_code': customer_code,
                         
                         'variable_weight': line_part[5],
                         'lot': line_part[6],
@@ -1523,16 +1528,18 @@ class EdiSoapLogistic(orm.Model):
         plot_lines_data = plotToCreate['pLotLinesData']
         for line in logistic.line_ids: 
             product = line.product_id
-            mapping_ids = mapping_pool.search(cr, uid, [
-                ('product_id', '=', product.id),                
-                ], context=context)
-            if mapping_ids:
-                mapping = mapping_pool.browse(
-                    cr, uid, mapping_ids, context=context)[0]
-                customer_code = mapping.name
-            else: 
-                _logger.error('No mapping code for %s' % product.default_code)
-                customer_code = ''        
+            customer_code = line.customer_code
+            if not customer_code:
+                mapping_ids = mapping_pool.search(cr, uid, [
+                    ('product_id', '=', product.id),                
+                    ], context=context)
+                if mapping_ids:
+                    mapping = mapping_pool.browse(
+                        cr, uid, mapping_ids, context=context)[0]
+                    customer_code = mapping.name
+                else: 
+                    _logger.error(
+                        'No mapping code for %s' % product.default_code)
                 
             plot_lines_data.append({
                 'cdArticolo': customer_code or '', # MSC code
@@ -1781,7 +1788,8 @@ class EdiSoapLogistic(orm.Model):
             'product_id', 'chunk', type='integer', string='Chunk per pack'),
 
         'sequence': fields.integer('Seq.'),
-        'name': fields.char('Article', size=40, required=True),
+        'name': fields.char('Company code', size=40, required=True),
+        'customer_code': fields.char('Customer code', size=20),
         'variable_weight': fields.char('Variable weight', size=1),
         'lot': fields.char('Lot', size=6),
         'confirmed_qty': fields.float('Confirmed qty', digits=(16, 2)),
