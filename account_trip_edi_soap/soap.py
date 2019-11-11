@@ -1201,7 +1201,7 @@ class EdiSoapOrder(orm.Model):
         destination_code = order.destination_id.sql_destination_code or ''
         
         entity_name = order.entity_name or ''
-        if entity_name.upper().startwith('WH'):
+        if entity_name.upper().startswith('WH'):
             entity_name = order.document_comment
             
         file_csv = open(fullname, 'w')
