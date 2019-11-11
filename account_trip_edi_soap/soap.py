@@ -955,8 +955,11 @@ class EdiSoapOrder(orm.Model):
                     ))
                 self.unlink(cr, uid, order_ids, context=context)
             else:
+                # Update only state:
                 _logger.warning('Order %s yet present' % po_number)                 
-                return False
+                return self.write(cr, uid, order_ids, {
+                    'status': self._safe_get(order, 'status'),
+                    }, context=context)
 
         header = {
             'connection_id': connection_id,
