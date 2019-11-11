@@ -106,7 +106,6 @@
                     
                     <group expand="0" string="Group By...">
                         <filter name="group_destination_id" string="Destination" context="{'group_by': 'destination_id'}"/>
-                        <filter name="group_fullname" string="Fullname" context="{'group_by': 'buyer_fullname'}" />
                         <filter name="group_buyer" string="Buyer" context="{'group_by': 'buyer_group'}" />
                         <filter name="group_address" string="Address" context="{'group_by': 'invoice_address'}" />
                         <filter name="group_status" string="Status" context="{'group_by': 'status'}" />
