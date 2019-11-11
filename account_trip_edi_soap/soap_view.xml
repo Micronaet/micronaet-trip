@@ -98,13 +98,15 @@
                     <field name="delivery_port_nam" />
                     <field name="invoice_holder" />
                     <field name="invoice_address" />
-                    <field name="delivery_address" />     
+                    <field name="delivery_address" />   
+                    <field name="fullname" />  
                     
                     <filter name="sent_account" string="Sent account" domain="[('filename','!=',False)]"/>
                     <filter name="unsent_account" string="Not sent account" domain="[('filename','=',False)]"/>
                     
                     <group expand="0" string="Group By...">
                         <filter name="group_destination_id" string="Destination" context="{'group_by': 'destination_id'}"/>
+                        <filter name="group_fullname" string="Fullname" context="{'group_by': 'buyer_fullname'}" />
                         <filter name="group_buyer" string="Buyer" context="{'group_by': 'buyer_group'}" />
                         <filter name="group_address" string="Address" context="{'group_by': 'invoice_address'}" />
                         <filter name="group_status" string="Status" context="{'group_by': 'status'}" />
@@ -120,20 +122,21 @@
                     <field name="check_pre_export" invisible="1"/>
                     <field name="name" />
                     <field name="delivery_date" />
-                    <field name="connection_id" />
+                    <field name="connection_id" invisible="1"/>
                     <field name="destination_id" />
                     <field name="entity_name" />                    
+                    <field name="document_comment" />
                     <field name="delivery_port_nam" />
-                    <field name="status" />
-                    <field name="currency" />
+                    <field name="currency" invisible="1"/>
                     <field name="fullname" />
-                    <field name="buyer_group" />
-                    <field name="invoice_holder" />
-                    <field name="invoice_address" />
-                    <field name="invoice_vatcode" />
+                    <field name="buyer_group" invisible="1"/>
+                    <field name="invoice_holder" invisible="1"/>
+                    <field name="invoice_address" invisible="1"/>
+                    <field name="invoice_vatcode" invisible="1"/>
                     <field name="delivery_at" />
-                    <field name="delivery_address" />     
-                    <field name="filename" />               
+                    <field name="delivery_address" invisible="1"/>     
+                    <field name="filename" invisible="1"/>
+                    <field name="status" />
                     <button name="extract_order_csv_file" string="Export CSV" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('check_pre_export', '=', False), ('filename','!=',False)]}" icon="gtk-execute"/>
                 </tree>
             </field>
