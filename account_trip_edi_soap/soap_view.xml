@@ -146,7 +146,7 @@
             <field name="arch" type="xml">
                 <form string="SOAP order" version="7.0">
                     <header>                        
-                        <button name="reload_this_order" string="Reload order" type="object" icon="gtk-refresh" class="oe_highlight" groups="group_edi_soap_reload"/>
+                        <button name="reload_this_order" string="Reload order" type="object" icon="gtk-refresh" class="oe_highlight" groups="account_trip_edi_soap.group_edi_soap_reload"/>
                         <button name="extract_order_csv_file" string="Export CSV" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('check_pre_export', '=', False), ('filename','!=',False)]}" icon="gtk-execute"/>
                     </header>
                     <shell>
