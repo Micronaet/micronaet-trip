@@ -849,7 +849,7 @@ class EdiSoapOrder(orm.Model):
     _name = 'edi.soap.order'
     _description = 'EDI Soap Order'
     _rec_name = 'name'
-    _order = 'name'
+    _order = 'delivery_date,name'
 
     # -------------------------------------------------------------------------
     # Utility:
