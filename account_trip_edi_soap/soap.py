@@ -1180,7 +1180,7 @@ class EdiSoapOrder(orm.Model):
         
         # Parameters:
         mask = '%3s|%-8s|%-8s|%-25s|%-16s|' + \
-            '%-16s|%-60s|%-2s|%-15s|%-15s|%-15s|%-8s|%-8s\r\n'
+            '%-16s|%-60s|%-2s|%-15s|%-15s|%-15s|%-8s|%-8s|%-30s\r\n'
 
         connection = order.connection_id
         separator = connection.order_separator
@@ -1199,6 +1199,10 @@ class EdiSoapOrder(orm.Model):
         today = datetime.now().strftime(
             DEFAULT_SERVER_DATE_FORMAT).replace('-', '')
         destination_code = order.destination_id.sql_destination_code or ''
+        
+        entity_name = order.entity_name or ''
+        if entity_name.upper().startwith('WH'):
+            entity_name = order.document_comment
             
         file_csv = open(fullname, 'w')
         error = []
@@ -1230,6 +1234,8 @@ class EdiSoapOrder(orm.Model):
                     subtotal, 15, 3, error=error), 
                 date,
                 today,
+                clean_text(
+                    entity_name, 30, error=error), 
                 )
             file_csv.write(row)
         file_csv.close()
