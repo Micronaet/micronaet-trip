@@ -682,6 +682,13 @@ class EdiSoapConnection(orm.Model):
         '''
         return self._soap_login(cr, uid, ids, context=context)
 
+    def scheduled_load_new_order(self, cr, uid, context=None):
+        ''' Scheduled action for import all orders
+        '''
+        for item_id in self.search(cr, uid, [], context=context):
+            self.load_new_order(cr, uid, [item_id], context=context)    
+        return True    
+
     def load_new_order(self, cr, uid, ids, context=None):
         ''' Load order from WSDL Soap Connection
         '''
