@@ -86,6 +86,32 @@
         </record>
 
         <!--edi.soap.order-->
+        <record model="ir.ui.view" id="view_edi_soap_order_search">
+            <field name="name">edi.soap.order.search</field>
+            <field name="model">edi.soap.order</field>
+            <field name="arch" type="xml">
+                <search string="String" version="7.0">        
+                    <field name="name" />
+                    <field name="connection_id" filter_domain="[('connection_id','=',self)]"/>
+                    <field name="destination_id" filter_domain="[('destination_id','=',self)]"/>
+                    <field name="entity_name" />                    
+                    <field name="delivery_port_nam" />
+                    <field name="invoice_holder" />
+                    <field name="invoice_address" />
+                    <field name="delivery_address" />     
+                    
+                    <filter name="sent_account" string="Sent account" domain="[('filename','!=',False)]"/>
+                    <filter name="unsent_account" string="Not sent account" domain="[('filename','=',False)]"/>
+                    
+                    <group expand="0" string="Group By...">
+                        <filter name="group_destination_id" string="Destination" context="{'group_by': 'destination_id'}"/>
+                        <filter name="group_buyer" string="Buyer" context="{'group_by': 'buyer_group'}" />
+                        <filter name="group_address" string="Address" context="{'group_by': 'invoice_address'}" />
+                        <filter name="group_status" string="Status" context="{'group_by': 'status'}" />
+                    </group>                
+                </search>
+            </field>
+        </record>
         <record model="ir.ui.view" id="view_edi_soap_order_tree">
             <field name="name">edi.soap.order.tree</field>
             <field name="model">edi.soap.order</field>
@@ -93,9 +119,10 @@
                 <tree string="SOAP order" colors="green:filename!=False;red:check_pre_export==False">
                     <field name="check_pre_export" invisible="1"/>
                     <field name="name" />
+                    <field name="delivery_date" />
                     <field name="connection_id" />
                     <field name="destination_id" />
-                    <field name="entity_name" />
+                    <field name="entity_name" />                    
                     <field name="delivery_port_nam" />
                     <field name="status" />
                     <field name="currency" />
@@ -128,7 +155,6 @@
                             
                             <field name="entity_name" readonly="1" />
                             <field name="delivery_port_nam" readonly="1" />
-                            
                             
                             <field name="po_create_date" readonly="1" />
                             <field name="delivery_date" readonly="1" />
@@ -219,13 +245,14 @@
                 </form>
             </field>
         </record>
-        <record model="ir.actions.act_window" id="action_edi_soap_order">
+        <record model="ir.actions.act_window" id="action_edi_soap_order_unsent">
             <field name="name">SOAP order</field>
             <field name="res_model">edi.soap.order</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_edi_soap_order_tree"/>
-            <field name="context">{}</field>
+            <field name="search_view_id" ref="view_edi_soap_order_search"/>
+            <field name="context">{'search_default_unsent_account': True}</field>
             <field name="domain">[]</field>
         </record>
         
@@ -374,7 +401,24 @@
                 </form>
             </field>
         </record>
-        <!--edi.soap.logistic-->        
+        <!--edi.soap.logistic-->   
+        <record model="ir.ui.view" id="view_edi_soap_logistic_search">
+            <field name="name">edi.soap.logistic.search</field>
+            <field name="model">edi.soap.logistic</field>
+            <field name="arch" type="xml">
+                <search string="Logistic order" version="7.0">        
+                    <field name="name" />
+                    <field name="order_id" filter_domain="[('order_id','=',self)]"/>
+
+                    <filter name="soap_sent_on" string="Sent" domain="[('soap_sent','=',True)]"/>
+                    <filter name="soap_sent_off" string="Not sent" domain="[('soap_sent','=',False)]"/>
+
+                    <group expand="0" string="Group By...">
+                        <filter name="group_order" string="Order" context="{'group_by': 'order_id'}"/>
+                    </group>                
+                </search>
+            </field>
+        </record>     
         <record model="ir.ui.view" id="view_edi_soap_logistic_tree">
             <field name="name">edi.soap.logistic.tree</field>
             <field name="model">edi.soap.logistic</field>
@@ -384,6 +428,8 @@
                     <field name="name" />
                     <field name="order_id" />
                     <field name="delivery_date" />
+                    <field name="soap_sent" invisible="1" />
+                    <button name="send_logistic_2_soap" string="Send" type="object" class="oe_highlight" icon="gtk-save-as" attrs="{'invisible': [('soap_sent','=',True)]}"/>
                 </tree>
             </field>
         </record>
@@ -442,7 +488,7 @@
                                      <group colspan="4" col="4">
                                          <separator string="Pallet:" colspan="4"/>
                                          <field name="pallet_ids" colspan="4" nolabel="1" readonly="1">
-                                              <tree string="Pallet" editable="bottom" colors="red:total_line == 0">
+                                              <tree string="Pallet" editable="bottom" colors="grey:total_line == 0;red:total_weight>=550">
                                                    <field name="name" readonly="1"/>
                                                    <field name="sscc" readonly="1"/>
                                                    <field name="total_line" readonly="1" sum="total_q"/>
@@ -479,9 +525,11 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_edi_soap_logistic_tree"/>
-            <field name="context">{}</field>
+            <field name="search_view_id" ref="view_edi_soap_logistic_search"/>
+            <field name="context">{'search_default_soap_sent_off': True}</field>
             <field name="domain">[]</field>
         </record>
+
         <!--edi.soap.mapping-->
         <record model="ir.ui.view" id="view_edi_soap_mapping_tree">
             <field name="name">edi.soap.mapping.tree</field>
@@ -544,9 +592,9 @@
             />
             <menuitem 
                 parent="menu_trip_soap_configuration" 
-                id="menu_trip_soap_order" 
+                id="menu_trip_soap_order_unsent" 
                 name="EDI order"
-                action="action_edi_soap_order"
+                action="action_edi_soap_order_unsent"
                 sequence="10"
                 />
             <menuitem 
