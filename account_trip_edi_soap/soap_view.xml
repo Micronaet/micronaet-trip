@@ -117,7 +117,7 @@
             <field name="name">edi.soap.order.tree</field>
             <field name="model">edi.soap.order</field>
             <field name="arch" type="xml">
-                <tree string="SOAP order" colors="green:filename!=False;red:check_pre_export==False">
+                <tree string="SOAP order" colors="green:filename!=False;red:check_pre_export==False;blue:status=='Approved'">
                     <field name="check_pre_export" invisible="1"/>
                     <field name="name" />
                     <field name="delivery_date" />
