@@ -1180,7 +1180,7 @@ class EdiSoapOrder(orm.Model):
         
         # Parameters:
         mask = '%3s|%-8s|%-8s|%-25s|%-16s|' + \
-            '%-16s|%-60s|%-2s|%-15s|%-15s|%-15s|%-8s|%-8s|%-30s\r\n'
+            '%-16s|%-60s|%-2s|%-15s|%-15s|%-15s|%-8s|%-8s|%-40s\r\n'
 
         connection = order.connection_id
         separator = connection.order_separator
@@ -1235,7 +1235,7 @@ class EdiSoapOrder(orm.Model):
                 date,
                 today,
                 clean_text(
-                    entity_name, 30, error=error), 
+                    entity_name, 40, error=error), 
                 )
             file_csv.write(row)
         file_csv.close()
