@@ -50,6 +50,9 @@
         
         # Report:
         'report/sscc_label_report.xml',
+        
+        # Scheduled action:
+        'scheduler.xml',
         ],
     'active': False,
     'installable': True,

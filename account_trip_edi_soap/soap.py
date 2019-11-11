@@ -685,6 +685,7 @@ class EdiSoapConnection(orm.Model):
     def scheduled_load_new_order(self, cr, uid, context=None):
         ''' Scheduled action for import all orders
         '''
+        _logger.info('Scheduled action: import all SOAP order')
         for item_id in self.search(cr, uid, [], context=context):
             self.load_new_order(cr, uid, [item_id], context=context)    
         return True    
@@ -958,12 +959,12 @@ class EdiSoapOrder(orm.Model):
 
                 # Delete order before (so recreate)
                 _logger.warning('Order deleted for recreation: %s' % (
-                    order_ids,
+                    po_number,
                     ))
                 self.unlink(cr, uid, order_ids, context=context)
             else:
                 # Update only state:
-                _logger.warning('Order %s yet present' % po_number)                 
+                _logger.warning('%s yet present (update status)' % po_number)                 
                 return self.write(cr, uid, order_ids, {
                     'status': self._safe_get(order, 'status'),
                     }, context=context)
@@ -1096,6 +1097,8 @@ class EdiSoapOrder(orm.Model):
             pallet_pool.write(cr, uid, pallet_ids, {
                 'order_id': order_id,
                 }, context=context)
+                
+        # TODO generate pallet list if empty?        
         return order_id
 
     def extract_order_csv_file(self, cr, uid, ids, context=None):
