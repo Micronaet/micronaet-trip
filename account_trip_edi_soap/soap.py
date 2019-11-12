@@ -199,6 +199,17 @@ class EdiSoapConnection(orm.Model):
         return token
     
     # -------------------------------------------------------------------------
+    # Scheduled events:
+    # -------------------------------------------------------------------------
+    def scheduled_load_new_invoice(self, cr, uid, context=None):
+        ''' Scheduled new invoice
+        '''
+        _logger.info('Start import load invoice for logistic order')
+        for connection_id in self.search(cr, uid, [], context=context):
+            self.load_new_invoice(cr, uid, [connection_id], context=context)
+        return True        
+    
+    # -------------------------------------------------------------------------
     # Button events:
     # -------------------------------------------------------------------------
     # Server:
@@ -361,7 +372,7 @@ class EdiSoapConnection(orm.Model):
             os.system('mkdir -p %s' % folder)
         
         # ---------------------------------------------------------------------
-        # Clean operation:
+        # Clean operation (unused files):
         # ---------------------------------------------------------------------
         for check_path in (path, pdf_path):
             for root, folders, files in os.walk(check_path):
@@ -667,7 +678,7 @@ class EdiSoapConnection(orm.Model):
             break # only path folder
 
         # ---------------------------------------------------------------------
-        # Remove unused file:        
+        # History used files:
         # ---------------------------------------------------------------------
         for filename, history in history_list:
             shutil.move(filename, history)

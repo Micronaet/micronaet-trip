@@ -5,7 +5,21 @@
 			<field eval="&quot;&quot;&quot;scheduled_load_new_order&quot;&quot;&quot;" name="function"/>
 			<field eval="&quot;&quot;&quot;hours&quot;&quot;&quot;" name="interval_type"/>
 			<field name="user_id" ref="base.user_root"/>
-			<field eval="&quot;&quot;&quot;Schedule: SOAP New order&quot;&quot;&quot;" name="name"/>
+			<field eval="&quot;&quot;&quot;Schedule: SOAP Sale order IN&quot;&quot;&quot;" name="name"/>
+			<field eval="-1" name="numbercall"/>
+			<field eval="&quot;&quot;&quot;2015-05-05 11:15:00&quot;&quot;&quot;" name="nextcall"/>
+			<field eval="5" name="priority"/>
+			<field eval="0" name="doall"/>
+			<field eval="0" name="active"/>
+			<field name="args">()</field>
+			<field eval="1" name="interval_number"/>
+			<field eval="&quot;&quot;&quot;edi.soap.connection&quot;&quot;&quot;" name="model"/>
+		</record>		
+		<record id="ir_cron_scheduled_load_invoice_order_0" model="ir.cron">
+			<field eval="&quot;&quot;&quot;scheduled_load_new_invoice&quot;&quot;&quot;" name="function"/>
+			<field eval="&quot;&quot;&quot;hours&quot;&quot;&quot;" name="interval_type"/>
+			<field name="user_id" ref="base.user_root"/>
+			<field eval="&quot;&quot;&quot;Schedule: SOAP Logistic order OUT&quot;&quot;&quot;" name="name"/>
 			<field eval="-1" name="numbercall"/>
 			<field eval="&quot;&quot;&quot;2015-05-05 11:15:00&quot;&quot;&quot;" name="nextcall"/>
 			<field eval="5" name="priority"/>
@@ -15,20 +29,5 @@
 			<field eval="1" name="interval_number"/>
 			<field eval="&quot;&quot;&quot;edi.soap.connection&quot;&quot;&quot;" name="model"/>
 		</record>
-		<!--TODO also load logistic order:
-		<record id="ir_cron_scheduled_load_logisic_order_0" model="ir.cron">
-			<field eval="&quot;&quot;&quot;scheduled_load_logistic_order&quot;&quot;&quot;" name="function"/>
-			<field eval="&quot;&quot;&quot;hours&quot;&quot;&quot;" name="interval_type"/>
-			<field name="user_id" ref="base.user_root"/>
-			<field eval="&quot;&quot;&quot;Schedule: SOAP Logistic order&quot;&quot;&quot;" name="name"/>
-			<field eval="-1" name="numbercall"/>
-			<field eval="&quot;&quot;&quot;2015-05-05 11:15:00&quot;&quot;&quot;" name="nextcall"/>
-			<field eval="5" name="priority"/>
-			<field eval="0" name="doall"/>
-			<field eval="0" name="active"/>
-			<field name="args">()</field>
-			<field eval="1" name="interval_number"/>
-			<field eval="&quot;&quot;&quot;edi.soap.connection&quot;&quot;&quot;" name="model"/>
-		</record>-->
 	</data>
 </openerp>
