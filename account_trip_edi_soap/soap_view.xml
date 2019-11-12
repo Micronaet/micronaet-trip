@@ -310,7 +310,7 @@
 
                     <filter name="origin_line" string="Original" domain="[('splitted_from_id','=',False)]"/>
                     <filter name="splitted_line" string="Splitted" domain="[('splitted_from_id','!=',False)]"/>
-                    <filter name="oversize" string="Oversize" domain="['|',('net_qty','>=',550), ('lord_qty','>=',550)]"/>
+                    <filter name="oversize" string="Oversize" domain="['|',('net_qty','>=',650), ('lord_qty','>=',650)]"/>
 
                     <group expand="0" string="Group By...">
                         <filter name="group_product" string="Product" context="{'group_by': 'product_id'}"/>
@@ -323,7 +323,7 @@
             <field name="name">edi.soap.logistic.line.tree</field>
             <field name="model">edi.soap.logistic.line</field>
             <field name="arch" type="xml">
-                <tree editable="bottom" string="Line" colors="red:lord_qty>550;blue:splitted_from_id!=False">
+                <tree editable="bottom" string="Line" colors="red:lord_qty>650;blue:splitted_from_id!=False">
                      <button name="line_detail" string="Line detail" type="object" icon="gtk-index" />
                      <field name="splitted_from_id" invisible="1" />
                      <field name="sequence" readonly="1" />
@@ -464,7 +464,7 @@
                                           <button name="setup_pallet_id" string="Set pallet all" type="object" icon="gtk-refresh" help="Setup all line with this pallet" />-->
                                           
                                           <field name="line_ids" nolabel="1" colspan="6" context="{'default_logistic_id': active_id}">
-                                              <tree editable="bottom" string="Line" colors="red:lord_qty>550;blue:splitted_from_id!=False">
+                                              <tree editable="bottom" string="Line" colors="red:lord_qty>650;blue:splitted_from_id!=False">
                                                   <field name="splitted_from_id" invisible="1" />
                                                   <button name="line_detail" string="Line detail" type="object" icon="gtk-index" />
                                                   <field name="logistic_id" invisible="1" />
@@ -490,7 +490,7 @@
                                      <group colspan="4" col="4">
                                          <separator string="Pallet:" colspan="4"/>
                                          <field name="pallet_ids" colspan="4" nolabel="1" readonly="1">
-                                              <tree string="Pallet" editable="bottom" colors="grey:total_line == 0;red:total_weight>=550">
+                                              <tree string="Pallet" editable="bottom" colors="grey:total_line == 0;red:total_weight>=650">
                                                    <field name="name" readonly="1"/>
                                                    <field name="sscc" readonly="1"/>
                                                    <field name="total_line" readonly="1" sum="total_q"/>
