@@ -606,10 +606,13 @@ class EdiSoapConnection(orm.Model):
                     pallet_pool.write(cr, uid, pallet_ids, {
                         'logistic_id': logistic_id,
                         }, context=context)
-                    #if len(pallet_ids) == 1:    
-                    default_pallet_id = pallet_ids[0] # TODO Check if first!
-                    default_pallet = pallet_pool.browse(
-                        cr, uid, default_pallet_id, context=context).name
+                    if len(pallet_ids):    
+                        default_pallet_id = pallet_ids[0] # TODO Check if first!
+                        default_pallet = pallet_pool.browse(
+                            cr, uid, default_pallet_id, context=context).name
+                    else:
+                        default_pallet_id = False    
+                        default_pallet = False
 
                 # C. Import order line:
                 sequence = 0
