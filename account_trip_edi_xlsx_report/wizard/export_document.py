@@ -337,7 +337,7 @@ class QualityExportExcelReport(orm.TransientModel):
                 data[11] = item[1]
                 data[12] = item[2]
                 data[13] = (sign * float(
-                    item[3].strip().strip('|')), f_number)
+                    item[3].replace('|', '').strip()), f_number)
                 data[14] = (float(item[4]), f_number)
                 data[15] = (float(item[5]), f_number)
                 
