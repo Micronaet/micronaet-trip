@@ -336,10 +336,8 @@ class QualityExportExcelReport(orm.TransientModel):
                 data[10] = item[0]
                 data[11] = item[1]
                 data[12] = item[2]
-                try:
-                   data[13] = (sign * float(item[3].strip('|')), f_number)
-                except:
-                    import pdb; pdb.set_trace()
+               data[13] = (sign * float(
+                   item[3].strip().strip('|')), f_number)
                 data[14] = (float(item[4]), f_number)
                 data[15] = (float(item[5]), f_number)
                 
