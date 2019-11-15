@@ -120,6 +120,7 @@
                 <tree string="SOAP order" colors="green:filename!=False;red:check_pre_export==False;blue:status=='Approved'">
                     <field name="check_pre_export" invisible="1"/>
                     <field name="name" />
+                    <field name="company_order" />
                     <field name="delivery_date" />
                     <field name="connection_id" invisible="1"/>
                     <field name="destination_id" />
@@ -160,6 +161,9 @@
                             
                             <field name="po_create_date" readonly="1" />
                             <field name="delivery_date" readonly="1" />
+                            
+                            <field name="company_order" />
+                            <newline/>
                             
                             <field name="fullname" readonly="1" />
                             <field name="buyer_group" readonly="1" />

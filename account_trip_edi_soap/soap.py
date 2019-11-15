@@ -1331,6 +1331,7 @@ class EdiSoapOrder(orm.Model):
             #domain='[("sql_destination_code", "!=", False)]'
             ), 
          
+        'company_order': fields.char('Company order', size=20),
         'delivery_date': fields.date('Delivery date'), # required=True
         'po_create_date': fields.date('PO Create date'), # required=True
         'entity_name': fields.char('Entity name', size=40),
