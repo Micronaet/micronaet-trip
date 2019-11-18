@@ -418,6 +418,9 @@
                     <field name="name" />
                     <field name="order_id" filter_domain="[('order_id','=',self)]"/>
 
+                    <filter name="soap_mode_wh" string="Warehouse order" domain="[('order_id.mode', '=', 'WH')]"/>
+                    <filter name="soap_mode_sh" string="Ship order" domain="[('order_id.mode', '=', 'SH')]"/>
+
                     <filter name="soap_sent_on" string="Sent" domain="[('soap_sent','=',True), ('order_id.mode', '=', 'WH')]"/>
                     <filter name="soap_sent_off" string="Not sent" domain="[('soap_sent','=',False), ('order_id.mode', '=', 'WH')]"/>
 
