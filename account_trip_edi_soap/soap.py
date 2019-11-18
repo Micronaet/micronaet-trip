@@ -957,7 +957,13 @@ class EdiSoapOrder(orm.Model):
         pallet_uom = connection.uom_code
         pallet_extra = connection.pallet_extra
 
+        entity_name = self._safe_get(order, 'entityName')
         po_number = self._safe_get(order, 'poNumber')        
+        if entity_name.upper().startswith('WH'):
+            mode = 'WH'
+        else:
+            mode = 'SH'
+            
         order_ids = self.search(cr, uid, [
             ('name', '=', po_number),
             ], context=context)
@@ -989,8 +995,8 @@ class EdiSoapOrder(orm.Model):
                 order, 'poNumber'), # '2110479-FB04023'
             'delivery_date': self._safe_get(
                 order, 'deliveryDate'), # None,
-            'entity_name': self._safe_get(
-                order, 'entityName'),# 'MV Poesia',
+            'entity_name': entity_name,# 'MV Poesia',
+            'mode': mode,
             'delivery_port_nam': self._safe_get(
                 order, 'deliveryPortName'), # u'Wa\xfcnde',
             'status': self._safe_get(
