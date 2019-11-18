@@ -34,7 +34,7 @@ odoo_order = sys.argv[2]
 company_order = sys.argv[3]
 
 # From config file:
-cfg_file = os.path.expanduser('./openerp.cfg')
+cfg_file = os.path.expanduser('./%s.cfg' % company)
 
 config = ConfigParser.ConfigParser()
 config.read([cfg_file])
