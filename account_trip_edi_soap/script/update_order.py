@@ -67,4 +67,6 @@ if order_ids:
     order_pool.write(order_ids, {
         'company_order': company_order,
         })
+else:
+    print '[%s] Order not found: %s' % (company, odoo_order)
 
