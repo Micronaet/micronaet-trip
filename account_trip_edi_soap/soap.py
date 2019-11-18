@@ -1330,6 +1330,10 @@ class EdiSoapOrder(orm.Model):
             'res.partner', 'Destination', 
             #domain='[("sql_destination_code", "!=", False)]'
             ), 
+        'mode': fields.selection([
+            ('WH', 'Warehouse'),
+            ('SH', 'Ship'),
+            ], 'Mode'),
          
         'company_order': fields.char('Company order', size=20),
         'delivery_date': fields.date('Delivery date'), # required=True
@@ -1462,10 +1466,6 @@ class EdiSoapOrderLine(orm.Model):
         'order_id': fields.many2one('edi.soap.order', 'Order', 
             ondelete='cascade'),
         'product_id': fields.many2one('product.product', 'Company product'),
-        'mode': fields.selection([
-            ('WH', 'Warehouse'),
-            ('SH', 'Ship'),
-            ], 'Mode'),
 
         'duty_code': fields.related(
             'product_id', 'duty_code', type='char', string='Duty code'),
