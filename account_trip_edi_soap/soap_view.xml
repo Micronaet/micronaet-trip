@@ -418,8 +418,8 @@
                     <field name="name" />
                     <field name="order_id" filter_domain="[('order_id','=',self)]"/>
 
-                    <filter name="soap_sent_on" string="Sent" domain="[('soap_sent','=',True)]"/>
-                    <filter name="soap_sent_off" string="Not sent" domain="[('soap_sent','=',False)]"/>
+                    <filter name="soap_sent_on" string="Sent" domain="[('soap_sent','=',True), ('order_id.mode', '=', 'WH')]"/>
+                    <filter name="soap_sent_off" string="Not sent" domain="[('soap_sent','=',False), ('order_id.mode', '=', 'WH')]"/>
 
                     <group expand="0" string="Group By...">
                         <filter name="group_order" string="Order" context="{'group_by': 'order_id'}"/>
