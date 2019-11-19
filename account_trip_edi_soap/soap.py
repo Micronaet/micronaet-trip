@@ -1652,10 +1652,10 @@ class EdiSoapLogistic(orm.Model):
         if res['operationOutcome']['statusCode']:
             raise osv.except_osv(
                 _('SOAP Error'), 
-                _('Message: %s [%s] {%s}') % (
+                _('Message: %s [%s]') % (
                     message,
                     error_list,
-                    plotToCreate,
+                    #{%s}plotToCreate,
                     ))
         else:
             self.write(cr, uid, ids, {
