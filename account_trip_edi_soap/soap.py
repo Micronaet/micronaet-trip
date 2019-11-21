@@ -1797,6 +1797,30 @@ class EdiSoapLogistic(orm.Model):
     _rec_name = 'name'
     _order = 'sequence, name, splitted_from_id desc'
 
+    def unlink(self, cr, uid, ids, context=None):
+        """ Delete all record(s) from table heaving record id in ids
+            return True on success, False otherwise 
+            @param cr: cursor to database
+            @param uid: id of current user
+            @param ids: list of record ids to be removed from table
+            @param context: context arguments, like lang, time zone
+            
+            @return: True on success, False otherwise
+        """    
+        #TODO: process before delete resource
+        try:
+            log_file = open(os.path.expanduser('~/logistic_line.log', 'a')
+            lines = self.browse(cr, uid, ids, context=context)
+            log_file.write('%s. Delete line for invoice %s [user: %s]' % (
+                datetime.now(),
+                lines[0].logistic_id.name, 
+                uid,
+                ))
+        except:
+            _log.error('Error log unlink logistic line')        
+        return = super(EdiSoapLogistic, self).unlink(
+            cr, uid, ids, context=context)
+        return res
     # -------------------------------------------------------------------------
     # Onchange:
     # -------------------------------------------------------------------------
@@ -1851,12 +1875,14 @@ class EdiSoapLogistic(orm.Model):
         'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order', 
             ondelete='cascade'),
         'pallet': fields.integer('Pallet'),
-        'pallet_id': fields.many2one('edi.soap.logistic.pallet', 'Pallet'),
+        'pallet_id': fields.many2one('edi.soap.logistic.pallet', 'Pallet', 
+            ondelete='set null'),
         'order_id': fields.related(
             'logistic_id', 'order_id', 
             type='many2one', relation='edi.soap.order', 
-            string='Order'),
-        'product_id': fields.many2one('product.product', 'Product'),
+            string='Order', ondelete='set null'),
+        'product_id': fields.many2one(
+            'product.product', 'Product', ondelete='set null'),
         'duty_code': fields.related(
             'product_id', 'duty_code', type='char', string='Duty code'),
         'chunk': fields.related(
