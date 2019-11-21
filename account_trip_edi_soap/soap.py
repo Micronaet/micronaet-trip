@@ -1848,7 +1848,8 @@ class EdiSoapLogistic(orm.Model):
     _columns = {
         # ---------------------------------------------------------------------
         # XXX Remember duplication wizard when add fields!!!
-        'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order'),
+        'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order', 
+            ondelete='cascade'),
         'pallet': fields.integer('Pallet'),
         'pallet_id': fields.many2one('edi.soap.logistic.pallet', 'Pallet'),
         'order_id': fields.related(
