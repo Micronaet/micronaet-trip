@@ -1813,7 +1813,7 @@ class EdiSoapLogisticPallet(orm.Model):
             type='float', digits=(16, 3), string='Total line', multi=True),        
         }        
 
-class EdiSoapLogistic(orm.Model):
+class EdiSoapLogisticLine(orm.Model):
     ''' Soap logistic order
     '''
     _name = 'edi.soap.logistic.line'
