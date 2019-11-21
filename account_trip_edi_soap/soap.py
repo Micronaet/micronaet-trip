@@ -1511,6 +1511,30 @@ class EdiSoapLogistic(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
+    def unlink(self, cr, uid, ids, context=None):
+        """ Delete all record(s) from table heaving record id in ids
+            return True on success, False otherwise 
+            @param cr: cursor to database
+            @param uid: id of current user
+            @param ids: list of record ids to be removed from table
+            @param context: context arguments, like lang, time zone
+            
+            @return: True on success, False otherwise
+        """    
+        #TODO: process before delete resource
+        try:
+            log_file = open(os.path.expanduser('~/logistic_line.log', 'a'))
+            logistic = self.browse(cr, uid, ids, context=context)
+            log_file.write('%s. Delete logistic %s [user: %s]' % (
+                datetime.now(),
+                logistic.name, 
+                uid,
+                ))
+        except:
+            _log.error('Error log unlink logistic line')        
+        return super(EdiSoapLogistic, self).unlink(
+            cr, uid, ids, context=context)
+
     def open_logistic_lines(self, cr, uid, ids, context=None):
         ''' Logisti line details
         '''        
