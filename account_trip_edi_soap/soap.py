@@ -1818,9 +1818,9 @@ class EdiSoapLogistic(orm.Model):
                 ))
         except:
             _log.error('Error log unlink logistic line')        
-        return = super(EdiSoapLogistic, self).unlink(
+        return super(EdiSoapLogistic, self).unlink(
             cr, uid, ids, context=context)
-        return res
+
     # -------------------------------------------------------------------------
     # Onchange:
     # -------------------------------------------------------------------------
