@@ -549,8 +549,14 @@ class EdiSoapConnection(orm.Model):
                     ], context=context)
 
                 if logistic_ids:
+                    # No unlink admitted!
+                    _logger.error('Order yet present: %s' % name)
+                    continue
+                    '''
                     logistic = logistic_pool.browse(
                         cr, uid, logistic_ids, context=context)[0]
+                        
+                    
                     if logistic.state != 'draft':
                         # Yet load cannot override:
                         # TODO move in after folder (unused)
@@ -558,7 +564,7 @@ class EdiSoapConnection(orm.Model):
                         
                     # Delete and override:
                     logistic_pool.unlink(
-                        cr, uid, logistic_ids, context=context)
+                        cr, uid, logistic_ids, context=context)'''
 
                 # Bug management:                
                 text = data['text'].replace('\xb0', ' ')                
@@ -1585,11 +1591,15 @@ class EdiSoapLogistic(orm.Model):
                 else: 
                     _logger.error(
                         'No mapping code for %s' % product.default_code)
-            chunk = product.chunk
-            if not chunk:
-                chunk = product_pool.get_chunk(product)
-                # not saved only for this send!
-                
+            # -----------------------------------------------------------------
+            # XXX No more used chunk:
+            #chunk = product.chunk
+            #if not chunk:
+            #    chunk = product_pool.get_chunk(product)
+            #    # not saved only for this send!
+            # -----------------------------------------------------------------
+            parcel = line.parcel or 1
+            chunk = int(round(line.net_qty / parcel, 0))
             plot_lines_data.append({
                 'cdArticolo': customer_code or '', # MSC code
                 'cdVoceDoganale': product.duty_code or '', 
@@ -1604,7 +1614,7 @@ class EdiSoapLogistic(orm.Model):
                 
                 'nrNetto': line.net_qty, 
                 'nrLordo': line.lord_qty,
-                'nrColli': line.parcel or '',
+                'nrColli': parcel,
                 'nrPzConf': chunk,
                 'dtScadenza': line.deadline, # Lot?
                 'cdPaeseOrigine': line.origin_country or '',
