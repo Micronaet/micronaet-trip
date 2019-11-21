@@ -1809,7 +1809,7 @@ class EdiSoapLogistic(orm.Model):
         """    
         #TODO: process before delete resource
         try:
-            log_file = open(os.path.expanduser('~/logistic_line.log', 'a')
+            log_file = open(os.path.expanduser('~/logistic_line.log', 'a'))
             lines = self.browse(cr, uid, ids, context=context)
             log_file.write('%s. Delete line for invoice %s [user: %s]' % (
                 datetime.now(),
