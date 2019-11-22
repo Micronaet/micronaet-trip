@@ -1141,7 +1141,7 @@ class EdiSoapOrder(orm.Model):
             if error is None:
                 error = []
 
-            text = text.strip()
+            text = (text or '').strip()
             if len(text) > length:
                 if truncate:
                     text = text[:length]
