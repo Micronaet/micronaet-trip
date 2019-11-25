@@ -1511,7 +1511,7 @@ class EdiSoapLogistic(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
-    '''def unlink(self, cr, uid, ids, context=None):
+    def unlink(self, cr, uid, ids, context=None):
         """ Delete all record(s) from table heaving record id in ids
             return True on success, False otherwise 
             @param cr: cursor to database
@@ -1525,7 +1525,7 @@ class EdiSoapLogistic(orm.Model):
         try:
             log_file = open(os.path.expanduser('~/logistic_line.log', 'a'))
             logistic = self.browse(cr, uid, ids, context=context)
-            log_file.write('%s. Delete logistic %s [user: %s]' % (
+            log_file.write('%s. Delete logistic order %s [user: %s]' % (
                 datetime.now(),
                 logistic.name, 
                 uid,
@@ -1533,7 +1533,7 @@ class EdiSoapLogistic(orm.Model):
         except:
             _logger.error('Error log unlink logistic line')        
         return super(EdiSoapLogistic, self).unlink(
-            cr, uid, ids, context=context)'''
+            cr, uid, ids, context=context)
 
     def open_logistic_lines(self, cr, uid, ids, context=None):
         ''' Logisti line details
@@ -1821,7 +1821,6 @@ class EdiSoapLogisticLine(orm.Model):
     _rec_name = 'name'
     _order = 'sequence, name, splitted_from_id desc'
 
-    '''
     def unlink(self, cr, uid, ids, context=None):
         """ Delete all record(s) from table heaving record id in ids
             return True on success, False otherwise 
@@ -1843,8 +1842,8 @@ class EdiSoapLogisticLine(orm.Model):
                 ))
         except:
             _logger.error('Error log unlink logistic line')        
-        return super(EdiSoapLogistic, self).unlink(
-            cr, uid, ids, context=context)'''
+        return super(EdiSoapLogisticLine, self).unlink(
+            cr, uid, ids, context=context)
 
     # -------------------------------------------------------------------------
     # Onchange:
