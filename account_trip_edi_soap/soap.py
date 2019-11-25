@@ -1821,7 +1821,7 @@ class EdiSoapLogisticLine(orm.Model):
     _rec_name = 'name'
     _order = 'sequence, name, splitted_from_id desc'
 
-    def unlink(self, cr, uid, ids, context=None):
+    '''def unlink(self, cr, uid, ids, context=None):
         """ Delete all record(s) from table heaving record id in ids
             return True on success, False otherwise 
             @param cr: cursor to database
@@ -1844,7 +1844,7 @@ class EdiSoapLogisticLine(orm.Model):
         except:
             _logger.error('Error log unlink logistic line')        
         return super(EdiSoapLogisticLine, self).unlink(
-            cr, uid, ids, context=context)
+            cr, uid, ids, context=context)'''
 
     # -------------------------------------------------------------------------
     # Onchange:
