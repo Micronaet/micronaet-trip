@@ -1832,6 +1832,7 @@ class EdiSoapLogisticLine(orm.Model):
             @return: True on success, False otherwise
         """    
         #TODO: process before delete resource
+        import pdb; pdb.set_trace()
         try:
             log_file = open(os.path.expanduser('~/logistic_line.log', 'a'))
             lines = self.browse(cr, uid, ids, context=context)
