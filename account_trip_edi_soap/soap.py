@@ -1893,7 +1893,6 @@ class EdiSoapLogisticLine(orm.Model):
         'sequence': fields.integer('Seq.'),
         'name': fields.char('Company code', size=40, required=True),
         'customer_code': fields.char('Customer code', size=20),
-        'variable_weight': fields.char('Variable weight', size=1),
         'lot': fields.char('Lot', size=6),
         'confirmed_qty': fields.float('Confirmed qty', digits=(16, 2)),
         'net_qty': fields.float('Net qty', digits=(16, 2)),
