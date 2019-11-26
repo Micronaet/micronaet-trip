@@ -12,7 +12,7 @@ access_edi_soap_logistic_pallet_user,edi.soap.logistic.pallet,model_edi_soap_log
 
 access_edi_soap_logistic_user,edi.soap.logistic,model_edi_soap_logistic,base.group_user,1,1,1,0
 access_edi_soap_logistic_user,edi.soap.logistic,model_edi_soap_logistic,account_trip_edi_soap.group_edi_soap_delete_manager,1,1,1,1
-access_edi_soap_logistic_line_user,edi.soap.logistic.line,model_edi_soap_logistic_line,base.group_user,1,1,1,0
-access_edi_soap_logistic_line_user,edi.soap.logistic.line,model_edi_soap_logistic_line,account_trip_edi_soap.group_edi_soap_delete_manager,1,1,1,1
+access_edi_soap_logistic_line_user,edi.soap.logistic.detail,model_edi_soap_logistic_line,base.group_user,1,1,1,0
+access_edi_soap_logistic_line_user,edi.soap.logistic.detail,model_edi_soap_logistic_line,account_trip_edi_soap.group_edi_soap_delete_manager,1,1,1,1
 
 

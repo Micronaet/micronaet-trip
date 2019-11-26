@@ -1813,7 +1813,7 @@ class EdiSoapLogisticPallet(orm.Model):
             type='float', digits=(16, 3), string='Total line', multi=True),        
         }        
 
-class EdiSoapLogisticLineModel(orm.Model):
+class EdiSoapLogisticLine(orm.Model):
     ''' Soap logistic order
     '''
     _name = 'edi.soap.logistic.line'
@@ -1843,7 +1843,7 @@ class EdiSoapLogisticLineModel(orm.Model):
                 ))
         except:
             _logger.error('Error log unlink logistic line')        
-        return super(EdiSoapLogisticLineModel, self).unlink(
+        return super(EdiSoapLogisticLine, self).unlink(
             cr, uid, ids, context=context)'''
 
     # -------------------------------------------------------------------------

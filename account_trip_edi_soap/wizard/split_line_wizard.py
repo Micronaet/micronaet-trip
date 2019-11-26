@@ -41,7 +41,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 _logger = logging.getLogger(__name__)
 
 # Wizard is not a really wizard but a line extension used for duplication
-class EdiLogisticLineSplitWizard(orm.TransientModel):
+class EdiLogisticLineSplitWizard(orm.Model):
     ''' Wizard for for split line
     '''
     _inherit = 'edi.soap.logistic.line'
