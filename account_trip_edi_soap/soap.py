@@ -628,7 +628,17 @@ class EdiSoapConnection(orm.Model):
                     sequence += 1
                     line_part = row.split(separator)
                     
-                    if not customer_code.startswith('F'):
+                    mapping_id = False
+                    if customer_code.startswith('F'):
+                        # Link mapping data:
+                        mapping_ids = mapping_pool.search(cr, uid, [
+                            ('name', '=', customer_code),
+                            ], context=context)
+                            
+                        if mapping_ids:
+                            mapping_id = mapping_ids[0]
+                    else:  # Wrong code:
+                        _logger.error('Wrong code %s' % customer_code)
                         customer_code = ''
                         
                     # Deadline: 
@@ -655,6 +665,7 @@ class EdiSoapConnection(orm.Model):
                         'pallet_id': default_pallet_id, # one2many
                         'pallet': default_pallet, # code
                         'product_id': product_id,
+                        'mapping_id': mapping_id, # Mapping reference
 
                         'sequence': sequence,
                         'name': default_code,
@@ -836,6 +847,7 @@ class EdiSoapMapping(orm.Model):
         
     _columns = {
         'name': fields.char('Customer code', size=64, required=True),
+        'variable_weight': fields.boolean('Variable weight'),
         'default_code': fields.char('Company code', size=64),
         'product_id': fields.many2one(
             'product.product', 'Product', required=True),
@@ -1511,32 +1523,8 @@ class EdiSoapLogistic(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
-    '''def unlink(self, cr, uid, ids, context=None):
-        """ Delete all record(s) from table heaving record id in ids
-            return True on success, False otherwise 
-            @param cr: cursor to database
-            @param uid: id of current user
-            @param ids: list of record ids to be removed from table
-            @param context: context arguments, like lang, time zone
-            
-            @return: True on success, False otherwise
-        """    
-        #TODO: process before delete resource
-        try:
-            log_file = open(os.path.expanduser('~/logistic_line.log', 'a'))
-            logistic = self.browse(cr, uid, ids, context=context)
-            log_file.write('%s. Delete logistic order %s [user: %s]' % (
-                datetime.now(),
-                logistic.name, 
-                uid,
-                ))
-        except:
-            _logger.error('Error log unlink logistic line')        
-        return super(EdiSoapLogistic, self).unlink(
-            cr, uid, ids, context=context)'''
-
     def open_logistic_lines(self, cr, uid, ids, context=None):
-        ''' Logisti line details
+        ''' Logistic line details
         '''        
         model_pool = self.pool.get('ir.model.data')
         view_id = model_pool.get_object_reference(
@@ -1624,12 +1612,17 @@ class EdiSoapLogistic(orm.Model):
             # -----------------------------------------------------------------
             parcel = line.parcel or 1
             chunk = int(round(line.net_qty / parcel, 0))
+            if line.variable_weight:
+                variable_weight = '1'
+            else:
+                variable_weight = '0'
+
             plot_lines_data.append({
                 'cdArticolo': customer_code or '', # MSC code
                 'cdVoceDoganale': product.duty_code or '', 
                 'cdCollo': line.pallet_id.sscc or '', # SSCC
                 'cdGtin': product.default_code, # Company code or EAN
-                'flPesoVariabile': '', # 1 or 0
+                'flPesoVariabile': variable_weight, # 1 or 0
                 'nrLotto': line.lot or '',
                 'qtPrevista': line.confirmed_qty, # Company confirmed
                 
@@ -1821,31 +1814,6 @@ class EdiSoapLogisticLine(orm.Model):
     _rec_name = 'name'
     _order = 'sequence, name, splitted_from_id desc'
 
-    '''def unlink(self, cr, uid, ids, context=None):
-        """ Delete all record(s) from table heaving record id in ids
-            return True on success, False otherwise 
-            @param cr: cursor to database
-            @param uid: id of current user
-            @param ids: list of record ids to be removed from table
-            @param context: context arguments, like lang, time zone
-            
-            @return: True on success, False otherwise
-        """    
-        #TODO: process before delete resource
-        import pdb; pdb.set_trace()
-        try:
-            log_file = open(os.path.expanduser('~/logistic_line.log', 'a'))
-            lines = self.browse(cr, uid, ids, context=context)
-            log_file.write('%s. Delete line for invoice %s [user: %s]' % (
-                datetime.now(),
-                lines[0].logistic_id.name, 
-                uid,
-                ))
-        except:
-            _logger.error('Error log unlink logistic line')        
-        return super(EdiSoapLogisticLine, self).unlink(
-            cr, uid, ids, context=context)'''
-
     # -------------------------------------------------------------------------
     # Onchange:
     # -------------------------------------------------------------------------
@@ -1899,17 +1867,25 @@ class EdiSoapLogisticLine(orm.Model):
         # XXX Remember duplication wizard when add fields!!!
         'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order', 
             ondelete='cascade'),
-        'pallet': fields.integer('Pallet'),
+        'pallet': fields.integer('Pallet'),        
         'pallet_id': fields.many2one('edi.soap.logistic.pallet', 'Pallet', 
             ondelete='set null'),
         'order_id': fields.related(
             'logistic_id', 'order_id', 
             type='many2one', relation='edi.soap.order', 
             string='Order', ondelete='set null'),
+        'mapping_id': fields.many2one('edi.soap.mapping', 'Mapping', 
+            ondelete='set null'),
         'product_id': fields.many2one(
             'product.product', 'Product', ondelete='set null'),
+        
+        # XXX Use mapping - product ducy code (not product)    
         'duty_code': fields.related(
-            'product_id', 'duty_code', type='char', string='Duty code'),
+            'mapping_id', 'duty_code', type='char', string='Duty code'),
+        'variable_weight': fields.related(
+            'mapping_id', 'variable_weight', type='boolean', 
+            string='Variable weight'),
+
         'chunk': fields.related(
             'product_id', 'chunk', type='integer', string='Chunk per pack'),
 
