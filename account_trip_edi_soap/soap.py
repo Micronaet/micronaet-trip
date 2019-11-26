@@ -317,6 +317,7 @@ class EdiSoapConnection(orm.Model):
         company_pool = self.pool.get('res.company')
         order_pool = self.pool.get('edi.soap.order')
         product_pool = self.pool.get('product.product')
+        mapping_pool = self.pool.get('edi.soap.mapping')
 
         # ---------------------------------------------------------------------
         # Parameters:
