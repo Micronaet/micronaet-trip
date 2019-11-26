@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
    <data>
+        <record id="group_edi_soap_delete_manager" model="res.groups">
+            <field name="name">SOAP Delete Manager</field>
+        </record>
         <record id="group_edi_soap_manager" model="res.groups">
             <field name="name">SOAP Manager</field>
         </record>
