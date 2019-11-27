@@ -1524,6 +1524,12 @@ class EdiSoapLogistic(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
+    def send_logistic_not_send(self, cr, uid, ids, context=None):
+        ''' Not sent button
+        '''
+        return self.write(cr, uid, ids, {
+            'soap_not_sent': True,
+            }, context=context)
     def open_logistic_lines(self, cr, uid, ids, context=None):
         ''' Logistic line details
         '''        
@@ -1715,6 +1721,7 @@ class EdiSoapLogistic(orm.Model):
     _columns = {
         'name': fields.char('Invoice reference', size=40, required=True),
         'soap_sent': fields.boolean('MSC sent'),
+        'soap_not_sent': fields.boolean('MSC not sent (old order)'),
         'soap_message': fields.char('Returned message', size=100),
         'soap_detail': fields.text('Returned detail'),
         'customer_order': fields.char('Cust. Number', size=40),
@@ -1727,6 +1734,12 @@ class EdiSoapLogistic(orm.Model):
         'select_pallet_id': fields.many2one(
             'edi.soap.logistic.pallet', 'Select pallet'),
         'text': fields.text('File text', help='Account file as original'),
+        'mode': fields.related(
+            'order_id', 'mode', 
+            type='selection', string='Mode'),
+            #('WH', 'Warehouse'),
+            #('SH', 'Ship'),
+            #], 'Mode'),
         'state': fields.selection([
             ('draft', 'Draft'), # To be worked
             ('working', 'Working'), # Start assign pallet

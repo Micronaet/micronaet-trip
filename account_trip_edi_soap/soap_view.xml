@@ -343,7 +343,7 @@
                      <field name="variable_weight" readonly="1"/>
                      <field name="lot" readonly="1" />
                      <!--<field name="piece" readonly="1" />-->
-                     <field name="parcel" readonly="1" sum="total"/>
+                     <field name="parcel" readonly="1" />
                      <field name="confirmed_qty" readonly="1" sum="total"/>
                      <field name="net_qty" readonly="1" sum="total"/>
                      <field name="lord_qty" readonly="1" sum="total"/>
@@ -435,13 +435,16 @@
             <field name="name">edi.soap.logistic.tree</field>
             <field name="model">edi.soap.logistic</field>
             <field name="arch" type="xml">
-                <tree string="SOAP Logistic order" colors="red:order_id==False"> 
+                <tree string="SOAP Logistic order" colors="red:order_id==False; green:soap_sent==True; grey:soap_not_sent==True"> 
                     <field name="connection_id" />
                     <field name="name" />
                     <field name="order_id" />
+                    <field name="mode" />
                     <field name="delivery_date" />
                     <field name="soap_sent" invisible="1" />
-                    <button name="send_logistic_2_soap" string="Send" type="object" class="oe_highlight" icon="gtk-save-as" attrs="{'invisible': [('soap_sent','=',True)]}"/>
+                    <field name="soap_not_sent" invisible="1" />
+                    <button name="send_logistic_not_send" string="Not Send" type="object" icon="gtk-cancel" attrs="{'invisible': ['|', ('soap_not_sent','=',True), ('soap_sent','=',True)]}" confirm="This will mark order as not send an removed from here, confirm?"/>
+                    <button name="send_logistic_2_soap" string="Send" type="object" class="oe_highlight" icon="gtk-save-as" attrs="{'invisible': ['|', ('soap_not_sent','=',True), ('soap_sent','=',True)]}"/><!--'|', ('mode', '=', 'WH'),-->
                 </tree>
             </field>
         </record>
@@ -451,7 +454,8 @@
             <field name="arch" type="xml">
                 <form string="SOAP Logistic order" version="7.0"> 
                      <header>
-                         <button name="send_logistic_2_soap" string="Send" type="object" class="oe_highlight" icon="gtk-save-as" attrs="{'invisible': [('soap_sent','=',True)]}"/>
+                         <button name="send_logistic_2_soap" string="Send" type="object" class="oe_highlight" icon="gtk-save-as" attrs="{'invisible': ['|', ('soap_not_sent','=',True), ('soap_sent','=',True)]}"/>
+                         <button name="send_logistic_not_send" string="Not Send" type="object" icon="gtk-cancel" attrs="{'invisible': ['|', ('soap_not_sent','=',True), ('soap_sent','=',True)]}" confirm="This will mark order as not send an removed from here, confirm?"/>
                      </header>
                      <sheet>                     
                          <group colspan="4" col="4">
@@ -519,8 +523,9 @@
                                   <page string="MSC" attrs="{'invisible': [('soap_sent','=',False)]}">
                                      <group colspan="4" col="4">
                                          <separator string="MSC response:" colspan="4"/>
-                                         <field name="soap_sent" />
                                          <field name="soap_message" />
+                                         <field name="soap_sent" />
+                                         <field name="soap_not_sent" colspan="4"/>
                                          <separator string="Detail:" colspan="4"/>
                                          <field name="soap_detail" nolabel="1" colspan="4"/>
                                      </group>
