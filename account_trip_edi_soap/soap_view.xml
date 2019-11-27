@@ -544,6 +544,16 @@
             <field name="view_id" ref="view_edi_soap_logistic_tree"/>
             <field name="search_view_id" ref="view_edi_soap_logistic_search"/>
             <field name="context">{'search_default_soap_sent_off': True}</field>
+            <field name="domain">[('order_id.mode', '=', 'WH')]</field>
+        </record>
+        <record model="ir.actions.act_window" id="action_edi_soap_logistic_all">
+            <field name="name">All SOAP Logistic</field>
+            <field name="res_model">edi.soap.logistic</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_edi_soap_logistic_tree"/>
+            <field name="search_view_id" ref="view_edi_soap_logistic_search"/>
+            <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>
 
@@ -622,6 +632,13 @@
                 action="action_edi_soap_logistic"
                 sequence="20"
                 />
+                <menuitem 
+                    parent="menu_trip_soap_logistic" 
+                    id="menu_trip_soap_logistic_all" 
+                    name="Logistic order (all)"
+                    action="action_edi_soap_logistic_all"
+                    sequence="10"
+                    />
             <menuitem 
                 parent="menu_trip_soap_configuration" 
                 id="menu_trip_soap_mapping" 

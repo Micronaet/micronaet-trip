@@ -1522,7 +1522,7 @@ class EdiSoapLogistic(orm.Model):
     _name = 'edi.soap.logistic'
     _description = 'EDI Soap Logistic'
     _rec_name = 'name'
-    _order = 'name'
+    _order = 'name desc'
 
     def send_logistic_not_send(self, cr, uid, ids, context=None):
         ''' Not sent button
