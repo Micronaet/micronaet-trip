@@ -422,8 +422,8 @@
                     <filter name="soap_mode_wh" string="Warehouse order" domain="[('order_id.mode', '=', 'WH')]"/>
                     <filter name="soap_mode_sh" string="Ship order" domain="[('order_id.mode', '=', 'SH')]"/>
 
-                    <filter name="soap_sent_on" string="Sent" domain="[('soap_sent','=',True), ('order_id.mode', '=', 'WH')]"/>
-                    <filter name="soap_sent_off" string="Not sent" domain="[('soap_sent','=',False), ('order_id.mode', '=', 'WH')]"/>
+                    <filter name="soap_sent_on" string="Sent" domain="[('order_id.mode', '=', 'WH'), ('soap_sent','=',True)]"/>
+                    <filter name="soap_sent_off" string="Not sent" domain="[('soap_not_sent','=',False), ('soap_sent','=',False), ('order_id.mode', '=', 'WH')]"/>
 
                     <group expand="0" string="Group By...">
                         <filter name="group_order" string="Order" context="{'group_by': 'order_id'}"/>
