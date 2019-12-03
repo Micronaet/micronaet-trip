@@ -163,7 +163,7 @@ class EdiSoapExportExcelReport(orm.TransientModel):
             _('Scadenza'),
             
             '', _('Tipo'),
-            ', _('Ricors.'),
+            '', _('Ricors.'),
 
             '', 
             ''

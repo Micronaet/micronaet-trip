@@ -466,32 +466,37 @@ class EdiSoapConnection(orm.Model):
                     # ---------------------------------------------------------
                     elif data['detail_status'] == 'on': # Start details
                         if line.startswith(separator): # Detail line
+                            # 1. Article line:
                             data['detail_text'] = line
                             data['product_insert'] = False
-                        elif start['weight'] in line: # weigh line (second)
-                            if data['product_insert']:
-                                # Check error (ex. 2 PESO LORDO line)
-                                _logger.warning('Extra line: %s' % line)
-                                line_mode = 'error'
-                            else:
-                                data['detail'].append((
-                                    data['detail_text'], 
-                                    get_float(line),
-                                    line.split()[0], # customer code
-                                    ))
-                                data['product_insert'] = True
+                        elif not data['product_insert'] and \
+                                start['weight'] in line: # weigh line (second)
+                            # 2A. Error: Weight double     
+                            data['detail'].append((
+                                data['detail_text'], 
+                                get_float(line),
+                                line.split()[0], # customer code
+                                ))
+                            data['product_insert'] = True
                             
-                        elif not line: # End detail block
+                        elif data['product_insert'] and \
+                                start['weight'] in line: # weigh line (second)
+                            # 2B. Check error (ex. 2 PESO LORDO line)
+                            _logger.warning('Extra line: %s' % line)
+                            line_mode = 'error'
+
+                        else: 
+                            # 3. Comment line:
                             data['detail_status'] = 'end'
-                        else:
-                            data['error'] = True
-                            data['error_comment'] += \
-                                '%s Detail without correct schema' % data['i']
+                        #else:
+                        #    data['error'] = True
+                        #    data['error_comment'] += \
+                        #        '%s Detail without correct schema' % data['i']
                         
                     # ---------------------------------------------------------
-                    #                       End of document part:
+                    #         End of document part (always done):
                     # ---------------------------------------------------------
-                    elif data['detail_status'] == 'end': # Start details
+                    if data['detail_status'] == 'end': # Start details
                         # CONSEGNA DEL:
 
                         # DESTINAZIONE: 
