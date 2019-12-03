@@ -556,21 +556,21 @@ class EdiSoapConnection(orm.Model):
 
                 if logistic_ids:
                     # No unlink admitted!
-                    _logger.error('Order yet present: %s' % name)
-                    continue
-                    '''
                     logistic = logistic_pool.browse(
                         cr, uid, logistic_ids, context=context)[0]
-                        
                     
                     if logistic.state != 'draft':
                         # Yet load cannot override:
                         # TODO move in after folder (unused)
+                        _logger.error(
+                            'Order yet present, cannot be deleted: %s' % name)
                         continue
+                    else:
+                        _logger.error('Order yet present, deleted: %s' % name)
                         
                     # Delete and override:
                     logistic_pool.unlink(
-                        cr, uid, logistic_ids, context=context)'''
+                        cr, uid, logistic_ids, context=context)
 
                 # Bug management:                
                 text = data['text'].replace('\xb0', ' ')                
