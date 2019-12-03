@@ -1621,6 +1621,7 @@ class EdiSoapLogistic(orm.Model):
             chunk = int(round(line.net_qty / parcel, 0))
             if line.variable_weight:
                 variable_weight = '1'
+                chunk = 1
             else:
                 variable_weight = '0'
 
