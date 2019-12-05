@@ -95,12 +95,12 @@ class EdiSoapExportExcelReport(orm.TransientModel):
         # Trip:
         # -----------------------------------------------------------------
         # Parameters:
-        extension='xls'
+        extension='xlsx'
         ws_name = _('Ordini SOAP EDI')
         ws_detail_name = _('Dettaglio')
         ws_total_name = _('Totali')
 
-        name_of_file = _('ordini_soap.xls')            
+        name_of_file = _('ordini_soap.xlsx')            
         
         # -----------------------------------------------------------------            
         # Create Excel file:    
