@@ -34,7 +34,8 @@ from openerp import SUPERUSER_ID, api
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
+from openerp.tools import (
+    DEFAULT_SERVER_DATE_FORMAT, 
     DEFAULT_SERVER_DATETIME_FORMAT, 
     DATETIME_FORMATS_MAP, 
     float_compare)
@@ -54,15 +55,59 @@ class EdiPortalStockStatus(orm.Model):
     # -------------------------------------------------------------------------
     # Scheduled update:
     # -------------------------------------------------------------------------
-    def update_stock_status(self, cr, uid, filename, context=None):
+    def update_stock_status(self, cr, uid, username, filename, context=None):
         ''' Update stock status from external file
         '''
+        def clean_float(value):
+            ''' Clean float value
+            '''
+            value = (value or '').strip()
+            value = value.replace(',', '.')
+            try:
+                return float(value)
+            except:
+                _logger.error('Error converting float: %s' % value)
+                return 0.0
+
+        def clean_date(value):
+            ''' Clean date value
+            '''
+            value = (value or '').strip()
+            value_split = value.split('/')
+            if len(value_split) != 3:
+                _logger.error('Error converting date: %s' % value)
+                return False
+                
+            return = '%s%s-%s-%s' % (
+                '20' if len(value_split[2]) == 2 else '',
+                value_split[2],
+                value_split[1],
+                value_split[0],
+                )
+            
         separator = ';'
         f_csv = open(filename, 'r')
         
+        # ---------------------------------------------------------------------
         # Clean al previous record:
+        # ---------------------------------------------------------------------
+        user_pool = self.pool.get('res.users')
+        user_ids = user_pool.search(cr, uid, [
+            ('login', '=', username),
+            ], context=context)
+        if not user_ids:
+            _logger.error('User login %s not found!' % username)
+            return False
+        user_id = user_ids
         
+        line_ids = self.search(cr, uid, [
+            ('user_id', '=', user_id),
+            ], context=context)
+        self.unlink(cr, uid, line_ids, context=context)
+        
+        # ---------------------------------------------------------------------
         # Start import new status:
+        # ---------------------------------------------------------------------
         status = False
         header = False
         columns = False
@@ -89,10 +134,23 @@ class EdiPortalStockStatus(orm.Model):
             description = row[1]
             uom = row[2]
             stock_qty = clean_float(row[3])
-            locked_qty = clean_float(row[3])
-            available_qty = clean_float(row[3])
-            provision_qty = clean_float(row[3])
-            deadline = clean_date(row[3])
+            locked_qty = clean_float(row[4])
+            available_qty = clean_float(row[5])
+            provision_qty = clean_float(row[6])
+            deadline = clean_date(row[7])
+            
+            self.create(cr, uid, {
+                'user_id': user_id,
+                'name': name, 
+                'parent': parent,
+                'description': description,
+                'uom': uom,
+                'stock_qty': stock_qty,
+                'locked_qty': locked_qty,
+                'available_qty': available_qty,
+                'provision_qty': provision_qty,
+                'deadline': deadline,
+                }, context=context)
             
         return True
         

@@ -41,6 +41,7 @@
         'security/ir.model.access.csv',    
         
         'portal_view.xml',
+        'scheduler.xml',
         ],
     'active': False,
     'installable': True,
