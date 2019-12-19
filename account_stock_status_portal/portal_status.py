@@ -139,7 +139,6 @@ class EdiPortalStockStatus(orm.Model):
                 _logger.error('Line with different columns: %s' % (line, ))   
             
             # Extract info:
-            import pdb; pdb.set_trace()
             name = clean_text(row[0])
             parent = clean_text(name[:11])
             description = clean_text(row[1])
