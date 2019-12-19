@@ -150,7 +150,7 @@ class EdiPortalStockStatus(orm.Model):
             provision_qty = clean_float(row[6])
             deadline = clean_date(row[7])
             
-            self.create(cr, uid, {
+            data = {
                 'user_id': user_id,
                 'name': name, 
                 'parent': parent,
@@ -161,7 +161,8 @@ class EdiPortalStockStatus(orm.Model):
                 'available_qty': available_qty,
                 'provision_qty': provision_qty,
                 'deadline': deadline,
-                }, context=context)
+                }
+            self.create(cr, uid, data, context=context)
         return True
         
     _columns = {
