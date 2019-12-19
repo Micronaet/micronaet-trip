@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!--edi.portal.stock.status-->
+        <record model="ir.ui.view" id="view_edi_portal_stock_status_tree">
+            <field name="name">edi.portal.stock.status.tree</field>
+            <field name="model">edi.portal.stock.status</field>
+            <field name="arch" type="xml">
+                <tree string="Log stock status" editable="bottom" >
+                    <field name="user_id" invisible="1"/>
+                    <field name="parent" />
+                    <field name="name" />
+                    <field name="description" />
+                    <field name="uom" />
+                    <field name="stock_qty" />
+                    <field name="locked_qty" />
+                    <field name="available_qty" />
+                    <field name="provision_qty" />
+                    <field name="deadline" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_edi_portal_stock_status">
+            <field name="name">Stock status</field>
+            <field name="res_model">edi.portal.stock.status</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_edi_portal_stock_status_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+        
+        <menuitem 
+            id="menu_edi_portal_root" 
+            action="action_edi_portal_root_tree"
+            name="EDI Portal"
+            sequence="1"
+            groups="account_stock_status_portal.group_portal_manager"
+            />
+            <menuitem 
+                parent="menu_edi_portal_root" 
+                id="menu_edi_portal_stock_status" 
+                sequence="10"
+                />
+                <menuitem 
+                    parent="menu_edi_portal_stock_status" 
+                    id="menu_edi_portal_stock_status_lot" 
+                    action="action_edi_portal_stock_status"
+                    sequence="10"
+                    />
+    </data>
+</openerp>
+

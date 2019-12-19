@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+   <data>
+        <record id="group_portal_manager" model="res.groups">
+            <field name="name">Portal EDI status Manager</field>
+        </record>
+        <record id="group_portal_user" model="res.groups">
+            <field name="name">Portal EDI status user</field>
+        </record>
+   </data>
+</openerp>
