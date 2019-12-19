@@ -1,6 +1,31 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <record model="ir.ui.view" id="view_res_users_portal_update_form">
+            <field name="name">res.users.form</field>
+            <field name="model">res.users</field>
+            <field name="priority" eval="40" />
+            <field name="arch" type="xml">
+                <form string="Data status" version="7.0">        
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <separator string="Update information:" colspan="4"/>
+                            <field name="edi_portal_status" nolabel="1" colspan="4" widget="HTML"/>
+                        </group>
+                    </sheet>        
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_view_res_users_portal_update">
+            <field name="name">Data status</field>
+            <field name="res_model">res.users</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_res_users_portal_update_form"/>
+            <field name="context">{}</field>
+            <field name="domain">[('id', '=', uid)]</field>
+        </record>
+        
         <!--edi.portal.stock.status-->
         <record model="ir.ui.view" id="view_edi_portal_stock_status_tree">
             <field name="name">edi.portal.stock.status.tree</field>
@@ -61,12 +86,6 @@
         
 
         <!--Override:-->
-        <menuitem name="Messaging"
-          id="mail.mail_feeds_main"
-          sequence="10"
-          groups=""
-          />
-
         <menuitem 
             id="menu_edi_portal_root" 
             name="EDI Portal"
@@ -79,6 +98,12 @@
                 sequence="10"
                 name="Stock status"
                 />
+                <menuitem 
+                    parent="menu_edi_portal_stock_status" 
+                    id="menu_edi_portal_stock_status_update" 
+                    sequence="1"
+                    action="action_view_res_users_portal_update"
+                    />                
                 <menuitem 
                     parent="menu_edi_portal_stock_status" 
                     id="menu_edi_portal_stock_status_lot" 

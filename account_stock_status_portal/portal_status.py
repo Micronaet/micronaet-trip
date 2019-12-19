@@ -43,6 +43,16 @@ from openerp.tools import (
 
 _logger = logging.getLogger(__name__)
 
+class ResUsers(orm.Model):
+    """ Model name: ResUsers
+    """
+    
+    _inherit = 'res.users'
+    
+    _columns = {
+        'edi_portal_status': fields.text('Portal status'),
+        }
+
 class EdiPortalStockStatus(orm.Model):
     """ Model name: EdiPortalStockStatus
     """
@@ -162,6 +172,11 @@ class EdiPortalStockStatus(orm.Model):
                 'deadline': deadline,
                 }
             self.create(cr, uid, data, context=context)
+            
+        # Update portal status:     
+        user_pool.write(cr, uid, user_id, {
+            'edi_portal_status': status,
+            }, context=context)
         return True
         
     _columns = {
