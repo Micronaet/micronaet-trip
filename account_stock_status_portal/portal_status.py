@@ -112,6 +112,8 @@ class EdiPortalStockStatus(orm.Model):
         filename = os.path.expanduser(filename)
         f_csv = open(filename, 'r')
         
+        _logger.warning('Update portal with user: %s, file %s' % (
+            username, filename))
         # ---------------------------------------------------------------------
         # Clean al previous record:
         # ---------------------------------------------------------------------
