@@ -180,7 +180,7 @@ class EdiPortalStockStatus(orm.Model):
         # Update portal status: 
         event_pool = self.pool.get('edi.portal.stock.status.event')
         event_ids = event_pool.search(cr, uid, [], context=context)
-        event_pool.unlink(event_ids)
+        event_pool.unlink(cr, uid, event_ids, context=context)
         event_pool.create(cr, uid, {
             'edi_portal_status': status,
             }, context=context)
