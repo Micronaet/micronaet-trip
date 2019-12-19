@@ -58,6 +58,11 @@ class EdiPortalStockStatus(orm.Model):
     def update_stock_status(self, cr, uid, username, filename, context=None):
         ''' Update stock status from external file
         '''
+        def clean_text(value):
+            ''' Clean text
+            '''
+            return (value or '').strip()
+
         def clean_float(value):
             ''' Clean float value
             '''
@@ -89,7 +94,6 @@ class EdiPortalStockStatus(orm.Model):
                 )
             
         separator = ';'
-        import pdb; pdb.set_trace()
         filename = os.path.expanduser(filename)
         f_csv = open(filename, 'r')
         
@@ -118,7 +122,6 @@ class EdiPortalStockStatus(orm.Model):
         columns = False
         
         for line in f_csv:
-            line = line.strip()
             if not status:
                 status = line
                 continue
@@ -135,10 +138,10 @@ class EdiPortalStockStatus(orm.Model):
                 _logger.error('Line with different columns: %s' % (line, ))   
             
             # Extract info:
-            name = row[0]
-            parent = name[:11]
-            description = row[1]
-            uom = row[2]
+            name = clean_text(row[0])
+            parent = clean_text(name[:11])
+            description = clean_text(row[1])
+            uom = clean_text(row[2])
             stock_qty = clean_float(row[3])
             locked_qty = clean_float(row[4])
             available_qty = clean_float(row[5])
