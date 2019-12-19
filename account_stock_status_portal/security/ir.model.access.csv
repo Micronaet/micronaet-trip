@@ -1,4 +1,6 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
-access_edi_portal_stock_status_user,edi.portal.stock.status,model_edi_portal_stock_status,account_stock_status_portal.group_portal_manager,1,1,1,1
+access_edi_portal_stock_status_manager,edi.portal.stock.status,model_edi_portal_stock_status,account_stock_status_portal.group_portal_manager,1,1,1,1
 access_edi_portal_stock_status_user,edi.portal.stock.status,model_edi_portal_stock_status,account_stock_status_portal.group_portal_user,1,0,0,0
+access_edi_portal_stock_status_event_manager,edi.portal.stock.status.event,model_edi_portal_stock_status_event,account_stock_status_portal.group_portal_manager,1,1,1,1
+access_edi_portal_stock_status_event_user,edi.portal.stock.status.event,model_edi_portal_stock_status_event,account_stock_status_portal.group_portal_user,1,0,0,0
 

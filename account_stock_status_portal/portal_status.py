@@ -44,34 +44,17 @@ from openerp.tools import (
 _logger = logging.getLogger(__name__)
 
 
-class ResUsersPortalStatusWizard(orm.TransientModel):
-    ''' Wizard for status
+class EdiPportalStockStatusEvent(orm.TransientModel):
+    ''' Wizard for status event
     '''
-    _name = 'res.users.portal.status.wizard'
+    _name = 'edi.portal.stock.status.event'
+    _order = 'create_date desc'
+    _rec_name = 'edi_portal_status'
     
     _columns = {
-        'edi_portal_status': fields.text('Portal status', readonly=True),
-        }
-    
-    def default_portal_status(self, cr, uid, context=None):
-        ''' Status from res.users
-        '''
-        current_user = self.pool.get('res.users').browse(
-            cr, uid, uid, context=context)
-        return current_user.edi_portal_status
-    
-    _defaults = {
-        'edi_portal_status': lambda s, cr, uid, ctx: s.default_portal_status(
-            cr, uid, ctx),
-        }
-class ResUsers(orm.Model):
-    """ Model name: ResUsers
-    """
-    
-    _inherit = 'res.users'
-    
-    _columns = {
-        'edi_portal_status': fields.text('Portal status', readonly=True),
+        'create_date': fields.date('Create date', readonly=True),
+        'edi_portal_status': fields.text('Portal status', readonly=True,
+            required=True),
         }
 
 class EdiPortalStockStatus(orm.Model):
@@ -194,10 +177,14 @@ class EdiPortalStockStatus(orm.Model):
                 }
             self.create(cr, uid, data, context=context)
             
-        # Update portal status:     
-        user_pool.write(cr, uid, user_id, {
+        # Update portal status: 
+        event_pool = self.pool.get('edi.portal.stock.status.event')
+        event_ids = event_pool.search(cr, uid, [], context=context)
+        event_pool.unlink(event_ids)
+        event_pool.create(cr, uid, {
             'edi_portal_status': status,
             }, context=context)
+            
         return True
         
     _columns = {
