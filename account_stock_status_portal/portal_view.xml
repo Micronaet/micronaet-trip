@@ -32,7 +32,6 @@
         
         <menuitem 
             id="menu_edi_portal_root" 
-            action="action_edi_portal_root_tree"
             name="EDI Portal"
             sequence="1"
             groups="account_stock_status_portal.group_portal_manager"
@@ -41,6 +40,7 @@
                 parent="menu_edi_portal_root" 
                 id="menu_edi_portal_stock_status" 
                 sequence="10"
+                name="Stock status"
                 />
                 <menuitem 
                     parent="menu_edi_portal_stock_status" 

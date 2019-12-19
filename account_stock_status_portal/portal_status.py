@@ -30,7 +30,7 @@ import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from openerp import SUPERUSER_ID, api
+from openerp import SUPERUSER_ID
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
@@ -78,7 +78,7 @@ class EdiPortalStockStatus(orm.Model):
                 _logger.error('Error converting date: %s' % value)
                 return False
                 
-            return = '%s%s-%s-%s' % (
+            return '%s%s-%s-%s' % (
                 '20' if len(value_split[2]) == 2 else '',
                 value_split[2],
                 value_split[1],
