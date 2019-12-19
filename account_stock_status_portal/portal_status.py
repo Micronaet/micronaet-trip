@@ -44,7 +44,7 @@ from openerp.tools import (
 _logger = logging.getLogger(__name__)
 
 
-class EdiPportalStockStatusEvent(orm.TransientModel):
+class EdiPportalStockStatusEvent(orm.Model):
     ''' Wizard for status event
     '''
     _name = 'edi.portal.stock.status.event'
