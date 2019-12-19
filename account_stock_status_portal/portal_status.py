@@ -194,7 +194,7 @@ class EdiPortalStockStatus(orm.Model):
         'name': fields.char('Product code', size=20, required=True),
         'parent': fields.char('Parent code', size=11, required=True),
         'description': fields.char('Product description', size=80),
-        'uom': fields.char('Product code', size=64, required=True),
+        'uom': fields.char('UM', size=64, required=True),
         'stock_qty': fields.float('Stock Q.', digits=(16, 2)),
         'locked_qty': fields.float('Locked Q.', digits=(16, 2)),
         'available_qty': fields.float('Available Q.', digits=(16, 2)),
