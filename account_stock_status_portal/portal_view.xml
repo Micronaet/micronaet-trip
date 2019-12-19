@@ -59,7 +59,14 @@
             <field name="domain">[]</field>
         </record>
         
-        
+
+        <!--Override:-->
+        <menuitem name="Messaging"
+          id="mail.mail_feeds_main"
+          sequence="10"
+          groups=""
+          />
+
         <menuitem 
             id="menu_edi_portal_root" 
             name="EDI Portal"

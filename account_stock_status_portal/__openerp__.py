@@ -33,6 +33,7 @@
     'license': 'AGPL-3',
     'depends': [
         'base',
+        'mail', # to remove menu
         ],
     'init_xml': [],
     'demo': [],
