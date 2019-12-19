@@ -62,6 +62,9 @@ class EdiPortalStockStatus(orm.Model):
             ''' Clean float value
             '''
             value = (value or '').strip()
+            if not value: 
+                return 0.0
+
             value = value.replace(',', '.')
             try:
                 return float(value)
@@ -100,7 +103,7 @@ class EdiPortalStockStatus(orm.Model):
         if not user_ids:
             _logger.error('User login %s not found!' % username)
             return False
-        user_id = user_ids
+        user_id = user_ids[0]
         
         line_ids = self.search(cr, uid, [
             ('user_id', '=', user_id),
@@ -115,6 +118,7 @@ class EdiPortalStockStatus(orm.Model):
         columns = False
         
         for line in f_csv:
+            line = line.strip()
             if not status:
                 status = line
                 continue
