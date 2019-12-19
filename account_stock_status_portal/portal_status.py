@@ -86,6 +86,8 @@ class EdiPortalStockStatus(orm.Model):
                 )
             
         separator = ';'
+        import pdb; pdb.set_trace()
+        filename = os.path.expanduser(filename)
         f_csv = open(filename, 'r')
         
         # ---------------------------------------------------------------------
