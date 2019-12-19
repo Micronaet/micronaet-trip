@@ -43,6 +43,27 @@ from openerp.tools import (
 
 _logger = logging.getLogger(__name__)
 
+
+class ResUsersPortalStatusWizard(orm.TransientModel):
+    ''' Wizard for status
+    '''
+    _name = 'res.users.portal.status.wizard'
+    
+    _columns = {
+        'edi_portal_status': fields.text('Portal status', readonly=True),
+        }
+    
+    def default_portal_status(self, cr, uid, context=None):
+        ''' Status from res.users
+        '''
+        current_user = self.pool.get('res.users').browse(
+            cr, uid, uid, context=context)
+        return current_user.edi_portal_status
+    
+    _defaults = {
+        'edi_portal_status': lambda s, cr, uid, ctx: s.default_portal_status(
+            cr, uid, ctx),
+        }
 class ResUsers(orm.Model):
     """ Model name: ResUsers
     """
@@ -50,7 +71,7 @@ class ResUsers(orm.Model):
     _inherit = 'res.users'
     
     _columns = {
-        'edi_portal_status': fields.text('Portal status'),
+        'edi_portal_status': fields.text('Portal status', readonly=True),
         }
 
 class EdiPortalStockStatus(orm.Model):
