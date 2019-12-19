@@ -1,0 +1,151 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# 	* account_stock_status_portal
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-12-19 13:43+0000\n"
+"PO-Revision-Date: 2019-12-19 14:47+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: account_stock_status_portal
+#: view:edi.portal.stock.status:0
+msgid "total_provision"
+msgstr "Totale approvvigionamento"
+
+#. module: account_stock_status_portal
+#: model:res.groups,name:account_stock_status_portal.group_portal_manager
+msgid "Portal EDI status Manager"
+msgstr "Manager portale EDI"
+
+#. module: account_stock_status_portal
+#: view:edi.portal.stock.status:0
+msgid "Group By..."
+msgstr "Raggruppa per..."
+
+#. module: account_stock_status_portal
+#: view:edi.portal.stock.status:0
+msgid "UOM"
+msgstr "UM"
+
+#. module: account_stock_status_portal
+#: view:edi.portal.stock.status:0
+msgid "Available"
+msgstr "Disponibile"
+
+#. module: account_stock_status_portal
+#: field:edi.portal.stock.status,deadline:0
+msgid "Lot deadline"
+msgstr "Scadenza lotto"
+
+#. module: account_stock_status_portal
+#: view:edi.portal.stock.status:0
+msgid "total_available"
+msgstr "Totale disponibile"
+
+#. module: account_stock_status_portal
+#: view:edi.portal.stock.status:0
+msgid "Parent"
+msgstr "Codice padre"
+
+#. module: account_stock_status_portal
+#: field:edi.portal.stock.status,description:0
+msgid "Product description"
+msgstr "Descrizione prodotto"
+
+#. module: account_stock_status_portal
+#: field:edi.portal.stock.status,stock_qty:0
+msgid "Stock Q."
+msgstr "Q. magazzino"
+
+#. module: account_stock_status_portal
+#: model:ir.model,name:account_stock_status_portal.model_edi_portal_stock_status
+msgid "EDI Stock status"
+msgstr "ERI: Stato magazzino "
+
+#. module: account_stock_status_portal
+#: model:ir.actions.act_window,name:account_stock_status_portal.action_edi_portal_stock_status
+#: model:ir.ui.menu,name:account_stock_status_portal.menu_edi_portal_stock_status
+#: model:ir.ui.menu,name:account_stock_status_portal.menu_edi_portal_stock_status_lot
+msgid "Stock status"
+msgstr "Stato magazzino"
+
+#. module: account_stock_status_portal
+#: model:res.groups,name:account_stock_status_portal.group_portal_user
+msgid "Portal EDI status user"
+msgstr "Utente portale EDI"
+
+#. module: account_stock_status_portal
+#: field:edi.portal.stock.status,parent:0
+msgid "Parent code"
+msgstr "Codice padre"
+
+#. module: account_stock_status_portal
+#: field:edi.portal.stock.status,locked_qty:0
+msgid "Locked Q."
+msgstr "Q. bloccata"
+
+#. module: account_stock_status_portal
+#: view:edi.portal.stock.status:0
+msgid "total_locked"
+msgstr "Totale bloccato"
+
+#. module: account_stock_status_portal
+#: view:edi.portal.stock.status:0
+msgid "Log stock status search"
+msgstr "Ricarca stato magazzino"
+
+#. module: account_stock_status_portal
+#: view:edi.portal.stock.status:0
+msgid "Log stock status"
+msgstr "Stato magazzino"
+
+#. module: account_stock_status_portal
+#: model:ir.actions.act_window,name:account_stock_status_portal.action_edi_portal_stock_status_all
+#: model:ir.ui.menu,name:account_stock_status_portal.menu_edi_portal_stock_status_lot_all
+msgid "Stock status all"
+msgstr "Stato magazzino (tutti)"
+
+#. module: account_stock_status_portal
+#: model:ir.ui.menu,name:account_stock_status_portal.menu_edi_portal_root
+msgid "EDI Portal"
+msgstr "Portale EDI"
+
+#. module: account_stock_status_portal
+#: field:edi.portal.stock.status,available_qty:0
+msgid "Available Q."
+msgstr "Q. disponibile"
+
+#. module: account_stock_status_portal
+#: field:edi.portal.stock.status,provision_qty:0
+msgid "Provision Q."
+msgstr "Q. approvvigionamento"
+
+#. module: account_stock_status_portal
+#: field:edi.portal.stock.status,name:0 field:edi.portal.stock.status,uom:0
+msgid "Product code"
+msgstr "Codice prodotto"
+
+#. module: account_stock_status_portal
+#: view:edi.portal.stock.status:0
+msgid "total_stock"
+msgstr "Totale magazzino"
+
+#. module: account_stock_status_portal
+#: view:edi.portal.stock.status:0
+msgid "Deadline"
+msgstr "Scadenza"
+
+#. module: account_stock_status_portal
+#: field:edi.portal.stock.status,user_id:0
+msgid "Partner"
+msgstr "Partner"
