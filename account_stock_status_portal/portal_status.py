@@ -82,6 +82,7 @@ class EdiPortalStockStatus(orm.Model):
             '''
             value = (value or '').strip()
             value_split = value.split('/')
+            
             if len(value_split) != 3:
                 _logger.error('Error converting date: %s' % value)
                 return False
@@ -138,6 +139,7 @@ class EdiPortalStockStatus(orm.Model):
                 _logger.error('Line with different columns: %s' % (line, ))   
             
             # Extract info:
+            import pdb; pdb.set_trace()
             name = clean_text(row[0])
             parent = clean_text(name[:11])
             description = clean_text(row[1])
@@ -160,7 +162,6 @@ class EdiPortalStockStatus(orm.Model):
                 'provision_qty': provision_qty,
                 'deadline': deadline,
                 }, context=context)
-            
         return True
         
     _columns = {
