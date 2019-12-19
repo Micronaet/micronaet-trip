@@ -4,15 +4,14 @@
         <record model="ir.ui.view" id="view_edi_portal_stock_status_event_tree">
             <field name="name">edi.portal.stock.status.event.form</field>
             <field name="model">edi.portal.stock.status.event</field>
-            <field name="priority" eval="40" />
             <field name="arch" type="xml">
                 <tree string="Events" editable="bottom">        
-                        <field name="edi_portal_status" />
+                     <field name="edi_portal_status" />
                 </tree>
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_view_edi_portal_stock_status_event">
-            <field name="name">Data status</field>
+            <field name="name">Events</field>
             <field name="res_model">edi.portal.stock.status.event</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree</field>
