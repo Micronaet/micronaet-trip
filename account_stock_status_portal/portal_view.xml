@@ -2,7 +2,7 @@
 <openerp>
     <data>
         <record model="ir.ui.view" id="view_edi_portal_stock_status_event_tree">
-            <field name="name">edi.portal.stock.status.event.form</field>
+            <field name="name">edi.portal.stock.status.event.tree</field>
             <field name="model">edi.portal.stock.status.event</field>
             <field name="arch" type="xml">
                 <tree string="Events" editable="bottom">        
