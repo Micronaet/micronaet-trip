@@ -21,8 +21,8 @@
             </field>
         </record>
         <record model="ir.ui.view" id="view_edi_portal_stock_status_search">
-            <field name="name">edi.porta.stock.status.search</field>
-            <field name="model">edi.porta.stock.status</field>
+            <field name="name">edi.portal.stock.status.search</field>
+            <field name="model">edi.portal.stock.status</field>
             <field name="arch" type="xml">
                 <search string="Log stock status search" version="7.0">        
                     <field name="name" />
