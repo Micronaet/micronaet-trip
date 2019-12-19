@@ -98,12 +98,12 @@
                 sequence="10"
                 name="Stock status"
                 />
-                <menuitem 
+                <!--<menuitem 
                     parent="menu_edi_portal_stock_status" 
                     id="menu_edi_portal_stock_status_update" 
                     sequence="1"
                     action="action_view_res_users_portal_status_wizard"
-                    />                
+                    />-->
                 <menuitem 
                     parent="menu_edi_portal_stock_status" 
                     id="menu_edi_portal_stock_status_lot" 
