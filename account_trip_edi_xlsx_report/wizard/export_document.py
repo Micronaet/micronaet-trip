@@ -195,15 +195,15 @@ class QualityExportExcelReport(orm.TransientModel):
         format_text_blue = excel_pool.get_format('text_blue')
         format_text_red = excel_pool.get_format('text_red')
 
-        #format_number = excel_pool.get_format('number')
-        #format_number_green = excel_pool.get_format('number_green')
-        #format_number_blue = excel_pool.get_format('number_blue')
-        #format_number_red = excel_pool.get_format('number_red')
+        format_number = excel_pool.get_format('number')
+        format_number_green = excel_pool.get_format('number_green')
+        format_number_blue = excel_pool.get_format('number_blue')
+        format_number_red = excel_pool.get_format('number_red')
 
-        format_number = excel_pool.get_format('text')
-        format_number_green = excel_pool.get_format('text_green')
-        format_number_blue = excel_pool.get_format('text_blue')
-        format_number_red = excel_pool.get_format('text_red')
+        #format_number = excel_pool.get_format('text')
+        #format_number_green = excel_pool.get_format('text_green')
+        #format_number_blue = excel_pool.get_format('text_blue')
+        #format_number_red = excel_pool.get_format('text_red')
 
         
         # Column setup width:
