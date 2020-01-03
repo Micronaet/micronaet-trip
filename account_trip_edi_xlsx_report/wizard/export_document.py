@@ -169,12 +169,12 @@ class QualityExportExcelReport(orm.TransientModel):
         # Trip:
         # -----------------------------------------------------------------
         # Parameters:
-        extension='xls'
+        extension='xlsx'
         ws_name = _('Ordini EDI')
         ws_detail_name = _('Dettaglio')
         ws_total_name = _('Totali')
 
-        name_of_file = _('ordini.xls')            
+        name_of_file = _('ordini.xlsx')            
         
         # -----------------------------------------------------------------            
         # Create Excel file:    
