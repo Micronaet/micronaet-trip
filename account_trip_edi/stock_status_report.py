@@ -221,9 +221,9 @@ class edi_company_report(orm.Model):
             # Field:
             # -----------------------------------------------------------------
             # Description:
-            default_code = column[0]
-            name = column[1]
-            uom = column[2]
+            default_code = column[0].strip()
+            name = column[1].strip()
+            uom = column[2].strip()
             
             # Quantity:
             inventory_qty = clean_float(column[3])
