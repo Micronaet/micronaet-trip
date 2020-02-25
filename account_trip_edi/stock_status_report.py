@@ -315,7 +315,6 @@ class edi_company_report(orm.Model):
         black = excel_format['black']
         red = excel_format['red']
         
-        import pdb; pdb.set_trace()
         for default_code in sorted(report['data']):
             row +=1 
             delta = report['data'][default_code]
