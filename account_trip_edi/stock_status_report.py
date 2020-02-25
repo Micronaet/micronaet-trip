@@ -237,7 +237,7 @@ class edi_company_report(orm.Model):
             # Calculated:
             net_qty = inventory_qty + load_qty - unload_qty
             oc_qty = oc_e_qty + oc_s_qty # XXX OF added in real columns
-            available_qty = new_qty - oc_qty
+            available_qty = net_qty - oc_qty
             
             account_data[default_code] = [
                 name,
