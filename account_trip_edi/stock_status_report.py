@@ -201,8 +201,10 @@ class edi_company_report(orm.Model):
                 )
         edi_account_data = os.path.expanduser(edi_account_data)
         try:
-            stock_status = open(os.path.join(edi_account_data, 'stato-mag.gfd'))
-            supplier_order = open(os.path.join(edi_account_data, 'stato-of.gfd'))
+            stock_status = open(
+                os.path.join(edi_account_data, 'stato-mag.gfd'))
+            supplier_order = open(
+                os.path.join(edi_account_data, 'stato-of.gfd'))
         except:    
             raise osv.except_osv(
                 _('Errore file di scambio'), 
@@ -222,7 +224,7 @@ class edi_company_report(orm.Model):
             # Description:
             default_code = column[0].strip()
             name = column[1].strip()
-            uom = column[2].strip()
+            uom = column[2].strip().upper()
             
             # Quantity:
             inventory_qty = clean_float(column[3])
@@ -233,12 +235,16 @@ class edi_company_report(orm.Model):
             of_qty = clean_float(column[8])
             
             # Calculated:
-            available_qty = inventory_qty + load_qty - unload_qty - oc_e_qty \
-                - oc_s_qty # XXX OF added in real columns
+            net_qty = inventory_qty + load_qty - unload_qty
+            oc_qty = oc_e_qty + oc_s_qty # XXX OF added in real columns
+            available_qty = new_qty - oc_qty
             
             account_data[default_code] = [
                 name,
                 uom,
+                
+                net_qty,
+                oc_qty,
                 available_qty,
                 ]
 
@@ -275,17 +281,23 @@ class edi_company_report(orm.Model):
             }
 
         col_width = [
-            15, 40, 5, 15,
+            15, 40, 5, 10, 10, 10
             # TODO appena date total
             ]
         col_width.extend([5 for item in range(context.get('report_days'))])            
 
         header = [
+            # Product:
             _('Codice'),
             _('Nome'),
             _('UM'),
-            _('Gestionale'),
-            # TODO append date total title
+            
+            # Account program:
+            _('Esistenza'),
+            _('Ordinato'),
+            _('Disponibile'),
+            
+            # Number data:
             ]
         fixed_cols = len(header)
         excel_pool.column_width(ws_name, col_width)
@@ -319,9 +331,11 @@ class edi_company_report(orm.Model):
             row +=1 
             delta = report['data'][default_code]
             try:
-                name, uom, start_qty = account_data[default_code]
+                name, uom, net_qty, oc_qty, start_qty = \
+                    account_data[default_code]
             except:
-                name, uom, start_qty = '', '', 0.0    
+                name = uom = ''
+                oc_qty = start_qty = start_qty = 0.0    
 
             self.transform_delta_record(start_qty, delta, excel_format)
             
