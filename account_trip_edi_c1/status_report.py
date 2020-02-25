@@ -46,7 +46,7 @@ class edi_company_report_c1(orm.Model):
     ''' Manage more than one importation depend on company
     '''    
     _inherit = 'edi.company'
-    
+
     # -------------------------------------------------------------------------
     # OVERRIDE: Collect data for report
     # -------------------------------------------------------------------------
@@ -58,12 +58,13 @@ class edi_company_report_c1(orm.Model):
                 'data'
                 'empty_record'
         """
-        _logger.warning('Append company 1 data')
-
         report = super(
             edi_company_report_c1, self).collect_future_order_data_report(
                 cr, uid, context=context)
-        
+                
+        if not self.get_module_company(cr, uid, 1, context=context):
+            return report
+            
         # =====================================================================
         # XXX Data will be create with override:
         # =====================================================================

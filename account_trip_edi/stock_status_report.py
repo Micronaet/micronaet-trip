@@ -48,6 +48,35 @@ class edi_company_report(orm.Model):
     _inherit = 'edi.company'
 
     # -------------------------------------------------------------------------
+    # Utility:
+    # -------------------------------------------------------------------------
+    def get_module_company(self, cr, uid, module_id, context=None):
+        """ Return browse object for company generated with the module
+        """
+        _logger.warning('Append company %s data' % module_id)
+        model_pool = self.pool.get('ir.model.data')
+
+        try:
+            reference_id = model_pool.get_object_reference(
+                cr, uid,
+                'account_trip_edi_c%s' % module_id, 
+                'importatione_account_trip_edi_c%s' % module_id,
+                )[1]
+            
+            company_ids = self.search(cr, uid, [
+                ('type_importation_id', '=', reference_id),
+                ], context=context)
+            if company_ids:
+                company = self.browse(cr, uid, company_ids, context=context)[0]
+                if company.import:
+                    return True
+                else:    
+                    _logger.error('Company not active: #%s' % module_id)     
+        except:            
+            _logger.error('Error get company reference #%s' % module_id)     
+        return False
+        
+    # -------------------------------------------------------------------------
     # Collect data for report (overridable)
     # -------------------------------------------------------------------------
     def collect_future_order_data_report(self, cr, uid, context=None):
