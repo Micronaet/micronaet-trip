@@ -156,6 +156,12 @@ class edi_company_report(orm.Model):
         """ Overridable procedure for manage the report data collected in all 
             company with active EDI company
         """
+        def clean_floaf(value):
+            """ Clean float from csv file
+            """
+            value = (value or '').strip().replace(',', '.')
+            return float(value)
+            
         excel_pool = self.pool.get('excel.writer')
         
         if context is None:
