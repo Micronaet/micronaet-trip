@@ -69,7 +69,7 @@ class edi_company_report(orm.Model):
             if company_ids:
                 company = self.browse(cr, uid, company_ids, context=context)[0]
                 if company.import:
-                    return True
+                    return company
                 else:    
                     _logger.error('Company not active: #%s' % module_id)     
         except:            
