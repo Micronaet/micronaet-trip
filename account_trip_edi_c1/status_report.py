@@ -84,7 +84,9 @@ class edi_company_report_c1(orm.Model):
                 if mode == 'create':
                     sign = -1  # Note: create order is negative for stock!
                 else:
-                    sign = +1  # TODO test!!
+                    _logger.warning('Not used: %s' % filename)
+                    continue   # TODO complete!!
+                    sign = +1
 
                 fullname = os.path.join(root, filename)                
                 order_file = open(fullname)
