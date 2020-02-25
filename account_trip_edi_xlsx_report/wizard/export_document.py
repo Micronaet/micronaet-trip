@@ -85,8 +85,7 @@ class QualityExportExcelReport(orm.TransientModel):
                         line.replace(
                             '&nbsp;', '').replace(
                                 '<td>', '').replace('</td>', ''))
-                    continue
-                
+                    continue                
             return res
         
         def write_order_detail(excel_pool, ws_name, row, order, details):

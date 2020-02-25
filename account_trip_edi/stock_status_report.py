@@ -50,7 +50,7 @@ class edi_company_report(orm.Model):
     # -------------------------------------------------------------------------
     # Collect data for report (overridable)
     # -------------------------------------------------------------------------
-    def collect_future_order_data_report(self, cr, uid, ids, context=None):
+    def collect_future_order_data_report(self, cr, uid, context=None):
         """ Overridable procedure for manage the report data collected in all 
             company with active EDI company
         """
@@ -134,7 +134,7 @@ class edi_company_report(orm.Model):
         # ---------------------------------------------------------------------
         _logger.info('Start collect information for EDI stock status report')
         report = self.collect_future_order_data_report(
-            cr, uid, ids, context=context)
+            cr, uid, context=context)
         
         # Get data from account
         account_data = {
