@@ -32,6 +32,7 @@
         'account_trip',
         'base_mssql_accounting_trip', # Link destinations code
         'sql_partner_trip',           # Destination extra info for link code
+        'excel_export',               # Excel report
         ],
     'init_xml': [],
     'demo': [],
@@ -39,6 +40,8 @@
         'security/edi_group.xml',
         'security/ir.model.access.csv',
         'edi_view.xml',
+        
+        'report_scheduler.xml',
         ],
     'active': False,
     'installable': True,

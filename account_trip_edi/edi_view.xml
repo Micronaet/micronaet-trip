@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-
         <record id="ir_trip_edi_line_reload_server_action" model="ir.actions.server">
             <field name="sequence" eval="5"/>
             <field name="state">code</field>

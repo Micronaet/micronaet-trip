@@ -165,20 +165,20 @@ class QualityExportExcelReport(orm.TransientModel):
         if filter_code: 
             filter_description += _(', Codice prodotto: %s') % filter_code
         
-        # -----------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # Trip:
-        # -----------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # Parameters:
-        extension='xlsx'
+        extension = 'xlsx'
         ws_name = _('Ordini EDI')
         ws_detail_name = _('Dettaglio')
         ws_total_name = _('Totali')
 
         name_of_file = _('ordini.xlsx')            
         
-        # -----------------------------------------------------------------            
+        # ---------------------------------------------------------------------         
         # Create Excel file:    
-        # -----------------------------------------------------------------            
+        # ---------------------------------------------------------------------        
         # Worksheet:
         excel_pool.create_worksheet(ws_name, extension=extension)
         excel_pool.create_worksheet(ws_detail_name)
