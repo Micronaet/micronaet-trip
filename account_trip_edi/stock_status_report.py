@@ -162,25 +162,78 @@ class edi_company_report(orm.Model):
             context = {}
         
         # ---------------------------------------------------------------------
-        # Parameter for report:
+        # Extract data from EDI provider
         # ---------------------------------------------------------------------
+        # Parameters:
         context.update({
             'account_days_covered': 2,
             'report_days':28,            
             })
 
-        # ---------------------------------------------------------------------
-        # Excel file:
-        # ---------------------------------------------------------------------
         _logger.info('Start collect information for EDI stock status report')
         report = self.collect_future_order_data_report(
             cr, uid, context=context)
-        
-        # Get data from account
-        account_data = {
-            # Product code: Available data
-            }
 
+        # ---------------------------------------------------------------------
+        #                Get information from account:        
+        # ---------------------------------------------------------------------
+        separator = ';'
+
+        # Get data from account
+        company_pool = self.pool.get('res.company')
+        company_ids = company_pool.search(cr, uid, [], context=None)
+        company = company_pool.browse(cr, uid, company_ids, context=context)[0]
+        edi_account_data = company.edi_account_data
+        if not edi_account_data:
+            raise osv.except_osv(
+                _('Errore parametri'), 
+                _('Manca un parametro nella azienda scheda EDI!'),
+                )
+        edi_account_data = os.path.expanduser(edi_account_data)
+        try:
+            stock_status = open(os.path.join(edi_account_data, 'stato-mag.gfd'))
+            supplier_order = open(os.path.join(edi_account_data, 'stato-of.gfd'))
+        except:    
+            raise osv.except_osv(
+                _('Errore file di scambio'), 
+                _('Non si possono leggere i file di scambio cartella: %s!' % (
+                    edi_account_data)),
+                )
+
+        # A. Stock satus:
+        account_data = {}
+        for line in stock_status:
+            row = line.split(separator)
+            
+            # -----------------------------------------------------------------
+            # Field:
+            # -----------------------------------------------------------------
+            # Description:
+            default_code = row[0]
+            name = row[1]
+            uom = row[2]
+            
+            # Quantity:
+            inventory_qty = row[3]
+            load_qty = row[4]
+            unload_qty = row[5]
+            oc_e_qty = row[6]
+            oc_s_qty = row[7]
+            of_qty = row[8]
+            
+            # Calculated:
+            available_qty = inventory_qty + load_qty - unload_qty - oc_e_qty \
+                - oc_s_qty # XXX OF added in real columns
+            
+            account_data[default_code] = [
+                name,
+                uom,
+                available_qty,
+                ]
+
+        # ---------------------------------------------------------------------
+        # Excel file:
+        # ---------------------------------------------------------------------
         extension = 'xlsx'
         ws_name = _('EDI stato magazzino')
         
@@ -257,13 +310,14 @@ class edi_company_report(orm.Model):
             delta = report['data'][default_code]
             #default_code = product.default_code
 
-            start_qty = account_data.get(default_code, 0)
+            name, uom, start_qty = account_data.get(
+                default_code, ['', '', 0.0])
             self.transform_delta_record(start_qty, delta, excel_format)
             
             excel_pool.write_xls_line(ws_name, row, [
                 default_code,
-                default_code, # TODO Name
-                '', # TODO UOM
+                name,
+                uom,
                 (start_qty, black['number'])
                 ], black['text'])
                 

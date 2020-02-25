@@ -725,12 +725,23 @@ class edi_company_importation(orm.Model):
     _name = 'edi.company.importation'
     _description = 'EDI Company importation'
     
-    
     _columns = {
         'name': fields.char('Importation type', size=20, required=True),
         'code': fields.char('Code', size=10),
         'object': fields.char('Object', size=64, required=True),
         'note': fields.char('Note'),
+        }
+
+class res_company(orm.Model):
+    ''' Add parameters fields
+    '''    
+    _inherit = 'res.company'
+
+    _columns = {
+        'edi_account_data': fields.char(
+            'Cartella dati EDI', size=80, required=True,
+            help='Cartella dove vengono esportati i dati del gestionale'
+            ),
         }
 
 class edi_company(orm.Model):

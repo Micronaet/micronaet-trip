@@ -113,7 +113,22 @@
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="edi_company_trip_parameter_tree_view"/>
     </record>
-    
+
+      <record id="view_res_company_edi_page_form" model="ir.ui.view">
+        <field name="name">Company EDI parameters</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form" />
+        <field name="arch" type="xml">
+            <xpath expr="/form/sheet/notebook/page[@string='General Information']" position="after">
+			    <page string="EDI">
+   	                <group colspan="4" col="4">
+                         <field name='edi_account_data'/>
+			        </group>
+                </page>
+            </xpath>
+        </field>    
+      </record>        
+
        <!-- trip.edi.line-->
        <record id="trip_edi_line_search_view" model="ir.ui.view">
             <field name="name">EDI line</field>
