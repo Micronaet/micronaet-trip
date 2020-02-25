@@ -25,6 +25,7 @@ import os
 import sys
 import logging
 import openerp
+import math
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
@@ -140,6 +141,21 @@ class edi_company_report(orm.Model):
     def transform_delta_record(self, start_qty, delta, excel_format):
         """ Transform delta record with quantity record
         """
+        def get_heat(excel_format, number):
+            """ Return format depend on heat
+            """
+            if number >= 0:
+                mode = 'heat_green'
+            else:
+                number = -number
+                mode = 'heat_red'
+            position = int(math.log10(number))
+            if position > 3:
+                position = 3
+
+            return excel_format[mode][position]
+            
+            
         for col in range(0, len(delta)):
             if col:
                 previous_qty = delta[col - 1][0]
@@ -147,10 +163,7 @@ class edi_company_report(orm.Model):
                 previous_qty = start_qty
 
             new_qty = delta[col] + previous_qty # Append previous col
-            if new_qty >= 0:
-                delta[col] = (new_qty, excel_format['green']['number'])
-            else:    
-                delta[col] = (new_qty, excel_format['red']['number'])
+            delta[col] = (new_qty, get_heat(excel_format, new_qty))
             
     def generate_future_order_data_report(self, cr, uid, ids, context=None):
         """ Overridable procedure for manage the report data collected in all 
@@ -278,6 +291,20 @@ class edi_company_report(orm.Model):
                 'text': excel_pool.get_format('bg_red'),
                 'number': excel_pool.get_format('bg_red_number'),                    
                 },
+
+            'heat_red': [
+                excel_pool.get_format('bg_red_number_0'),                    
+                excel_pool.get_format('bg_red_number_1'),                    
+                excel_pool.get_format('bg_red_number_2'),                    
+                excel_pool.get_format('bg_red_number_3'),
+                ],
+
+            'heat_green': [
+                excel_pool.get_format('bg_green_number_0'),                    
+                excel_pool.get_format('bg_green_number_1'),                    
+                excel_pool.get_format('bg_green_number_2'),                    
+                excel_pool.get_format('bg_green_number_3'),
+                ],
             }
 
         col_width = [
