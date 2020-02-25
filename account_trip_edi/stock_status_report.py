@@ -53,7 +53,6 @@ class edi_company_report(orm.Model):
     def get_module_company(self, cr, uid, module_id, context=None):
         """ Return browse object for company generated with the module
         """
-        _logger.warning('Append company %s data' % module_id)
         model_pool = self.pool.get('ir.model.data')
 
         try:
@@ -66,14 +65,17 @@ class edi_company_report(orm.Model):
             company_ids = self.search(cr, uid, [
                 ('type_importation_id', '=', reference_id),
                 ], context=context)
-            if company_ids:
-                company = self.browse(cr, uid, company_ids, context=context)[0]
-                if company.import:
+
+            if company_ids:            
+                company = self.browse(
+                    cr, uid, company_ids, context=context)[0]
+                if company.__getattr__('import'):
+                    _logger.warning('Append data for: #%s' % company.name)
                     return company
                 else:    
-                    _logger.error('Company not active: #%s' % module_id)     
+                    _logger.error('Company not active: #%s' % company.name)
         except:            
-            _logger.error('Error get company reference #%s' % module_id)     
+            _logger.error('Error get company reference #%s' % company.name)     
         return False
         
     # -------------------------------------------------------------------------
