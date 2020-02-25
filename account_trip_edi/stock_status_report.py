@@ -343,9 +343,9 @@ class edi_company_report(orm.Model):
                 default_code,
                 name,
                 uom,
-                (net_qty, black['number'])
-                (oc_qty, black['number'])
-                (start_qty, black['number'])
+                (net_qty, black['number']),
+                (oc_qty, black['number']),
+                (start_qty, black['number']),
                 ], black['text'])
                 
             # Integration:
