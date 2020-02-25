@@ -110,10 +110,14 @@ class edi_company_report_c1(orm.Model):
                     # Extract used data:
                     default_code = row[
                         trace['detail_code'][0]: trace['detail_code'][1]]
-                    quantity = float(row[
-                        trace['detail_quantity'][0]: 
-                            trace['detail_quantity'][1]])
-                    
+                    try:    
+                        quantity = float(row[
+                            trace['detail_quantity'][0]: 
+                                trace['detail_quantity'][1]])
+                    except:
+                        import pdb; pdb.set_trace()
+                        quantity = 0.0            
+                        
                     if default_code not in data:
                         data[default_code] = report['empty'][:]
                     data[default_code][col] += sign * quantity    
