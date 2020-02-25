@@ -335,7 +335,7 @@ class edi_company_report(orm.Model):
                     account_data[default_code]
             except:
                 name = uom = ''
-                oc_qty = start_qty = start_qty = 0.0    
+                net_qty = oc_qty = start_qty = 0.0    
 
             self.transform_delta_record(start_qty, delta, excel_format)
             
@@ -343,6 +343,8 @@ class edi_company_report(orm.Model):
                 default_code,
                 name,
                 uom,
+                (net_qty, black['number'])
+                (oc_qty, black['number'])
                 (start_qty, black['number'])
                 ], black['text'])
                 
