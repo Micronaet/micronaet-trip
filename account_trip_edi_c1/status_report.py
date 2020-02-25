@@ -69,8 +69,33 @@ class edi_company_report_c1(orm.Model):
         # =====================================================================
         # XXX Data will be create with override:
         # =====================================================================
+        data = report['data']
+
         # Append this company data:
-        
+        path = company.trip_import_folder
+        import pdb; pdb.set_trace()
+        for root, folders, files in os.walk(path):
+            for filename in files:
+                # Check file mode:
+                sign = +1 
+
+                fullname = os.path.join(root, filename)
+                order_file = open(fullname)
+                
+                deadline = '' # TODO
+                col = report['header'][deadline]
+
+                for row in order_file:
+                    default_code = 'Default code'
+                    name = 'Name'
+                    quantity = 0.0 # TODO 
+                    
+                    if default_code not in data:
+                        data[default_code] = report.empty_record
+                    data[default_code][col] += sign * quantity    
+                    
+                        
+                    
         return report
 
 
