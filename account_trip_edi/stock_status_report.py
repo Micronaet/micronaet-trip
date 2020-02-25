@@ -212,7 +212,6 @@ class edi_company_report(orm.Model):
 
         # A. Stock satus:
         account_data = {}
-        import pdb; pdb.set_trace()
         for line in stock_status:
             line = line.strip()
             column = line.split(separator)
@@ -316,14 +315,16 @@ class edi_company_report(orm.Model):
         black = excel_format['black']
         red = excel_format['red']
         
+        import pdb; pdb.set_trace()
         for default_code in sorted(report['data']):
             row +=1 
-
             delta = report['data'][default_code]
-            #default_code = product.default_code
+            try:
+                name, uom, start_qty = account_data[default_code]
+            except:
+                name, uom = ''
+                start_qty = 0.0    
 
-            name, uom, start_qty = account_data.get(
-                default_code, ['', '', 0.0])
             self.transform_delta_record(start_qty, delta, excel_format)
             
             excel_pool.write_xls_line(ws_name, row, [
