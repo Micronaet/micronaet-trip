@@ -156,10 +156,14 @@ class edi_company_report(orm.Model):
         """ Overridable procedure for manage the report data collected in all 
             company with active EDI company
         """
-        def clean_floaf(value):
+        def clean_float(value):
             """ Clean float from csv file
             """
-            value = (value or '').strip().replace(',', '.')
+            value = (value or '')
+            if not value:
+                return 0.0
+                
+            value = value.strip().replace(',', '.')
             return float(value)
             
         excel_pool = self.pool.get('excel.writer')
@@ -220,12 +224,12 @@ class edi_company_report(orm.Model):
             uom = row[2]
             
             # Quantity:
-            inventory_qty = row[3]
-            load_qty = row[4]
-            unload_qty = row[5]
-            oc_e_qty = row[6]
-            oc_s_qty = row[7]
-            of_qty = row[8]
+            inventory_qty = clean_float(row[3])
+            load_qty = clean_float(row[4])
+            unload_qty = clean_float(row[5])
+            oc_e_qty = clean_float(row[6])
+            oc_s_qty = clean_float(row[7])
+            of_qty = clean_float(row[8])
             
             # Calculated:
             available_qty = inventory_qty + load_qty - unload_qty - oc_e_qty \
