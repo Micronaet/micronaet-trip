@@ -186,7 +186,8 @@ class edi_company_report(orm.Model):
         
         excel_pool.create_worksheet(ws_name, extension=extension)
 
-        excel_pool.set_format(number_format='0.#0')
+        #excel_pool.set_format(number_format='0.#0')
+        excel_pool.set_format(number_format='0')
         excel_pool.get_format() # Update workbook
         
         excel_format = {
@@ -199,18 +200,13 @@ class edi_company_report(orm.Model):
                 },
 
             'green': {
-                'text': excel_pool.get_format('text_green'),
-                'number': excel_pool.get_format('number_green'),                    
+                'text': excel_pool.get_format('bg_green'),
+                'number': excel_pool.get_format('bg_green_number'),                    
                 },
 
             'red': {
-                'text': excel_pool.get_format('text_red'),
-                'number': excel_pool.get_format('number_red'),                    
-                },
-
-            'blue': {
-                'text': excel_pool.get_format('text_blue'),
-                'number': excel_pool.get_format('number_blue'),                    
+                'text': excel_pool.get_format('bg_red'),
+                'number': excel_pool.get_format('bg_red_number'),                    
                 },
             }
 
