@@ -41,7 +41,7 @@
         'security/ir.model.access.csv',
         'edi_view.xml',
         
-        'report_scheduler.xml',
+        #'report_scheduler.xml',
         ],
     'active': False,
     'installable': True,

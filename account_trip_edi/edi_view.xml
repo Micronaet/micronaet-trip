@@ -101,6 +101,7 @@
 	            <field name="trip_import_folder" />
 	            <field name="trip_todo_file" />
 	            <field name="trip_delete_folder" />
+	            <button name="generate_future_order_data_report" string="EDI stampa progressivi magazzino" type="object" icon="gtk-print" />
             </tree>
         </field>
     </record>
