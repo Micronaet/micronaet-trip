@@ -111,7 +111,8 @@ class edi_company_report_c1(orm.Model):
 
                     # Extract used data:
                     default_code = row[
-                        trace['detail_code'][0]: trace['detail_code'][1]]
+                        trace['detail_code'][0]:
+                            trace['detail_code'][1]].strip()
                     quantity = float(row[
                         trace['detail_quantity'][0]: 
                             trace['detail_quantity'][1]])
