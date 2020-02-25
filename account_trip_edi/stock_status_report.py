@@ -88,7 +88,7 @@ class edi_company_report(orm.Model):
         # Header creation:
         pos = 0
         for day in range(columns):
-            date = now_dt + timedelta(days=day)
+            date = from_date_dt + timedelta(days=day)
             report['header'][date.strftime('%m-%d')] = pos
             pos += 1
         
@@ -178,8 +178,8 @@ class edi_company_report(orm.Model):
             15, 40, 5, 15,
             # TODO appena date total
             ]
-        col_width.extend([5 for item in range(context.get['report_days'])])    
-        
+        col_width.extend([5 for item in range(context.get('report_days'))])            
+
         header = [
             _('Codice'),
             _('Nome'),
