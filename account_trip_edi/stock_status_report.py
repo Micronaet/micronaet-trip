@@ -89,7 +89,7 @@ class edi_company_report(orm.Model):
         pos = 0
         for day in range(columns):
             date = now_dt + timedelta(days=day)
-            report['header'][date.strftime('%d-%m')] = pos
+            report['header'][date.strftime('%m-%d')] = pos
             pos += 1
         
         # =====================================================================
@@ -178,6 +178,7 @@ class edi_company_report(orm.Model):
             15, 40, 5, 15,
             # TODO appena date total
             ]
+        col_width.extend([5 for item in range(context.get['report_days'])])    
         
         header = [
             _('Codice'),
@@ -205,8 +206,8 @@ class edi_company_report(orm.Model):
             ws_name, row, header, excel_format['header'])
         # Integration:
         excel_pool.write_xls_line(
-            ws_name, row, report['header'].keys(), excel_format['header'], 
-            col=fixed_cols)
+            ws_name, row, sorted(report['header'].keys()), 
+            excel_format['header'], col=fixed_cols)
             
         # ---------------------------------------------------------------------        
         # Data
