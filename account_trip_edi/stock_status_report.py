@@ -25,7 +25,6 @@ import os
 import sys
 import logging
 import openerp
-import math
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
@@ -144,12 +143,18 @@ class edi_company_report(orm.Model):
         def get_heat(excel_format, number):
             """ Return format depend on heat
             """
+            import math
+
             if number >= 0:
                 mode = 'heat_green'
             else:
                 number = -number
                 mode = 'heat_red'
-            position = int(math.log10(number))
+            
+            if not number:
+                position = 0
+            else:    
+                position = int(math.log10(number))
             if position > 3:
                 position = 3
 
