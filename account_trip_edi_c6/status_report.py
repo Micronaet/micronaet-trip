@@ -62,7 +62,8 @@ class edi_company_report_c1(orm.Model):
             edi_company_report_c1, self).collect_future_order_data_report(
                 cr, uid, context=context)
                 
-        if not self.get_module_company(cr, uid, 6, context=context):
+        company = self.get_module_company(cr, uid, 6, context=context)
+        if not company:
             return report
         
         # =====================================================================
