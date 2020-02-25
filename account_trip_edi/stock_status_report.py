@@ -148,7 +148,7 @@ class edi_company_report(orm.Model):
 
             new_qty = delta[col] + previous_qty # Append previous col
             if new_qty >= 0:
-                delta[col] = (new_qty, excel_format['black']['number'])
+                delta[col] = (new_qty, excel_format['green']['number'])
             else:    
                 delta[col] = (new_qty, excel_format['red']['number'])
             
