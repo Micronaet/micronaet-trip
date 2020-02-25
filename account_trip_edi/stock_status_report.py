@@ -99,6 +99,8 @@ class edi_company_report(orm.Model):
         to_date_dt = from_date_dt + timedelta(days=report_days)
         
         report = {
+            'days': report_days,
+
             # Title:
             'title': 'Stampa progressivi di magazzino, data: %s' % now,
             
@@ -111,17 +113,20 @@ class edi_company_report(orm.Model):
             'data': {
                 # Article record: [Q., data, list]
                 },
-                
-            # Function used to generate empty record:
-            'empty_record': lambda x: [0.0 for item in range(0, columns)],                
+            'empty': [0.0 for item in range(columns)]    
             }
         
         # Header creation:
         pos = 0
+        this_date = False
         for day in range(columns):
             date = from_date_dt + timedelta(days=day)
-            report['header'][date.strftime('%m-%d')] = pos
+            this_date = date.strftime('%Y-%m-%d')
+            if 'min' not in report:
+                report['min'] = this_date
+            report['header'][this_date] = pos
             pos += 1
+        report['max'] = this_date
         
         # =====================================================================
         # XXX Data will be create with override:
@@ -135,9 +140,13 @@ class edi_company_report(orm.Model):
     def transform_delta_record(self, start_qty, delta, excel_format):
         """ Transform delta record with quantity record
         """
-        delta[0] += start_qty
-        for col in range(1, len(delta)):
-            new_qty += delta[col - 1] # Append previous col
+        for col in range(0, len(delta)):
+            if col:
+                previous_qty = delta[col - 1][0]
+            else: # first line:
+                previous_qty = start_qty
+
+            new_qty = delta[col] + previous_qty # Append previous col
             if new_qty >= 0:
                 delta[col] = (new_qty, excel_format['black']['number'])
             else:    
@@ -236,20 +245,20 @@ class edi_company_report(orm.Model):
         excel_pool.write_xls_line(
             ws_name, row, header, excel_format['header'])
         # Integration:
-        excel_pool.write_xls_line(
-            ws_name, row, sorted(report['header'].keys()), 
-            excel_format['header'], col=fixed_cols)
-            
+        excel_pool.write_xls_line(ws_name, row, [
+            item[5:] for item in sorted(report['header'].keys())
+            ], excel_format['header'], col=fixed_cols)
+
         # ---------------------------------------------------------------------        
         # Data
         # ---------------------------------------------------------------------
         black = excel_format['black']
         red = excel_format['red']
         
-        for default_code in report['data']:
+        for default_code in sorted(report['data']):
             row +=1 
 
-            delta = report['data'][product]
+            delta = report['data'][default_code]
             #default_code = product.default_code
 
             start_qty = account_data.get(default_code, 0)
@@ -267,9 +276,6 @@ class edi_company_report(orm.Model):
                 ws_name, row, delta, excel_format['header'], 
                 col=fixed_cols)
             
-            
-        
-        
         
         return excel_pool.return_attachment(cr, uid, ws_name, 
             name_of_file='future_stock_status.xls', version='7.0', 

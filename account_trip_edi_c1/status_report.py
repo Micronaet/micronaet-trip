@@ -58,47 +58,66 @@ class edi_company_report_c1(orm.Model):
                 'data'
                 'empty_record'
         """
+        this_id = 1
         report = super(
             edi_company_report_c1, self).collect_future_order_data_report(
                 cr, uid, context=context)
             
-        company = self.get_module_company(cr, uid, 1, context=context)
+        company = self.get_module_company(cr, uid, this_id, context=context)
         if not company:
             return report
             
         # =====================================================================
         # XXX Data will be create with override:
         # =====================================================================
+        this_pool = self.pool.get('edi.company.c%s' % this_id)
+        trace = this_pool.trace
+        
         data = report['data']
 
         # Append this company data:
-        path = company.trip_import_folder
-        import pdb; pdb.set_trace()
+        path = os.path.expanduser(company.trip_import_folder)
         for root, folders, files in os.walk(path):
             for filename in files:
-                # Check file mode:
-                sign = +1 
+                # create or delete mode TODO
+                mode = this_pool.get_state_of_file(filename, []) # No forced
+                if mode == 'create':
+                    sign = -1  # Note: create order is negative for stock!
+                else:
+                    sign = +1  # TODO test!!
 
-                fullname = os.path.join(root, filename)
+                fullname = os.path.join(root, filename)                
                 order_file = open(fullname)
-                
-                deadline = '' # TODO
-                col = report['header'][deadline]
-
+                deadline = False
                 for row in order_file:
-                    default_code = 'Default code'
-                    name = 'Name'
-                    quantity = 0.0 # TODO 
+                    # Use only data row:
+                    if this_pool.is_an_invalid_row(row):
+                        continue
+
+                    # Deadline information:
+                    if not deadline:
+                        deadline = this_pool.format_date(
+                            row[trace['deadline'][0]: trace['deadline'][1]])
+
+                        # Define col position:
+                        if deadline < report['min']:
+                            col = 0
+                        elif deadline > report['max']:
+                            col = report['days'] - 1 # Go in last cell
+                        else:
+                            col = report['header'][deadline]
+
+                    # Extract used data:
+                    default_code = row[
+                        trace['detail_code'][0]: trace['detail_code'][1]]
+                    quantity = float(row[
+                        trace['detail_quantity'][0]: 
+                            trace['detail_quantity'][1]])
                     
                     if default_code not in data:
-                        data[default_code] = report.empty_record
+                        data[default_code] = report['empty'][:]
                     data[default_code][col] += sign * quantity    
-                    
-                        
-                    
+                order_file.close()
         return report
-
-
-
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
