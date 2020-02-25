@@ -294,8 +294,8 @@ class edi_company_report(orm.Model):
             
             # Account program:
             _('Esistenza'),
-            _('- Ordinato'),
-            _('= Disponibile'),
+            _('\'- Ordinato'),
+            _('\'= Disponibile'),
             
             # Number data:
             ]
