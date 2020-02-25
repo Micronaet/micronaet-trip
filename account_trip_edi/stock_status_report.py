@@ -212,24 +212,26 @@ class edi_company_report(orm.Model):
 
         # A. Stock satus:
         account_data = {}
+        import pdb; pdb.set_trace()
         for line in stock_status:
-            row = line.split(separator)
+            line = line.strip()
+            column = line.split(separator)
             
             # -----------------------------------------------------------------
             # Field:
             # -----------------------------------------------------------------
             # Description:
-            default_code = row[0]
-            name = row[1]
-            uom = row[2]
+            default_code = column[0]
+            name = column[1]
+            uom = column[2]
             
             # Quantity:
-            inventory_qty = clean_float(row[3])
-            load_qty = clean_float(row[4])
-            unload_qty = clean_float(row[5])
-            oc_e_qty = clean_float(row[6])
-            oc_s_qty = clean_float(row[7])
-            of_qty = clean_float(row[8])
+            inventory_qty = clean_float(column[3])
+            load_qty = clean_float(column[4])
+            unload_qty = clean_float(column[5])
+            oc_e_qty = clean_float(column[6])
+            oc_s_qty = clean_float(column[7])
+            of_qty = clean_float(column[8])
             
             # Calculated:
             available_qty = inventory_qty + load_qty - unload_qty - oc_e_qty \
