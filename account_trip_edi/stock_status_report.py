@@ -302,7 +302,7 @@ class edi_company_report(orm.Model):
             if default_code not in report['data']:
                 _logger.warning('No OF product in report: %s' % default_code)
                 continue
-            import pdb; pdb.set_trace()
+
             of_qty = float((column[3].strip() or '0').replace(',', '.'))
             of_delivery = column[4].strip()
             if not of_delivery:
@@ -314,6 +314,7 @@ class edi_company_report(orm.Model):
                 )
 
             # Define col position:
+            import pdb; pdb.set_trace()
             if deadline < report['min']:
                 col = 0
             elif deadline > report['max']:
@@ -321,6 +322,8 @@ class edi_company_report(orm.Model):
             else:
                 col = report['header'][deadline]
             report['data'][default_code][col] += of_qty    
+            
+            # TODO add detail data?
             
         # ---------------------------------------------------------------------
         # Excel file:
