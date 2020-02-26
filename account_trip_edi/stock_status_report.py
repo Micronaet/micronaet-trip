@@ -396,13 +396,14 @@ class edi_company_report(orm.Model):
             }
 
         col_width = [
-            15, 40, 5, 8, 8, 8, 8
+            3, 15, 40, 3, 8, 8, 8, 8
             # TODO appena date total
             ]
         col_width.extend([6 for item in range(context.get('report_days'))])            
 
         header = [
             # Product:
+            _('Neg.'),
             _('Codice'),
             _('Nome'),
             _('UM'),
@@ -436,6 +437,7 @@ class edi_company_report(orm.Model):
         excel_pool.write_xls_line(ws_name, row, [
             item[5:] for item in sorted(report['header'].keys())
             ], excel_format['header'], col=fixed_cols)
+        excel_pool.autofilter(ws_name, row, 0, row, 2)    
 
         # ---------------------------------------------------------------------        
         # Data
@@ -453,12 +455,14 @@ class edi_company_report(orm.Model):
                 name = uom = ''
                 of_qty = net_qty = oc_qty = start_qty = 0.0    
 
-            if self.transform_delta_record(start_qty, delta, excel_format):
+            has_negative = self.transform_delta_record(start_qty, delta, excel_format)    
+            if has_negative:
                 color = red
             else:
                 color = black
                 
             excel_pool.write_xls_line(ws_name, row, [
+                'S' if has_negative else 'N',
                 (default_code, color['text']),
                 (name, color['text']),
                 uom,
@@ -510,6 +514,7 @@ class edi_company_report(orm.Model):
         row += 2
         excel_pool.write_xls_line(
             ws_name, row, header, excel_format['header'])
+        excel_pool.autofilter(ws_name, row, 0, row, len(header)-1)    
 
         # ---------------------------------------------------------------------        
         # Data
