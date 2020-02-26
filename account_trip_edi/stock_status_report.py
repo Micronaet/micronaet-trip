@@ -155,8 +155,8 @@ class edi_company_report(orm.Model):
                 position = 0
             else:    
                 position = int(math.log10(number))
-            if position > 3:
-                position = 3
+            if position > 4:
+                position = 4
 
             return excel_format[mode][position]
             
@@ -302,6 +302,7 @@ class edi_company_report(orm.Model):
                 excel_pool.get_format('bg_red_number_1'),                    
                 excel_pool.get_format('bg_red_number_2'),                    
                 excel_pool.get_format('bg_red_number_3'),
+                excel_pool.get_format('bg_red_number_4'),
                 ],
 
             'heat_green': [
@@ -309,6 +310,7 @@ class edi_company_report(orm.Model):
                 excel_pool.get_format('bg_green_number_1'),                    
                 excel_pool.get_format('bg_green_number_2'),                    
                 excel_pool.get_format('bg_green_number_3'),
+                excel_pool.get_format('bg_green_number_4'),
                 ],
             }
 
