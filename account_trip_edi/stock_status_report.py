@@ -314,13 +314,12 @@ class edi_company_report(orm.Model):
                 )
 
             # Define col position:
-            import pdb; pdb.set_trace()
-            if deadline < report['min']:
+            if of_delivery < report['min']:
                 col = 0
-            elif deadline > report['max']:
+            elif of_delivery > report['max']:
                 col = report['days'] - 1 # Go in last cell
             else:
-                col = report['header'][deadline]
+                col = report['header'][of_delivery]
             report['data'][default_code][col] += of_qty    
             
             # TODO add detail data?
