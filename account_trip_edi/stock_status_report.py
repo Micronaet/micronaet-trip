@@ -290,6 +290,7 @@ class edi_company_report(orm.Model):
                 net_qty,
                 oc_qty,
                 available_qty,
+                of_qty,
                 ]
 
         # ---------------------------------------------------------------------
@@ -340,7 +341,7 @@ class edi_company_report(orm.Model):
             }
 
         col_width = [
-            15, 40, 5, 8, 8, 8
+            15, 40, 5, 8, 8, 8, 8
             # TODO appena date total
             ]
         col_width.extend([7 for item in range(context.get('report_days'))])            
@@ -354,7 +355,8 @@ class edi_company_report(orm.Model):
             # Account program:
             _('Mag.'),
             _('OC'),
-            _('Disp.'),
+            _('OF'),
+            _('Mag.-OC'),
             
             # Number data:
             ]
@@ -390,11 +392,11 @@ class edi_company_report(orm.Model):
             row +=1 
             delta = report['data'][default_code]
             try:
-                name, uom, net_qty, oc_qty, start_qty = \
+                name, uom, net_qty, oc_qty, start_qty, of_qty = \
                     account_data[default_code]
             except:
                 name = uom = ''
-                net_qty = oc_qty = start_qty = 0.0    
+                of_qty = net_qty = oc_qty = start_qty = 0.0    
 
             self.transform_delta_record(start_qty, delta, excel_format)
             
@@ -402,6 +404,7 @@ class edi_company_report(orm.Model):
                 default_code,
                 name,
                 uom,
+                (of_qty, black['number']),
                 (net_qty, black['number']),
                 (oc_qty, black['number']),
                 (start_qty, black['number']),
