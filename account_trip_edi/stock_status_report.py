@@ -344,7 +344,7 @@ class edi_company_report(orm.Model):
             15, 40, 5, 8, 8, 8, 8
             # TODO appena date total
             ]
-        col_width.extend([7 for item in range(context.get('report_days'))])            
+        col_width.extend([6 for item in range(context.get('report_days'))])            
 
         header = [
             # Product:
