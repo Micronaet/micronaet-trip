@@ -187,12 +187,12 @@ class edi_company_report(orm.Model):
             delta[col] = (new_qty, get_heat(excel_format, new_qty))
 
         # Format cell (not installed on Ubuntu 12.04 server:
-        locale.setlocale(locale.LC_ALL, 'it_IT')
-        for col in range(0, len(delta)):            
-            delta[col] = (
-                locale.format('%0.0f', delta[col][0], grouping=True),
-                delta[col][1],
-                )
+        #locale.setlocale(locale.LC_ALL, 'it_IT')
+        #for col in range(0, len(delta)):            
+        #    delta[col] = (
+        #        locale.format('%0.0f', delta[col][0], grouping=True),
+        #        delta[col][1],
+        #        )
             
             
     def generate_future_order_data_report(self, cr, uid, ids, context=None):
