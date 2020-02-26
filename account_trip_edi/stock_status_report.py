@@ -473,7 +473,7 @@ class edi_company_report(orm.Model):
         excel_pool.create_worksheet(ws_name, extension=extension)
         
         col_width = [
-            10, 22, 5, 12, 10, 4, 15, 8,
+            10, 22, 5, 12, 10, 4, 15, 8, 30,
             ]
 
         header = [
