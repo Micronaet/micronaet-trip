@@ -330,9 +330,9 @@ class edi_company_report(orm.Model):
                 default_code,
                 col,
                 'OF',
+                supplier,
                 '',
-                '',
-                '%s [%s]' % (number, supplier),
+                number,
                 of_delivery,
                 of_qty,
                 ])
