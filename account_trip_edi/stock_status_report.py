@@ -317,13 +317,19 @@ class edi_company_report(orm.Model):
                 )
 
             # Define col position:
+            comment = ''
             if of_delivery < report['min']:
-                col = 0
+                comment = 'Non usato (< min)'
+                col = -1
             elif of_delivery > report['max']:
+                comment = 'Messo ultima colonna (< max)'
                 col = report['days'] - 1 # Go in last cell
             else:
+                comment = 'Usato'
                 col = report['header'][of_delivery]
-            report['data'][default_code][col] += of_qty    
+                
+            if col >= 0:    
+                report['data'][default_code][col] += of_qty    
             
             # TODO add detail data?
             report['detail'].append([
@@ -335,6 +341,7 @@ class edi_company_report(orm.Model):
                 number,
                 of_delivery,
                 of_qty,
+                comment,
                 ])
             
         # ---------------------------------------------------------------------
@@ -478,6 +485,7 @@ class edi_company_report(orm.Model):
             _('Pos.'),
             _('Codice'),
             _('Q.'),
+            _('Commento'),
             ]
         excel_pool.column_width(ws_name, col_width)
 
@@ -501,7 +509,8 @@ class edi_company_report(orm.Model):
         # ---------------------------------------------------------------------
         for line in sorted(report['detail']):
             row +=1 
-            code, position, mode, company, filename, order, deadline, q = line
+            (code, position, mode, company, filename, order, deadline, q, 
+                comment) = line
             if mode == 'OF':
                 sign = 1
             else:
@@ -516,6 +525,7 @@ class edi_company_report(orm.Model):
                 (position, black['number']),
                 code,
                 (sign * q, black['number']),
+                comment,
                 ], black['text'])
                                         
         return excel_pool.return_attachment(cr, uid, ws_name, 

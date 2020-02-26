@@ -138,6 +138,7 @@ class edi_company_report_c1(orm.Model):
                         number,
                         deadline,
                         quantity,
+                        '', 
                         ])
                 order_file.close()
         return report
