@@ -187,6 +187,7 @@ class edi_company_report(orm.Model):
             delta[col] = (new_qty, get_heat(excel_format, new_qty))
 
         # Format cell:
+        import pdb; pdb.set_trace()
         locale.setlocale(locale.LC_ALL, '')
         for col in range(0, len(delta)):            
             delta[col] = (
