@@ -176,6 +176,7 @@ class edi_company_report(orm.Model):
 
             return excel_format[mode][position]
             
+        # Transform in progress total:    
         for col in range(0, len(delta)):
             if col:
                 previous_qty = delta[col - 1][0]
