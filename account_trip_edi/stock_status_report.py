@@ -353,10 +353,10 @@ class edi_company_report(orm.Model):
             _('UM'),
             
             # Account program:
+            _('OF'),
             _('Mag.'),
             _('OC'),
-            _('OF'),
-            _('Mag.-OC'),
+            _('Mag. - OC'),
             
             # Number data:
             ]
