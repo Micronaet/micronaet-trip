@@ -134,7 +134,7 @@ class edi_company_report_c1(orm.Model):
                         filename,
                         number,
                         deadline,
-                        col
+                        col,
                         default_code,
                         quantity,
                         ])
