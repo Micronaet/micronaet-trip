@@ -176,7 +176,6 @@ class edi_company_report(orm.Model):
 
             return excel_format[mode][position]
             
-        locale.setlocale(locale.LC_ALL, '')
         for col in range(0, len(delta)):
             if col:
                 previous_qty = delta[col - 1][0]
@@ -184,8 +183,17 @@ class edi_company_report(orm.Model):
                 previous_qty = start_qty
 
             new_qty = delta[col] + previous_qty # Append previous col
-            local_new_qty = locale.format('%0.2f', new_qty, grouping=True)
-            delta[col] = (local_new_qty, get_heat(excel_format, new_qty))
+            delta[col] = (new_qty, get_heat(excel_format, new_qty))
+
+        # Format cell:
+        locale.setlocale(locale.LC_ALL, '')
+        for col in range(0, len(delta)):            
+            local_new_qty = 
+            delta[col] = (
+                locale.format('%0.2f', delta[col][0], grouping=True),
+                delta[col][1],
+                )
+            
             
     def generate_future_order_data_report(self, cr, uid, ids, context=None):
         """ Overridable procedure for manage the report data collected in all 
