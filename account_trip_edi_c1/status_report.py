@@ -130,12 +130,12 @@ class edi_company_report_c1(orm.Model):
                    
                     # Detail data:
                     detail.append([
+                        default_code,
                         company.name,
                         filename,
                         number,
                         deadline,
                         col,
-                        default_code,
                         quantity,
                         ])
                 order_file.close()
