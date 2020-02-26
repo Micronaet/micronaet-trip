@@ -184,8 +184,8 @@ class edi_company_report(orm.Model):
                 previous_qty = start_qty
 
             new_qty = delta[col] + previous_qty # Append previous col
-            new_qty = locale.format('%0.2f', new_qty, grouping=True)
-            delta[col] = (new_qty, get_heat(excel_format, new_qty))
+            local_new_qty = locale.format('%0.2f', new_qty, grouping=True)
+            delta[col] = (local_new_qty, get_heat(excel_format, new_qty))
             
     def generate_future_order_data_report(self, cr, uid, ids, context=None):
         """ Overridable procedure for manage the report data collected in all 
