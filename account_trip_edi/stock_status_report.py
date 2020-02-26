@@ -292,7 +292,36 @@ class edi_company_report(orm.Model):
                 available_qty,
                 of_qty,
                 ]
+        
+        # B. Supplier order (upadte report database)       
+        for line in supplier_order:
+            line = line.strip()
+            column = line.split(separator)
+            
+            default_code = column[0].strip()
+            if default_code not in report['data']:
+                _logger.warning('No OF product in report: %s' % default_code)
+                continue
+            import pdb; pdb.set_trace()
+            of_qty = float((column[3].strip() or '0').replace(',', '.'))
+            of_delivery = column[4].strip()
+            if not of_delivery:
+                continue
+            of_delivery = '%s-%s-%s' % (
+                of_delivery[:4],
+                of_delivery[4:6],
+                of_delivery[6:8],                    
+                )
 
+            # Define col position:
+            if deadline < report['min']:
+                col = 0
+            elif deadline > report['max']:
+                col = report['days'] - 1 # Go in last cell
+            else:
+                col = report['header'][deadline]
+            report['data'][default_code][col] += of_qty    
+            
         # ---------------------------------------------------------------------
         # Excel file:
         # ---------------------------------------------------------------------
@@ -398,8 +427,7 @@ class edi_company_report(orm.Model):
                 name = uom = ''
                 of_qty = net_qty = oc_qty = start_qty = 0.0    
 
-            self.transform_delta_record(start_qty, delta, excel_format)
-            
+            self.transform_delta_record(start_qty, delta, excel_format)            
             excel_pool.write_xls_line(ws_name, row, [
                 default_code,
                 name,
