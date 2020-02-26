@@ -177,6 +177,7 @@ class edi_company_report(orm.Model):
             return excel_format[mode][position]
             
         # Transform in progress total:    
+        has_negative = False
         for col in range(0, len(delta)):
             if col:
                 previous_qty = delta[col - 1][0]
@@ -185,6 +186,8 @@ class edi_company_report(orm.Model):
 
             new_qty = delta[col] + previous_qty # Append previous col
             delta[col] = (new_qty, get_heat(excel_format, new_qty))
+            if not has_negative and new_qty < 0:
+                has_negative =True
 
         # Format cell (not installed on Ubuntu 12.04 server:
         locale.setlocale(locale.LC_ALL, '') # Default en_US
@@ -194,6 +197,7 @@ class edi_company_report(orm.Model):
                     ',', '.'), # XXX not work with Italian setup!
                 delta[col][1],
                 )
+        return has_negative        
             
             
     def generate_future_order_data_report(self, cr, uid, ids, context=None):
@@ -392,12 +396,14 @@ class edi_company_report(orm.Model):
             }
 
         col_width = [
-            15, 40, 5, 8, 8, 8, 8
+            3, 15, 40, 5, 8, 8, 8, 8
             # TODO appena date total
             ]
         col_width.extend([6 for item in range(context.get('report_days'))])            
 
         header = [
+            _('Neg.'),
+            
             # Product:
             _('Codice'),
             _('Nome'),
@@ -449,8 +455,10 @@ class edi_company_report(orm.Model):
                 name = uom = ''
                 of_qty = net_qty = oc_qty = start_qty = 0.0    
 
-            self.transform_delta_record(start_qty, delta, excel_format)            
+            has_negative = self.transform_delta_record(
+                start_qty, delta, excel_format)            
             excel_pool.write_xls_line(ws_name, row, [
+                'X' if has_negative else '',
                 default_code,
                 name,
                 uom,
@@ -465,7 +473,6 @@ class edi_company_report(orm.Model):
                 ws_name, row, delta, excel_format['header'], 
                 col=fixed_cols)
             
-
         # ---------------------------------------------------------------------        
         #                                Detail
         # ---------------------------------------------------------------------
