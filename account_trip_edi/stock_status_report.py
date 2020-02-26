@@ -448,7 +448,8 @@ class edi_company_report(orm.Model):
                 code,
                 (q, black['number']),
                 ], black['text'])
-                
+
+                                        
         return excel_pool.return_attachment(cr, uid, ws_name, 
             name_of_file='future_stock_status.xls', version='7.0', 
             php=True, context=context)
