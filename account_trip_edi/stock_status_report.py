@@ -502,6 +502,10 @@ class edi_company_report(orm.Model):
         for line in sorted(report['detail']):
             row +=1 
             code, position, mode, company, filename, order, deadline, q = line
+            if mode == 'OF':
+                sign = 1
+            else:
+                sign = -1
             excel_pool.write_xls_line(ws_name, row, [
                 company,
                 filename,
@@ -511,7 +515,7 @@ class edi_company_report(orm.Model):
                 deadline,
                 (position, black['number']),
                 code,
-                (-q, black['number']),
+                (sign * q, black['number']),
                 ], black['text'])
                                         
         return excel_pool.return_attachment(cr, uid, ws_name, 
