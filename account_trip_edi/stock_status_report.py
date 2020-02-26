@@ -24,6 +24,7 @@
 import os
 import sys
 import logging
+import locale
 import openerp
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
@@ -116,6 +117,10 @@ class edi_company_report(orm.Model):
             # -----------------------------------------------------------------
             # Sheet data:
             # -----------------------------------------------------------------
+            'negative': {
+                # Product with negative
+                },
+                
             'detail': [
                 # Detail line for check problems
                 ],
@@ -171,7 +176,7 @@ class edi_company_report(orm.Model):
 
             return excel_format[mode][position]
             
-            
+        locale.setlocale(locale.LC_ALL, '')
         for col in range(0, len(delta)):
             if col:
                 previous_qty = delta[col - 1][0]
@@ -179,6 +184,7 @@ class edi_company_report(orm.Model):
                 previous_qty = start_qty
 
             new_qty = delta[col] + previous_qty # Append previous col
+            new_qty = locale.format('%0.2f', new_qty, grouping=True)
             delta[col] = (new_qty, get_heat(excel_format, new_qty))
             
     def generate_future_order_data_report(self, cr, uid, ids, context=None):
@@ -449,7 +455,6 @@ class edi_company_report(orm.Model):
                 code,
                 (q, black['number']),
                 ], black['text'])
-
                                         
         return excel_pool.return_attachment(cr, uid, ws_name, 
             name_of_file='future_stock_status.xls', version='7.0', 
