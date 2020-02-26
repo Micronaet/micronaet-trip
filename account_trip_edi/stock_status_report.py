@@ -506,7 +506,7 @@ class edi_company_report(orm.Model):
                 company,
                 filename,
                 
-                move,
+                mode,
                 order,
                 deadline,
                 (position, black['number']),
