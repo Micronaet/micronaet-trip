@@ -439,7 +439,7 @@ class edi_company_report(orm.Model):
         # ---------------------------------------------------------------------
         for line in sorted(report['detail']):
             row +=1 
-            code, company, filename, order, deadline, position, q = line
+            code, position, company, filename, order, deadline, q = line
             excel_pool.write_xls_line(ws_name, row, [
                 company,
                 filename,
