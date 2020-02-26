@@ -74,6 +74,7 @@ class edi_company_report_c1(orm.Model):
         trace = this_pool.trace
         
         data = report['data']
+        detail = report['detail']
 
         # Append this company data:
         path = os.path.expanduser(company.trip_import_folder)
@@ -91,6 +92,7 @@ class edi_company_report_c1(orm.Model):
                 fullname = os.path.join(root, filename)                
                 order_file = open(fullname)
                 deadline = False
+                
                 for row in order_file:
                     # Use only data row:
                     if this_pool.is_an_invalid_row(row):
@@ -100,7 +102,9 @@ class edi_company_report_c1(orm.Model):
                     if not deadline:
                         deadline = this_pool.format_date(
                             row[trace['deadline'][0]: trace['deadline'][1]])
-
+                        number = row[
+                            trace['number'][0]: trace['number'][1]].strip()
+                        
                         # Define col position:
                         if deadline < report['min']:
                             col = 0
@@ -116,10 +120,24 @@ class edi_company_report_c1(orm.Model):
                     quantity = float(row[
                         trace['detail_quantity'][0]: 
                             trace['detail_quantity'][1]])
-                        
+
+                    # ---------------------------------------------------------
+                    # Report data:                        
+                    # ---------------------------------------------------------
                     if default_code not in data:
                         data[default_code] = report['empty'][:]
                     data[default_code][col] += sign * quantity    
+                   
+                    # Detail data:
+                    detail.append([
+                        company.name,
+                        filename,
+                        number,
+                        deadline,
+                        col
+                        default_code,
+                        quantity,
+                        ])
                 order_file.close()
         return report
 

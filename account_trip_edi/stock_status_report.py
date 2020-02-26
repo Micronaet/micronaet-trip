@@ -101,18 +101,29 @@ class edi_company_report(orm.Model):
         report = {
             'days': report_days,
 
+            # -----------------------------------------------------------------
             # Title:
+            # -----------------------------------------------------------------
             'title': 'Stampa progressivi di magazzino, data: %s' % now,
             
+            # -----------------------------------------------------------------
             # Header data:
+            # -----------------------------------------------------------------
             'header': {
                 # Data col: position
                 },
 
-            # Cell data:
+            # -----------------------------------------------------------------
+            # Sheet data:
+            # -----------------------------------------------------------------
+            'detail': [
+                # Detail line for check problems
+                ],
+
             'data': {
                 # Article record: [Q., data, list]
                 },
+                
             'empty': [0.0 for item in range(columns)]    
             }
         
@@ -271,7 +282,6 @@ class edi_company_report(orm.Model):
         # ---------------------------------------------------------------------
         extension = 'xlsx'
         ws_name = _('EDI stato magazzino')
-        
         excel_pool.create_worksheet(ws_name, extension=extension)
 
         #excel_pool.set_format(number_format='0.#0')
@@ -387,7 +397,58 @@ class edi_company_report(orm.Model):
                 ws_name, row, delta, excel_format['header'], 
                 col=fixed_cols)
             
+
+        # ---------------------------------------------------------------------        
+        #                                Detail
+        # ---------------------------------------------------------------------
+        ws_name = _('EDI dettaglio')
+        excel_pool.create_worksheet(ws_name, extension=extension)
         
+        col_width = [
+            15, 20, 15, 10, 5, 15, 10,
+            ]
+        header = [
+            _('Azienda'),
+            _('File'),
+            _('Ordine'),
+            _('Scadenza'),
+            _('Pos.'),
+            _('Codice'),
+            _('Q.'),
+            ]
+        excel_pool.column_width(ws_name, col_width)
+
+        # ---------------------------------------------------------------------        
+        # Title:
+        # ---------------------------------------------------------------------        
+        row = 0
+        excel_pool.write_xls_line(ws_name, row, (
+            'Dettaglio report', 
+            ), excel_format['title'])
+        
+        # ---------------------------------------------------------------------        
+        # Header:
+        # ---------------------------------------------------------------------        
+        row += 2
+        excel_pool.write_xls_line(
+            ws_name, row, header, excel_format['header'])
+
+        # ---------------------------------------------------------------------        
+        # Data
+        # ---------------------------------------------------------------------
+        for line in sorted(report['detail']):
+            row +=1 
+            code, company, filename, order, deadline, position, q = line
+            excel_pool.write_xls_line(ws_name, row, [
+                company,
+                filename,
+                order,
+                deadline,
+                (position, black['number']),
+                code,
+                (q, black['number']),
+                ], black['text'])
+                
         return excel_pool.return_attachment(cr, uid, ws_name, 
             name_of_file='future_stock_status.xls', version='7.0', 
             php=True, context=context)
