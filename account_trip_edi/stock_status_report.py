@@ -190,7 +190,7 @@ class edi_company_report(orm.Model):
         locale.setlocale(locale.LC_ALL, '')
         for col in range(0, len(delta)):            
             delta[col] = (
-                locale.format('%0.2f', delta[col][0], grouping=True),
+                locale.format('%0.0f', delta[col][0], grouping=True),
                 delta[col][1],
                 )
             
