@@ -132,6 +132,7 @@ class edi_company_report_c1(orm.Model):
                     detail.append([
                         default_code,
                         col,
+                        'OC',
                         company.name,
                         filename,
                         number,

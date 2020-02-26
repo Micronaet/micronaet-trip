@@ -305,6 +305,9 @@ class edi_company_report(orm.Model):
 
             of_qty = float((column[3].strip() or '0').replace(',', '.'))
             of_delivery = column[4].strip()
+            supplier = column[5].strip()
+            number =  column[6].strip()
+
             if not of_delivery:
                 continue
             of_delivery = '%s-%s-%s' % (
@@ -323,6 +326,16 @@ class edi_company_report(orm.Model):
             report['data'][default_code][col] += of_qty    
             
             # TODO add detail data?
+            report['detail'].append([
+                default_code,
+                col,
+                'OF',
+                '',
+                '',
+                '%s [%s]' % (number, supplier),
+                of_delivery,
+                of_qty,
+                ])
             
         # ---------------------------------------------------------------------
         # Excel file:
@@ -453,13 +466,14 @@ class edi_company_report(orm.Model):
         excel_pool.create_worksheet(ws_name, extension=extension)
         
         col_width = [
-            10, 22, 12, 10, 4, 15, 8,
+            10, 22, 5, 12, 10, 4, 15, 8,
             ]
 
         header = [
             _('Azienda'),
             _('File'),
-            _('Ordine'),
+            _('Tipo'),
+            _('Numero'),
             _('Scadenza'),
             _('Pos.'),
             _('Codice'),
@@ -487,15 +501,17 @@ class edi_company_report(orm.Model):
         # ---------------------------------------------------------------------
         for line in sorted(report['detail']):
             row +=1 
-            code, position, company, filename, order, deadline, q = line
+            code, position, mode, company, filename, order, deadline, q = line
             excel_pool.write_xls_line(ws_name, row, [
                 company,
                 filename,
+                
+                move,
                 order,
                 deadline,
                 (position, black['number']),
                 code,
-                (q, black['number']),
+                (-q, black['number']),
                 ], black['text'])
                                         
         return excel_pool.return_attachment(cr, uid, ws_name, 
