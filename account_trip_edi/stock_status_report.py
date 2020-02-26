@@ -187,10 +187,11 @@ class edi_company_report(orm.Model):
             delta[col] = (new_qty, get_heat(excel_format, new_qty))
 
         # Format cell (not installed on Ubuntu 12.04 server:
-        locale.setlocale(locale.LC_ALL, 'it_IT.UTF-8')
+        locale.setlocale(locale.LC_ALL, '') # Default en_US
         for col in range(0, len(delta)):            
             delta[col] = (
-                locale.format('%0.0f', delta[col][0], grouping=True),
+                locale.format('%0.0f', delta[col][0], grouping=True).replace(
+                    ',', '.'), # XXX not work with Italian setup!
                 delta[col][1],
                 )
             
