@@ -396,14 +396,12 @@ class edi_company_report(orm.Model):
             }
 
         col_width = [
-            3, 15, 40, 5, 8, 8, 8, 8
+            15, 40, 5, 8, 8, 8, 8
             # TODO appena date total
             ]
         col_width.extend([6 for item in range(context.get('report_days'))])            
 
         header = [
-            _('Neg.'),
-            
             # Product:
             _('Codice'),
             _('Nome'),
@@ -455,12 +453,14 @@ class edi_company_report(orm.Model):
                 name = uom = ''
                 of_qty = net_qty = oc_qty = start_qty = 0.0    
 
-            has_negative = self.transform_delta_record(
-                start_qty, delta, excel_format)            
+            if self.transform_delta_record(start_qty, delta, excel_format):
+                color = red
+            else:
+                color = black
+                
             excel_pool.write_xls_line(ws_name, row, [
-                'X' if has_negative else '',
-                default_code,
-                name,
+                (default_code, color['text']),
+                (name, color['text']),
                 uom,
                 (of_qty, black['number']),
                 (net_qty, black['number']),
