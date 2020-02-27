@@ -8,7 +8,16 @@
             <field name="model_id" ref="account_trip_edi.model_trip_edi_line"/>
             <field name="code">action = pool.get('trip.edi.line').load_edi_list(cr, uid, context.get('active_ids', []), context)</field>
             <field name="name">Reload EDI</field>
-        </record>  
+        </record> 
+        <record id="ir_trip_stock_status_server_action" model="ir.actions.server">
+            <field name="sequence" eval="5"/>
+            <field name="state">code</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="account_trip_edi.model_edi_company"/>
+            <field name="code">action = pool.get('edi.company').generate_future_order_data_report(cr, uid, False, context)</field>
+            <field name="name">Stampa progressivi di magazzino</field>
+        </record> 
+         
         
         <!--res.partner (inherit)-->
         <record model="ir.ui.view" id="view_res_partner_destination_form">
@@ -332,6 +341,7 @@
     <menuitem parent="account_trip.menu_trip_root" id="menu_trip_trip" name="EDI" sequence="20" groups="group_edi_manager,group_edi_operator"/>
          <menuitem parent="menu_trip_trip" id="menu_trip_view" name="View" sequence="20" action="action_trip_edi_line_view" />
              <menuitem parent="menu_trip_trip" id="menu_trip_trip_wizard" name="Refresh EDI order" sequence="10" action="ir_trip_edi_line_reload_server_action"/>
+             <menuitem parent="menu_trip_trip" id="menu_trip_stock_progression_wizard" name="Progressivi magazzino" sequence="10" action="ir_trip_stock_status_server_action"/>
 
              <menuitem parent="menu_trip_view" id="menu_trip_view_list" name="All orders" sequence="10" action="action_trip_edi_line_view_list"/>
              <menuitem parent="menu_trip_view" id="menu_trip_view_forceable" name="Order forceable" sequence="20" action="action_trip_edi_line_view"/>
