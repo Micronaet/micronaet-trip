@@ -432,7 +432,7 @@ class edi_company_report(orm.Model):
             }
 
         col_width = [
-            4, 25, 15, 40, 3, 8, 8, 8, 8
+            4, 10, 15, 40, 3, 8, 8, 8, 8
             # TODO appena date total
             ]
         col_width.extend([6 for item in range(context.get('report_days'))])            
@@ -499,8 +499,8 @@ class edi_company_report(orm.Model):
                 color = black
                 
             excel_pool.write_xls_line(ws_name, row, [
-                'S' if has_negative else 'N',
-                self.get_product_category(default_code),
+                ('S' if has_negative else 'N', color['text']),
+                (self.get_product_category(default_code), color['text']),
                 (default_code, color['text']),
                 (name, color['text']),
                 uom,
