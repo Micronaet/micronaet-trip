@@ -530,7 +530,7 @@ class edi_company_report(orm.Model):
                 
             # Comment:
             excel_pool.write_comment_line(
-                ws_name, row, report['comment'][default_code],
+                ws_name, row, report['comment'].get(default_code, []),
                 col=fixed_cols)
             
         # ---------------------------------------------------------------------        
