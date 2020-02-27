@@ -42,7 +42,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
-class edi_company_report_c1(orm.Model):
+class edi_company_report_this(orm.Model):
     ''' Manage more than one importation depend on company
     '''    
     _inherit = 'edi.company'
@@ -60,7 +60,7 @@ class edi_company_report_c1(orm.Model):
         """
         this_id = 1
         report = super(
-            edi_company_report_c1, self).collect_future_order_data_report(
+            edi_company_report_this, self).collect_future_order_data_report(
                 cr, uid, context=context)
             
         company = self.get_module_company(cr, uid, this_id, context=context)
