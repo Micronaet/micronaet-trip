@@ -109,7 +109,7 @@ class edi_company_report_this(orm.Model):
 
                 data[default_code][col] += sign * quantity    
                 data_comment[default_code][col] += '%s: %s q. %s\n' % (
-                    company.name, number, quantity)                    
+                    company_name, number, quantity)                    
                
                 # ---------------------------------------------------------
                 # Detail data:
