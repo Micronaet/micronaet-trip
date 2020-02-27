@@ -77,9 +77,9 @@ class edi_company_report_this(orm.Model):
 
         company_list = []            
         for order in this_pool.browse(cr, uid, order_ids, context=context):
-            company_name = order.connection_id.name
+            company_name = '[%s]' % order.connection_id.name
             if company_name not in company_list:
-                company_list.append('[%s]' % company_name)
+                company_list.append(company_name)
                 
             sign = +1 # always
             mode = 'create' # always            
