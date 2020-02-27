@@ -139,7 +139,8 @@ class edi_company_report(orm.Model):
             # -----------------------------------------------------------------
             # Title:
             # -----------------------------------------------------------------
-            'title': 'Stampa progressivi di magazzino, data: %s' % now,
+            'title': 
+                'Stampa progressivi di magazzino, data: %s - Aziende: ' % now,
             
             # -----------------------------------------------------------------
             # Header data:

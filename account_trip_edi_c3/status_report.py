@@ -66,6 +66,8 @@ class edi_company_report_c1(orm.Model):
         if not company:
             return report
 
+        report['title'] += '[%s]' % company.name
+
         # =====================================================================
         # XXX Data will be create with override:
         # =====================================================================

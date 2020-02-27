@@ -66,6 +66,8 @@ class edi_company_report_this(orm.Model):
         company = self.get_module_company(cr, uid, this_id, context=context)
         if not company:
             return report
+
+        report['title'] += '[%s]' % company.name
         
         # =====================================================================
         # Data will be create with override:
