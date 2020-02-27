@@ -42,7 +42,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
-class edi_company_report_c1(orm.Model):
+class edi_company_report_this(orm.Model):
     ''' Manage more than one importation depend on company
     '''    
     _inherit = 'edi.company'
@@ -58,22 +58,90 @@ class edi_company_report_c1(orm.Model):
                 'data'
                 'empty_record'
         """
+        this_id = 5
         report = super(
-            edi_company_report_c1, self).collect_future_order_data_report(
+            edi_company_report_this, self).collect_future_order_data_report(
                 cr, uid, context=context)
                 
-        company = self.get_module_company(cr, uid, 5, context=context)
+        company = self.get_module_company(cr, uid, this_id, context=context)
         if not company:
             return report
         
         # =====================================================================
-        # XXX Data will be create with override:
+        # Data will be create with override:
         # =====================================================================
-        # Append this company data:
+        this_pool = self.pool.get('edi.company.c%s' % this_id)
+        trace = this_pool.trace
         
+        data = report['data']
+        detail = report['detail']
+
+        # Append this company data:
+        path = os.path.expanduser(company.trip_import_folder)
+        for root, folders, files in os.walk(path):
+            for filename in files:
+                # create or delete mode TODO
+                mode = this_pool.get_state_of_file(filename, []) # No forced
+                if mode == 'create':
+                    sign = -1  # Note: create order is negative for stock!
+                else:
+                    _logger.warning('Not used: %s' % filename)
+                    continue   # TODO complete!!
+                    # forced only
+                    sign = +1
+
+                fullname = os.path.join(root, filename)                
+                order_file = open(fullname)
+                deadline = False
+                
+                for row in order_file:
+                    # Use only data row:
+                    if this_pool.is_an_invalid_row(row):
+                        continue
+
+                    # Deadline information:
+                    if not deadline:
+                        deadline = this_pool.format_date(
+                            row[trace['deadline'][0]: trace['deadline'][1]])
+                        number = row[
+                            trace['number'][0]: trace['number'][1]].strip()
+                        
+                        # Define col position:
+                        if deadline < report['min']:
+                            col = 0
+                        elif deadline > report['max']:
+                            col = report['days'] - 1 # Go in last cell
+                        else:
+                            col = report['header'][deadline]
+
+                    # Extract used data:
+                    default_code = row[
+                        trace['detail_code'][0]:
+                            trace['detail_code'][1]].strip()
+                    quantity = float(row[
+                        trace['detail_quantity'][0]: 
+                            trace['detail_quantity'][1]])
+
+                    # ---------------------------------------------------------
+                    # Report data:                        
+                    # ---------------------------------------------------------
+                    if default_code not in data:
+                        data[default_code] = report['empty'][:]
+                    data[default_code][col] += sign * quantity    
+                   
+                    # Detail data:
+                    detail.append([
+                        default_code,
+                        col,
+                        'OC',
+                        company.name,
+                        filename,
+                        number,
+                        deadline,
+                        quantity,
+                        '', 
+                        ])
+                order_file.close()
         return report
-
-
-
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
