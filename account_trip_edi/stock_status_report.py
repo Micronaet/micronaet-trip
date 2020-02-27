@@ -473,7 +473,12 @@ class edi_company_report(orm.Model):
                 col = report['header'][of_delivery]
                 
             if col >= 0:    
-                report['data'][default_code][col] += of_qty    
+                report['data'][default_code][col] += of_qty
+                report['comment'][default_code][col] += '%s: %s q. %s' % (
+                    supplier,
+                    number,
+                    of_qty,
+                    ) 
             
             # TODO add detail data?
             report['detail'].append([
