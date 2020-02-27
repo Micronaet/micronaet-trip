@@ -51,6 +51,40 @@ class edi_company_report(orm.Model):
     # -------------------------------------------------------------------------
     # Utility:
     # -------------------------------------------------------------------------
+    def get_product_category(self, default_code):
+        ''' Auto product category depend on start code
+        '''
+        code = default_code.upper()
+        start_1 = code[:1]
+        start_2 = code[:2]
+        start_3 = code[:3]
+
+        # -------------------------------------------------------------------------
+        # 3 char test start:
+        # -------------------------------------------------------------------------
+        if start_3 == 'SPA':
+            return _('Pasta') # 4
+        
+        # -------------------------------------------------------------------------
+        # 2 char test start:
+        # -------------------------------------------------------------------------
+        if start_2 in ('SP', 'SS'):
+            return _('Gelo')  # 1
+            
+        # -------------------------------------------------------------------------
+        # 1 char test start:
+        # -------------------------------------------------------------------------
+        if start_1 in 'CDFPSV':
+            return _('Gelo') # 1
+        elif start_1 in 'BILT': 
+            return _('Freschi') # 2
+        elif start_1 in 'HO':
+            return _('Secchi') # 3
+        elif start_1 in 'G': 
+            return _('Pasta') # 4
+        else: # Error list
+            return _('Non identificata') # 5
+        
     def get_module_company(self, cr, uid, module_id, context=None):
         """ Return browse object for company generated with the module
         """
@@ -486,7 +520,7 @@ class edi_company_report(orm.Model):
         excel_pool.create_worksheet(ws_name, extension=extension)
         
         col_width = [
-            10, 22, 5, 12, 10, 4, 15, 8, 30,
+            10, 22, 5, 12, 10, 4, 15, 15, 8, 30,
             ]
 
         header = [
@@ -496,6 +530,7 @@ class edi_company_report(orm.Model):
             _('Numero'),
             _('Scadenza'),
             _('Pos.'),
+            _('Categoria'),
             _('Codice'),
             _('Q.'),
             _('Commento'),
@@ -537,6 +572,7 @@ class edi_company_report(orm.Model):
                 order,
                 deadline,
                 (position, black['number']),
+                self.get_product_category(code),
                 code,
                 (sign * q, black['number']),
                 comment,
