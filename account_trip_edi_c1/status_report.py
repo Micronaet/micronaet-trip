@@ -76,6 +76,7 @@ class edi_company_report_this(orm.Model):
         trace = this_pool.trace
         
         data = report['data']
+        data_comment = report['comment']
         detail = report['detail']
 
         # Append this company data:
@@ -128,7 +129,11 @@ class edi_company_report_this(orm.Model):
                     # ---------------------------------------------------------
                     if default_code not in data:
                         data[default_code] = report['empty'][:]
+                        data_comment[default_code] = report['empty_comment'][:]
+
                     data[default_code][col] += sign * quantity    
+                    data_comment[default_code][col] += '%s: %s\n' % (
+                        company.name, number)                    
                    
                     # Detail data:
                     detail.append([

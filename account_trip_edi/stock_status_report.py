@@ -163,8 +163,14 @@ class edi_company_report(orm.Model):
             'data': {
                 # Article record: [Q., data, list]
                 },
+
+            'comment': {
+                # Article record: [Q., data, list]
+                },
                 
-            'empty': [0.0 for item in range(columns)]    
+            'empty': [0.0 for item in range(columns)],
+            'empty_comment': ['' for item in range(columns)],
+            
             }
         
         # Header creation:
@@ -384,7 +390,7 @@ class edi_company_report(orm.Model):
                 of_qty,
                 comment,
                 ])
-            
+
         # ---------------------------------------------------------------------
         # Excel file:
         # ---------------------------------------------------------------------
@@ -520,6 +526,11 @@ class edi_company_report(orm.Model):
             # Integration:
             excel_pool.write_xls_line(
                 ws_name, row, delta, excel_format['header'], 
+                col=fixed_cols)
+                
+            # Comment:
+            excel_pool.write_comment_line(
+                ws_name, row, report['data_comment'][default_code],
                 col=fixed_cols)
             
         # ---------------------------------------------------------------------        
