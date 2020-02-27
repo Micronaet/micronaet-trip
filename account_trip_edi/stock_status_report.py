@@ -171,13 +171,12 @@ class edi_company_report(orm.Model):
                 position = 0
             else:    
                 position = int(math.log10(number))
-            if position > 4:
+            if position > 4:            
                 position = 4
+            elif position < 0:
+                position = 0    
 
-            try:
-                return excel_format[mode][position]
-            except:
-                import pdb; pdb.set_trace()
+            return excel_format[mode][position]
             
         # Transform in progress total:    
         has_negative = False
