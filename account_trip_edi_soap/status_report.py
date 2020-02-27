@@ -81,7 +81,7 @@ class edi_company_report_this(orm.Model):
             if company_name not in company_list:
                 company_list.append(company_name)
                 
-            sign = +1 # always
+            sign = -1 # always
             mode = 'create' # always            
             deadline = order.delivery_date
             number = order.name
