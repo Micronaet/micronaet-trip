@@ -65,7 +65,6 @@ class edi_company_report_this(orm.Model):
         # =====================================================================
         # Data will be create with override:
         # =====================================================================
-        import pdb; pdb.set_trace()
         this_pool = self.pool.get('edi.soap.order')
 
         data = report['data']
@@ -79,7 +78,7 @@ class edi_company_report_this(orm.Model):
         company_list = []            
         for order in this_pool.browse(cr, uid, order_ids, context=context):
             company_name = order.connection_id.name
-            if connection_name not in company_list:
+            if company_name not in company_list:
                 company_list.append('[%s]' % company_name)
                 
             sign = +1 # always
