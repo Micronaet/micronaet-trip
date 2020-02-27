@@ -85,7 +85,7 @@ class edi_company_report_this(orm.Model):
             sign = -1 # always
             mode = 'create' # always            
             deadline = order.delivery_date
-            number = order.name
+            number = order.name.split('-')[0]
             status = order.status
             
             # Define col position:
