@@ -482,7 +482,8 @@ class edi_company_report(orm.Model):
         black = excel_format['black']
         red = excel_format['red']
         
-        for default_code in sorted(report['data']):
+        for default_code in sorted(report['data'], 
+                key=lambda c: (self.get_product_category(default_code), c)):
             row +=1 
             delta = report['data'][default_code]
             try:
@@ -492,7 +493,8 @@ class edi_company_report(orm.Model):
                 name = uom = ''
                 of_qty = net_qty = oc_qty = start_qty = 0.0    
 
-            has_negative = self.transform_delta_record(start_qty, delta, excel_format)    
+            has_negative = self.transform_delta_record(
+                start_qty, delta, excel_format)    
             if has_negative:
                 color = red
             else:
