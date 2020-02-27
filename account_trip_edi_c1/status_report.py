@@ -68,7 +68,7 @@ class edi_company_report_c1(orm.Model):
             return report
             
         # =====================================================================
-        # XXX Data will be create with override:
+        # Data will be create with override:
         # =====================================================================
         this_pool = self.pool.get('edi.company.c%s' % this_id)
         trace = this_pool.trace
