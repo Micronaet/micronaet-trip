@@ -126,7 +126,7 @@ class edi_company_report(orm.Model):
                         data_comment[default_code] = report['empty_comment'][:]
 
                     data[default_code][col] += sign * quantity    
-                    data_comment[default_code][col] += '%s: %s q. %s\n' % (
+                    data_comment[default_code][col] += '%s: OC %s q. %s\n' % (
                         company.name, number, quantity)                    
                    
                     # Detail data:
@@ -474,7 +474,7 @@ class edi_company_report(orm.Model):
                 
             if col >= 0:    
                 report['data'][default_code][col] += of_qty
-                report['comment'][default_code][col] += '%s: %s q. %s' % (
+                report['comment'][default_code][col] += '%s: OF %s q. %s' % (
                     supplier,
                     number,
                     of_qty,
