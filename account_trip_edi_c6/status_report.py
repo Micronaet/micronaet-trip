@@ -58,6 +58,7 @@ class edi_company_report_this(orm.Model):
                 'data'
                 'empty_record'
         """
+        import pdb; pdb.set_trace()
         this_id = 1
         report = super(
             edi_company_report_this, self).collect_future_order_data_report(
