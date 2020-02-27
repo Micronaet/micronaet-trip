@@ -482,8 +482,12 @@ class edi_company_report(orm.Model):
         black = excel_format['black']
         red = excel_format['red']
         
-        for default_code in sorted(report['data'], 
-                key=lambda c: (self.get_product_category(default_code), c)):
+        for default_code in sorted(
+                report['data'], 
+                key=lambda c: (
+                    self.get_product_category(c), 
+                    c,
+                    )):
             row +=1 
             delta = report['data'][default_code]
             try:
