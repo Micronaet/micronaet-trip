@@ -42,40 +42,27 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
-class edi_company_report_c1(orm.Model):
+class edi_company_report_this(orm.Model):
     ''' Manage more than one importation depend on company
     '''    
     _inherit = 'edi.company'
-    
+
     # -------------------------------------------------------------------------
     # OVERRIDE: Collect data for report
     # -------------------------------------------------------------------------
     def collect_future_order_data_report(self, cr, uid, context=None):
         """ Overridable procedure for manage the report data collected in all 
             company with active EDI company
-            Report: 
+            Report:
                 'header'
                 'data'
                 'empty_record'
         """
+        this_id = 2
         report = super(
-            edi_company_report_c1, self).collect_future_order_data_report(
+            edi_company_report_this, self).collect_future_order_data_report(
                 cr, uid, context=context)
-
-        company = self.get_module_company(cr, uid, 2, context=context)
-        if not company:
-            return report
-
-        report['title'] += '[%s]' % company.name
-                    
-        # =====================================================================
-        # XXX Data will be create with override:
-        # =====================================================================
-        # Append this company data:
-        
-        return report
-
-
-
-
+        return self.update_report_with_company_data(
+            cr, uid, this_id, report, context=context)
+             
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

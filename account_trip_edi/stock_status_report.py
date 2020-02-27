@@ -49,6 +49,103 @@ class edi_company_report(orm.Model):
     _inherit = 'edi.company'
 
     # -------------------------------------------------------------------------
+    # OVERRIDE: Collect data for report
+    # -------------------------------------------------------------------------
+    def update_report_with_company_data(
+            self, cr, uid, this_id, report, context=None):
+        """ Add data, data_comment, detail from edi_id passed 
+            Function call from company module to use internal object for
+            extract data
+        """
+        company = self.get_module_company(cr, uid, this_id, context=context)
+        if not company:
+            return report
+            
+        report['title'] += '[%s]' % company.name
+
+        # =====================================================================
+        # Data will be create with override:
+        # =====================================================================
+        this_pool = self.pool.get('edi.company.c%s' % this_id)
+        trace = this_pool.trace
+        
+        data = report['data']
+        data_comment = report['comment']
+        detail = report['detail']
+
+        # Append this company data:
+        path = os.path.expanduser(company.trip_import_folder)
+        for root, folders, files in os.walk(path):
+            for filename in files:
+                # create or delete mode TODO
+                mode = this_pool.get_state_of_file(filename, []) # No forced
+                if mode == 'create':
+                    sign = -1  # Note: create order is negative for stock!
+                else:
+                    _logger.warning('Not used: %s' % filename)
+                    continue   # TODO complete!!
+                    sign = +1
+
+                fullname = os.path.join(root, filename)                
+                order_file = open(fullname)
+                deadline = False
+                
+                for row in order_file:
+                    # Use only data row:
+                    if this_pool.is_an_invalid_row(row):
+                        continue
+
+                    # Deadline information:
+                    if not deadline:
+                        deadline = this_pool.format_date(
+                            row[trace['deadline'][0]: trace['deadline'][1]])
+                        number = row[
+                            trace['number'][0]: trace['number'][1]].strip()
+                        
+                        # Define col position:
+                        if deadline < report['min']:
+                            col = 0
+                        elif deadline > report['max']:
+                            col = report['days'] - 1 # Go in last cell
+                        else:
+                            col = report['header'][deadline]
+
+                    # Extract used data:
+                    default_code = row[
+                        trace['detail_code'][0]:
+                            trace['detail_code'][1]].strip()
+                    quantity = float(row[
+                        trace['detail_quantity'][0]: 
+                            trace['detail_quantity'][1]])
+
+                    # ---------------------------------------------------------
+                    # Report data:                        
+                    # ---------------------------------------------------------
+                    if default_code not in data:
+                        data[default_code] = report['empty'][:]
+                        data_comment[default_code] = report['empty_comment'][:]
+
+                    data[default_code][col] += sign * quantity    
+                    data_comment[default_code][col] += '%s: %s q. %s\n' % (
+                        company.name, number, quantity)                    
+                   
+                    # Detail data:
+                    detail.append([
+                        default_code,
+                        col,
+                        'OC',
+                        company.name,
+                        filename,
+                        number,
+                        deadline,
+                        quantity,
+                        '', 
+                        ])
+                order_file.close()
+        return report
+
+
+    # -------------------------------------------------------------------------
     # Utility:
     # -------------------------------------------------------------------------
     def get_product_category(self, default_code):
@@ -530,7 +627,7 @@ class edi_company_report(orm.Model):
                 
             # Comment:
             excel_pool.write_comment_line(
-                ws_name, row, report['comment'].get(default_code, []),
+                ws_name, row, report['comment'].get(default_code, []), # TODO!!!!!
                 col=fixed_cols)
             
         # ---------------------------------------------------------------------        
