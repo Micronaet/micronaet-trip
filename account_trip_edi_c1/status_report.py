@@ -68,8 +68,6 @@ class edi_company_report_this(orm.Model):
             return report
             
         report['title'] += '[%s]' % company.name
-        
-        report['title'] += '[%s]' % company.name
 
         # =====================================================================
         # Data will be create with override:
