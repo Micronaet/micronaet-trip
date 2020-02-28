@@ -344,6 +344,15 @@ class edi_company_report(orm.Model):
         """ Overridable procedure for manage the report data collected in all 
             company with active EDI company
         """
+        def clean_header_date(date):
+            """ Clean data in italian mode
+            """
+            date_part = date.split('-')
+            return '%s/%s' % (
+                date_part[2],
+                date_part[1],
+                )
+            
         def clean_float(value):
             """ Clean float from csv file
             """
@@ -598,10 +607,12 @@ class edi_company_report(orm.Model):
         row += 2
         excel_pool.write_xls_line(
             ws_name, row, header, excel_format['header'])
+        
         # Integration:
         excel_pool.write_xls_line(ws_name, row, [
-            item[5:] for item in sorted(report['header'].keys())
+            clean_header_date(item) for item in sorted(report['header'].keys())
             ], excel_format['header'], col=fixed_cols)
+
         excel_pool.autofilter(ws_name, row, 0, row, 2)    
         #excel_pool.freeze_panes(ws_name, row + 1, 3) # Lock row / col
 
