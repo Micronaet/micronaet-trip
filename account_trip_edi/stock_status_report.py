@@ -652,8 +652,7 @@ class edi_company_report(orm.Model):
                 
             # Integration:
             excel_pool.write_xls_line(
-                ws_name, row, delta, excel_format['header'], 
-                col=fixed_cols)
+                ws_name, row, delta, col=fixed_cols)
                 
             # Comment: # TODO
             excel_pool.write_comment_line(
