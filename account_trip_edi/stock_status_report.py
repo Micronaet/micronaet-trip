@@ -584,6 +584,7 @@ class edi_company_report(orm.Model):
             item[5:] for item in sorted(report['header'].keys())
             ], excel_format['header'], col=fixed_cols)
         excel_pool.autofilter(ws_name, row, 0, row, 2)    
+        excel_pool.freeze_panes(row, 0) # Lock title row
 
         # ---------------------------------------------------------------------        
         # Data
@@ -630,7 +631,7 @@ class edi_company_report(orm.Model):
                 ws_name, row, delta, excel_format['header'], 
                 col=fixed_cols)
                 
-            # Comment:
+            # Comment: # TODO
             excel_pool.write_comment_line(
                 ws_name, row, report['comment'].get(default_code, []), # TODO!!!!!
                 col=fixed_cols)
