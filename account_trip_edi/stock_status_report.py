@@ -640,7 +640,7 @@ class edi_company_report(orm.Model):
             # OF comment:
             if supplier_comment.get(default_code):
                 excel_pool.write_comment(
-                    row, supplier_col, supplier_comment[default_code])
+                    ws_name, row, supplier_col, supplier_comment[default_code])
                 
             # Integration:
             excel_pool.write_xls_line(
