@@ -675,6 +675,7 @@ class edi_company_report(orm.Model):
         excel_pool.write_xls_line(
             ws_name, row, header, excel_format['header'])
         excel_pool.autofilter(ws_name, row, 0, row, len(header)-1)    
+        excel_pool.freeze_panes(ws_name, row + 1, 0) # Lock row
 
         # ---------------------------------------------------------------------        
         # Data
