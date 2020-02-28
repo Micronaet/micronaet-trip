@@ -326,7 +326,7 @@ class edi_company_report(orm.Model):
 
             new_qty = delta[col] + previous_qty # Append previous col
             delta[col] = (new_qty, get_heat(excel_format, new_qty))
-            if not has_negative and new_qty < 0:
+            if not has_negative and new_qty <= 0:
                 has_negative =True
 
         # Format cell (not installed on Ubuntu 12.04 server:
