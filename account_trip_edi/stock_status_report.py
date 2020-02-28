@@ -432,7 +432,7 @@ class edi_company_report(orm.Model):
             # -----------------------------------------------------------------
             if oc_qty and default_code not in report['data']:
                 report['data'][default_code] = report['empty'][:]
-                report['data_comment'][default_code] = \
+                report['comment'][default_code] = \
                     report['empty_comment'][:]
 
             account_data[default_code] = [
