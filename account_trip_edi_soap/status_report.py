@@ -66,14 +66,36 @@ class edi_company_report_this(orm.Model):
         # Data will be create with override:
         # =====================================================================
         this_pool = self.pool.get('edi.soap.order')
+        connection_pool = self.pool.get('edi.soap.connection')
 
         data = report['data']
         data_comment = report['comment']
         detail = report['detail']
 
+        # ---------------------------------------------------------------------        
+        # Check if there's some filename exported
+        # ---------------------------------------------------------------------        
+        connection_ids = connection_pool.search(cr, uid, [], context=context)
+        exported_files = []
+        for connection in connection_pool.browse(
+                cr, uid, connection_ids, context=context):
+            path = connection.order_root
+            for root, folders, files in os.walk(path):
+                for filename in files:
+                    exported_files.append(filename)
+                break
+        _logger.warning('Found SOAP order not imported: %s' % (
+            exported_files, ))        
+
         order_ids = this_pool.search(cr, uid, [
+            '|',
+            # File not exported:
+            ('filename', '=', False),
+            # File exported not in account:
+            ('filename', 'in', exported_files),
+
+            # Not used for now:
             #('company_order', '=', False),
-            ('filename', '=', False), # TODO correct? case Account not import!
             ], context=context)
 
         company_list = []            
