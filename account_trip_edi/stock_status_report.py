@@ -638,7 +638,7 @@ class edi_company_report(orm.Model):
                 ], black['text'])
             
             # OF comment:
-            if supplier_comment[default_code]:
+            if supplier_comment.get(default_code):
                 excel_pool.write_comment(
                     row, supplier_col, supplier_comment[default_code])
                 
