@@ -460,7 +460,7 @@ class edi_company_report(orm.Model):
             line = line.strip()
             column = line.split(separator)
             
-            default_code = column[0].strip()
+            default_code = column[0].strip()[:11] # XXX Max parent length
             if default_code not in supplier_comment:
                 supplier_comment[default_code] = ''
 
