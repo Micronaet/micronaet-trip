@@ -437,12 +437,16 @@ class edi_company_report(orm.Model):
                 of_qty,
                 ]
         
-        # B. Supplier order (upadte report database)       
+        # B. Supplier order (upadte report database)  
+        supplier_comment = {}     
         for line in supplier_order:
             line = line.strip()
             column = line.split(separator)
             
             default_code = column[0].strip()
+            if default_code not in supplier_comment:
+                supplier_comment[default_code] = ''
+
             if default_code not in report['data']:
                 _logger.warning('No OF product in report: %s' % default_code)
                 continue
@@ -451,14 +455,19 @@ class edi_company_report(orm.Model):
             of_delivery = column[4].strip()
             supplier = column[5].strip()
             number =  column[6].strip()
+            if of_delivery:
+                of_delivery = '%s-%s-%s' % (
+                    of_delivery[:4],
+                    of_delivery[4:6],
+                    of_delivery[6:8],                    
+                    )
 
+            # Add comment for cell:
+            supplier_comment[default_code] += '[%s: %s (prev. %s)] q. %s\n' % (
+                supplier, number, of_delivery, of_qty,
+                )
             if not of_delivery:
                 continue
-            of_delivery = '%s-%s-%s' % (
-                of_delivery[:4],
-                of_delivery[4:6],
-                of_delivery[6:8],                    
-                )
 
             # Define col position:
             comment = ''
@@ -555,14 +564,16 @@ class edi_company_report(orm.Model):
             _('UM'),
             
             # Account program:
-            _('OF'),
+            'OF',
             _('Mag.'),
             _('OC'),
             _('Mag.-OC'),
             
             # Number data:
             ]
+        
         fixed_cols = len(header)
+        supplier_col = header.index('OF')
         excel_pool.column_width(ws_name, col_width)
 
         # ---------------------------------------------------------------------        
@@ -625,6 +636,11 @@ class edi_company_report(orm.Model):
                 (oc_qty, black['number']),
                 (start_qty, black['number']),
                 ], black['text'])
+            
+            # OF comment:
+            if supplier_comment[default_code]
+                excel_pool.write_comment(
+                    row, supplier_col, supplier_comment[default_code])
                 
             # Integration:
             excel_pool.write_xls_line(
