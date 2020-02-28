@@ -541,7 +541,7 @@ class edi_company_report(orm.Model):
             }
 
         col_width = [
-            4, 10, 15, 40, 3, 8, 8, 8, 8
+            4, 8, 11, 40, 2, 6, 6, 6, 6
             # TODO appena date total
             ]
         col_width.extend([6 for item in range(context.get('report_days'))])            
@@ -558,7 +558,7 @@ class edi_company_report(orm.Model):
             _('OF'),
             _('Mag.'),
             _('OC'),
-            _('Mag. - OC'),
+            _('Mag.-OC'),
             
             # Number data:
             ]
