@@ -299,9 +299,9 @@ class edi_company_report(orm.Model):
             """
             import math
 
-            if number >= 0:
+            if number > 0:
                 mode = 'heat_green'
-            else:
+            else:  # <=0
                 number = -number
                 mode = 'heat_red'
             
