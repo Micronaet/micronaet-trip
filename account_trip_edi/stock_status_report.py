@@ -427,6 +427,14 @@ class edi_company_report(orm.Model):
             oc_qty = oc_e_qty + oc_s_qty # XXX OF added in real columns
             available_qty = net_qty - oc_qty
             
+            # -----------------------------------------------------------------
+            # Statup data for Account OC present:
+            # -----------------------------------------------------------------
+            if oc_qty and default_code not in report['data']:
+                report['data'][default_code] = report['empty'][:]
+                report['data_comment'][default_code] = \
+                    report['empty_comment'][:]
+
             account_data[default_code] = [
                 name,
                 uom,
@@ -437,7 +445,7 @@ class edi_company_report(orm.Model):
                 of_qty,
                 ]
         
-        # B. Supplier order (upadte report database)  
+        # B. Supplier order (update report database)  
         supplier_comment = {}     
         for line in supplier_order:
             line = line.strip()
@@ -595,7 +603,7 @@ class edi_company_report(orm.Model):
             item[5:] for item in sorted(report['header'].keys())
             ], excel_format['header'], col=fixed_cols)
         excel_pool.autofilter(ws_name, row, 0, row, 2)    
-        excel_pool.freeze_panes(ws_name, row + 1, 3) # Lock row / col
+        #excel_pool.freeze_panes(ws_name, row + 1, 3) # Lock row / col
 
         # ---------------------------------------------------------------------        
         # Data
