@@ -558,14 +558,14 @@ class edi_company_report(orm.Model):
             }
 
         col_width = [
-            4, 8, 11, 40, 2, 6, 6, 6, 6
+            6, 8, 11, 40, 2, 6, 6, 6, 6
             # TODO appena date total
             ]
         col_width.extend([6 for item in range(context.get('report_days'))])            
 
         header = [
             # Product:
-            _('Neg.'),
+            _('Stato'),
             _('Categoria'),
             _('Codice'),
             _('Nome'),
@@ -634,7 +634,7 @@ class edi_company_report(orm.Model):
                 color = black
                 
             excel_pool.write_xls_line(ws_name, row, [
-                ('S' if has_negative else 'N', color['text']),
+                ('Pos.' if has_negative else 'Neg.', color['text']),
                 (self.get_product_category(default_code), color['text']),
                 (default_code, color['text']),
                 (name, color['text']),
