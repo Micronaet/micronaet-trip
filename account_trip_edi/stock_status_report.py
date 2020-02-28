@@ -634,7 +634,7 @@ class edi_company_report(orm.Model):
                 color = black
                 
             excel_pool.write_xls_line(ws_name, row, [
-                ('Pos.' if has_negative else 'Neg.', color['text']),
+                ('Neg.' if has_negative else 'Pos.', color['text']),
                 (self.get_product_category(default_code), color['text']),
                 (default_code, color['text']),
                 (name, color['text']),
