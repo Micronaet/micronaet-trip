@@ -463,8 +463,8 @@ class edi_company_report(orm.Model):
                     )
 
             # Add comment for cell:
-            supplier_comment[default_code] += '[%s: %s (prev. %s)] q. %s\n' % (
-                supplier, number, of_delivery, of_qty,
+            supplier_comment[default_code] += '[%s: %s (il %s)] q. %s\n' % (
+                supplier, number, of_delivery or '?', of_qty,
                 )
             if not of_delivery:
                 continue
