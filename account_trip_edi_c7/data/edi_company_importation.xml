@@ -4,7 +4,7 @@
     <!--Add element for choose importation type-->
     <record id="importatione_account_trip_edi_c7" model="edi.company.importation">
         <field name="name">Company 7</field>
-        <field name="code">MSC</field>
+        <field name="code">FAB</field>
         <field name="note">Specific importation for company 7</field>
         <field name="object">edi.company.c7</field>
     </record>             
