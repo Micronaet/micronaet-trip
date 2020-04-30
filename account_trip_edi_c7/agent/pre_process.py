@@ -68,42 +68,16 @@ def clean_text(text, length, uppercase=False, error=None, truncate=False):
         return text.upper()
     return text    
 
-def clean_date(italian_date, separator='', out_format='iso', error=None):
+def clean_date(date, error=None):
     ''' Return clean text with limit cut
         Log in error if over length
     '''
     if error is None:
         error = []
-    italian_date = italian_date.split(' ')[0] # remove hour block
-    if len(italian_date) != 10:
-        error.append('Error not italian date: %s' % italian_date)
-        # not stopped
-    if out_format == 'iso': 
-        return '%s%s%s%s%s' % (
-            italian_date[-4:],
-            separator,
-            italian_date[3:5],
-            separator,        
-            italian_date[:2],
-            )
-    elif out_format == 'italian': 
-        return '%s%s%s%s%s' % (
-            italian_date[:2],
-            separator,
-            italian_date[3:5],
-            separator,        
-            italian_date[-4:],
-            )
-    elif out_format == 'english': 
-        return '%s%s%s%s%s' % (
-            italian_date[3:5],
-            separator,
-            italian_date[:2],
-            separator,        
-            italian_date[-4:],
-            )
-    else: # incorrect format:        
-        return italian_date # nothing todo
+    date = date or ''
+    if len(date) != 8:
+        error.append('Error not date: %s' % date)
+    return date
 
 def clean_float(value, length, decimal=3, separator='.', error=None):
     ''' Clean float and return float format 
@@ -113,6 +87,7 @@ def clean_float(value, length, decimal=3, separator='.', error=None):
     try:    
         value = value.replace(',', '.')    
         float_value = float(value.strip())
+        float_value = float_value / (10 ^ decimal)
     except:
         error.append('Not a float: %s' % value)
         float_value = 0.0
@@ -219,6 +194,17 @@ for root, dirs, files in os.walk(in_path):
 
     for f in files:
         file_part = f.split('_')
+        if f[:2] = 'OF':
+            command = 'NEW'
+        elif f[:2] = 'CF':
+            command = 'UPD'
+        else:
+            log_on_file(
+                'File %s unmanaged [%s]' % (f, company), 
+                mode='ERROR', 
+                file_list=[f_in_log, f_out_log])
+            continue
+            
         command = (file_part[2][:3]).upper() # New, Upd, Can
 
         # Fullname needed:
@@ -233,7 +219,7 @@ for root, dirs, files in os.walk(in_path):
         file_out = os.path.join(
             out_path, '%s' % (
                 '%s_%s' % (create_date, f),
-                )) # TODO change name
+                ))  # TODO change name
         
         # ---------------------------------------------------------------------
         # Read input file:
@@ -247,6 +233,9 @@ for root, dirs, files in os.walk(in_path):
             file_list=[f_in_log, f_out_log])        
         for line in f_in:
             row = line.split(separator)
+            if line[:2] in ('TM', 'FM'):
+                # Not used (start and end line)
+                continue
             if len(row) != tot_col:
                 log_on_file(
                     'Different number columns: %s [%s]' % (file_in, company),
@@ -256,35 +245,37 @@ for root, dirs, files in os.walk(in_path):
             # -----------------------------------------------------------------
             # Read fields:
             # -----------------------------------------------------------------
-            date = create_date[:8] # From create date
-            
-            deadline = clean_date(row[0], separator='', out_format='iso', 
+            date = create_date[:8] # From create date            
+            deadline = clean_date(row[3], separator='', out_format='iso', 
                 error=error)
             
             # Char:
             code = clean_text(row[1], 9, error=error)
-            cook_center = clean_text(row[2], 110, error=error)[:60]# XXX Trunc
-            address = clean_text(row[3], 60, error=error)
-            cap = clean_text(row[4], 5, error=error) # XXX Check
-            city = clean_text(row[5], 60, error=error) # XXX Check
-            province = clean_text(row[6], 4, uppercase=True, error=error)
-            order = clean_text(row[7], 10, error=error)
-            default_code = clean_text(row[8], 16, uppercase=True, error=error)
+            cook_center = '%s-%s' % (
+                clean_text(row[1], 20, error=error)
+                clean_text(row[2], 20, error=error)
+                )[:60]  # XXX Trunc
+            address = ''  # clean_text(row[3], 60, error=error)
+            cap = ''  # clean_text(row[4], 5, error=error) # XXX Check
+            city = ''  # clean_text(row[5], 60, error=error) # XXX Check
+            province = ''  # clean_text(row[6], 4, uppercase=True, error=error)
+            order = clean_text(row[4], 15, error=error)  # TODO different
+            default_code = clean_text(row[10], 16, uppercase=True, error=error)
             default_code_supplier = clean_text(
-                row[9], 16, uppercase=True, error=error)
-            name = clean_text(row[10], 60, error=error, truncate=True)
-            um = clean_text(row[11], 2, uppercase=True, error=error)
+                row[6], 16, uppercase=True, error=error)
+            name = clean_text(row[11], 60, error=error, truncate=True)
+            um = clean_text(row[12], 2, uppercase=True, error=error)
             
             # Float:
-            quantity = clean_float(row[12], 15, 2, error=error)
-            price = clean_float(row[13], 15, 3, error=error)
-            cost = clean_float(row[14], 15, 3, error=error)
+            quantity = clean_float(row[13], 15, 3, error=error)
+            price = '' # clean_float(row[13], 15, 3, error=error)
+            cost = '' # clean_float(row[14], 15, 3, error=error)
 
             # -----------------------------------------------------------------
             # Convert row input file:
             # -----------------------------------------------------------------
             row_out.append(            
-                '%3s|%3s|%-8s|%-9s|%-60s|%-60s|%-5s|%-60s|%-4s|%-10s|%-16s|'
+                '%3s|%3s|%-8s|%-9s|%-60s|%-60s|%-5s|%-60s|%-4s|%-15s|%-16s|'
                 '%-16s|%-60s|%-2s|%-15s|%-15s|%-15s|%-8s\r\n' % (
                     # Header:
                     company, # depend on parameter
@@ -296,7 +287,7 @@ for root, dirs, files in os.walk(in_path):
                     cap,
                     city,
                     province,
-                    order,
+                    order,  # 15
                     
                     # Row:
                     default_code,
@@ -323,7 +314,10 @@ for root, dirs, files in os.walk(in_path):
         # Convert file:
         f_out = open(file_out, 'w')
         
-        for line in sorted(row_out, key=lambda x: sort_line(x)):
+        # sorted_row = sorted(row_out, key=lambda x: sort_line(x))  # TODO
+        sorted_row = row_out
+        
+        for line in sorted_row:
             f_out.write(line)
         f_out.close()
         
