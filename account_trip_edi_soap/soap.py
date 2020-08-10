@@ -98,7 +98,8 @@ class EdiSoapConnection(orm.Model):
     def _get_error_status(self, status_code):
         ''' Return error comment:
         '''
-        return self._response_status.get(status_code, 'Errore non gestito')
+        return self._response_status.get(
+            status_code, 'Errore non gestito: %s' % status_code)
         
     def _get_soap_service(self, cr, uid, ids, wsdl_root=False, namespace=False, 
             context=None):
