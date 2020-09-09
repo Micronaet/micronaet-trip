@@ -19,24 +19,8 @@
 #
 ###############################################################################
 
-import os
-import sys
 import logging
-import openerp
-import openerp.netsvc as netsvc
-import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from openerp import SUPERUSER_ID
-from openerp import tools
-from openerp.tools.translate import _
-from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
-    DEFAULT_SERVER_DATETIME_FORMAT,
-    DATETIME_FORMATS_MAP,
-    float_compare)
-
 
 _logger = logging.getLogger(__name__)
 
@@ -54,21 +38,21 @@ class edi_company_c1(orm.Model):
     # -------------------------------------------------------------------------
     trace = {
         'number': (19, 28),
-        'date': (29, 37), # 8
-        'deadline': (45, 53), #8
-        'customer': (1545, 1645), # 100
-        'detail_code': (2356, 2391), # 35
-        'detail_description': (2531, 2631), # 100
-        'detail_um': (2641, 2644), # 3
-        'detail_quantity': (2631, 2641), # 10
-        'detail_price': (2877, 2887), # 10
-        'detail_total': (2907, 2917), # 10
+        'date': (29, 37),  # 8
+        'deadline': (45, 53),  # 8
+        'customer': (1545, 1645),  # 100
+        'detail_code': (2356, 2391),  # 35
+        'detail_description': (2531, 2631),  # 100
+        'detail_um': (2641, 2644),  # 3
+        'detail_quantity': (2631, 2641),  # 10
+        'detail_price': (2877, 2887),  # 10
+        'detail_total': (2907, 2917),  # 10
 
         # Destination blocks:
-        'destination_facility': (871, 906), # 35 facility
-        'destination_cost': (253, 283), # 30 cost
-        'destination_site': (1189, 1224), # 35 site
-        'destination_description': (1259, 1359) # 100 description
+        'destination_facility': (871, 906),  # 35 facility
+        'destination_cost': (253, 283),  # 30 cost
+        'destination_site': (1189, 1224),  # 35 site
+        'destination_description': (1259, 1359)  # 100 description
         }
 
     def is_an_invalid_row(self, row):
@@ -86,14 +70,14 @@ class edi_company_c1(orm.Model):
                 00 for create order ELIORD
                 10 for delete order ELICHG
         """
-        return "%s-%s-%s %s:%s:%s.%s" % (
-            file_in[6:10],   # Year
+        return '%s-%s-%s %s:%s:%s.%s' % (
+            file_in[6:10],  # Year
             file_in[10:12],  # Month
             file_in[12:14],  # Day
             file_in[14:16],  # Hour
             file_in[16:18],  # Minute
             file_in[18:20],  # Second
-            "00" if file_in.startswith("ELIORD") else "10" # Millisecond
+            '00' if file_in.startswith('ELIORD') else '10'  # Millisecond
             )
 
     def get_state_of_file(self, file_in, forced_list):
@@ -101,14 +85,15 @@ class edi_company_c1(orm.Model):
         """
         if file_in in forced_list: # Forced (pickle file)
             return 'forced'
-        elif file_in.startswith("ELIORD") or file_in.startswith("ELIURG"):
+        elif file_in.startswith('ELIORD') or file_in.startswith('ELIURG'):
             return 'create'
         else:
-            return 'delete' # Update file
+            return 'delete'  # Update file
 
     def get_destination(self, facility, cost, site):
-        """ Mask for code destination"""
-        return "[%s|%s|%s]" % (facility, cost, site)
+        """ Mask for code destination
+        """
+        return '[%s|%s|%s]' % (facility, cost, site)
 
     def get_destination_id(self, cr, uid, facility, cost, site, context=None):
         """ Get 3 parameters for destination and return ID get from res.partner
@@ -116,7 +101,7 @@ class edi_company_c1(orm.Model):
         """
         # The 3 part of destination, in importation, are stored in 2 fields
         return self.pool.get('res.partner').search_supplier_destination(
-            cr, uid, facility, "%s%s" % (cost, site), context=context)
+            cr, uid, facility, '%s%s' % (cost, site), context=context)
 
     def get_priority(self, cr, uid, file_in):
         """ Return priority value depend on file name
@@ -131,7 +116,8 @@ class edi_company_c1(orm.Model):
         """
         return value
 
-    def format_float(self, value, decimal=3, with_separator=False, separator='.'):
+    def format_float(self, value, decimal=3, with_separator=False,
+                     separator='.'):
         """ EDI float format
         """
         return value
@@ -139,12 +125,9 @@ class edi_company_c1(orm.Model):
     def format_date(self, value, date_format='ISO'):
         """ EDI file date format YYYYMMDD
         """
-        return "%s-%s-%s" % (value[:4], value[4:6], value[6:8])
+        return '%s-%s-%s' % (value[:4], value[4:6], value[6:8])
 
     def format_string(self, value):
         """ EDI file string
         """
         return value.strip()
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
