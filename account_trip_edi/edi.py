@@ -179,6 +179,9 @@ class trip_import_edi_wizard(orm.Model):
                     supplier_cost = ""
                     supplier_site = ""
                     destination_description = ""
+                    # destination = ""
+                    # deadline = False
+                    # date = False
 
                     # Open file for read informations:
                     fin = open(os.path.join(path_in, file_in), "r")
@@ -446,7 +449,7 @@ class trip_import_edi_wizard(orm.Model):
                         'information': html,
                         'priority': parametrized.get_priority(
                             cr, uid, file_in),
-                        }        
+                        }     
                     line_id = self.create(
                         cr, uid, data_line, context=context)
 
