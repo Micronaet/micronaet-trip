@@ -151,7 +151,7 @@ class edi_company_report(orm.Model):
     def get_product_category(self, default_code):
         ''' Auto product category depend on start code
         '''
-        code = default_code.upper()
+        code = (default_code or 'NON PRESENTE').upper()
         start_1 = code[:1]
         start_2 = code[:2]
         start_3 = code[:3]
