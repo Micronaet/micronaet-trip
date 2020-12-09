@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-# ODOO (ex OpenERP) 
+# ODOO (ex OpenERP)
 # Open Source Management Solution
 # Copyright (C) 2001-2015 Micronaet S.r.l. (<https://micronaet.com>)
 # Developer: Nicola Riolini @thebrush (<https://it.linkedin.com/in/thebrush>)
@@ -13,7 +13,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
@@ -35,17 +35,18 @@ from openerp import SUPERUSER_ID
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
-
+import pdb
 
 _logger = logging.getLogger(__name__)
 
+
 class edi_company_report(orm.Model):
-    ''' Manage more than one importation depend on company
-    '''    
+    """ Manage more than one importation depend on company
+    """
     _inherit = 'edi.company'
 
     # -------------------------------------------------------------------------
@@ -53,14 +54,14 @@ class edi_company_report(orm.Model):
     # -------------------------------------------------------------------------
     def update_report_with_company_data(
             self, cr, uid, this_id, report, context=None):
-        """ Add data, data_comment, detail from edi_id passed 
+        """ Add data, data_comment, detail from edi_id passed
             Function call from company module to use internal object for
             extract data
         """
         company = self.get_module_company(cr, uid, this_id, context=context)
         if not company:
             return report
-            
+
         report['title'] += '[%s]' % company.name
 
         # =====================================================================
@@ -68,7 +69,7 @@ class edi_company_report(orm.Model):
         # =====================================================================
         this_pool = self.pool.get('edi.company.c%s' % this_id)
         trace = this_pool.trace
-        
+
         data = report['data']
         data_comment = report['comment']
         detail = report['detail']
@@ -86,10 +87,10 @@ class edi_company_report(orm.Model):
                     continue   # TODO complete!!
                     sign = +1
 
-                fullname = os.path.join(root, filename)                
+                fullname = os.path.join(root, filename)
                 order_file = open(fullname)
                 deadline = False
-                
+
                 for row in order_file:
                     # Use only data row:
                     if this_pool.is_an_invalid_row(row):
@@ -101,7 +102,7 @@ class edi_company_report(orm.Model):
                             row[trace['deadline'][0]: trace['deadline'][1]])
                         number = row[
                             trace['number'][0]: trace['number'][1]].strip()
-                        
+
                         # Define col position:
                         if deadline < report['min']:
                             col = 0
@@ -115,20 +116,20 @@ class edi_company_report(orm.Model):
                         trace['detail_code'][0]:
                             trace['detail_code'][1]].strip()
                     quantity = float(row[
-                        trace['detail_quantity'][0]: 
+                        trace['detail_quantity'][0]:
                             trace['detail_quantity'][1]])
 
                     # ---------------------------------------------------------
-                    # Report data:                        
+                    # Report data:
                     # ---------------------------------------------------------
                     if default_code not in data:
                         data[default_code] = report['empty'][:]
                         data_comment[default_code] = report['empty_comment'][:]
 
-                    data[default_code][col] += sign * quantity    
+                    data[default_code][col] += sign * quantity
                     data_comment[default_code][col] += '[%s: %s] q. %s\n' % (
-                        company.name, number, quantity)                    
-                   
+                        company.name, number, quantity)
+
                     # Detail data:
                     detail.append([
                         default_code,
@@ -139,49 +140,48 @@ class edi_company_report(orm.Model):
                         number,
                         deadline,
                         quantity,
-                        '', 
+                        '',
                         ])
                 order_file.close()
         return report
-
 
     # -------------------------------------------------------------------------
     # Utility:
     # -------------------------------------------------------------------------
     def get_product_category(self, default_code):
-        ''' Auto product category depend on start code
-        '''
+        """ Auto product category depend on start code
+        """
         code = (default_code or 'NON PRESENTE').upper()
         start_1 = code[:1]
         start_2 = code[:2]
         start_3 = code[:3]
 
-        # -------------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # 3 char test start:
-        # -------------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         if start_3 == 'SPA':
             return _('Pasta') # 4
-        
-        # -------------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------
         # 2 char test start:
-        # -------------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         if start_2 in ('SP', 'SS'):
             return _('Gelo')  # 1
-            
-        # -------------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------
         # 1 char test start:
-        # -------------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         if start_1 in 'CDFPSV':
-            return _('Gelo') # 1
-        elif start_1 in 'BILT': 
-            return _('Freschi') # 2
+            return _('Gelo')  # 1
+        elif start_1 in 'BILT':
+            return _('Freschi')  # 2
         elif start_1 in 'HO':
-            return _('Secchi') # 3
-        elif start_1 in 'G': 
-            return _('Pasta') # 4
+            return _('Secchi')  # 3
+        elif start_1 in 'G':
+            return _('Pasta')  # 4
         else: # Error list
-            return _('Non identificata') # 5
-        
+            return _('Non identificata')  # 5
+
     def get_module_company(self, cr, uid, module_id, context=None):
         """ Return browse object for company generated with the module
         """
@@ -190,31 +190,31 @@ class edi_company_report(orm.Model):
         try:
             reference_id = model_pool.get_object_reference(
                 cr, uid,
-                'account_trip_edi_c%s' % module_id, 
+                'account_trip_edi_c%s' % module_id,
                 'importatione_account_trip_edi_c%s' % module_id,
                 )[1]
-            
+
             company_ids = self.search(cr, uid, [
                 ('type_importation_id', '=', reference_id),
                 ], context=context)
 
-            if company_ids:            
+            if company_ids:
                 company = self.browse(
                     cr, uid, company_ids, context=context)[0]
                 if company.__getattr__('import'):
                     _logger.warning('Append data for: #%s' % company.name)
                     return company
-                else:    
+                else:
                     _logger.error('Company not active: #%s' % company.name)
-        except:            
-            _logger.error('Error get company reference #%s' % company.name)     
+        except:
+            _logger.error('Error get company reference #%s' % company.name)
         return False
-        
+
     # -------------------------------------------------------------------------
     # Collect data for report (overridable)
     # -------------------------------------------------------------------------
     def collect_future_order_data_report(self, cr, uid, context=None):
-        """ Overridable procedure for manage the report data collected in all 
+        """ Overridable procedure for manage the report data collected in all
             company with active EDI company
         """
         if context is None:
@@ -222,23 +222,23 @@ class edi_company_report(orm.Model):
 
         # Read parameters:
         account_days_covered = context.get('account_days_covered', 2)
-        report_days = context.get('report_days', 28) 
+        report_days = context.get('report_days', 28)
         columns = report_days # Report Days total columns
 
-        now_dt = datetime.now() 
+        now_dt = datetime.now()
         now = now_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         from_date_dt = now_dt + timedelta(days=account_days_covered)
         to_date_dt = from_date_dt + timedelta(days=report_days)
-        
+
         report = {
             'days': report_days,
 
             # -----------------------------------------------------------------
             # Title:
             # -----------------------------------------------------------------
-            'title': 
+            'title':
                 'Stampa progressivi di magazzino, data: %s - Aziende: ' % now,
-            
+
             # -----------------------------------------------------------------
             # Header data:
             # -----------------------------------------------------------------
@@ -252,7 +252,7 @@ class edi_company_report(orm.Model):
             'negative': {
                 # Product with negative
                 },
-                
+
             'detail': [
                 # Detail line for check problems
                 ],
@@ -264,12 +264,12 @@ class edi_company_report(orm.Model):
             'comment': {
                 # Article record: [Q., data, list]
                 },
-                
+
             'empty': [0.0 for item in range(columns)],
             'empty_comment': ['' for item in range(columns)],
-            
+
             }
-        
+
         # Header creation:
         pos = 0
         this_date = False
@@ -281,13 +281,13 @@ class edi_company_report(orm.Model):
             report['header'][this_date] = pos
             pos += 1
         report['max'] = this_date
-        
+
         # =====================================================================
         # XXX Data will be create with override:
         # =====================================================================
-        
+
         return report
-        
+
     # -------------------------------------------------------------------------
     # Report action:
     # -------------------------------------------------------------------------
@@ -304,19 +304,19 @@ class edi_company_report(orm.Model):
             else:  # <=0
                 number = -number
                 mode = 'heat_red'
-            
+
             if not number:
                 position = 0
-            else:    
+            else:
                 position = int(math.log10(number))
-            if position > 4:            
+            if position > 4:
                 position = 4
             elif position < 0:
-                position = 0    
+                position = 0
 
             return excel_format[mode][position]
-            
-        # Transform in progress total:    
+
+        # Transform in progress total:
         has_negative = False
         for col in range(0, len(delta)):
             if col:
@@ -331,17 +331,16 @@ class edi_company_report(orm.Model):
 
         # Format cell (not installed on Ubuntu 12.04 server:
         locale.setlocale(locale.LC_ALL, '') # Default en_US
-        for col in range(0, len(delta)):            
+        for col in range(0, len(delta)):
             delta[col] = (
                 locale.format('%0.0f', delta[col][0], grouping=True).replace(
                     ',', '.'), # XXX not work with Italian setup!
                 delta[col][1],
                 )
-        return has_negative        
-            
-            
+        return has_negative
+
     def generate_future_order_data_report(self, cr, uid, ids, context=None):
-        """ Overridable procedure for manage the report data collected in all 
+        """ Overridable procedure for manage the report data collected in all
             company with active EDI company
         """
         def clean_header_date(date):
@@ -352,29 +351,29 @@ class edi_company_report(orm.Model):
                 date_part[2],
                 date_part[1],
                 )
-            
+
         def clean_float(value):
             """ Clean float from csv file
             """
             value = (value or '')
             if not value:
                 return 0.0
-                
+
             value = value.strip().replace(',', '.')
             return float(value)
-            
+
         excel_pool = self.pool.get('excel.writer')
-        
+
         if context is None:
             context = {}
-        
+
         # ---------------------------------------------------------------------
         # Extract data from EDI provider
         # ---------------------------------------------------------------------
         # Parameters:
         context.update({
             'account_days_covered': 2,
-            'report_days':28,            
+            'report_days':28,
             })
 
         _logger.info('Start collect information for EDI stock status report')
@@ -382,7 +381,7 @@ class edi_company_report(orm.Model):
             cr, uid, context=context)
 
         # ---------------------------------------------------------------------
-        #                Get information from account:        
+        #                Get information from account:
         # ---------------------------------------------------------------------
         separator = ';'
 
@@ -393,7 +392,7 @@ class edi_company_report(orm.Model):
         edi_account_data = company.edi_account_data
         if not edi_account_data:
             raise osv.except_osv(
-                _('Errore parametri'), 
+                _('Errore parametri'),
                 _('Manca un parametro nella azienda scheda EDI!'),
                 )
         edi_account_data = os.path.expanduser(edi_account_data)
@@ -402,9 +401,9 @@ class edi_company_report(orm.Model):
                 os.path.join(edi_account_data, 'stato-mag.gfd'))
             supplier_order = open(
                 os.path.join(edi_account_data, 'stato-of.gfd'))
-        except:    
+        except:
             raise osv.except_osv(
-                _('Errore file di scambio'), 
+                _('Errore file di scambio'),
                 _('Non si possono leggere i file di scambio cartella: %s!' % (
                     edi_account_data)),
                 )
@@ -414,7 +413,7 @@ class edi_company_report(orm.Model):
         for line in stock_status:
             line = line.strip()
             column = line.split(separator)
-            
+
             # -----------------------------------------------------------------
             # Field:
             # -----------------------------------------------------------------
@@ -422,7 +421,7 @@ class edi_company_report(orm.Model):
             default_code = column[0].strip()
             name = column[1].strip()
             uom = column[2].strip().upper()
-            
+
             # Quantity:
             inventory_qty = clean_float(column[3])
             load_qty = clean_float(column[4])
@@ -430,12 +429,12 @@ class edi_company_report(orm.Model):
             oc_e_qty = clean_float(column[6])
             oc_s_qty = clean_float(column[7])
             of_qty = clean_float(column[8])
-            
+
             # Calculated:
             net_qty = inventory_qty + load_qty - unload_qty
             oc_qty = oc_e_qty + oc_s_qty # XXX OF added in real columns
             available_qty = net_qty - oc_qty
-            
+
             # -----------------------------------------------------------------
             # Statup data for Account OC present:
             # -----------------------------------------------------------------
@@ -447,20 +446,20 @@ class edi_company_report(orm.Model):
             account_data[default_code] = [
                 name,
                 uom,
-                
+
                 net_qty,
                 oc_qty,
                 available_qty,
                 of_qty,
                 ]
-        
-        # B. Supplier order (update report database)  
-        supplier_comment = {}     
+
+        # B. Supplier order (update report database)
+        supplier_comment = {}
         for line in supplier_order:
             line = line.strip()
             column = line.split(separator)
-            
-            default_code = column[0].strip()[:11] # XXX Max parent length
+
+            default_code = column[0].strip()[:11]  # XXX Max parent length
             if default_code not in supplier_comment:
                 supplier_comment[default_code] = ''
 
@@ -471,12 +470,12 @@ class edi_company_report(orm.Model):
             of_qty = float((column[3].strip() or '0').replace(',', '.'))
             of_delivery = column[4].strip()
             supplier = column[5].strip()
-            number =  column[6].strip()
+            number = column[6].strip()
             if of_delivery:
                 of_delivery = '%s-%s-%s' % (
                     of_delivery[:4],
                     of_delivery[4:6],
-                    of_delivery[6:8],                    
+                    of_delivery[6:8],
                     )
 
             # Add comment for cell:
@@ -497,15 +496,15 @@ class edi_company_report(orm.Model):
             else:
                 comment = 'Usato'
                 col = report['header'][of_delivery]
-                
-            if col >= 0:    
+
+            if col >= 0:
                 report['data'][default_code][col] += of_qty
                 report['comment'][default_code][col] += '[%s: %s] q. %s' % (
                     supplier,
                     number,
                     of_qty,
-                    ) 
-            
+                    )
+
             # TODO add detail data?
             report['detail'].append([
                 default_code,
@@ -526,41 +525,41 @@ class edi_company_report(orm.Model):
         ws_name = _('EDI stato magazzino')
         excel_pool.create_worksheet(ws_name, extension=extension)
 
-        #excel_pool.set_format(number_format='0.#0')
+        # excel_pool.set_format(number_format='0.#0')
         excel_pool.set_format(number_format='0')
         excel_pool.get_format() # Update workbook
-        
+
         excel_format = {
             'title': excel_pool.get_format('title'),
             'header': excel_pool.get_format('header'),
-    
+
             'black': {
                 'text': excel_pool.get_format('text'),
-                'number': excel_pool.get_format('number'),                    
+                'number': excel_pool.get_format('number'),
                 },
 
             'green': {
                 'text': excel_pool.get_format('bg_green'),
-                'number': excel_pool.get_format('bg_green_number'),                    
+                'number': excel_pool.get_format('bg_green_number'),
                 },
 
             'red': {
                 'text': excel_pool.get_format('bg_red'),
-                'number': excel_pool.get_format('bg_red_number'),                    
+                'number': excel_pool.get_format('bg_red_number'),
                 },
 
             'heat_red': [
-                excel_pool.get_format('bg_red_number_0'),                    
-                excel_pool.get_format('bg_red_number_1'),                    
-                excel_pool.get_format('bg_red_number_2'),                    
+                excel_pool.get_format('bg_red_number_0'),
+                excel_pool.get_format('bg_red_number_1'),
+                excel_pool.get_format('bg_red_number_2'),
                 excel_pool.get_format('bg_red_number_3'),
                 excel_pool.get_format('bg_red_number_4'),
                 ],
 
             'heat_green': [
-                excel_pool.get_format('bg_green_number_0'),                    
-                excel_pool.get_format('bg_green_number_1'),                    
-                excel_pool.get_format('bg_green_number_2'),                    
+                excel_pool.get_format('bg_green_number_0'),
+                excel_pool.get_format('bg_green_number_1'),
+                excel_pool.get_format('bg_green_number_2'),
                 excel_pool.get_format('bg_green_number_3'),
                 excel_pool.get_format('bg_green_number_4'),
                 ],
@@ -570,7 +569,7 @@ class edi_company_report(orm.Model):
             6, 8, 11, 40, 2, 6, 6, 6, 6
             # TODO appena date total
             ]
-        col_width.extend([6 for item in range(context.get('report_days'))])            
+        col_width.extend([6 for item in range(context.get('report_days'))])
 
         header = [
             # Product:
@@ -579,71 +578,71 @@ class edi_company_report(orm.Model):
             _('Codice'),
             _('Nome'),
             _('UM'),
-            
+
             # Account program:
             'OF',
             _('Mag.'),
             _('OC'),
             _('Mag.-OC'),
-            
+
             # Number data:
             ]
-        
+
         fixed_cols = len(header)
         supplier_col = header.index('OF')
         excel_pool.column_width(ws_name, col_width)
 
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         # Title:
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         row = 0
         excel_pool.write_xls_line(ws_name, row, (
-            report['title'], 
+            report['title'],
             ), excel_format['title'])
-        
-        # ---------------------------------------------------------------------        
+
+        # ---------------------------------------------------------------------
         # Header:
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         row += 2
         excel_pool.write_xls_line(
             ws_name, row, header, excel_format['header'])
-        
+
         # Integration:
         excel_pool.write_xls_line(ws_name, row, [
             clean_header_date(item) for item in sorted(report['header'].keys())
             ], excel_format['header'], col=fixed_cols)
 
-        excel_pool.autofilter(ws_name, row, 0, row, 2)    
-        #excel_pool.freeze_panes(ws_name, row + 1, 3) # Lock row / col
+        excel_pool.autofilter(ws_name, row, 0, row, 2)
+        # excel_pool.freeze_panes(ws_name, row + 1, 3) # Lock row / col
 
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         # Data
         # ---------------------------------------------------------------------
         black = excel_format['black']
         red = excel_format['red']
-        
+
         for default_code in sorted(
-                report['data'], 
+                report['data'],
                 key=lambda c: (
-                    self.get_product_category(c), 
+                    self.get_product_category(c),
                     c,
                     )):
-            row +=1 
+            row += 1
             delta = report['data'][default_code]
             try:
                 name, uom, net_qty, oc_qty, start_qty, of_qty = \
                     account_data[default_code]
             except:
                 name = uom = ''
-                of_qty = net_qty = oc_qty = start_qty = 0.0    
+                of_qty = net_qty = oc_qty = start_qty = 0.0
 
             has_negative = self.transform_delta_record(
-                start_qty, delta, excel_format)    
+                start_qty, delta, excel_format)
             if has_negative:
                 color = red
             else:
                 color = black
-                
+
             excel_pool.write_xls_line(ws_name, row, [
                 ('Neg.' if has_negative else 'Pos.', color['text']),
                 (self.get_product_category(default_code), color['text']),
@@ -655,27 +654,27 @@ class edi_company_report(orm.Model):
                 (oc_qty, black['number']),
                 (start_qty, black['number']),
                 ], black['text'])
-            
+
             # OF comment:
             if supplier_comment.get(default_code):
                 excel_pool.write_comment(
                     ws_name, row, supplier_col, supplier_comment[default_code])
-                
+
             # Integration:
             excel_pool.write_xls_line(
                 ws_name, row, delta, col=fixed_cols)
-                
+
             # Comment: # TODO
             excel_pool.write_comment_line(
-                ws_name, row, report['comment'].get(default_code, []), # TODO!!!!!
+                ws_name, row, report['comment'].get(default_code, []), # TODO!!
                 col=fixed_cols)
-            
-        # ---------------------------------------------------------------------        
+
+        # ---------------------------------------------------------------------
         #                                Detail
         # ---------------------------------------------------------------------
         ws_name = _('EDI dettaglio')
         excel_pool.create_worksheet(ws_name, extension=extension)
-        
+
         col_width = [
             10, 22, 5, 12, 10, 4, 15, 15, 8, 30,
             ]
@@ -694,29 +693,29 @@ class edi_company_report(orm.Model):
             ]
         excel_pool.column_width(ws_name, col_width)
 
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         # Title:
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         row = 0
         excel_pool.write_xls_line(ws_name, row, (
-            'Dettaglio report', 
+            'Dettaglio report',
             ), excel_format['title'])
-        
-        # ---------------------------------------------------------------------        
+
+        # ---------------------------------------------------------------------
         # Header:
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         row += 2
         excel_pool.write_xls_line(
             ws_name, row, header, excel_format['header'])
-        excel_pool.autofilter(ws_name, row, 0, row, len(header)-1)    
-        excel_pool.freeze_panes(ws_name, row + 1, 0) # Lock row
+        excel_pool.autofilter(ws_name, row, 0, row, len(header)-1)
+        excel_pool.freeze_panes(ws_name, row + 1, 0)  # Lock row
 
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         # Data
         # ---------------------------------------------------------------------
         for line in sorted(report['detail']):
-            row +=1 
-            (code, position, mode, company, filename, order, deadline, q, 
+            row += 1
+            (code, position, mode, company, filename, order, deadline, q,
                 comment) = line
             if mode == 'OF':
                 sign = 1
@@ -725,7 +724,7 @@ class edi_company_report(orm.Model):
             excel_pool.write_xls_line(ws_name, row, [
                 company,
                 filename,
-                
+
                 mode,
                 order,
                 deadline,
@@ -735,9 +734,9 @@ class edi_company_report(orm.Model):
                 (sign * q, black['number']),
                 comment,
                 ], black['text'])
-                                        
-        return excel_pool.return_attachment(cr, uid, ws_name, 
-            name_of_file='future_stock_status.xls', version='7.0', 
-            php=True, context=context)
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+        pdb.set_trace()
+        return excel_pool.return_attachment(
+            cr, uid, ws_name,
+            name_of_file='future_stock_status.xls', version='7.0',
+            php=True, context=context)

@@ -424,7 +424,7 @@ class trip_import_edi_wizard(orm.Model):
 
                     # Create file list
                     # TODO old code: Read from file
-                    #timestamp = datetime.fromtimestamp(ts).strftime(
+                    # timestamp = datetime.fromtimestamp(ts).strftime(
                     #        DEFAULT_SERVER_DATETIME_FORMAT + ".%f" )
                     destination_id = parametrized.get_destination_id(
                         cr, uid, supplier_facility, supplier_cost,
@@ -722,6 +722,7 @@ class res_partner(osv.osv):
             type='integer', string='# Order wait', store=False),
         }
 
+
 class edi_company_importation(orm.Model):
     """ This class elements are populated with extra modules:
         account_trip_edi_c*
@@ -736,6 +737,7 @@ class edi_company_importation(orm.Model):
         'note': fields.char('Note'),
         }
 
+
 class res_company(orm.Model):
     """ Add parameters fields
     """
@@ -747,6 +749,7 @@ class res_company(orm.Model):
             help='Cartella dove vengono esportati i dati del gestionale'
             ),
         }
+
 
 class edi_company(orm.Model):
     """ Manage more than one importation depend on company
