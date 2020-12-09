@@ -443,7 +443,7 @@ class edi_company_report(orm.Model):
                     report['empty_comment'][:]
 
             account_data[default_code] = [
-                u'{}'.format(name),  # Clean no ascii char
+                '{}'.format(name),  # Clean no ascii char
                 uom,
 
                 net_qty,
