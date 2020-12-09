@@ -237,7 +237,7 @@ class edi_company_report(orm.Model):
             # Title:
             # -----------------------------------------------------------------
             'title':
-                'Stampa progressivi di magazzino, data: %s - Aziende: ' % now,
+                u'Stampa progressivi di magazzino, data: %s - Aziende: ' % now,
 
             # -----------------------------------------------------------------
             # Header data:
@@ -285,7 +285,6 @@ class edi_company_report(orm.Model):
         # =====================================================================
         # XXX Data will be create with override:
         # =====================================================================
-
         return report
 
     # -------------------------------------------------------------------------
@@ -324,17 +323,17 @@ class edi_company_report(orm.Model):
             else: # first line:
                 previous_qty = start_qty
 
-            new_qty = delta[col] + previous_qty # Append previous col
+            new_qty = delta[col] + previous_qty  # Append previous col
             delta[col] = (new_qty, get_heat(excel_format, new_qty))
             if not has_negative and new_qty <= 0:
-                has_negative =True
+                has_negative = True
 
         # Format cell (not installed on Ubuntu 12.04 server:
         locale.setlocale(locale.LC_ALL, '') # Default en_US
         for col in range(0, len(delta)):
             delta[col] = (
                 locale.format('%0.0f', delta[col][0], grouping=True).replace(
-                    ',', '.'), # XXX not work with Italian setup!
+                    ',', '.'),  # XXX not work with Italian setup!
                 delta[col][1],
                 )
         return has_negative
@@ -373,7 +372,7 @@ class edi_company_report(orm.Model):
         # Parameters:
         context.update({
             'account_days_covered': 2,
-            'report_days':28,
+            'report_days': 28,
             })
 
         _logger.info('Start collect information for EDI stock status report')
@@ -464,7 +463,7 @@ class edi_company_report(orm.Model):
                 supplier_comment[default_code] = ''
 
             if default_code not in report['data']:
-                _logger.warning('No OF product in report: %s' % default_code)
+                _logger.warning(u'No OF product in report: %s' % default_code)
                 continue
 
             of_qty = float((column[3].strip() or '0').replace(',', '.'))
@@ -472,15 +471,15 @@ class edi_company_report(orm.Model):
             supplier = column[5].strip()
             number = column[6].strip()
             if of_delivery:
-                of_delivery = '%s-%s-%s' % (
+                of_delivery = u'%s-%s-%s' % (
                     of_delivery[:4],
                     of_delivery[4:6],
                     of_delivery[6:8],
                     )
 
             # Add comment for cell:
-            supplier_comment[default_code] += '[%s: %s (il %s)] q. %s\n' % (
-                supplier, number, of_delivery or '?', of_qty,
+            supplier_comment[default_code] += u'[%s: %s (il %s)] q. %s\n' % (
+                supplier, number, of_delivery or u'?', of_qty,
                 )
             if not of_delivery:
                 continue
@@ -488,13 +487,13 @@ class edi_company_report(orm.Model):
             # Define col position:
             comment = ''
             if of_delivery < report['min']:
-                comment = 'Non usato (< min)'
+                comment = u'Non usato (< min)'
                 col = -1
             elif of_delivery > report['max']:
-                comment = 'Messo ultima colonna (< max)'
+                comment = u'Messo ultima colonna (< max)'
                 col = report['days'] - 1 # Go in last cell
             else:
-                comment = 'Usato'
+                comment = u'Usato'
                 col = report['header'][of_delivery]
 
             if col >= 0:
@@ -567,23 +566,23 @@ class edi_company_report(orm.Model):
 
         col_width = [
             6, 8, 11, 40, 2, 6, 6, 6, 6
-            # TODO appena date total
+            # TODO append date total
             ]
         col_width.extend([6 for item in range(context.get('report_days'))])
 
         header = [
             # Product:
-            _('Stato'),
-            _('Categoria'),
-            _('Codice'),
-            _('Nome'),
-            _('UM'),
+            _(u'Stato'),
+            _(u'Categoria'),
+            _(u'Codice'),
+            _(u'Nome'),
+            _(u'UM'),
 
             # Account program:
-            'OF',
-            _('Mag.'),
-            _('OC'),
-            _('Mag.-OC'),
+            u'OF',
+            _(u'Mag.'),
+            _(u'OC'),
+            _(u'Mag.-OC'),
 
             # Number data:
             ]
@@ -672,7 +671,7 @@ class edi_company_report(orm.Model):
         # ---------------------------------------------------------------------
         #                                Detail
         # ---------------------------------------------------------------------
-        ws_name = _('EDI dettaglio')
+        ws_name = _(u'EDI dettaglio')
         excel_pool.create_worksheet(ws_name, extension=extension)
 
         col_width = [
@@ -680,16 +679,16 @@ class edi_company_report(orm.Model):
             ]
 
         header = [
-            _('Azienda'),
-            _('File'),
-            _('Tipo'),
-            _('Numero'),
-            _('Scadenza'),
-            _('Pos.'),
-            _('Categoria'),
-            _('Codice'),
-            _('Q.'),
-            _('Commento'),
+            _(u'Azienda'),
+            _(u'File'),
+            _(u'Tipo'),
+            _(u'Numero'),
+            _(u'Scadenza'),
+            _(u'Pos.'),
+            _(u'Categoria'),
+            _(u'Codice'),
+            _(u'Q.'),
+            _(u'Commento'),
             ]
         excel_pool.column_width(ws_name, col_width)
 
@@ -698,7 +697,7 @@ class edi_company_report(orm.Model):
         # ---------------------------------------------------------------------
         row = 0
         excel_pool.write_xls_line(ws_name, row, (
-            'Dettaglio report',
+            u'Dettaglio report',
             ), excel_format['title'])
 
         # ---------------------------------------------------------------------
