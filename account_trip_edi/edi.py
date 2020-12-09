@@ -25,7 +25,7 @@ import pickle
 import shutil
 from openerp.osv import osv, orm, fields
 from datetime import datetime, timedelta
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare)
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
@@ -34,9 +34,10 @@ import pickle
 
 _logger = logging.getLogger(__name__)
 
+
 class trip_import_edi_wizard(orm.Model):
-    ''' EDI file present in folder
-    '''
+    """ EDI file present in folder
+    """
     _name = 'trip.edi.line'
     _description = 'EDI import line'
     _order = 'timestamp'
@@ -45,14 +46,14 @@ class trip_import_edi_wizard(orm.Model):
     # Server Action:
     # --------------
     def load_edi_list(self, cr, uid, ids, context=None):
-        ''' Refresh button for load EDI file list in wizard
-        '''
+        """ Refresh button for load EDI file list in wizard
+        """
         # ---------------------------------------------------------------------
-        #                        Common function:        
+        #                        Common function:
         # ---------------------------------------------------------------------
         def ascii_check3(value):
-            ''' Try to remove not ascii char (replaced with #)
-            ''' 
+            """ Try to remove not ascii char (replaced with #)
+            """
             try:
                 value.decode("utf8") # test for raise error
                 return value
@@ -65,21 +66,21 @@ class trip_import_edi_wizard(orm.Model):
                         v += char
                     except:
                         v += "#" # replaced
-                return v     
-                   
-        def ascii_check(value):        
+                return v
+
+        def ascii_check(value):
             value = value or ''
             res = ''
             for c in value:
                 if ord(c) < 127:
                     res += c
                 else:
-                    res += '#'  
-            # Particular case:           
+                    res += '#'
+            # Particular case:
             res = res.replace('###', '') # Error (file start with wrong char!)
             return res.replace('##', '#')
             #return res
-            
+
         # ---------------------------------------------------------------------
         #                  Main code (common part)
         # ---------------------------------------------------------------------
@@ -91,18 +92,18 @@ class trip_import_edi_wizard(orm.Model):
         # Log operation:
         log_file = open(os.path.expanduser('~/refresh.edi.log'), 'a')
         log_file.write('%s. Inizio caricamento EDI, ID Utente: %s\n' % (
-            today, uid, 
+            today, uid,
             ))
         log_file.close()
-            
+
         order_info = {
             'create': {},   # last numer created
             'deleting': [], # list of order to deleting
             'anomaly': [],  # list order to delete without create (warning)
             }
-            
+
         recursion = {}
-        
+
         # Check period for importation (particular case)
         if today.weekday() in (3, 4, 5):
             reference_date = (today + timedelta(days=5)).strftime(
@@ -110,16 +111,16 @@ class trip_import_edi_wizard(orm.Model):
         else:
             reference_date = (today + timedelta(days=3)).strftime(
                 DEFAULT_SERVER_DATE_FORMAT)
-        
-        # Delete all previous: 
+
+        # Delete all previous:
         # TODO >> force single company importation?
         # If we create a wizard for select only one company:
         line_ids = self.search(cr, uid, [], context=context)
         try:
             self.unlink(cr, uid, line_ids, context=context)
         except:
-            pass # No comunication of error        
-        
+            pass # No comunication of error
+
         # Load destination dict:
         destination_not_found = []
 
@@ -130,51 +131,51 @@ class trip_import_edi_wizard(orm.Model):
         edi_company_ids = edi_company_pool.search(cr, uid, [
             ('import', '=', True)], context=context)
         for company in edi_company_pool.browse(
-                cr, uid, edi_company_ids, context=context): 
+                cr, uid, edi_company_ids, context=context):
             # Load object for use the same function name where needed:
             parametrized = self.pool.get(company.type_importation_id.object)
             _logger.warning('Reading %s...' % company.name)
-            
+
             # Normal trace:
             trace = parametrized.trace
-            
+
             # Structured trace (in flat file not present):
             try:
                 structured = parametrized.structured or {}
-            except: 
+            except:
                 structured = False
-            try:    
+            try:
                 start_structure = parametrized.start_structure or 0
-            except:    
+            except:
                 start_structure = 0
-                
+
             forced_list = edi_company_pool.load_forced(
                 cr, uid, company.id, context=context)
 
             # Get folder path:
             path_in = edi_company_pool.get_trip_import_edi_folder(
                 cr, uid, company.id, context=context)
-            
+
             if not path_in:
                 pass # TODO comunicate error
-            
+
             file_list = []
             try:
-                # Sort correctly the files:   
+                # Sort correctly the files:
                 for file_in in [
                         f for f in os.listdir(path_in) if os.path.isfile(
-                            os.path.join(path_in, f))]:            
+                            os.path.join(path_in, f))]:
                     file_list.append((
-                        parametrized.get_timestamp_from_file(file_in, path_in), 
+                        parametrized.get_timestamp_from_file(file_in, path_in),
                         file_in,
                         ))
                 file_list.sort()
-                
+
                 # Print list of sorted files for logging the operation:
                 for ts, file_in in file_list:
                     _logger.info('Read file: %s' % file_in)
-                    
-                    # Reset parameter for destination code:              
+
+                    # Reset parameter for destination code:
                     supplier_facility = ""
                     supplier_cost = ""
                     supplier_site = ""
@@ -185,11 +186,11 @@ class trip_import_edi_wizard(orm.Model):
 
                     # Open file for read informations:
                     fin = open(os.path.join(path_in, file_in), "r")
-                    
+
                     # Type mode valutation:
                     mode_type = parametrized.get_state_of_file(
                         file_in, forced_list)
-                    
+
                     html = """
                         <style>
                             .table_trip {
@@ -217,9 +218,9 @@ class trip_import_edi_wizard(orm.Model):
                     start = True # not structured (read header only first line)
                     # TODO load elements in importing state (depend on date)
                     if mode_type == 'delete':
-                        # Short read (get info from 1st line only) 
+                        # Short read (get info from 1st line only)
                         line = fin.readline()
-                        
+
                         # TODO check structured type! (for now not important)
                         # Read fields:
                         number = parametrized.format_string(
@@ -232,17 +233,17 @@ class trip_import_edi_wizard(orm.Model):
                         # have all grey
                         #if deadline < reference_date: # Next importation
                         #    mode_type = 'importing'
-                            
+
                         customer = False
                         destination = False
-                        
-                    else: # create 
+
+                    else: # create
                         for line in fin:
                             # Check if line is cancel
                             if parametrized.is_an_invalid_row(line):
                                 continue # Line cancel
-                            
-                            line = ascii_check(line)                            
+
+                            line = ascii_check(line)
                             # -------------------------------------------------
                             #                       HEADER
                             # -------------------------------------------------
@@ -250,7 +251,7 @@ class trip_import_edi_wizard(orm.Model):
                             if structured:
                                 # ---------------------------------------------
                                 #                 STRUCTURED
-                                # ---------------------------------------------                            
+                                # ---------------------------------------------
                                 if start: # Part only one:
                                     start = False
                                     # TODO Extra html header not present here!!
@@ -275,7 +276,7 @@ class trip_import_edi_wizard(orm.Model):
                                     deadline = parametrized.format_date(
                                         line[
                                             trace['deadline'][0]:
-                                            trace['deadline'][1]])                                    
+                                            trace['deadline'][1]])
                                 if structured['number'] == line_type:
                                     number = parametrized.format_string(
                                         line[
@@ -286,8 +287,8 @@ class trip_import_edi_wizard(orm.Model):
                                         line[
                                             trace['customer'][0]:
                                             trace['customer'][1]])
-                                        
-                                            
+
+
                                 # Read all destination code (max 3 parts):
                                 # NOTE: All 3 parts stay on same line (for now)
                                 if structured[
@@ -308,11 +309,11 @@ class trip_import_edi_wizard(orm.Model):
                                         trace['destination_description'][0]:
                                         trace['destination_description'][1]])
                                     destination = parametrized.get_destination(
-                                        supplier_facility, 
-                                        supplier_cost, 
-                                        supplier_site, 
+                                        supplier_facility,
+                                        supplier_cost,
+                                        supplier_site,
                                         )
-                            
+
                             else:
                                 # ---------------------------------------------
                                 #            NOT STRUCTURED HEADER
@@ -338,7 +339,7 @@ class trip_import_edi_wizard(orm.Model):
                                             trace['customer'][0]:
                                             trace['customer'][1]])
 
-                                    # Read all destination code (max 3 parts):                                
+                                    # Read all destination code (max 3 parts):
                                     supplier_facility = parametrized.format_string(line[
                                         trace['destination_facility'][0]:
                                         trace['destination_facility'][1]])
@@ -352,12 +353,12 @@ class trip_import_edi_wizard(orm.Model):
                                         trace['destination_description'][0]:
                                         trace['destination_description'][1]])
                                     destination = parametrized.get_destination(
-                                        supplier_facility, 
-                                        supplier_cost, 
-                                        supplier_site, 
+                                        supplier_facility,
+                                        supplier_cost,
+                                        supplier_site,
                                         )
-                                
-                                    # Create an HMTL element for preview file:        
+
+                                    # Create an HMTL element for preview file:
                                     html += "<p>"
                                     html += _("Date: %s<br/>") % date
                                     html += _("Deadline: %s<br/>") % deadline
@@ -378,7 +379,7 @@ class trip_import_edi_wizard(orm.Model):
                             # -------------------------------------------------
                             #                      DETAILS:
                             # -------------------------------------------------
-                            # Common part:                            
+                            # Common part:
                             if not structured or structured[ # test w/art. code
                                    'detail_code'] == line_type:
                                 html += """
@@ -418,7 +419,7 @@ class trip_import_edi_wizard(orm.Model):
                                                  trace['detail_total'][0]:
                                                  trace['detail_total'][1]]),
                                          )
-                        html += "</table>"  # TODO if empty??                        
+                        html += "</table>"  # TODO if empty??
                     fin.close()
 
                     # Create file list
@@ -426,14 +427,14 @@ class trip_import_edi_wizard(orm.Model):
                     #timestamp = datetime.fromtimestamp(ts).strftime(
                     #        DEFAULT_SERVER_DATETIME_FORMAT + ".%f" )
                     destination_id = parametrized.get_destination_id(
-                        cr, uid, supplier_facility, supplier_cost, 
+                        cr, uid, supplier_facility, supplier_cost,
                         supplier_site)
-                    
-                    # Remember destination not fount        
+
+                    # Remember destination not fount
                     if not destination_id and (
-                            destination_id not in destination_not_found): 
+                            destination_id not in destination_not_found):
                         destination_not_found.append(destination)
-                        
+
                     data_line = {
                         'name': file_in,
                         'timestamp': ts,
@@ -449,11 +450,11 @@ class trip_import_edi_wizard(orm.Model):
                         'information': html,
                         'priority': parametrized.get_priority(
                             cr, uid, file_in),
-                        }     
+                        }
                     line_id = self.create(
                         cr, uid, data_line, context=context)
 
-                    # Create record for test recursions:    
+                    # Create record for test recursions:
                     if number not in recursion:
                         recursion[number] = [1, [line_id]]
                     else:
@@ -464,27 +465,27 @@ class trip_import_edi_wizard(orm.Model):
                     # Particular case for create-delete-recreate management:
                     if mode_type == 'create':
                         # last (for test delete)
-                        order_info['create'][number] = line_id 
+                        order_info['create'][number] = line_id
                     elif mode_type == 'delete':
-                        if number in order_info['create']:                    
+                        if number in order_info['create']:
                             order_info['deleting'].append(
                                 order_info['create'][number])
-                        else:    
+                        else:
                             order_info['anomaly'].append(line_id)
-                            
-                if destination_not_found: 
+
+                if destination_not_found:
                     _logger.warning(_('\n\nDestination not found: \n[%s]') % (
                         destination_not_found, )  )
             except:
                 _logger.error("Generic error: %s" % (sys.exc_info(), ))
-                
+
         # Update recursion informations (write totals recursions):
         for key in recursion:
             total, record_ids = recursion[key]
             self.write(cr, uid, record_ids, {
                 'recursion': total,
                 }, context=context)
-        
+
         # TODO parametrize:
         # Update type informations (for create-delete-recreate management):
         for key in order_info:
@@ -500,47 +501,47 @@ class trip_import_edi_wizard(orm.Model):
                         }, context=context)
             else: # create
                 pass
-                
+
         # Log operation:
         log_file = open(os.path.expanduser('~/refresh.edi.log'), 'a')
         log_file.write('%s. Fine caricamento EDI, ID Utente: %s\n' % (
-            today, uid, 
+            today, uid,
             ))
         log_file.close()
 
-        return {          
+        return {
             'view_type': 'form',
             'view_mode': 'tree,form',
             'res_model': 'trip.edi.line',
             'type': 'ir.actions.act_window',
             'context': {'search_default_type_create': 1},
-            }  
+            }
 
     # -------------
     # Button event:
     # -------------
     def action_null(self, cr, uid, ids, context=None):
-        ''' Do Nothing
-        '''
+        """ Do Nothing
+        """
         return True
-        
+
     # Utility (for button):
     def force_import_common(self, cr, uid, ids, force=True, context=None):
-        ''' Common procedure for 2 botton for force and unforce
-        '''
+        """ Common procedure for 2 botton for force and unforce
+        """
         # Read company elements:
-        line_proxy = self.browse(cr, uid, ids, context=context)[0] 
+        line_proxy = self.browse(cr, uid, ids, context=context)[0]
         company_id = line_proxy.company_id.id
-        # Read transit file:        
+        # Read transit file:
         edi_pool = self.pool.get("edi.company")
         forced_list = edi_pool.load_forced(
             cr, uid, company_id, context=context)
-        
+
         # Save if not present:
         file_proxy = self.browse(cr, uid, ids, context=context)[0]
         modified = False
         log_file = open(os.path.join(
-            os.path.expanduser('~'), 
+            os.path.expanduser('~'),
             'forced_edi_order.log',
             ), 'a')
 
@@ -549,7 +550,7 @@ class trip_import_edi_wizard(orm.Model):
                 forced_list.append(file_proxy.name)
                 modified = True
             state = 'forced'
-            
+
             # Log forced:
             log_file.write('[INFO] %s. USER: %s FORCED: %s RIF: %s\r\n' % (
                 datetime.now(), uid, file_proxy.name, file_proxy.number))
@@ -558,56 +559,56 @@ class trip_import_edi_wizard(orm.Model):
             if file_proxy.name in forced_list:
                 forced_list.remove(file_proxy.name)  # TODO only one? yes!?
                 modified = True
-            state = 'create'   
+            state = 'create'
 
             # Log forced:
             log_file.write('[INFO] %s. USER: %s UNFORCED: %s RIF: %s\r\n' % (
                 datetime.now(), uid, file_proxy.name, file_proxy.number))
 
-        log_file.close()    
+        log_file.close()
         if modified: # only if changed:
-            edi_pool.store_forced(cr, uid, company_id, forced_list, 
+            edi_pool.store_forced(cr, uid, company_id, forced_list,
                 context=context)
-            
-        # Set record to importing    
+
+        # Set record to importing
         self.write(cr, uid, ids, {
             'type': state, }, context=context)
         return True
-       
+
     def force_import(self, cr, uid, ids, context=None):
-        ''' Force importation of order (using pickle file)
-        '''
+        """ Force importation of order (using pickle file)
+        """
         return self.force_import_common(
             cr, uid, ids, force=True, context=context)
 
     def unforce_import(self, cr, uid, ids, context=None):
-        ''' Unforce importation of order (using pickle file)
-        '''
+        """ Unforce importation of order (using pickle file)
+        """
         return self.force_import_common(
             cr, uid, ids, force=False, context=context)
 
     def delete_order(self, cr, uid, ids, context=None):
-        ''' Move order in delete folder
-        '''
+        """ Move order in delete folder
+        """
         comment = ''
         try:
             company_id = self.browse(
                 cr, uid, ids, context=context)[0].company_id.id
             edi_pool = self.pool.get('edi.company')
             origin_folder = edi_pool.get_trip_import_edi_folder(
-                    cr, uid, 
+                    cr, uid,
                     company_id,
                     value='folder',
                     context=context)
             delete_folder = edi_pool.get_trip_import_edi_folder(
-                    cr, uid, 
+                    cr, uid,
                     company_id,
-                    value='delete', 
+                    value='delete',
                     context=context)
             if not all((origin_folder, delete_folder)):
                 raise osv.except_osv(
-                    _('Error'), 
-                    _('Set in EDI Company view: origin and delete folder!'))  
+                    _('Error'),
+                    _('Set in EDI Company view: origin and delete folder!'))
 
             item_proxy = self.browse(cr, uid, ids, context=context)[0]
             f_in = os.path.join(origin_folder, item_proxy.name)
@@ -623,15 +624,15 @@ class trip_import_edi_wizard(orm.Model):
                     pass
 
                 # 1. Move
-                try:                    
+                try:
                     shutil.move(f_in, f_out)
                     comment = 'Moved after delete existent!'
-                except: 
+                except:
                     comment = 'Error moving deleted file!'
                     _logger.error('Error moving deleted file!')
 
-            self.unlink(cr, uid, ids, context=context)    
-            
+            self.unlink(cr, uid, ids, context=context)
+
             # -----------------------------------------------------------------
             # Log deletion:
             # -----------------------------------------------------------------
@@ -644,34 +645,34 @@ class trip_import_edi_wizard(orm.Model):
             return True
         except:
             raise osv.except_osv(
-                _("Error"), 
+                _("Error"),
                 _("Error deleting file %s") % (sys.exc_info(), ),
-                )            
-            return False    
-    
+                )
+            return False
+
     _columns = {
         'name': fields.char('Name', size=80, required=True, readonly=True),
         'timestamp': fields.char('Timestamp', size=30, help='Arriving order'),
         'date': fields.date('Date'),
         'deadline': fields.date('Deadline'),
-        'number': fields.char('Reference', size=20, readonly=True),        
+        'number': fields.char('Reference', size=20, readonly=True),
         'customer': fields.char('Customer', size=100, readonly=True),
-        'destination': fields.char('Destination (customer)', size=110, 
+        'destination': fields.char('Destination (customer)', size=110,
             readonly=True),
         'company_id':fields.many2one('edi.company', 'Company', required=True),
-        'destination_id': fields.many2one('res.partner', 
-            'Destination (internal)', 
+        'destination_id': fields.many2one('res.partner',
+            'Destination (internal)',
             readonly=True, domain=[('is_address', '=', True)],
             ondelete='set null'),
-        'destination_description': fields.char('Destination description', 
+        'destination_description': fields.char('Destination description',
             size=100, readonly=True),
-        'tour1_id': fields.related('destination_id','tour1_id', 
-            type='many2one', 
+        'tour1_id': fields.related('destination_id','tour1_id',
+            type='many2one',
             relation='trip.tour', string='Trip 1', store=True),
-        'tour2_id': fields.related('destination_id','tour2_id', 
-            type='many2one', 
+        'tour2_id': fields.related('destination_id','tour2_id',
+            type='many2one',
             relation='trip.tour', string='Trip 2', store=True),
-        'information': fields.text('Information', 
+        'information': fields.text('Information',
             help='Short info about context of order (detail, destination'),
         'priority': fields.selection([
             ('low', 'Low'),
@@ -682,52 +683,52 @@ class trip_import_edi_wizard(orm.Model):
             ('importing', 'To importing'),   # Next importation files
             ('anomaly', 'Delete (Anomaly)'), # Delete, not found create before
             ('create', 'Create'),            # Create
-            ('change', 'Change'),            # Change an order 
+            ('change', 'Change'),            # Change an order
             ('deleting', 'To delete'),       # Create, but delete before
             ('forced', 'To force'),          # Force to load next importation
             ('delete', 'Delete')], 'Type', required=True), # To delete
         'recursion': fields.integer('Recursion')
         }
-        
+
     _defaults = {
         'type': lambda *x: 'create',
         }
 
 class res_partner(osv.osv):
-    ''' Add extra info for calculate waiting order for destination
-    '''
+    """ Add extra info for calculate waiting order for destination
+    """
     _inherit = 'res.partner'
-    
+
     # ---------------
     # Field function:
     # ---------------
-    def _function_get_order_wait(self, cr, uid, ids, args=None, fields=None, 
+    def _function_get_order_wait(self, cr, uid, ids, args=None, fields=None,
             context=None):
-        ''' Return number of active order if is a destination
-        '''
+        """ Return number of active order if is a destination
+        """
         res = {}
-        for partner in self.browse(cr, uid, ids, context=context):        
+        for partner in self.browse(cr, uid, ids, context=context):
             if partner.is_address:
                 res[partner.id] = len(partner.destination_order_waiting_ids)
             else:
                 res[partner.id] = 0
-        return res   
-        
-    _columns = { 
+        return res
+
+    _columns = {
         'destination_order_waiting_ids': fields.one2many(
-            'trip.edi.line', 'destination_id', 'Destination order wait'),             
+            'trip.edi.line', 'destination_id', 'Destination order wait'),
         'active_order_wait': fields.function(
-            _function_get_order_wait, method=True, 
-            type='integer', string='# Order wait', store=False),            
-        }    
+            _function_get_order_wait, method=True,
+            type='integer', string='# Order wait', store=False),
+        }
 
 class edi_company_importation(orm.Model):
-    ''' This class elements are populated with extra modules:
+    """ This class elements are populated with extra modules:
         account_trip_edi_c*
-    '''    
+    """
     _name = 'edi.company.importation'
     _description = 'EDI Company importation'
-    
+
     _columns = {
         'name': fields.char('Importation type', size=20, required=True),
         'code': fields.char('Code', size=10),
@@ -736,8 +737,8 @@ class edi_company_importation(orm.Model):
         }
 
 class res_company(orm.Model):
-    ''' Add parameters fields
-    '''    
+    """ Add parameters fields
+    """
     _inherit = 'res.company'
 
     _columns = {
@@ -748,38 +749,38 @@ class res_company(orm.Model):
         }
 
 class edi_company(orm.Model):
-    ''' Manage more than one importation depend on company
-    '''    
+    """ Manage more than one importation depend on company
+    """
     _name = 'edi.company'
     _description = 'EDI Company'
 
     # -------------------------------------------------------------------------
     #                             Utility function
     # -------------------------------------------------------------------------
-    def get_trip_import_edi_folder(self, cr, uid, company_id, value='folder', 
+    def get_trip_import_edi_folder(self, cr, uid, company_id, value='folder',
             context=None):
-        ''' Read parameter for default EDI folder (set up in company)
+        """ Read parameter for default EDI folder (set up in company)
             value: 'folder' (default) folder of EDI in file
                    'file' for file used to pass forced list
                    'delete' for folder used for deletion elements
-        '''        
+        """
         try:
             company_proxy = self.browse(
                 cr, uid, company_id, context=context)
-                
+
             if value == 'folder':
                 return os.path.expanduser(company_proxy.trip_import_folder)
-            elif value == 'file': 
+            elif value == 'file':
                 return os.path.expanduser(company_proxy.trip_todo_file)
-            else: # 'delete': 
-                return os.path.expanduser(company_proxy.trip_delete_folder)                
+            else: # 'delete':
+                return os.path.expanduser(company_proxy.trip_delete_folder)
         except:
             _logger.error(_("Error trying to read EDI folder"))
         return False
 
     def store_forced(self, cr, uid, company_id, forced_list, context=None):
-        ''' Store passed forced list pickle in a file (for company_id passed) 
-        '''
+        """ Store passed forced list pickle in a file (for company_id passed)
+        """
         try:
             # Read EDI file for passed force list
             filename = self.get_trip_import_edi_folder(
@@ -788,31 +789,31 @@ class edi_company(orm.Model):
             pickle.dump(forced_list, open(filename, "wb" ) )
             return True
         except:
-            return False    
+            return False
 
     def load_forced(self, cr, uid, company_id, context=None):
-        ''' Load list of forced from file (for company_id passed)
-        '''
+        """ Load list of forced from file (for company_id passed)
+        """
         try:
             filename = self.get_trip_import_edi_folder(
                 cr, uid, company_id, value='file', context=context)
             return pickle.load(open(filename, 'rb')) or []
-        except: 
+        except:
             return []
 
     def _type_importation_selection(self, cr, uid, context=None):
-        ''' Empty without extra importation modules
-        '''
+        """ Empty without extra importation modules
+        """
         return []
 
     _columns = {
         'name': fields.char('Code', size=15, required=True),
         'partner_id': fields.many2one(
             'res.partner', 'Partner', required=False),
-        'import':fields.boolean('Import'),    
+        'import':fields.boolean('Import'),
         'type_importation_id': fields.many2one(
             'edi.company.importation', 'Importation type', required=True),
-            
+
         # Folders:
         'trip_import_folder': fields.char(
             'Trip import folder', size=150, required=True,
@@ -821,12 +822,12 @@ class edi_company(orm.Model):
             'Trip delete folder', size=150, required=True,
             help="Tuple value, like: ('~', 'etl', 'edi', 'removed')"),
         'trip_todo_file': fields.char(
-            'Trip TODO file', size=150, required=True, 
+            'Trip TODO file', size=150, required=True,
             help="File export where indicate TODO element, used by import "
                 "file script for force some future importation order. "
                 "Write a tuple, like: ('~', 'etl', 'export', 'todo.txt')"),
         }
-        
+
     _defaults = {
         'import': lambda *x: False,
         }
