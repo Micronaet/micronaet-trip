@@ -450,6 +450,8 @@ class edi_company_report(orm.Model):
                 for c in name:
                     if ord(c) < 127:
                         res += c
+                    else:
+                        res += '[ERR]'
                 name = res
 
             account_data[default_code] = [
