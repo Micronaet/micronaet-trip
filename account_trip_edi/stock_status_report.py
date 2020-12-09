@@ -418,7 +418,7 @@ class edi_company_report(orm.Model):
             # -----------------------------------------------------------------
             # Description:
             default_code = column[0].strip()
-            name = column[1].strip()
+            name = u'%s' % column[1].strip()
             uom = column[2].strip().upper()
 
             # Quantity:
@@ -431,11 +431,11 @@ class edi_company_report(orm.Model):
 
             # Calculated:
             net_qty = inventory_qty + load_qty - unload_qty
-            oc_qty = oc_e_qty + oc_s_qty # XXX OF added in real columns
+            oc_qty = oc_e_qty + oc_s_qty  # XXX OF added in real columns
             available_qty = net_qty - oc_qty
 
             # -----------------------------------------------------------------
-            # Statup data for Account OC present:
+            # Startup data for Account OC present:
             # -----------------------------------------------------------------
             if oc_qty and default_code not in report['data']:
                 report['data'][default_code] = report['empty'][:]
@@ -466,7 +466,7 @@ class edi_company_report(orm.Model):
                 _logger.warning(u'No OF product in report: %s' % default_code)
                 continue
 
-            of_qty = float((column[3].strip() or '0').replace(',', '.'))
+            of_qty = float((column[3].strip() or u'0').replace(u',', u'.'))
             of_delivery = column[4].strip()
             supplier = column[5].strip()
             number = column[6].strip()
@@ -498,23 +498,23 @@ class edi_company_report(orm.Model):
 
             if col >= 0:
                 report['data'][default_code][col] += of_qty
-                report['comment'][default_code][col] += '[%s: %s] q. %s' % (
+                report['comment'][default_code][col] += u'[%s: %s] q. %s' % (
                     supplier,
                     number,
                     of_qty,
                     )
 
             # TODO add detail data?
-            report['detail'].append([
-                default_code,
-                col,
-                'OF',
-                supplier,
-                '',
-                number,
-                of_delivery,
-                of_qty,
-                comment,
+            report['detail'].append(
+                [default_code,
+                 col,
+                 u'OF',
+                 supplier,
+                 u'',
+                 number,
+                 of_delivery,
+                 of_qty,
+                 comment,
                 ])
 
         # ---------------------------------------------------------------------
@@ -526,7 +526,7 @@ class edi_company_report(orm.Model):
 
         # excel_pool.set_format(number_format='0.#0')
         excel_pool.set_format(number_format='0')
-        excel_pool.get_format() # Update workbook
+        excel_pool.get_format()  # Update workbook
 
         excel_format = {
             'title': excel_pool.get_format('title'),
@@ -632,7 +632,7 @@ class edi_company_report(orm.Model):
                 name, uom, net_qty, oc_qty, start_qty, of_qty = \
                     account_data[default_code]
             except:
-                name = uom = ''
+                name = uom = u''
                 of_qty = net_qty = oc_qty = start_qty = 0.0
 
             has_negative = self.transform_delta_record(
@@ -643,7 +643,7 @@ class edi_company_report(orm.Model):
                 color = black
 
             excel_pool.write_xls_line(ws_name, row, [
-                ('Neg.' if has_negative else 'Pos.', color['text']),
+                (u'Neg.' if has_negative else u'Pos.', color['text']),
                 (self.get_product_category(default_code), color['text']),
                 (default_code, color['text']),
                 (name, color['text']),
@@ -734,7 +734,6 @@ class edi_company_report(orm.Model):
                 comment,
                 ], black['text'])
 
-        pdb.set_trace()
         return excel_pool.return_attachment(
             cr, uid, ws_name,
             name_of_file='future_stock_status.xls', version='7.0',
