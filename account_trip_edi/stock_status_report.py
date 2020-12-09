@@ -443,19 +443,18 @@ class edi_company_report(orm.Model):
                     report['empty_comment'][:]
 
             # TODO make better:
-            try:  # Clean no ascii char
-                name = u'{}'.format(name)
-            except:
-                res = ''
-                for c in name:
-                    if ord(c) < 127:
-                        res += c
-                    else:
-                        res += '[ERR]'
-                name = res
+            # try:  # Clean no ascii char
+            #    name = u'{}'.format(name)
+            # except:
+            clean_name = ''
+            for c in name:
+                if ord(c) < 127:
+                    clean_name += c
+                else:
+                    clean_name += '[ERR]'
 
             account_data[default_code] = [
-                name,
+                clean_name,
                 uom,
 
                 net_qty,
