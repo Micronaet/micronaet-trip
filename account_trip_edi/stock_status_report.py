@@ -446,7 +446,11 @@ class edi_company_report(orm.Model):
             try:  # Clean no ascii char
                 name = u'{}'.format(name)
             except:
-                name = 'ERRORE CARATTERI NON ASCII!!'
+                res = ''
+                for c in name:
+                    if ord(c) < 127:
+                        res += c
+                name = res
 
             account_data[default_code] = [
                 name,
