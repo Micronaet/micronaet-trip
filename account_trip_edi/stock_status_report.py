@@ -452,6 +452,7 @@ class edi_company_report(orm.Model):
                     clean_name += c
                 else:
                     clean_name += '[ERR]'
+                    pdb.set_trace()
 
             account_data[default_code] = [
                 clean_name,
