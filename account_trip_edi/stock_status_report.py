@@ -442,8 +442,14 @@ class edi_company_report(orm.Model):
                 report['comment'][default_code] = \
                     report['empty_comment'][:]
 
+            # TODO make better:
+            try:  # Clean no ascii char
+                name = u'{}'.format(name)
+            except:
+                name = 'ERRORE CARATTERI NON ASCII!!'
+
             account_data[default_code] = [
-                '{}'.format(name),  # Clean no ascii char
+                name,
                 uom,
 
                 net_qty,
