@@ -418,7 +418,7 @@ class edi_company_report(orm.Model):
             # -----------------------------------------------------------------
             # Description:
             default_code = column[0].strip()
-            name = u'%s' % column[1].strip()
+            name = column[1].strip()
             uom = column[2].strip().upper()
 
             # Quantity:
@@ -443,7 +443,7 @@ class edi_company_report(orm.Model):
                     report['empty_comment'][:]
 
             account_data[default_code] = [
-                name,
+                u'%s' % name,
                 uom,
 
                 net_qty,
