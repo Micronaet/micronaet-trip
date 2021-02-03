@@ -34,15 +34,15 @@ from openerp import SUPERUSER_ID
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
 
 _logger = logging.getLogger(__name__)
 
 # -----------------------------------------------------------------------------
-# SOAP: 
+# SOAP:
 # -----------------------------------------------------------------------------
 import hmac
 import hashlib
@@ -53,12 +53,12 @@ import pytz
 #try:
 from zeep import Client
 #except:
-#    _logger.error('Install zeep dept.: pip install zeep')         
+#    _logger.error('Install zeep dept.: pip install zeep')
 
 
 class EdiSoapConnection(orm.Model):
-    ''' Soap Parameter for connection
-    '''
+    """ Soap Parameter for connection
+    """
     _name = 'edi.soap.connection'
     _description = 'EDI Soap Connection'
     _rec_name = 'name'
@@ -71,11 +71,11 @@ class EdiSoapConnection(orm.Model):
         0: u'Nessun Errore',
         1: u'Credenziali non valide',
         2: u'Dati non disponibili',
-        3: u'Dati errati', # Campi con i dati errati
+        3: u'Dati errati',  # Campi con i dati errati
         4: u'PON non esistente',
         5: u'Numero Ordine non ammesso per il fornitore',
         6: u'Dati acquisti - Ordine incompleto',
-        7: u'Dati acquisti - Righe non presenti in ordine', # Righe in più
+        7: u'Dati acquisti - Righe non presenti in ordine',  # Righe in più
         8: u'Ordine non necessita di logistica',
         9: u'Logistica già inviata a click',
         10: u'Limite temporale superato',
@@ -85,66 +85,67 @@ class EdiSoapConnection(orm.Model):
         14: u'Token di accesso non più valido',
         99: u'Internal Server Error',
         }
-    
+
     # -------------------------------------------------------------------------
     # Utility function:
     # -------------------------------------------------------------------------
     def _get_datetime_tz(self, ):
-        ''' Change datetime removing gap from now and GMT 0
-        '''
+        """ Change datetime removing gap from now and GMT 0
+        """
         return pytz.utc.localize(datetime.now()).astimezone(
             pytz.timezone('Europe/Rome'))
-        
+
     def _get_error_status(self, status_code):
-        ''' Return error comment:
-        '''
+        """ Return error comment:
+        """
         return self._response_status.get(
             status_code, 'Errore non gestito: %s' % status_code)
-        
-    def _get_soap_service(self, cr, uid, ids, wsdl_root=False, namespace=False, 
+
+    def _get_soap_service(
+            self, cr, uid, ids, wsdl_root=False, namespace=False,
             context=None):
-        ''' Get WSDL Service link
-            if passed namespace and wsdl root use that, instead of read from 
+        """ Get WSDL Service link
+            if passed namespace and wsdl root use that, instead of read from
             parameters
-        '''
+        """
         if not wsdl_root: # Read from parameters
             parameter = self.browse(cr, uid, ids, context=context)[0]
             namespace = parameter.namespace
-            wsdl_root = parameter.wsdl_root         
-            
+            wsdl_root = parameter.wsdl_root
+
         client = Client(wsdl_root)
         return client.create_service(
-            namespace, 
+            namespace,
             wsdl_root,
             )
 
     def check_return_status(self, res, comment):
-        ''' Check returned status error
-        '''
+        """ Check returned status error
+        """
         # Parameters
-        header = _('SOAP Error') 
+        header = _('SOAP Error')
         error_mask = _('Cannot connect with SOAP [%s]: %s')
-        
+
         # XXX Status code 14 > New login!
         try:
             status_code = res['operationOutcome']['statusCode']
         except:
             raise osv.except_osv(
-                header, 
+                header,
                 error_mask % (comment, 'Unmanaged error!'),
                 )
 
         if status_code: # if present means error!
             raise osv.except_osv(
-                header, 
+                header,
                 error_mask % (comment, self._get_error_status(status_code))
                 )
 
-        _logger.info('Server response OK')        
-        
+        _logger.info('Server response OK')
+
     def _soap_login(self, cr, uid, ids, context=None):
-        ''' Login and get token from WSDL
-        '''
+        """ Login and get token from WSDL
+        """
         if context is None:
             context = {}
         force_reload = context.get('force_reload', True)
@@ -162,7 +163,7 @@ class EdiSoapConnection(orm.Model):
         token = parameter.token
 
         # ---------------------------------------------------------------------
-        # Check if present last token saved: 
+        # Check if present last token saved:
         # ---------------------------------------------------------------------
         if not force_reload and token:
             _logger.warning('Token yet present, use that')
@@ -173,148 +174,148 @@ class EdiSoapConnection(orm.Model):
         # ---------------------------------------------------------------------
         # Parameter for call:
         timestamp = self._get_datetime_tz().strftime('%d%m%Y%H%M%S')
-        
+
         number = str(uuid.uuid4())[-6:]
         message = message_mask % (username, timestamp, number)
 
         # HMAC encrypt:
         signature = hmac.new(
-            secret, 
-            msg=message, 
+            secret,
+            msg=message,
             digestmod=hashlib.sha256,
-            ).digest()            
+            ).digest()
         hash_text = base64.b64encode(signature)
 
-        service = self._get_soap_service(cr, uid, ids, wsdl_root, namespace, 
-            context=context)
+        service = self._get_soap_service(
+            cr, uid, ids, wsdl_root, namespace, context=context)
         res = service.login(
             username=username, time=timestamp, number=number, hash=hash_text)
         self.check_return_status(res, 'Login')
-            
-        # Get new token and save for next calls: 
+
+        # Get new token and save for next calls:
         token = res['accessToken']
         self.write(cr, uid, ids, {
             'token': token,
-            }, context=context)            
+            }, context=context)
         _logger.warning('Token reloaded')
         return token
-    
+
     # -------------------------------------------------------------------------
     # Scheduled events:
     # -------------------------------------------------------------------------
     def scheduled_load_new_invoice(self, cr, uid, context=None):
-        ''' Scheduled new invoice
-        '''
+        """ Scheduled new invoice
+        """
         _logger.info('Start import load invoice for logistic order')
         for connection_id in self.search(cr, uid, [], context=context):
             self.load_new_invoice(cr, uid, [connection_id], context=context)
-        return True        
-    
+        return True
+
     # -------------------------------------------------------------------------
     # Button events:
     # -------------------------------------------------------------------------
     # Server:
     def load_new_invoice(self, cr, uid, ids, context=None):
-        ''' Load invoice from file
-        '''
+        """ Load invoice from file
+        """
         # ---------------------------------------------------------------------
         # Function
         # ---------------------------------------------------------------------
         def log_data(log_f, comment, mode='INFO', newline='\r\n'):
-            ''' Write comment on log file:
-            '''
+            """ Write comment on log file:
+            """
             return log_f.write('%s [%s] %s%s' % (
                 datetime.now(),
                 mode,
                 comment,
                 cr,
-                ))                
+                ))
 
         def clean_line(line):
-            ''' Clean line            
-            '''
+            """ Clean line
+            """
             remove_list = [('\xb0\xb0', '.'), ('\xc2\xb0', '.')]
-            
+
             line = line.strip()
             for item1, item2 in remove_list:
                 line = line.replace(item1, item2)
-            return line    
+            return line
 
         def get_float(value):
-            ''' Clean weight text:
-            '''
+            """ Clean weight text:
+            """
             value = value.strip().replace('.', ' ')
             try:
                 return float(value.split()[-1].replace(',', '.'))
             except:
                 _logger.error('Cannot parse float: %s' % value)
-                return 0.0 # TODO raise error        
+                return 0.0  # TODO raise error
 
         def get_date(value):
-            ''' Clean weight text:
-            '''
-            value = value.strip()      
+            """ Clean weight text:
+            """
+            value = value.strip()
             try:
                 if len(value) == 10:
                     month = value[3:5]
                 elif len(value) == 8:
                     month = value[2:4]
                 else:
-                    _logger.error('Cannot parse date: %s' % value)                
+                    _logger.error('Cannot parse date: %s' % value)
                     return False
                 res = '%s-%s-%s' % (value[-4:], month, value[:2])
                 return res
 
             except:
                 _logger.error('Cannot parse date: %s' % value)
-                return False 
+                return False
 
         def get_int(value):
-            ''' Clean weight text:
-            '''
-            value = value.strip()      
+            """ Clean weight text:
+            """
+            value = value.strip()
             try:
                 return int(value.replace(',', '.'))
             except:
                 _logger.error('Cannot parse int: %s' % value)
-                return 0 # TODO raise error        
+                return 0  # TODO raise error
 
         def get_last_day(month):
-            ''' Last day of the month
-            '''
+            """ Last day of the month
+            """
             if month == '02':
-                return '28'                
+                return '28'
             elif month in ('04', '06', '09', '11'):
                 return '30'
             else:
                 return '31'
 
         def check_startwith(text, start, key):
-            ''' Check if element passed start with key of start DB 
+            """ Check if element passed start with key of start DB
                 (could be a list)
                 @return extra part on the right
-            '''
+            """
             if key not in start:
                 _logger.error('Key %s not in Start %s' % (key, start))
                 return False
-            
-            key = start[key] # Read list of keys form start             
-            text = text.strip()                
+
+            key = start[key]  # Read list of keys form start
+            text = text.strip()
             if type(key) in (tuple, list): # multiple
                 for item in key:
-                    if text.startswith(item): 
+                    if text.startswith(item):
                         return text[len(item):].strip()
-                return False # not found 
-            else: # single
+                return False # not found
+            else:  # single
                 if text.startswith(key):
-                    return text[len(key):].strip()   
-                
+                    return text[len(key):].strip()
+
         # ---------------------------------------------------------------------
         # Pool used:
         # ---------------------------------------------------------------------
         logistic_pool = self.pool.get('edi.soap.logistic')
         line_pool = self.pool.get('edi.soap.logistic.line')
-        pallet_pool = self.pool.get('edi.soap.logistic.pallet')        
+        pallet_pool = self.pool.get('edi.soap.logistic.pallet')
         company_pool = self.pool.get('res.company')
         order_pool = self.pool.get('edi.soap.order')
         product_pool = self.pool.get('product.product')
@@ -335,10 +336,10 @@ class EdiSoapConnection(orm.Model):
             'header': 'HEADER',
             'detail': 'DETAIL',
             'weight': 'PESO LORDO',
-            
-            #'order': ('P.O.N.', 'N.ORDINE', 'PON'),
-            #'lord': ('PESO LORDO KG:', 'PESO LORDO'),
-            #'total': ('PESO LORDO KG:', 'PESO TOTALE'),
+
+            # 'order': ('P.O.N.', 'N.ORDINE', 'PON'),
+            # 'lord': ('PESO LORDO KG:', 'PESO LORDO'),
+            # 'total': ('PESO LORDO KG:', 'PESO TOTALE'),
             'pallet': ('BANCALI NR:', 'BANCALI N.', 'BANCALI PVC NR:'),
             'delivery_date': 'CONSEGNA DEL',
             }
@@ -349,11 +350,11 @@ class EdiSoapConnection(orm.Model):
         invoice_path = os.path.expanduser(parameter.server_root)
         partner_start = parameter.server_account_code.split('|')
         pon_code = parameter.server_pon_code
-        
+
         if not partner_start or not invoice_path or not pon_code:
             raise osv.except_osv(
-                _('Error'), 
-                _('Check parameter on SAOP Configuration!'),
+                _('Error'),
+                _('Check parameter on SOAP Configuration!'),
                 )
         partner_len = len(partner_start[0])
 
@@ -372,7 +373,7 @@ class EdiSoapConnection(orm.Model):
         # Create process (path not included!):
         for folder in (history_path, unsed_path, log_path, pdf_path):
             os.system('mkdir -p %s' % folder)
-        
+
         # ---------------------------------------------------------------------
         # Clean operation (unused files):
         # ---------------------------------------------------------------------
@@ -382,23 +383,23 @@ class EdiSoapConnection(orm.Model):
                     if filename[:partner_len] not in partner_start:
                         os.remove(os.path.join(root, filename))
                         _logger.warning('Remove file not used: %s' % filename)
-                break # No subfolder check
-        
+                break  # No subfolder check
+
         # ---------------------------------------------------------------------
         # Check folder for files:
         # ---------------------------------------------------------------------
         log_f = open(os.path.join(log_path, 'invoice.log'), 'w')
         history_list = []
 
-        for root, folders, files in os.walk(path):            
+        for root, folders, files in os.walk(path):
             for filename in files:
                 if not filename.lower().endswith('csv'):
                     _logger.error('File not used: %s' % filename)
                     continue
 
-                fullname = os.path.join(root, filename)                
+                fullname = os.path.join(root, filename)
                 if filename[:partner_len] not in partner_start:
-                    continue # jump unused files
+                    continue  # jump unused files
 
                 history_list.append(
                     (fullname, os.path.join(history_path, filename)))
@@ -406,21 +407,21 @@ class EdiSoapConnection(orm.Model):
                 log_data(log_f, 'File checked: %s' % filename)
 
                 # Read file (last part)
-                data = { # Collect order data
+                data = {  # Collect order data
                     'i': 0,
                     'text': '',
                     'detail_status': 'off',
-                    'product_insert': False, # for double weight
+                    'product_insert': False,  # for double weight
                     'detail_text': '',
                     'error': False,
                     'error_comment': '',
 
                     'pallet': 1,
                     'delivery_date': False,
-                    
-                    #'header': '',
-                    #'detail': [],                 
-                    #'footer': {},
+
+                    # 'header': '',
+                    # 'detail': [],
+                    # 'footer': {},
                     }
 
                 # -------------------------------------------------------------
@@ -429,13 +430,13 @@ class EdiSoapConnection(orm.Model):
                 file_rows = []
                 for line in open(fullname):
                     if line.startswith(start['header']):
-                        file_rows = [] # reset when find header!
+                        file_rows = []  # reset when find header!
                     file_rows.append(clean_line(line))
 
                 for line in file_rows:
                     data['i'] += 1
                     line = line.strip()
-                    
+
                     # ---------------------------------------------------------
                     # Check part of document:
                     # ---------------------------------------------------------
@@ -443,10 +444,10 @@ class EdiSoapConnection(orm.Model):
                     if line.startswith(start['header']):
                         data.update({
                             'header': line,
-                            'i': 1, # Restart from 1
-                            'text': '', #line + newline, # Restart from here
+                            'i': 1,  # Restart from 1
+                            'text': '',  # line + newline, # Restart from here
 
-                            'detail': [],                 
+                            'detail': [],
                             'footer': {},
                             })
                     elif line.startswith(start['detail']):
@@ -455,111 +456,111 @@ class EdiSoapConnection(orm.Model):
                     # ---------------------------------------------------------
                     #                         Header data:
                     # ---------------------------------------------------------
-                    elif data['i'] == start['customer_order']: # Customer order
-                        data['customer_order'] = line                        
-                    elif data['i'] == start['invoice']: # Invoice number
-                        data['invoice'] = line                        
-                    elif data['i'] == start['invoice_date']: # Invoice date
+                    elif data['i'] == start['customer_order']: # Custom. order
+                        data['customer_order'] = line
+                    elif data['i'] == start['invoice']:  # Invoice number
+                        data['invoice'] = line
+                    elif data['i'] == start['invoice_date']:  # Invoice date
                         data['invoice_date'] = line
 
                     # ---------------------------------------------------------
                     #                         Detail data:
                     # ---------------------------------------------------------
-                    elif data['detail_status'] == 'on': # Start details
-                        if line.startswith(separator): # Detail line
+                    elif data['detail_status'] == 'on':  # Start details
+                        if line.startswith(separator):  # Detail line
                             # 1. Article line:
                             data['detail_text'] = line
                             data['product_insert'] = False
                         elif not data['product_insert'] and \
-                                start['weight'] in line: # weigh line (second)
-                            # 2A. Error: Weight double     
+                                start['weight'] in line:  # weigh line (second)
+                            # 2A. Error: Weight double
                             data['detail'].append((
-                                data['detail_text'], 
+                                data['detail_text'],
                                 get_float(line),
-                                line.split()[0], # customer code
+                                line.split()[0],  # customer code
                                 ))
                             data['product_insert'] = True
-                            
+
                         elif data['product_insert'] and \
-                                start['weight'] in line: # weigh line (second)
+                                start['weight'] in line:  # weigh line (second)
                             # 2B. Check error (ex. 2 PESO LORDO line)
                             _logger.warning('Extra line: %s' % line)
                             line_mode = 'error'
 
-                        else: 
+                        else:
                             # 3. Comment line:
                             data['detail_status'] = 'end'
-                        #else:
+                        # else:
                         #    data['error'] = True
                         #    data['error_comment'] += \
                         #        '%s Detail without correct schema' % data['i']
-                        
+
                     # ---------------------------------------------------------
                     #         End of document part (always done):
                     # ---------------------------------------------------------
-                    if data['detail_status'] == 'end': # Start details
+                    if data['detail_status'] == 'end':  # Start details
                         # CONSEGNA DEL:
 
-                        # DESTINAZIONE: 
+                        # DESTINAZIONE:
 
                         # -----------------------------------------------------
                         # Extract remain line:
                         # -----------------------------------------------------
-                        #order_line = check_startwith(line, start, 'order')
+                        # order_line = check_startswith(line, start, 'order')
                         delivery_line = check_startwith(
                             line, start, 'delivery_date')
-                        #lord_line = check_startwith(line, start, 'lord')
-                        #total_line = check_startwith(line, start, 'total')
+                        # lord_line = check_startswith(line, start, 'lord')
+                        # total_line = check_startswith(line, start, 'total')
 
                         pallet_line = check_startwith(
                             line, start, 'pallet')
-                        
+
                         # -----------------------------------------------------
                         # Extract needed data:
                         # -----------------------------------------------------
-                        #if order_line:
+                        # if order_line:
                         #    pass # XXX get in first line of file no needed
 
                         if delivery_line:
                             data['delivery_date'] = get_date(
                                 delivery_line.split()[-1])
 
-                        #elif lord_line:
+                        # elif lord_line:
                         #    pass # XXX needed?
 
-                        #elif total_line:
+                        # elif total_line:
                         #    pass # XXX needed?
-                        
+
                         elif pallet_line:
                             try:
                                 data['pallet'] = int(pallet_line)
                             except:
                                 data['pallet'] = 0
                                 _logger.error(
-                                    'Cannot decode pallet: %s' % line)        
+                                    'Cannot decode pallet: %s' % line)
 
                     # ---------------------------------------------------------
-                    # Keep only last part of the file:    
+                    # Keep only last part of the file:
                     # ---------------------------------------------------------
                     if line_mode == 'error':
                         data['text'] += '<font color="red">%s</font><br/>' % (
-                            line, )  
+                            line, )
                     else:
                         data['text'] += '%s<br />' % line
-                           
+
                 # -------------------------------------------------------------
-                # Create ODOO Record:                
+                # Create ODOO Record:
                 # -------------------------------------------------------------
                 name = '%s del %s' % (data['invoice'], data['invoice_date'])
                 logistic_ids = logistic_pool.search(cr, uid, [
                     ('name', '=', name),
                     ], context=context)
-
+                import pdb; pdb.set_trace()
                 if logistic_ids:
                     # No unlink admitted!
                     logistic = logistic_pool.browse(
                         cr, uid, logistic_ids, context=context)[0]
-                    
+
                     if logistic.state != 'draft':
                         # Yet load cannot override:
                         # TODO move in after folder (unused)
@@ -568,16 +569,16 @@ class EdiSoapConnection(orm.Model):
                         continue
                     else:
                         _logger.error('Order yet present, deleted: %s' % name)
-                        
+
                     # Delete and override:
                     logistic_pool.unlink(
                         cr, uid, logistic_ids, context=context)
 
-                # Bug management:                
-                text = data['text'].replace('\xb0', ' ')                
+                # Bug management:
+                text = data['text'].replace('\xb0', ' ')
 
                 # -------------------------------------------------------------
-                # Link to order                
+                # Link to order
                 # -------------------------------------------------------------
                 customer_order = data['customer_order']
 
@@ -587,16 +588,16 @@ class EdiSoapConnection(orm.Model):
                         customer_order,
                         pon_code,
                         )
-                        
+
                 order_ids = order_pool.search(cr, uid, [
                     ('name', '=', customer_order),
                     ], context=context)
-                if order_ids: 
-                    order_id = order_ids[0]    
+                if order_ids:
+                    order_id = order_ids[0]
                 else:
                     _logger.error('Cannot link logistic to generator order!')
                     order_id = False
-                    
+
                 # A. Import order:
                 logistic_id = logistic_pool.create(cr, uid, {
                     'name': name,
@@ -606,7 +607,7 @@ class EdiSoapConnection(orm.Model):
                     'pallet': data['pallet'],
                     'delivery_date': data['delivery_date'],
                     'customer_order': customer_order,
-                    #'filename': 
+                    # 'filename':
                     }, context=context)
 
                 # B. Link pallet:
@@ -619,12 +620,12 @@ class EdiSoapConnection(orm.Model):
                     pallet_pool.write(cr, uid, pallet_ids, {
                         'logistic_id': logistic_id,
                         }, context=context)
-                    if len(pallet_ids):    
+                    if len(pallet_ids):
                         default_pallet_id = pallet_ids[0] # TODO Check if first!
                         default_pallet = pallet_pool.browse(
                             cr, uid, default_pallet_id, context=context).name
                     else:
-                        default_pallet_id = False    
+                        default_pallet_id = False
                         default_pallet = False
 
                 # C. Import order line:
@@ -634,57 +635,57 @@ class EdiSoapConnection(orm.Model):
                 for row, lord_qty, customer_code in data['detail']:
                     sequence += 1
                     line_part = row.split(separator)
-                    
+
                     mapping_id = False
                     if customer_code.startswith('F'):
                         # Link mapping data:
                         mapping_ids = mapping_pool.search(cr, uid, [
                             ('name', '=', customer_code),
                             ], context=context)
-                            
+
                         if mapping_ids:
                             mapping_id = mapping_ids[0]
                     else:  # Wrong code:
                         _logger.error('Wrong code %s' % customer_code)
                         customer_code = ''
-                        
-                    # Deadline: 
+
+                    # Deadline:
                     if line_part[12]:
                         deadline = '20%s-%s-%s' % (
                             line_part[12][-2:],
-                            line_part[12][:2],                        
+                            line_part[12][:2],
                             get_last_day(line_part[12][:2]),
                             )
                     else:
-                        deadline = False        
+                        deadline = False
 
                     default_code = line_part[4]
                     product_ids = product_pool.search(cr, uid, [
                         ('default_code', '=', default_code[:11]),
                         ], context=context)
                     if product_ids:
-                        product_id = product_ids[0]    
+                        product_id = product_ids[0]
                     else:
                         _logger.error('Not found: %s' % default_code)
-                        product_id = False    
+                        product_id = False
                     data = {
                         'logistic_id': logistic_id,
-                        'pallet_id': default_pallet_id, # one2many
-                        'pallet': default_pallet, # code
+                        'pallet_id': default_pallet_id,  # one2many
+                        'pallet': default_pallet,  # code
                         'product_id': product_id,
-                        'mapping_id': mapping_id, # Mapping reference
+                        'mapping_id': mapping_id,  # Mapping reference
 
                         'sequence': sequence,
                         'name': default_code,
                         'customer_code': customer_code,
-                        
+
                         'variable_weight': line_part[5],
                         'lot': line_part[6],
                         'confirmed_qty': get_float(line_part[7]),
                         'net_qty': get_float(line_part[8]),
                         'lord_qty': lord_qty,
                         'parcel': get_int(line_part[10]),
-                        'piece': get_int(line_part[11]), # XXX not used!
+                        'piece': get_int(line_part[11]),  # XXX not used!
                         'deadline': deadline,
                         'origin_country': line_part[13],
                         'provenance_country': line_part[14],
@@ -714,31 +715,31 @@ class EdiSoapConnection(orm.Model):
         log_f.close()
         return True
 
-    # SOAP: 
+    # SOAP:
     def get_token(self, cr, uid, ids, context=None):
-        ''' Try to use previous token or get new one for period
-        '''
+        """ Try to use previous token or get new one for period
+        """
         return self._soap_login(cr, uid, ids, context=context)
 
     def scheduled_load_new_order(self, cr, uid, context=None):
-        ''' Scheduled action for import all orders
-        '''
+        """ Scheduled action for import all orders
+        """
         _logger.info('Scheduled action: import all SOAP order')
         for item_id in self.search(cr, uid, [], context=context):
-            self.load_new_order(cr, uid, [item_id], context=context)    
-        return True    
+            self.load_new_order(cr, uid, [item_id], context=context)
+        return True
 
     def load_new_order(self, cr, uid, ids, context=None):
-        ''' Load order from WSDL Soap Connection
-        '''
+        """ Load order from WSDL Soap Connection
+        """
         order_pool = self.pool.get('edi.soap.order')
 
         service = self._get_soap_service(cr, uid, ids, context=context)
 
         res = service.getOngoingPOrders(
-            accessToken=self.get_token(cr, uid, ids, context=context))            
-        self.check_return_status(res, 'Load new order') 
-        
+            accessToken=self.get_token(cr, uid, ids, context=context))
+        self.check_return_status(res, 'Load new order')
+
         # TODO Manage token problem
         for order in res['orders']:
             order_pool.create_new_order(
@@ -747,52 +748,65 @@ class EdiSoapConnection(orm.Model):
 
     _columns = {
         'name': fields.char('Soap Connection', size=64, required=True),
-        'token': fields.char('Soap token', size=180, 
+        'token': fields.char(
+            'Soap token', size=180,
             help='Token assigned and saved when updated'),
 
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         # Soap connection:
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         'username': fields.char('Username', size=40, required=True),
-        'secret': fields.char('Secret', size=180, required=True),        
-        'wsdl_root': fields.char('WSDL Root', size=180, required=True, 
+        'secret': fields.char('Secret', size=180, required=True),
+        'wsdl_root': fields.char(
+            'WSDL Root', size=180, required=True,
             help='Example: https://example.com/pep/wsdl'),
-        'namespace': fields.char('Namespace', size=40, required=True,
+        'namespace': fields.char(
+            'Namespace', size=40, required=True,
             help='Example: {it.example.soapws.ws}WsPortSoap11'),
 
-        # ---------------------------------------------------------------------        
-        # Server connection:    
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
+        # Server connection:
+        # ---------------------------------------------------------------------
         # Invoice:
-        'server_root': fields.char('Invoice Root', size=180, required=True, 
+        'server_root': fields.char(
+            'Invoice Root', size=180, required=True,
             help='Example: ~/account/invoice'),
-        'detail_separator': fields.char('Detail separator', size=5, 
+        'detail_separator': fields.char(
+            'Detail separator', size=5,
             required=True, help='Separator used for detail columns'),
-        
-        # Order:    
-        'order_root': fields.char('Order Root', size=180, required=True, 
+
+        # Order:
+        'order_root': fields.char(
+            'Order Root', size=180, required=True,
             help='Example: ~/account/order/in'),
-        'order_separator': fields.char('Detail separator', size=5, 
+        'order_separator': fields.char(
+            'Detail separator', size=5,
             required=True, help='Separator used for detail columns'),
-        'csv_code': fields.char('Company code', size=5, 
+        'csv_code': fields.char(
+            'Company code', size=5,
             required=True, help='Used for first field in CSV file'),
 
         # Pallet:
-        'uom_code': fields.char('UOM code', size=5, 
+        'uom_code': fields.char(
+            'UOM code', size=5,
             help='Used for pallet total calc'),
-        'pallet_capability': fields.integer('Pallet capability',
+        'pallet_capability': fields.integer(
+            'Pallet capability',
             help='Used for pallet total calc'),
-        'pallet_extra': fields.integer('Pallet extra',
+        'pallet_extra': fields.integer(
+            'Pallet extra',
             help='Used to print extra label if needed'),
-        # Account:    
-        'server_account_code': fields.char('Account code', size=180, 
-            required=True, 
+        # Account:
+        'server_account_code': fields.char(
+            'Account code', size=180,
+            required=True,
             help='Account ref. for partners, ex: 02.00001|02.00002'),
-        'server_pon_code': fields.char('PON partner code', size=15, 
-            required=True, 
+        'server_pon_code': fields.char(
+            'PON partner code', size=15,
+            required=True,
             help='Right part of the order: ORDER-PONCODE >> PONCODE'),
         }
-    
+
     _defaults = {
         'detail_separator': lambda *x: '|*|',
         'order_separator': lambda *x: '|',
@@ -800,19 +814,20 @@ class EdiSoapConnection(orm.Model):
         'pallet_capability': lambda *x: 550,
         }
 
+
 class EdiSoapMapping(orm.Model):
-    ''' Soap Parameter for connection
-    '''
+    """ Soap Parameter for connection
+    """
     _name = 'edi.soap.mapping'
     _description = 'EDI Soap Mapping'
     _rec_name = 'name'
     _order = 'connection_id,default_code'
-    
+
     def onchange_product_id(self, cr, uid, ids, product_id, context=None):
-        ''' Onchange product check chunk data:
-        '''
+        """ Onchange product check chunk data:
+        """
         if not product_id:
-           return False #{'value': {'chunk': False}}
+            return False  # {'value': {'chunk': False}}
         # Update chunk if not present:
         product_pool = self.pool.get('product.product')
         product = product_pool.browse(cr, uid, product_id, context=context)
@@ -823,11 +838,11 @@ class EdiSoapMapping(orm.Model):
             product_pool.write(cr, uid, [product_id], {
                 'chunk': chunk,
                 }, context=context)
-        return False 
+        return False
 
     def onchange_default_code(self, cr, uid, ids, default_code, context=None):
-        ''' Update product from default_code
-        '''
+        """ Update product from default_code
+        """
         res = {}
         product_pool = self.pool.get('product.product')
         product_ids = product_pool.search(cr, uid, [
@@ -842,23 +857,23 @@ class EdiSoapMapping(orm.Model):
                 }
             res['domain'] = {
                 'product_id': [],
-                }    
-            # Call for update chunk:    
+                }
+            # Call for update chunk:
             self.onchange_product_id(
-                cr, uid, ids, product_ids[0], context=context)    
+                cr, uid, ids, product_ids[0], context=context)
         else:
             res['domain'] = {
                 'product_id': [('id', 'in', product_ids)],
                 }
-        return res        
-        
+        return res
+
     _columns = {
         'name': fields.char('Customer code', size=64, required=True),
         'variable_weight': fields.boolean('Variable weight'),
         'default_code': fields.char('Company code', size=64),
         'product_id': fields.many2one(
             'product.product', 'Product', required=True),
-            
+
         'connection_id': fields.many2one(
             'edi.soap.connection', 'Connection', required=True),
         'duty_code': fields.related(
@@ -870,29 +885,29 @@ class EdiSoapMapping(orm.Model):
 class ProductProduct(orm.Model):
     """ Model name: ProductProduct
     """
-    
+
     _inherit = 'product.product'
 
     # -------------------------------------------------------------------------
     # Utility:
     # -------------------------------------------------------------------------
     def get_chunk(self, product):
-        ''' Extract chunk from name
-        '''
+        """ Extract chunk from name
+        """
         try:
             return re.findall(r'\d*[xX]', product.name)[0][:-1] or 1
         except:
-            return 1    
+            return 1
 
-    
+
     _columns = {
         'duty_code': fields.char('Duty code', size=20),
         'chunk': fields.char('Chunk per pack', size=20),
     }
 
 class EdiSoapOrder(orm.Model):
-    ''' Soap Soap Order
-    '''
+    """ Soap Soap Order
+    """
     _name = 'edi.soap.order'
     _description = 'EDI Soap Order'
     _rec_name = 'name'
@@ -902,20 +917,20 @@ class EdiSoapOrder(orm.Model):
     # Utility:
     # -------------------------------------------------------------------------
     def _safe_get(self, item, field, default=False):
-        ''' Safe eval the field data
-        ''' 
+        """ Safe eval the field data
+        """
         try:
             return eval('item[field] or default')
-        except:    
+        except:
             _logger.error('Cannot eval: field %s' % field)
             return default
 
     # -------------------------------------------------------------------------
     #                                    BUTTON:
     # -------------------------------------------------------------------------
-    def print_all_label(self, cr, uid, ids, context=None):    
-        ''' Print all label
-        '''
+    def print_all_label(self, cr, uid, ids, context=None):
+        """ Print all label
+        """
         line_pool = self.pool.get('edi.soap.logistic.pallet')
         if context is None:
             context = []
@@ -923,30 +938,30 @@ class EdiSoapOrder(orm.Model):
         return line_pool.print_label(cr, uid, False, context=context)
 
     def generate_pallet_list(self, cr, uid, ids, context=None):
-        ''' Generate list of pallet from order weight
-        '''
+        """ Generate list of pallet from order weight
+        """
         extra_pallet = 0 # TODO Param for print more labels
 
-        # Pool used:        
+        # Pool used:
         pallet_pool = self.pool.get('edi.soap.logistic.pallet')
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
         pallet = current_proxy.total_pallet
         current_pallet = len(current_proxy.pallet_ids)
         if current_pallet and pallet == current_pallet:
             raise osv.except_osv(
-                _('Warning'), 
+                _('Warning'),
                 _('The %s pallet is yet created!') % pallet,
                 )
         elif pallet < current_pallet and current_pallet:
             raise osv.except_osv(
-                _('Warning'), 
+                _('Warning'),
                 _('Cannot remove, dont\'t use the wrong created!'),
                 )
-        try:        
-            last = max([item.name for item in current_proxy.pallet_ids])        
+        try:
+            last = max([item.name for item in current_proxy.pallet_ids])
         except:
             last = 0
-        
+
         # ---------------------------------------------------------------------
         # If is only one assign to all
         # ---------------------------------------------------------------------
@@ -954,19 +969,19 @@ class EdiSoapOrder(orm.Model):
         remain = pallet - current_pallet
         pallet_id = 0
         pallet_ids = []
-        for i in range(0, remain):            
+        for i in range(0, remain):
             pallet_ids.append(pallet_pool.create(cr, uid, {
                 'name': last + i + 1,
                 'sscc': pallet_pool._generate_sscc_code(
                     cr, uid, context=context),
                 'order_id': ids[0]
                 }, context=context))
-        return True        
+        return True
 
-    def create_new_order(self, cr, uid, connection_id, order, force=False, 
+    def create_new_order(self, cr, uid, connection_id, order, force=False,
             context=None):
-        ''' Create new order from order object
-        '''        
+        """ Create new order from order object
+        """
         # Pool used:
         connection_pool = self.pool.get('edi.soap.connection')
         mapping_pool = self.pool.get('edi.soap.mapping')
@@ -983,12 +998,12 @@ class EdiSoapOrder(orm.Model):
         pallet_extra = connection.pallet_extra
 
         entity_name = self._safe_get(order, 'entityName')
-        po_number = self._safe_get(order, 'poNumber')        
+        po_number = self._safe_get(order, 'poNumber')
         if entity_name.upper().startswith('WH'):
             mode = 'WH'
         else:
             mode = 'SH'
-            
+
         order_ids = self.search(cr, uid, [
             ('name', '=', po_number),
             ], context=context)
@@ -1009,7 +1024,7 @@ class EdiSoapOrder(orm.Model):
                 self.unlink(cr, uid, order_ids, context=context)
             else:
                 # Update only state:
-                _logger.warning('%s yet present (update status)' % po_number)                 
+                _logger.warning('%s yet present (update status)' % po_number)
                 return self.write(cr, uid, order_ids, {
                     'status': self._safe_get(order, 'status'),
                     }, context=context)
@@ -1058,11 +1073,11 @@ class EdiSoapOrder(orm.Model):
                 order, 'logistic'),# False,
             'requires_logistic': self._safe_get(
                 order, 'requiresLogistic'),# None,
-            }            
+            }
 
-        # Create order not present:    
+        # Create order not present:
         order_id = self.create(cr, uid, header, context=context)
-        _logger.info('New Order %s' % po_number)                 
+        _logger.info('New Order %s' % po_number)
 
         # TODO load also file for ERP Management
         weight = {}
@@ -1072,13 +1087,13 @@ class EdiSoapOrder(orm.Model):
             # -----------------------------------------------------------------
             uom = self._safe_get(line, 'itemReceivingUnit') # 'KG'
             confirmed_qty = float(self._safe_get(
-                    line, 'quantityConfirmed', 0.0)) # Decimal('230.00000'),                    
-            name = self._safe_get(line, 'itemCode') # 'F0000801'        
+                    line, 'quantityConfirmed', 0.0)) # Decimal('230.00000'),
+            name = self._safe_get(line, 'itemCode') # 'F0000801'
 
             # Update total for pallet label calc:
             if uom in weight:
                 weight[uom] += confirmed_qty
-            else:    
+            else:
                 weight[uom] = confirmed_qty
 
             # Search product mapping:
@@ -1087,11 +1102,11 @@ class EdiSoapOrder(orm.Model):
                 ], context=context)
             if mapping_ids:
                 mapping_proxy = mapping_pool.browse(
-                    cr, uid, mapping_ids, context=context)[0]    
-                product_id = mapping_proxy.product_id.id    
+                    cr, uid, mapping_ids, context=context)[0]
+                product_id = mapping_proxy.product_id.id
             else:
-                product_id = False    
-            
+                product_id = False
+
             line = {
                 'order_id': order_id,
                 'name': name,
@@ -1106,7 +1121,7 @@ class EdiSoapOrder(orm.Model):
                 'confirmed_qty': confirmed_qty,
                 'logistic_qty': float(self._safe_get(
                     line, 'quantityLogistic', 0.0)), # None,
-                
+
                 'cd_gtin': self._safe_get(
                     line, 'cdGtin'), # None,
                 'cd_voce_doganale': self._safe_get(
@@ -1119,22 +1134,22 @@ class EdiSoapOrder(orm.Model):
                     line, 'cdPaeseProvenienza'), # None,
                 'fl_dogana': self._safe_get(
                     line, 'flDogana'), # None
-                }                    
+                }
             line_pool.create(cr, uid, line, context=context)
 
-        weight = weight.get(pallet_uom, 0.0)        
-        if weight: 
+        weight = weight.get(pallet_uom, 0.0)
+        if weight:
             self.write(cr, uid, [order_id], {
                 'total_weight': weight,
                 'total_pallet': pallet_extra + (weight / pallet_weight) + \
                     1 if weight % pallet_weight > 0 else 0
-                }, context=context)   
+                }, context=context)
 
-        if destination_id: 
+        if destination_id:
             self.write(cr, uid, [order_id], {
                 'destination_id': destination_id,
                 }, context=context)
-        
+
         # Pallet relinked to new order:
         if pallet_ids:
             _logger.warning('Pallet relinked to logistic order # %s' % len(
@@ -1142,21 +1157,21 @@ class EdiSoapOrder(orm.Model):
             pallet_pool.write(cr, uid, pallet_ids, {
                 'order_id': order_id,
                 }, context=context)
-                
-        # TODO generate pallet list if empty?        
+
+        # TODO generate pallet list if empty?
         return order_id
 
     def extract_order_csv_file(self, cr, uid, ids, context=None):
-        ''' Generate all pallet label from here
-        '''
+        """ Generate all pallet label from here
+        """
         # ---------------------------------------------------------------------
         # Utility:
         # ---------------------------------------------------------------------
-        def clean_text(text, length, uppercase=False, error=None, 
+        def clean_text(text, length, uppercase=False, error=None,
                 truncate=False):
-            ''' Return clean text with limit cut
+            """ Return clean text with limit cut
                 Log in error if over length
-            '''
+            """
             if error is None:
                 error = []
 
@@ -1168,71 +1183,71 @@ class EdiSoapOrder(orm.Model):
                     error.append('Text: %s > %s' % (text, length))
             if uppercase:
                 return text.upper()
-            return text    
+            return text
 
-        def clean_date(italian_date, separator='', out_format='iso', 
+        def clean_date(italian_date, separator='', out_format='iso',
                 error=None):
-            ''' Return clean text with limit cut
+            """ Return clean text with limit cut
                 Log in error if over length
-            '''
+            """
             if error is None:
                 error = []
             italian_date = italian_date.split(' ')[0] # remove hour block
             if len(italian_date) != 10:
                 error.append('Error not italian date: %s' % italian_date)
                 # not stopped
-            if out_format == 'iso': 
+            if out_format == 'iso':
                 return '%s%s%s%s%s' % (
                     italian_date[-4:],
                     separator,
                     italian_date[3:5],
-                    separator,        
+                    separator,
                     italian_date[:2],
                     )
-            elif out_format == 'italian': 
+            elif out_format == 'italian':
                 return '%s%s%s%s%s' % (
                     italian_date[:2],
                     separator,
                     italian_date[3:5],
-                    separator,        
+                    separator,
                     italian_date[-4:],
                     )
-            elif out_format == 'english': 
+            elif out_format == 'english':
                 return '%s%s%s%s%s' % (
                     italian_date[3:5],
                     separator,
                     italian_date[:2],
-                    separator,        
+                    separator,
                     italian_date[-4:],
                     )
-            else: # incorrect format:        
+            else: # incorrect format:
                 return italian_date # nothing todo
 
         def clean_float(value, length, decimal=3, separator='.', error=None):
-            ''' Clean float and return float format 
-            '''
+            """ Clean float and return float format
+            """
             if error is None:
                 error = []
             try:
                 if type(value) == str:
-                    value = value.replace(',', '.')    
+                    value = value.replace(',', '.')
                     float_value = float(value.strip())
                 else: # float
-                    float_value = value    
+                    float_value = value
             except:
                 error.append('Not a float: %s' % value)
                 float_value = 0.0
-            
+
             mask = '%%%s.%sf' % (length, decimal)
             res = mask % float_value
             res = res.replace('.', separator)
             return res
-        
+
         # ---------------------------------------------------------------------
         #                           Export procedure:
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         order = self.browse(cr, uid, ids, context=context)[0]
-        
+
         # Parameters:
         mask = '%3s|%-8s|%-8s|%-25s|%-16s|' + \
             '%-16s|%-60s|%-2s|%-15s|%-15s|%-15s|%-8s|%-8s|%-40s\r\n'
@@ -1243,22 +1258,22 @@ class EdiSoapOrder(orm.Model):
         path = os.path.expanduser(connection.order_root)
         filename = '%s.csv' % order.name
         fullname = os.path.join(path, filename)
-        
+
         # Update separator
         if separator != '|':
             mask = mask.replace('|', separator)
-        
+
         # Header data:
         date = order.po_create_date.replace('-', '')
         deadline = order.delivery_date.replace('-', '')
         today = datetime.now().strftime(
             DEFAULT_SERVER_DATE_FORMAT).replace('-', '')
         destination_code = order.destination_id.sql_destination_code or ''
-        
+
         entity_name = order.entity_name or ''
         if entity_name.upper().startswith('WH'):
             entity_name = order.document_comment
-            
+
         file_csv = open(fullname, 'w')
         error = []
         for line in order.line_ids:
@@ -1268,43 +1283,43 @@ class EdiSoapOrder(orm.Model):
 
             row = mask % (
                 csv_code, # 3 Company
-                deadline, 
+                deadline,
                 clean_text(
-                    destination_code, 8, error=error), 
+                    destination_code, 8, error=error),
                 clean_text(
-                    order.name, 25, error=error), 
+                    order.name, 25, error=error),
                 clean_text(
                     line.name, 16, uppercase=True, error=error),
                 clean_text(
-                    product.default_code, 16, uppercase=True, error=error), 
+                    product.default_code, 16, uppercase=True, error=error),
                 clean_text(
                     product.name, 60, error=error, truncate=True),
                 clean_text(
-                    line.uom, 2, uppercase=True, error=error), 
+                    line.uom, 2, uppercase=True, error=error),
                 clean_float( # quantity
-                    line.confirmed_qty, 15, 2, error=error), 
+                    line.confirmed_qty, 15, 2, error=error),
                 clean_float( # price
-                    line.item_price, 15, 3, error=error), 
+                    line.item_price, 15, 3, error=error),
                 clean_float( # subtotal
-                    subtotal, 15, 3, error=error), 
+                    subtotal, 15, 3, error=error),
                 date,
                 today,
                 clean_text(
-                    entity_name, 40, error=error), 
+                    entity_name, 40, error=error),
                 )
             file_csv.write(row)
         file_csv.close()
 
-        # Save file name (hide button):            
+        # Save file name (hide button):
         self.write(cr, uid, [order.id], {
             'filename': filename,
             }, context=context)
         _logger.warning('Files %s exported!' % fullname)
         return True
-        
+
     def reload_this_order(self, cr, uid, ids, context=None):
-        ''' Reload this order
-        '''
+        """ Reload this order
+        """
         connection_pool = self.pool.get('edi.soap.connection')
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
         connection_id = current_proxy.connection_id.id
@@ -1318,12 +1333,12 @@ class EdiSoapOrder(orm.Model):
             poNumber=current_proxy.name,
             )
         connection_pool.check_return_status(
-            res, 'Reload order: %s' % current_proxy.name) 
-        order = res['pOrder']    
+            res, 'Reload order: %s' % current_proxy.name)
+        order = res['pOrder']
 
         # Force recreation of order:
         order_id = self.create_new_order(
-            cr, uid, connection_id, order, force=True, 
+            cr, uid, connection_id, order, force=True,
             context=context)
         return {
             'type': 'ir.actions.act_window',
@@ -1338,18 +1353,18 @@ class EdiSoapOrder(orm.Model):
             'context': context,
             'target': 'current', # 'new'
             'nodestroy': False,
-            }    
+            }
 
     def _get_check_pre_export(self, cr, uid, ids, fields, args, context=None):
-        ''' Fields function for calculate export OK
-        '''
+        """ Fields function for calculate export OK
+        """
         res = {}
-        for order in self.browse(cr, uid, ids, context=context): 
+        for order in self.browse(cr, uid, ids, context=context):
             res[order.id] = True
             for line in order.line_ids:
                 if not (line.product_id and line.duty_code and line.chunk):
                     res[order.id] = False
-                    break 
+                    break
         return res
 
     _columns = {
@@ -1358,14 +1373,14 @@ class EdiSoapOrder(orm.Model):
         'connection_id': fields.many2one(
             'edi.soap.connection', 'Connection', required=True),
         'destination_id': fields.many2one(
-            'res.partner', 'Destination', 
+            'res.partner', 'Destination',
             #domain='[("sql_destination_code", "!=", False)]'
-            ), 
+            ),
         'mode': fields.selection([
             ('WH', 'Warehouse'),
             ('SH', 'Ship'),
             ], 'Mode'),
-         
+
         'company_order': fields.char('Company order', size=20),
         'delivery_date': fields.date('Delivery date'), # required=True
         'po_create_date': fields.date('PO Create date'), # required=True
@@ -1375,48 +1390,48 @@ class EdiSoapOrder(orm.Model):
         'currency': fields.char('currency', size=10),
         'fullname': fields.char('Full name', size=40),
         'buyer_group': fields.char('Buyer Group', size=30),
-        
+
         'document_value': fields.float('Document value', digits=(16, 3)), #documentValue #: 234.20000,
         'delivery_terms': fields.char('Delivery Terms', size=30), # deliveryTerms # None
         'info_container': fields.char('Info container', size=40), # infoContainer # None
         'document_comment': fields.char('Document Comment', size=30), # documentComment #: None
-        
+
         'invoice_holder': fields.char('Invoice Holder', size=40),
         'invoice_address': fields.char('Invoice Address', size=60),
         'invoice_vatcode': fields.char('Invoice VAT code', size=40),
         'delivery_at': fields.char('Delivery at', size=40),
         'delivery_address': fields.char('Delivery Address', size=40),
-        
+
         'delivery_ship': fields.char('Delivery ship', size=50), # deliveryShip # None
         'logistic': fields.boolean('Invoice VAT code'), # logistic # False
         'requires_logistic': fields.char('Requires logistic', size=50), # requiresLogistic # None
-        
+
         'total_weight': fields.integer('Total weight'),
         'total_pallet': fields.integer('Total pallet'),
         'note': fields.text('Note'),
 
         'filename': fields.char('Filename CSV', size=40),
         'check_pre_export': fields.function(
-            _get_check_pre_export, method=True, 
-            type='boolean', string='Check pre export', 
-            store=False), 
-                        
-        }    
+            _get_check_pre_export, method=True,
+            type='boolean', string='Check pre export',
+            store=False),
+
+        }
 
 class EdiSoapOrderLine(orm.Model):
-    ''' Soap order line
-    '''
+    """ Soap order line
+    """
     _name = 'edi.soap.order.line'
     _description = 'EDI Soap Order line'
     _rec_name = 'name'
     _order = 'name'
 
-    def order_line_detail(self, cr, uid, ids, context=None):   
-        ''' Open detail line
-        '''
+    def order_line_detail(self, cr, uid, ids, context=None):
+        """ Open detail line
+        """
         model_pool = self.pool.get('ir.model.data')
         view_id = model_pool.get_object_reference(
-            cr, uid, 
+            cr, uid,
             'account_trip_edi_soap', 'view_edi_soap_order_line_form')[1]
 
         return {
@@ -1435,8 +1450,8 @@ class EdiSoapOrderLine(orm.Model):
             }
 
     def extract_chunk_from_name(self, cr, uid, product_id, context=None):
-        ''' Extract left part of X if decimal
-        '''
+        """ Extract left part of X if decimal
+        """
         product_pool = self.pool.get('product.product')
         product = product_pool.browse(cr, uid, product_id, context=context)
         if not product.chunk:
@@ -1444,22 +1459,22 @@ class EdiSoapOrderLine(orm.Model):
             product_pool.write(cr, uid, [product_id], {
                 'chunk': chunk,
                 }, context=context)
-        return 
+        return
 
     # -------------------------------------------------------------------------
     # Oncange:
     # -------------------------------------------------------------------------
-    def onchange_company_product_id(self, cr, uid, ids, order_id, name, 
+    def onchange_company_product_id(self, cr, uid, ids, order_id, name,
             product_id, context=None):
-        ''' Update mapped product
-        '''
+        """ Update mapped product
+        """
         res = {}
         if not order_id or not product_id or not name:
             return res
-            
+
         order_pool = self.pool.get('edi.soap.order')
         mapping_pool = self.pool.get('edi.soap.mapping')
-        
+
         order_proxy = order_pool.browse(cr, uid, order_id, context=context)
         connection_id = order_proxy.connection_id.id
 
@@ -1467,7 +1482,7 @@ class EdiSoapOrderLine(orm.Model):
         self.extract_chunk_from_name(cr, uid, product_id, context=context)
 
         # ---------------------------------------------------------------------
-        # Search mapping    
+        # Search mapping
         # ---------------------------------------------------------------------
         mapping_ids = mapping_pool.search(cr, uid, [
             ('connection_id', '=', connection_id),
@@ -1476,8 +1491,8 @@ class EdiSoapOrderLine(orm.Model):
 
         if len(mapping_ids) > 1:
            _logger.error('More than one mapping: %s' % name)
-        
-        
+
+
         # ---------------------------------------------------------------------
         # Mapping operation:
         # ---------------------------------------------------------------------
@@ -1487,14 +1502,14 @@ class EdiSoapOrderLine(orm.Model):
             'product_id': product_id,
             }
         if mapping_ids:
-            mapping_pool.write(cr, uid, mapping_ids, data, context=context)            
+            mapping_pool.write(cr, uid, mapping_ids, data, context=context)
         else:
-            mapping_pool.create(cr, uid, data, context=context)                
+            mapping_pool.create(cr, uid, data, context=context)
         return res
-        
+
     _columns = {
         'name': fields.char('Code', size=40, required=True),
-        'order_id': fields.many2one('edi.soap.order', 'Order', 
+        'order_id': fields.many2one('edi.soap.order', 'Order',
             ondelete='cascade'),
         'product_id': fields.many2one('product.product', 'Company product'),
 
@@ -1510,7 +1525,7 @@ class EdiSoapOrderLine(orm.Model):
         'logistic_qty': fields.float('Logistic', digits=(16, 3)),
 
         'item_price': fields.float('Price', digits=(16, 5)),
-        
+
         'cd_gtin': fields.char('GTIN', size=40), # cdGtin
         'cd_voce_doganale': fields.char('Duty code', size=40), #cdVoceDoganale
         'nr_pz_conf': fields.char('Q. x pack', size=5), # nrPxConf
@@ -1523,33 +1538,33 @@ class EdiSoapOrderLine(orm.Model):
 #                              LOGISTIC ORDER:
 # -----------------------------------------------------------------------------
 class EdiSoapLogistic(orm.Model):
-    ''' Soap logistic order
-    '''
+    """ Soap logistic order
+    """
     _name = 'edi.soap.logistic'
     _description = 'EDI Soap Logistic'
     _rec_name = 'name'
     _order = 'name desc'
 
     def send_logistic_not_send(self, cr, uid, ids, context=None):
-        ''' Not sent button
-        '''
+        """ Not sent button
+        """
         return self.write(cr, uid, ids, {
             'soap_not_sent': True,
             }, context=context)
     def open_logistic_lines(self, cr, uid, ids, context=None):
-        ''' Logistic line details
-        '''        
+        """ Logistic line details
+        """
         model_pool = self.pool.get('ir.model.data')
         view_id = model_pool.get_object_reference(
-            cr, uid, 
-            'account_trip_edi_soap', 
+            cr, uid,
+            'account_trip_edi_soap',
             'view_edi_soap_logistic_line_tree')[1]
-        
+
         line_pool = self.pool.get('edi.soap.logistic.line')
         line_ids = line_pool.search(cr, uid, [
             ('logistic_id', '=', ids[0]),
             ], context=context)
-        
+
         return {
             'type': 'ir.actions.act_window',
             'name': _('Detail lines'),
@@ -1564,10 +1579,10 @@ class EdiSoapLogistic(orm.Model):
             'target': 'current',
             'nodestroy': False,
             }
-        
+
     def send_logistic_2_soap(self, cr, uid, ids, context=None):
-        ''' Send to SOAP platform logistic order
-        '''
+        """ Send to SOAP platform logistic order
+        """
         connection_pool = self.pool.get('edi.soap.connection')
         mapping_pool = self.pool.get('edi.soap.mapping')
         product_pool = self.pool.get('product.product')
@@ -1581,13 +1596,13 @@ class EdiSoapLogistic(orm.Model):
 
         token = connection_pool.get_token(
             cr, uid, [logistic.connection_id.id], context=context)
-        
+
         # Header:
         try:
             first_line = logistic.line_ids[0]
         except:
             raise osv.except_osv(
-                _('Error'), 
+                _('Error'),
                 _('No lines!'),
                 )
         plotToCreate = {
@@ -1596,24 +1611,24 @@ class EdiSoapLogistic(orm.Model):
             'dfDocIngresso': first_line.invoice,
             'dtEmissione': first_line.invoice_date,
             'dtIngresso': logistic.delivery_date,
-            
+
             'pLotLinesData': [],
             }
-            
+
         # Lines:
         plot_lines_data = plotToCreate['pLotLinesData']
-        for line in logistic.line_ids: 
+        for line in logistic.line_ids:
             product = line.product_id
             customer_code = line.customer_code
             if not customer_code:
                 mapping_ids = mapping_pool.search(cr, uid, [
-                    ('product_id', '=', product.id),                
+                    ('product_id', '=', product.id),
                     ], context=context)
                 if mapping_ids:
                     mapping = mapping_pool.browse(
                         cr, uid, mapping_ids, context=context)[0]
                     customer_code = mapping.name
-                else: 
+                else:
                     _logger.error(
                         'No mapping code for %s' % product.default_code)
             # -----------------------------------------------------------------
@@ -1633,48 +1648,48 @@ class EdiSoapLogistic(orm.Model):
 
             plot_lines_data.append({
                 'cdArticolo': customer_code or '', # MSC code
-                'cdVoceDoganale': product.duty_code or '', 
+                'cdVoceDoganale': product.duty_code or '',
                 'cdCollo': line.pallet_id.sscc or '', # SSCC
                 'cdGtin': product.default_code, # Company code or EAN
                 'flPesoVariabile': variable_weight, # 1 or 0
                 'nrLotto': line.lot or '',
                 'qtPrevista': line.confirmed_qty, # Company confirmed
-                
+
                 'cdMisura': '', # TODO
                 'nrRiga': line.sequence, # 1 x or 10 x?
-                
-                'nrNetto': line.net_qty, 
+
+                'nrNetto': line.net_qty,
                 'nrLordo': line.lord_qty,
                 'nrColli': parcel,
                 'nrPzConf': chunk,
                 'dtScadenza': line.deadline, # Lot?
                 'cdPaeseOrigine': line.origin_country or '',
                 'cdPaeseProvenienza': line.provenance_country or '',
-                
+
                 'dfDvce': line.dvce or '',
                 'dtDvce': line.dvce_date or '',
                 'dfAnimo': line.animo or '',
                 'dfSif': line.sif or '',
                 'flDogana': line.duty or '',# 0 or 1 (duty document needed)
                 'dfMrn': line.mrn or '',
-                
+
                 'dfFattura': line.invoice or '', # Number
                 'dtFattura': line.invoice_date or '', # Date
                 })
         res = service.createNewPLot(
             accessToken=token, plotToCreate=plotToCreate)
 
-        # XXX ? res['ricevuta']  # file (base64) filename 
+        # XXX ? res['ricevuta']  # file (base64) filename
 
         # ---------------------------------------------------------------------
         # Check response:
         # ---------------------------------------------------------------------
         if not res:
             raise osv.except_osv(
-                _('SOAP Error'), 
+                _('SOAP Error'),
                 _('No reply!'),
                 )
-        
+
         try:
             message = res['operationOutcome']['message']
         except:
@@ -1684,15 +1699,15 @@ class EdiSoapLogistic(orm.Model):
             error_list = ','.join(res['operationOutcome']['errorsList'])
         except:
             error_list = ''
-        
+
         try:
             message_logistic = res['logistic']
         except:
             message_logistic = 'No logistic response'
-                
+
         if res['operationOutcome']['statusCode']:
             raise osv.except_osv(
-                _('SOAP Error'), 
+                _('SOAP Error'),
                 _('Message: %s [%s]') % (
                     message,
                     error_list,
@@ -1703,18 +1718,18 @@ class EdiSoapLogistic(orm.Model):
                 'soap_sent': True,
                 'soap_message': message,
                 'soap_detail': res['logistic'],
-                }, context=context)                
+                }, context=context)
         return True
-        
+
     def setup_pallet_id(self, cr, uid, ids, context=None):
-        ''' Setup selected pallet in all lines
-        '''
+        """ Setup selected pallet in all lines
+        """
         line_pool = self.pool.get('edi.soap.logistic.line')
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
         select_pallet_id = current_proxy.select_pallet_id.id
         if not select_pallet_id:
             raise osv.except_osv(
-                _('Errore'), 
+                _('Errore'),
                 _('Select before the pallet to setup, and click the button!'),
                 )
 
@@ -1723,8 +1738,8 @@ class EdiSoapLogistic(orm.Model):
             ], context=context)
         return line_pool.write(cr, uid, line_ids, {
             'pallet_id': select_pallet_id,
-            }, context=context)    
-        
+            }, context=context)
+
     _columns = {
         'name': fields.char('Invoice reference', size=40, required=True),
         'soap_sent': fields.boolean('MSC sent'),
@@ -1742,7 +1757,7 @@ class EdiSoapLogistic(orm.Model):
             'edi.soap.logistic.pallet', 'Select pallet'),
         'text': fields.text('File text', help='Account file as original'),
         'mode': fields.related(
-            'order_id', 'mode', 
+            'order_id', 'mode',
             type='selection', string='Mode'),
             #('WH', 'Warehouse'),
             #('SH', 'Ship'),
@@ -1753,16 +1768,16 @@ class EdiSoapLogistic(orm.Model):
             ('confirmed', 'Confirmed'), # Confirmed and sent
             ('done', 'Done'), # Received and approved
             ], 'State'),
-        }        
-    
+        }
+
     _defaults = {
         'pallet': lambda *x: 1,
         'state': lambda *x: 'draft',
-        }    
+        }
 
 class EdiSoapLogisticPallet(orm.Model):
-    ''' Soap logistic order
-    '''
+    """ Soap logistic order
+    """
     _name = 'edi.soap.logistic.pallet'
     _description = 'EDI Soap Logistic Pallet'
     _rec_name = 'name'
@@ -1772,8 +1787,8 @@ class EdiSoapLogisticPallet(orm.Model):
     # Button:
     # -------------------------------------------------------------------------
     def all_this_pallet(self, cr, uid, ids, context=None):
-        ''' Set this pallet to all the line
-        '''
+        """ Set this pallet to all the line
+        """
         pallet = self.browse(cr, uid, ids, context=context)[0]
 
         line_pool = self.pool.get('edi.soap.logistic.line')
@@ -1790,8 +1805,8 @@ class EdiSoapLogisticPallet(orm.Model):
             'tag': 'reload',
             }
     def _get_pallet_totals(self, cr, uid, ids, fields, args, context=None):
-        ''' Fields function for calculate 
-        '''
+        """ Fields function for calculate
+        """
         res = {}
 
         for pallet in self.browse(cr, uid, ids, context=context):
@@ -1802,7 +1817,7 @@ class EdiSoapLogisticPallet(orm.Model):
                 ('pallet_id', '=', pallet.id)
                 ], context=context)
             lines = line_pool.browse(cr, uid, line_ids, context=context)
-            
+
             # XXX check chunk?
             res[pallet.id] = {
                 'total_line': len(line_ids),
@@ -1811,7 +1826,7 @@ class EdiSoapLogisticPallet(orm.Model):
                 #        for line in lines])
                 'total_weight': sum([line.lord_qty for line in lines])
                 }
-            
+
         return res
 
     _columns = {
@@ -1820,16 +1835,16 @@ class EdiSoapLogisticPallet(orm.Model):
         'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order'),
         'order_id': fields.many2one('edi.soap.order', 'Sale order'),
         'total_line': fields.function(
-            _get_pallet_totals, method=True, 
-            type='integer', string='Total line', multi=True), 
+            _get_pallet_totals, method=True,
+            type='integer', string='Total line', multi=True),
         'total_weight': fields.function(
-            _get_pallet_totals, method=True, 
-            type='float', digits=(16, 3), string='Total line', multi=True),        
-        }        
+            _get_pallet_totals, method=True,
+            type='float', digits=(16, 3), string='Total line', multi=True),
+        }
 
 class EdiSoapLogisticLine(orm.Model):
-    ''' Soap logistic order
-    '''
+    """ Soap logistic order
+    """
     _name = 'edi.soap.logistic.line'
     _description = 'EDI Soap Logistic Line'
     _rec_name = 'name'
@@ -1838,34 +1853,34 @@ class EdiSoapLogisticLine(orm.Model):
     # -------------------------------------------------------------------------
     # Onchange:
     # -------------------------------------------------------------------------
-    def onchange_pallet_code(self, cr, uid, ids, logistic_id, pallet_code, 
+    def onchange_pallet_code(self, cr, uid, ids, logistic_id, pallet_code,
             field_name='pallet_id', context=None):
-        ''' Save correct element
+        """ Save correct element
             Called also from wizard new_pallet reference
-        '''
+        """
         logistic_pool = self.pool.get('edi.soap.logistic')
         logistic = logistic_pool.browse(cr, uid, logistic_id, context=context)
         pallet_id = False
-        
+
         for pallet in logistic.pallet_ids:
             if pallet_code == pallet.name:
                 pallet_id = pallet.id
                 break
         if not pallet_id:
             raise osv.except_osv(
-                _('Pallet error'), 
+                _('Pallet error'),
                 _('Pallet not found use code present in the list'),
-                )        
+                )
         return {'value': {
-            field_name: pallet_id, 
-            }}        
+            field_name: pallet_id,
+            }}
 
-    def line_detail(self, cr, uid, ids, context=None):   
-        ''' Open detail line
-        '''
+    def line_detail(self, cr, uid, ids, context=None):
+        """ Open detail line
+        """
         model_pool = self.pool.get('ir.model.data')
         view_id = model_pool.get_object_reference(
-            cr, uid, 
+            cr, uid,
             'account_trip_edi_soap', 'view_edi_soap_logistic_line_form')[1]
 
         return {
@@ -1886,25 +1901,25 @@ class EdiSoapLogisticLine(orm.Model):
     _columns = {
         # ---------------------------------------------------------------------
         # XXX Remember duplication wizard when add fields!!!
-        'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order', 
+        'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order',
             ondelete='cascade'),
-        'pallet': fields.integer('Pallet'),        
-        'pallet_id': fields.many2one('edi.soap.logistic.pallet', 'Pallet', 
+        'pallet': fields.integer('Pallet'),
+        'pallet_id': fields.many2one('edi.soap.logistic.pallet', 'Pallet',
             ondelete='set null'),
         'order_id': fields.related(
-            'logistic_id', 'order_id', 
-            type='many2one', relation='edi.soap.order', 
+            'logistic_id', 'order_id',
+            type='many2one', relation='edi.soap.order',
             string='Order', ondelete='set null'),
-        'mapping_id': fields.many2one('edi.soap.mapping', 'Mapping', 
+        'mapping_id': fields.many2one('edi.soap.mapping', 'Mapping',
             ondelete='set null'),
         'product_id': fields.many2one(
             'product.product', 'Product', ondelete='set null'),
-        
-        # XXX Use mapping - product ducy code (not product)    
+
+        # XXX Use mapping - product ducy code (not product)
         'duty_code': fields.related(
             'mapping_id', 'duty_code', type='char', string='Duty code'),
         'variable_weight': fields.related(
-            'mapping_id', 'variable_weight', type='boolean', 
+            'mapping_id', 'variable_weight', type='boolean',
             string='Variable weight'),
 
         'chunk': fields.related(
@@ -1937,19 +1952,19 @@ class EdiSoapLogisticLine(orm.Model):
         }
 
 class EdiSoapLogisticPallet(orm.Model):
-    ''' Soap logistic order relations
-    '''
+    """ Soap logistic order relations
+    """
     _inherit = 'edi.soap.logistic.pallet'
 
     # -------------------------------------------------------------------------
     # Utility for syntax:
     # -------------------------------------------------------------------------
     def _sscc_check_digit(self, fixed):
-        ''' Generate check digit and return
-        '''
+        """ Generate check digit and return
+        """
         tot = 0
         pos = 0
-        
+
         for c in fixed:
             pos+=1
             number = int(c)
@@ -1957,42 +1972,42 @@ class EdiSoapLogisticPallet(orm.Model):
                 tot += number
             else:
                 tot += number * 3
-        
+
         remain = tot % 10
         if remain:
-            return 10 - remain 
-        else: 
+            return 10 - remain
+        else:
             return 0
-    
+
     # -------------------------------------------------------------------------
     # Utility for syntax:
     # -------------------------------------------------------------------------
     def get_sscc_formatted(self, sscc):
-        ''' Return in format (00) XXXX...
-        '''
+        """ Return in format (00) XXXX...
+        """
         return '(%s)%s' % (sscc[:2], sscc[2:])
-        
+
     def _generate_sscc_code(self, cr, uid, raw=True, context=None):
-        ''' Generate partial code with counter and add check digit
-        '''
+        """ Generate partial code with counter and add check digit
+        """
         fixed = self.pool.get('ir.sequence').get(
             cr, uid, 'sscc.code.pallet.number')
         return '%s%s' % (fixed, self._sscc_check_digit(fixed))
-        
+
     # -------------------------------------------------------------------------
     # Button:
     # -------------------------------------------------------------------------
-    def print_label(self, cr, uid, ids, context=None):    
-        ''' Print single label for pallet:
-        ''' 
+    def print_label(self, cr, uid, ids, context=None):
+        """ Print single label for pallet:
+        """
         if context is None:
-            context = {}       
+            context = {}
 
-        if not ids:     
+        if not ids:
             order_id = context.get('order_id')
             if not order_id:
                raise osv.except_osv(
-                   _('Error'), 
+                   _('Error'),
                    _('Cannot get order to print!'),
                    )
             ids = self.search(cr, uid, [
@@ -2007,25 +2022,25 @@ class EdiSoapLogisticPallet(orm.Model):
             'type': 'ir.actions.report.xml',
             'report_name': 'sscc_pallet_label_report',
             'datas': datas,
-            }            
-        
+            }
+
     # -------------------------------------------------------------------------
     # Field function:
     # -------------------------------------------------------------------------
     def _get_sscc_fullname(self, cr, uid, pallet, context=None):
-        ''' Get image name for SSCC image file crom current proxy obj
-        '''
+        """ Get image name for SSCC image file crom current proxy obj
+        """
         extension = 'png'
         connection = pallet.order_id.connection_id
-        
+
         sscc_path = os.path.expanduser(os.path.join(
             connection.server_root,
             'sscc',
             ))
-        try:    
-            os.system('mkdir -p %s' % sscc_path)    
+        try:
+            os.system('mkdir -p %s' % sscc_path)
             return os.path.join(
-                sscc_path, 
+                sscc_path,
                 '%s.%s' % (
                     pallet.sscc,
                     extension,
@@ -2033,12 +2048,12 @@ class EdiSoapLogisticPallet(orm.Model):
         except:
             raise osv.except_osv(
                 _('Error'), _('Errore generating SSCC path!'))
-        return False        
-        
-    def _get_sscc_codebar_image(self, cr, uid, ids, field_name, arg, 
+        return False
+
+    def _get_sscc_codebar_image(self, cr, uid, ids, field_name, arg,
             context=None):
-        ''' Get image from SSCC folder image
-        '''
+        """ Get image from SSCC folder image
+        """
         pallet_proxy = self.browse(cr, uid, ids, context=context)
 
         res = dict.fromkeys(ids, False)
@@ -2051,7 +2066,7 @@ class EdiSoapLogisticPallet(orm.Model):
                 f.close()
             except:
                 _logger.error('Cannot load: %s' % fullname)
-        return res            
+        return res
 
     _columns = {
         'sscc_image': fields.function(
@@ -2060,40 +2075,40 @@ class EdiSoapLogisticPallet(orm.Model):
         'line_ids': fields.one2many(
             'edi.soap.logistic.line', 'pallet_id', 'Logistic Lines'),
         }
-    
+
 class EdiSoapLogistic(orm.Model):
-    ''' Soap logistic order relations
-    '''
+    """ Soap logistic order relations
+    """
     _inherit = 'edi.soap.logistic'
-    
+
     _columns = {
         'line_ids': fields.one2many(
             'edi.soap.logistic.line', 'logistic_id', 'Lines'),
         'pallet_ids': fields.one2many(
             'edi.soap.logistic.pallet', 'logistic_id', 'Pallet'),
-        }    
+        }
 
 class EdiSoapOrder(orm.Model):
-    ''' Soap Parameter for connection
-    '''
+    """ Soap Parameter for connection
+    """
     _inherit = 'edi.soap.order'
-    
+
     _columns = {
         'line_ids': fields.one2many(
             'edi.soap.order.line', 'order_id', 'Lines'),
         'pallet_ids': fields.one2many(
             'edi.soap.logistic.pallet', 'order_id', 'Pallet'),
-        }    
+        }
 
 class ResPartner(orm.Model):
     """ Model name: Res partner
     """
-    
+
     _inherit = 'res.partner'
-    
+
     def res_partner_destination_detail(self, cr, uid, ids, context=None):
-        ''' Detail partner
-        '''
+        """ Detail partner
+        """
         return {
             'type': 'ir.actions.act_window',
             'name': _('Destination'),
@@ -2108,10 +2123,10 @@ class ResPartner(orm.Model):
             'target': 'current',
             'nodestroy': False,
             }
-            
+
     _columns = {
         'connection_id': fields.many2one(
-            'edi.soap.connection', 'Connection'),        
+            'edi.soap.connection', 'Connection'),
         }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
