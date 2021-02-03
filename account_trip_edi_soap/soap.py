@@ -551,7 +551,6 @@ class EdiSoapConnection(orm.Model):
                 # -------------------------------------------------------------
                 # Create ODOO Record:
                 # -------------------------------------------------------------
-                import pdb; pdb.set_trace()
                 name = '%s del %s' % (data['invoice'], data['invoice_date'])
                 logistic_ids = logistic_pool.search(cr, uid, [
                     ('name', '=', name),
