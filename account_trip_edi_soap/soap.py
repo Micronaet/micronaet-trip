@@ -1604,6 +1604,7 @@ class EdiSoapLogistic(orm.Model):
                 _('Error'),
                 _('No lines!'),
                 )
+
         plotToCreate = {
             'ponumber': logistic.order_id.name or \
                 logistic.customer_order,
@@ -1632,8 +1633,8 @@ class EdiSoapLogistic(orm.Model):
                         'No mapping code for %s' % product.default_code)
             # -----------------------------------------------------------------
             # XXX No more used chunk:
-            #chunk = product.chunk
-            #if not chunk:
+            # chunk = product.chunk
+            # if not chunk:
             #    chunk = product_pool.get_chunk(product)
             #    # not saved only for this send!
             # -----------------------------------------------------------------
@@ -1646,22 +1647,22 @@ class EdiSoapLogistic(orm.Model):
                 variable_weight = '0'
 
             plot_lines_data.append({
-                'cdArticolo': customer_code or '', # MSC code
+                'cdArticolo': customer_code or '',  # MSC code
                 'cdVoceDoganale': product.duty_code or '',
-                'cdCollo': line.pallet_id.sscc or '', # SSCC
-                'cdGtin': product.default_code, # Company code or EAN
-                'flPesoVariabile': variable_weight, # 1 or 0
+                'cdCollo': line.pallet_id.sscc or '',  # SSCC
+                'cdGtin': product.default_code,  # Company code or EAN
+                'flPesoVariabile': variable_weight,  # 1 or 0
                 'nrLotto': line.lot or '',
-                'qtPrevista': line.confirmed_qty, # Company confirmed
+                'qtPrevista': line.confirmed_qty,  # Company confirmed
 
-                'cdMisura': '', # TODO
-                'nrRiga': line.sequence, # 1 x or 10 x?
+                'cdMisura': '',  # TODO
+                'nrRiga': line.sequence,  # 1 x or 10 x?
 
                 'nrNetto': line.net_qty,
                 'nrLordo': line.lord_qty,
                 'nrColli': parcel,
                 'nrPzConf': chunk,
-                'dtScadenza': line.deadline, # Lot?
+                'dtScadenza': line.deadline,  # Lot?
                 'cdPaeseOrigine': line.origin_country or '',
                 'cdPaeseProvenienza': line.provenance_country or '',
 
@@ -1669,11 +1670,11 @@ class EdiSoapLogistic(orm.Model):
                 'dtDvce': line.dvce_date or '',
                 'dfAnimo': line.animo or '',
                 'dfSif': line.sif or '',
-                'flDogana': line.duty or '',# 0 or 1 (duty document needed)
+                'flDogana': line.duty or '',  # 0 or 1 (duty document needed)
                 'dfMrn': line.mrn or '',
 
-                'dfFattura': line.invoice or '', # Number
-                'dtFattura': line.invoice_date or '', # Date
+                'dfFattura': line.invoice or '',  # Number
+                'dtFattura': line.invoice_date or '',  # Date
                 })
         res = service.createNewPLot(
             accessToken=token, plotToCreate=plotToCreate)
@@ -1710,7 +1711,7 @@ class EdiSoapLogistic(orm.Model):
                 _('Message: %s [%s]') % (
                     message,
                     error_list,
-                    #{%s}plotToCreate,
+                    # {%s}plotToCreate,
                     ))
         else:
             self.write(cr, uid, ids, {
