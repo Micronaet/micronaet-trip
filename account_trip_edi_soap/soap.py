@@ -555,7 +555,6 @@ class EdiSoapConnection(orm.Model):
                 logistic_ids = logistic_pool.search(cr, uid, [
                     ('name', '=', name),
                     ], context=context)
-                import pdb; pdb.set_trace()
                 if logistic_ids:
                     # No unlink admitted!
                     logistic = logistic_pool.browse(
