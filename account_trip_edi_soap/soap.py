@@ -608,7 +608,6 @@ class EdiSoapConnection(orm.Model):
                     'customer_order': customer_order,
                     # 'filename':
                     }, context=context)
-                import pdb; pdb.set_trace()
 
                 # B. Link pallet:
                 default_pallet_id = False
