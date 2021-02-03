@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-# ODOO (ex OpenERP) 
+# ODOO (ex OpenERP)
 # Open Source Management Solution
 # Copyright (C) 2001-2015 Micronaet S.r.l. (<http://www.micronaet.it>)
 # Developer: Nicola Riolini @thebrush (<https://it.linkedin.com/in/thebrush>)
@@ -12,7 +12,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
@@ -51,12 +51,12 @@ connection_id = int(config.get('connection', 'id'))
 # -----------------------------------------------------------------------------
 odoo = erppeek.Client(
     'http://%s:%s' % (
-        server, port), 
+        server, port),
     db=dbname,
     user=user,
     password=pwd,
     )
-    
+
 # Pool used:
 order_pool = odoo.model('edi.soap.order')
 order_ids = order_pool.search([
@@ -68,5 +68,5 @@ if order_ids:
         'company_order': company_order,
         })
 else:
-    print '[%s] Order not found: %s' % (company, odoo_order)
+    print('[%s] Order not found: %s' % (company, odoo_order))
 
