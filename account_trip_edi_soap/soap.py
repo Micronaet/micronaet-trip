@@ -608,6 +608,7 @@ class EdiSoapConnection(orm.Model):
                     'customer_order': customer_order,
                     # 'filename':
                     }, context=context)
+                import pdb; pdb.set_trace()
 
                 # B. Link pallet:
                 default_pallet_id = False
@@ -620,7 +621,7 @@ class EdiSoapConnection(orm.Model):
                         'logistic_id': logistic_id,
                         }, context=context)
                     if len(pallet_ids):
-                        default_pallet_id = pallet_ids[0] # TODO Check if first!
+                        default_pallet_id = pallet_ids[0]  # TODO Check if 1st
                         default_pallet = pallet_pool.browse(
                             cr, uid, default_pallet_id, context=context).name
                     else:
@@ -667,7 +668,7 @@ class EdiSoapConnection(orm.Model):
                     else:
                         _logger.error('Not found: %s' % default_code)
                         product_id = False
-                    data = {
+                    line_data = {
                         'logistic_id': logistic_id,
                         'pallet_id': default_pallet_id,  # one2many
                         'pallet': default_pallet,  # code
@@ -701,8 +702,8 @@ class EdiSoapConnection(orm.Model):
                         'duty': '',
                         'mrn': '',
                         }
-                    line_pool.create(cr, uid, data, context=context)
-            break # only path folder
+                    line_pool.create(cr, uid, line_data, context=context)
+            break  # only path folder
 
         # ---------------------------------------------------------------------
         # History used files:
