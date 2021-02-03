@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-# ODOO (ex OpenERP) 
+# ODOO (ex OpenERP)
 # Open Source Management Solution
 # Copyright (C) 2001-2015 Micronaet S.r.l. (<https://micronaet.com>)
 # Developer: Nicola Riolini @thebrush (<https://it.linkedin.com/in/thebrush>)
@@ -13,7 +13,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
@@ -34,26 +34,27 @@ from openerp import SUPERUSER_ID
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
 
 
 _logger = logging.getLogger(__name__)
 
+
 class edi_company_report_this(orm.Model):
-    ''' Manage more than one importation depend on company
-    '''    
+    """ Manage more than one importation depend on company
+    """
     _inherit = 'edi.company'
 
     # -------------------------------------------------------------------------
     # OVERRIDE: Collect data for report
     # -------------------------------------------------------------------------
     def collect_future_order_data_report(self, cr, uid, context=None):
-        """ Overridable procedure for manage the report data collected in all 
+        """ Overridable procedure for manage the report data collected in all
             company with active EDI company
-            Report: 
+            Report:
                 'header'
                 'data'
                 'empty_record'
@@ -61,7 +62,7 @@ class edi_company_report_this(orm.Model):
         report = super(
             edi_company_report_this, self).collect_future_order_data_report(
                 cr, uid, context=context)
-        
+
         # =====================================================================
         # Data will be create with override:
         # =====================================================================
@@ -72,9 +73,9 @@ class edi_company_report_this(orm.Model):
         data_comment = report['comment']
         detail = report['detail']
 
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         # Check if there's some filename exported
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         connection_ids = connection_pool.search(cr, uid, [], context=context)
         exported_files = []
         for connection in connection_pool.browse(
@@ -85,7 +86,7 @@ class edi_company_report_this(orm.Model):
                     exported_files.append(filename)
                 break
         _logger.warning('Found SOAP order not imported: %s' % (
-            exported_files, ))        
+            exported_files, ))
 
         order_ids = this_pool.search(cr, uid, [
             '|',
@@ -95,26 +96,26 @@ class edi_company_report_this(orm.Model):
             ('filename', 'in', exported_files),
 
             # Not used for now:
-            #('company_order', '=', False),
+            # ('company_order', '=', False),
             ], context=context)
 
-        company_list = []            
+        company_list = []
         for order in this_pool.browse(cr, uid, order_ids, context=context):
             company_name = '[%s]' % order.connection_id.name
             if company_name not in company_list:
                 company_list.append(company_name)
-                
-            sign = -1 # always
-            mode = 'create' # always            
+
+            sign = -1  # always
+            mode = 'create'  # always
             deadline = order.delivery_date
             number = order.name.split('-')[0]
             status = order.status
-            
+
             # Define col position:
             if deadline < report['min']:
                 col = 0
             elif deadline > report['max']:
-                col = report['days'] - 1 # Go in last cell
+                col = report['days'] - 1  # Go in last cell
             else:
                 col = report['header'][deadline]
 
@@ -123,16 +124,16 @@ class edi_company_report_this(orm.Model):
                 quantity = line.confirmed_qty or line.ordered_qty
 
                 # ---------------------------------------------------------
-                # Report data:                        
+                # Report data:
                 # ---------------------------------------------------------
                 if default_code not in data:
                     data[default_code] = report['empty'][:]
                     data_comment[default_code] = report['empty_comment'][:]
 
-                data[default_code][col] += sign * quantity    
+                data[default_code][col] += sign * quantity
                 data_comment[default_code][col] += '%s: %s q. %s\n' % (
-                    company_name, number, quantity)                    
-               
+                    company_name, number, quantity)
+
                 # ---------------------------------------------------------
                 # Detail data:
                 # ---------------------------------------------------------
@@ -145,11 +146,9 @@ class edi_company_report_this(orm.Model):
                     number,
                     deadline,
                     quantity,
-                    'Stato: %s' % status, 
+                    'Stato: %s' % status,
                     ])
-                
+
         # Update soap company:
         report['title'] += ''.join(company_list)
         return report
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
