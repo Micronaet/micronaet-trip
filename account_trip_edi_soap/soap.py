@@ -1686,8 +1686,8 @@ class EdiSoapLogistic(orm.Model):
         # ---------------------------------------------------------------------
         if not res:
             raise osv.except_osv(
-                _('SOAP Error'),
-                _('No reply!'),
+                _('Errore SOAP'),
+                _('Nessuna risposta dal portale del cliente!'),
                 )
 
         try:
