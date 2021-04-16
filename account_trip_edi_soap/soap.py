@@ -1685,7 +1685,7 @@ class EdiSoapLogistic(orm.Model):
         # Check response:
         # ---------------------------------------------------------------------
         if not res:
-             _logger.error('Errore:\n%s' % plotToCreate)
+            _logger.error('Errore:\n%s' % plotToCreate)
             raise osv.except_osv(            
                 _('Errore SOAP'),
                 _('Nessuna risposta dal portale del cliente!'),
