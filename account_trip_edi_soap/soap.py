@@ -1677,8 +1677,6 @@ class EdiSoapLogistic(orm.Model):
                 'dfFattura': line.invoice or '',  # Number
                 'dtFattura': line.invoice_date or '',  # Date
                 })
-        _logger.warning(plotToCreate)
-        pdb.set_trace()
         res = service.createNewPLot(
             accessToken=token, plotToCreate=plotToCreate)
 
