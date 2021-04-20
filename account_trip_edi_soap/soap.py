@@ -1676,6 +1676,7 @@ class EdiSoapLogistic(orm.Model):
                 'dfFattura': line.invoice or '',  # Number
                 'dtFattura': line.invoice_date or '',  # Date
                 })
+        _logger.warning(plotToCreate)
         res = service.createNewPLot(
             accessToken=token, plotToCreate=plotToCreate)
 
@@ -1686,7 +1687,7 @@ class EdiSoapLogistic(orm.Model):
         # ---------------------------------------------------------------------
         if not res:
             _logger.error('Errore:\n%s' % plotToCreate)
-            raise osv.except_osv(            
+            raise osv.except_osv(
                 _('Errore SOAP'),
                 _('Nessuna risposta dal portale del cliente!'),
                 )
