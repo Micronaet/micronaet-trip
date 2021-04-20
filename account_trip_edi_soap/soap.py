@@ -20,6 +20,7 @@
 ###############################################################################
 
 import os
+import pdb
 import sys
 import logging
 import openerp
@@ -1677,6 +1678,7 @@ class EdiSoapLogistic(orm.Model):
                 'dtFattura': line.invoice_date or '',  # Date
                 })
         _logger.warning(plotToCreate)
+        pdb.set_trace()
         res = service.createNewPLot(
             accessToken=token, plotToCreate=plotToCreate)
 
