@@ -20,7 +20,7 @@
             <field name="name">http.request.connection.form</field>
             <field name="model">http.request.connection</field>
             <field name="arch" type="xml">
-                <form string="Connection" colors="blue:token!=False">
+                <form string="Connection" colors="blue:token!=False" version="7.0">
                     <header>
                         <button name="get_token" string="Update token" type="object" />
                     </header>
@@ -61,7 +61,7 @@
         </record>
 
         <menuitem
-            parent=""
+            parent="base.menu_custom"
             id="menu_http_request_connection_root"
             action=""
             name="HTTP Request"
@@ -69,7 +69,7 @@
             />
             <menuitem
                 parent="menu_http_request_connection_root"
-                id="menu_http_request_connection_root"
+                id="menu_http_request_connection_connection"
                 action="action_http_request_connection"
                 sequence="10"
                 />

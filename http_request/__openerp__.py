@@ -18,7 +18,7 @@
 ###############################################################################
 
 {
-    'name': 'HTTP requesst',
+    'name': 'HTTP request',
     'version': '0.1',
     'category': 'EDI',
     'description': """
