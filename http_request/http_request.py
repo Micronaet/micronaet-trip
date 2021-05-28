@@ -141,7 +141,7 @@ class HttpRequestEndpoint(orm.Model):
             'http.request.connection', 'Connection'),
     }
     _defaults = {
-        'context': lambda *x: 'application/json',
+        # 'content': lambda *x: 'application/json',
     }
 
 
