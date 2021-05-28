@@ -36,7 +36,7 @@
         'security/ir.model.access.csv',
 
         # View:
-        'request_view.xml',
+        'views/request_view.xml',
         ],
     'active': False,
     'installable': True,
