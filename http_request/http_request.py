@@ -84,11 +84,11 @@ class HttpRequestConnection(orm.Model):
     _columns = {
         'name': fields.char('Name', size=64, required=True),
         'endpoint': fields.char(
-            'Token endpoint', size=30, required=True,
+            'Token endpoint', size=100, required=True,
             help='Endpoint to get token value'),
         'username': fields.char('Username', size=64, required=True),
         'password': fields.char('Password', size=64, required=True),
-        'root': fields.char('Root url', size=80, required=True),
+        'root': fields.char('Root url', size=100, required=True),
         'token': fields.char('Root url', size=180),
         'token_expire': fields.char('Root url', size=80),
     }
@@ -135,7 +135,7 @@ class HttpRequestEndpoint(orm.Model):
     _columns = {
         'name': fields.char('Name', size=64, required=True),
         'code': fields.char('Code', size=30, required=True),
-        'endpoint': fields.char('Endpoint', size=40, required=True),
+        'endpoint': fields.char('Endpoint', size=50, required=True),
         # 'content': fields.char('Content type', size=40, required=True),
         'connection_id': fields.many2one(
             'http.request.connection', 'Connection'),
