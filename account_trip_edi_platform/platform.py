@@ -48,11 +48,24 @@ class EdiCompany(orm.Model):
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
         """ Import supplier order from platform
         """
+        company = self.browse(cr, uid, ids, context=context)[0]
+        # Call end point for get order:
+        # 20210101 data format
+        connection_pool = self.pool.get('http.request.endpoint')
+        ctx = context.copy()
+        ctx['endpoint_params'] = {
+            'data_from': '20210101',
+            'data_to': '20210101',
+        }
+        ctx['endpoint_code'] = company.endpoint_code
+
+        connection_pool.call_endpoint(cr, uid, ids, context=ctx)
 
     _columns = {
-        'has_platfrom': fields.Boolean('Has platform'),
+        'has_platform': fields.Boolean('Has platform'),
         'connection_id': fields.many2one(
             'http.request.connection', 'Connection'),
+        'endpoint_code': fields.char('Endpoint code', size=30),
     }
 
 
