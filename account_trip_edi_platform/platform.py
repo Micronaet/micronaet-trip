@@ -67,7 +67,8 @@ class EdiSupplierOrder(orm.Model):
 
     _columns = {
         'name': fields.char('Numero ordine', size=30, required=True),
-        'supplier_code': fields.char('Codice produttore', size=30, required=True),
+        'supplier_code': fields.char(
+            'Codice produttore', size=30, required=True),
         'dealer': fields.char('Concessionario', size=30),
         'dealer_code': fields.char('Codice Concessionario', size=30),
         'supplier': fields.char('Ragione sociale produttore', size=40),
@@ -89,15 +90,14 @@ class EdiSupplierOrderLine(orm.Model):
     _name = 'edi.supplier.order.line'
     _description = 'Supplier order line'
     _rec_name = 'name'
-    _order = 'name'
+    _order = 'sequence'
 
     _columns = {
-        'order_id': fields.many2one('edi.supplier.order', 'Ordine produttore'),
+        'sequence': fields.char('Seq.', size=4),
         'name': fields.char(
             'Descrizione articolo', size=40, required=True),
         'supplier_name': fields.char(
             'Descrizione articolo produttore', size=40),
-        'sequence': fields.char('Seq.', size=4),
         'supplier_code': fields.char('Codice produttore', size=20),
         'code': fields.char('Codice articolo', size=20),
         'uom_supplier': fields.char('UM fornitore', size=10),
@@ -105,6 +105,7 @@ class EdiSupplierOrderLine(orm.Model):
         'product_qty': fields.char('Q.', size=20),  # todo change in float
         'order_product_qty': fields.char('Q.', size=20),
         'note': fields.char('Nota riga', size=40),
+        'order_id': fields.many2one('edi.supplier.order', 'Ordine produttore'),
     }
 
 # 'RIGA_ORDINE': u'1', 'CODICE_ARTICOLO_PRODUTTORE': u'419490',

@@ -1,84 +1,98 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-        <record model="ir.ui.view" id="view_http_request_connection_tree">
-            <field name="name">http.request.connection.tree</field>
-            <field name="model">http.request.connection</field>
+        <record model="ir.ui.view" id="view_edi_supplier_order_tree">
+            <field name="name">edi.supplier.order.tree</field>
+            <field name="model">edi.supplier.order</field>
             <field name="arch" type="xml">
-                <tree string="Connection" colors="blue:token!=False">
+                <tree string="Ordine" colors="blue:token!=False">
                     <field name="name" />
-                    <field name="endpoint" />
-                    <field name="username" />
-                    <field name="password" />
-                    <field name="root" />
-                    <field name="token" invisible="1"/>
-                    <field name="token_expire" invisible="1"/>
+                    <field name="supplier_code" />
+                    <field name="dealer" />
+                    <field name="dealer_code" />
+                    <field name="supplier" />
+                    <field name="order_date" />
+                    <field name="deadline_date" />
                 </tree>
             </field>
         </record>
-        <record model="ir.ui.view" id="view_http_request_connection_form">
-            <field name="name">http.request.connection.form</field>
-            <field name="model">http.request.connection</field>
+        <record model="ir.ui.view" id="view_edi_supplier_order_form">
+            <field name="name">edi.supplier.order.form</field>
+            <field name="model">edi.supplier.order</field>
             <field name="arch" type="xml">
-                <form string="Connection" colors="blue:token!=False" version="7.0">
+                <form string="Ordine" version="7.0">
                     <header>
-                        <button name="get_token" string="Update token" type="object" icon="gtk-refresh" />
+                        <!--<button name="get_token" string="Update token" type="object" icon="gtk-refresh" />-->
                     </header>
                     <sheet>
                         <group col="4" colspan="4">
                             <field name="name" />
-                            <field name="endpoint" />
+                            <field name="supplier_code" />
+                            <field name="dealer" />
+                            <field name="dealer_code" />
+                            <field name="supplier" />
+                            <field name="order_date" />
+                            <field name="deadline_date" />
                             <notebook colspan="4">
-                                <page string="End point">
+                                <page string="Dettaglio">
                                     <group col="4" colspan="4">
-                                        <separator string="Endpoint:" colspan="4"/>
-                                        <field name="endpoint_ids" colspan="4" nolabel="1" >
-                                            <tree string="Endpoint" editable="bottom">
-                                                <field name="code"/>
+                                        <separator string="Dettaglio:" colspan="4"/>
+                                        <field name="line_ids" colspan="4" nolabel="1" >
+                                            <tree string="Righe">
+                                                <field name="sequence"/>
                                                 <field name="name"/>
-                                                <field name="endpoint"/>
-                                                <button name="call_endpoint" string="Update token" type="object" icon="gtk-refresh" />
+                                                <field name="supplier_name"/>
+                                                <field name="uom_supplier"/>
+                                                <field name="product_qty"/>
                                             </tree>
+                                            <form string="Riga">
+                                                <sheet>
+                                                    <group colspan="4" col="4">
+                                                        <field name="sequence"/>
+                                                        <field name="name"/>
+                                                        <field name="supplier_name"/>
+                                                        <field name="supplier_code"/>
+                                                        <field name="code"/>
+                                                        <field name="uom_supplier"/>
+                                                        <field name="uom_product"/>
+                                                        <field name="product_qty"/>
+                                                        <field name="order_product_qty"/>
+                                                        <separator string="Note" colspan="4"/>
+                                                        <field name="note" colspan="4" nolabel="1"/>
+                                                    </group>
+                                                </sheet>
+                                            </form>
                                         </field>
                                     </group>
                                 </page>
-                                <page string="Connection">
-                                    <group col="4" colspan="4">
-                                        <field name="username" />
-                                        <field name="password" widget="password"/>
-                                        <field name="root" />
-                                        <separator string="Token:" colspan="4"/>
-                                        <field name="token" />
-                                        <field name="token_expire" />
-                                    </group>
-                                </page>
                             </notebook>
+                            <separator string="Note" colspan="4"/>
+                            <field name="note" colspan="4" nolabel="1"/>
                         </group>
                     </sheet>
                 </form>
             </field>
         </record>
-        <record model="ir.actions.act_window" id="action_http_request_connection">
-            <field name="name">Connection</field>
-            <field name="res_model">http.request.connection</field>
+        <record model="ir.actions.act_window" id="action_edi_supplier_order">
+            <field name="name">Ordini produttore</field>
+            <field name="res_model">edi.supplier.order</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="view_http_request_connection_tree"/>
+            <field name="view_id" ref="view_edi_supplier_order_tree"/>
             <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>
 
         <menuitem
             parent="base.menu_custom"
-            id="menu_http_request_connection_root"
-            action=""
-            name="HTTP Request"
+            id="menu_edi_supplier_order_root"
+            name="Piattaforma"
             sequence="10"
             />
             <menuitem
-                parent="menu_http_request_connection_root"
-                id="menu_http_request_connection_connection"
-                action="action_http_request_connection"
+                parent="menu_edi_supplier_order_root"
+                id="menu_edi_supplier_order_order"
+                action="action_edi_supplier_order"
                 sequence="10"
                 />
 
