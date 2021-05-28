@@ -22,7 +22,7 @@
             <field name="arch" type="xml">
                 <form string="Connection" colors="blue:token!=False" version="7.0">
                     <header>
-                        <button name="get_token" string="Update token" type="object" />
+                        <button name="get_token" string="Update token" type="object" icon="gtk-refresh" />
                     </header>
                     <sheet>
                         <group col="4" colspan="4">
@@ -47,7 +47,7 @@
                                                 <field name="code"/>
                                                 <field name="name"/>
                                                 <field name="endpoint"/>
-                                                <button name="call_endpoint" string="Update token" type="object" />
+                                                <button name="call_endpoint" string="Update token" type="object" icon="gtk-refresh" />
                                             </tree>
                                         </field>
                                     </group>
