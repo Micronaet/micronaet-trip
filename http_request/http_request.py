@@ -115,6 +115,7 @@ class HttpRequestEndpoint(orm.Model):
                       'data_from': '20210101'}}
         """
         parameter = context.get('endpoint_params')
+
         connection_pool = self.pool.get('http.request.connection')
         endpoint = self.browse(cr, uid, ids, context=context)[0]
         connection = endpoint.connection_id
@@ -124,6 +125,8 @@ class HttpRequestEndpoint(orm.Model):
             connection.root,
             endpoint.endpoint,
         )
+        for name in parameter:
+            url = url.replace('{%s}' % name, parameter[name])
         header = {
             'Authorization': 'token %s' % token,
         }

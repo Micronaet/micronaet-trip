@@ -29,16 +29,6 @@
                             <field name="name" />
                             <field name="endpoint" />
                             <notebook colspan="4">
-                                <page string="Connection">
-                                    <group col="4" colspan="4">
-                                        <field name="username" />
-                                        <field name="password" widget="password"/>
-                                        <field name="root" />
-                                        <separator string="Token:" colspan="4"/>
-                                        <field name="token" />
-                                        <field name="token_expire" />
-                                    </group>
-                                </page>
                                 <page string="End point">
                                     <group col="4" colspan="4">
                                         <separator string="Endpoint:" colspan="4"/>
@@ -50,6 +40,16 @@
                                                 <button name="call_endpoint" string="Update token" type="object" icon="gtk-refresh" />
                                             </tree>
                                         </field>
+                                    </group>
+                                </page>
+                                <page string="Connection">
+                                    <group col="4" colspan="4">
+                                        <field name="username" />
+                                        <field name="password" widget="password"/>
+                                        <field name="root" />
+                                        <separator string="Token:" colspan="4"/>
+                                        <field name="token" />
+                                        <field name="token_expire" />
                                     </group>
                                 </page>
                             </notebook>
