@@ -105,7 +105,16 @@ class HttpRequestEndpoint(orm.Model):
 
     def call_endpoint(self, cr, uid, ids, context=None):
         """ Call end point and return result
+            context parameter:
+                some endpoint has parameter in {name} form so in
+                context pass data for those parameter, ex.:
+                endpoint_xxx?from_date={data_from}
+
+                in context: context{
+                   'endpoint_params': {
+                      'data_from': '20210101'}}
         """
+        parameter = context.get('endpoint_params')
         connection_pool = self.pool.get('http.request.connection')
         endpoint = self.browse(cr, uid, ids, context=context)[0]
         connection = endpoint.connection_id
@@ -138,7 +147,7 @@ class HttpRequestEndpoint(orm.Model):
     _columns = {
         'name': fields.char('Name', size=64, required=True),
         'code': fields.char('Code', size=30, required=True),
-        'endpoint': fields.char('Endpoint', size=50, required=True),
+        'endpoint': fields.char('Endpoint', size=150, required=True),
         # 'content': fields.char('Content type', size=40, required=True),
         'connection_id': fields.many2one(
             'http.request.connection', 'Connection'),
