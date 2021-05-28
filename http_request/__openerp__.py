@@ -18,11 +18,11 @@
 ###############################################################################
 
 {
-    'name': 'Account trip - Soap Order',
+    'name': 'HTTP requesst',
     'version': '0.1',
     'category': 'EDI',
     'description': """
-        Manage call with SOAP Server and get new order
+        Help HTTP request call from ODOO
         """,
     'author': 'Micronaet S.r.l. - Nicola Riolini',
     'website': 'http://www.micronaet.it',
