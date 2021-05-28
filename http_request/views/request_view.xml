@@ -5,7 +5,7 @@
             <field name="name">http.request.connection.tree</field>
             <field name="model">http.request.connection</field>
             <field name="arch" type="xml">
-                <tree string="Connection" colors="blue:token!=False">        
+                <tree string="Connection" colors="blue:token!=False">
                     <field name="name" />
                     <field name="endpoint" />
                     <field name="username" />
@@ -19,11 +19,11 @@
         <record model="ir.ui.view" id="view_http_request_connection_form">
             <field name="name">http.request.connection.form</field>
             <field name="model">http.request.connection</field>
-            <field name="arch" type="xml">            
-                <form string="Connection" colors="blue:token!=False">        
+            <field name="arch" type="xml">
+                <form string="Connection" colors="blue:token!=False">
                     <header>
                         <button name="get_token" string="Update token" type="object" />
-                    </header>                    
+                    </header>
                     <sheet>
                         <group col="4" colspan="4">
                             <field name="name" />
@@ -36,17 +36,17 @@
                                         <field name="root" />
                                         <field name="token" invisible="1"/>
                                         <field name="token_expire" invisible="1"/>
-                                    </group>    
+                                    </group>
                                 </page>
                                 <page string="End point">
                                     <group col="4" colspan="4">
                                         <separator string="Endpoint:" colspan="4"/>
                                         <field name="endpoint_ids" colspan="4" nolabel="1"/>
-                                    </group>    
+                                    </group>
                                 </page>
                             </notebook>
-                        </group>    
-                    <sheet>
+                        </group>
+                    </sheet>
                 </form>
             </field>
         </record>
@@ -59,17 +59,17 @@
             <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>
-        
-        <menuitem 
-            parent="" 
-            id="menu_http_request_connection_root" 
+
+        <menuitem
+            parent=""
+            id="menu_http_request_connection_root"
             action=""
             name="HTTP Request"
             sequence="10"
-            />        
-            <menuitem 
-                parent="menu_http_request_connection_root" 
-                id="menu_http_request_connection_root" 
+            />
+            <menuitem
+                parent="menu_http_request_connection_root"
+                id="menu_http_request_connection_root"
                 action="action_http_request_connection"
                 sequence="10"
                 />
