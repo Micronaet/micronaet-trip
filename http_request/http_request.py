@@ -131,7 +131,7 @@ class HttpRequestEndpoint(orm.Model):
         else:
             raise osv.except_osv(
                 _('Endpoint error:'),
-                _('Connection error: ' % reply.text),
+                _('Connection error: %s' % reply.text),
                 )
 
     _columns = {
