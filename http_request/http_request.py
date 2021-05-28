@@ -89,7 +89,7 @@ class HttpRequestConnection(orm.Model):
         'username': fields.char('Username', size=64, required=True),
         'password': fields.char('Password', size=64, required=True),
         'root': fields.char('Root url', size=100, required=True),
-        'token': fields.char('Root url', size=180),
+        'token': fields.char('Root url', size=300),
         'token_expire': fields.char('Root url', size=80),
     }
 
