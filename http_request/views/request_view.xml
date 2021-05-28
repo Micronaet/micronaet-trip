@@ -32,10 +32,11 @@
                                 <page string="Connection">
                                     <group col="4" colspan="4">
                                         <field name="username" />
-                                        <field name="password" />
+                                        <field name="password" widget="password"/>
                                         <field name="root" />
-                                        <field name="token" invisible="1"/>
-                                        <field name="token_expire" invisible="1"/>
+                                        <separator string="Token:" colspan="4"/>
+                                        <field name="token" />
+                                        <field name="token_expire" />
                                     </group>
                                 </page>
                                 <page string="End point">
