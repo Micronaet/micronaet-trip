@@ -143,3 +143,15 @@ class HttpRequestEndpoint(orm.Model):
     _defaults = {
         'context': lambda *x: 'application/json',
     }
+
+
+class HttpRequestConnectionRelation(orm.Model):
+    """ Model name: HTTP Request connection relations
+    """
+
+    _inherit = 'http.request.connection'
+
+    _columns = {
+        'endpoint_ids': fields.one2many(
+            'http.request.endpoint', 'connection_id', 'Endpoint')
+    }

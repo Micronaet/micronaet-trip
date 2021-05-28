@@ -29,30 +29,14 @@
     'license': 'AGPL-3',
     'depends': [
         'base',
-        'account_trip_edi',
         ],
     'init_xml': [],
     'demo': [],
     'data': [
-        'security/soap_group.xml',
         'security/ir.model.access.csv',
 
-        # Wizard:
-        'wizard/split_line_view.xml',
-
         # View:
-        'soap_view.xml',
-        'counter.xml',
-
-        # Init setup:
-        'data/connection_data.xml',
-        
-        
-        # Report:
-        'report/sscc_label_report.xml',
-        
-        # Scheduled action:
-        'scheduler.xml',
+        'request_view.xml',
         ],
     'active': False,
     'installable': True,

@@ -1,0 +1,4 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_http_request_connection_user,http.request.connection,model_http_request_connection,base.group_user,1,1,1,1
+access_http_request_endpoint_user,http.request.endpoint,model_http_request_endpoint,base.group_user,1,1,1,1
+
