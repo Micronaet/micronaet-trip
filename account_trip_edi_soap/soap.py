@@ -882,6 +882,7 @@ class EdiSoapMapping(orm.Model):
             'product_id', 'chunk', type='integer', string='Chunk per pack'),
         }
 
+
 class ProductProduct(orm.Model):
     """ Model name: ProductProduct
     """
@@ -899,11 +900,11 @@ class ProductProduct(orm.Model):
         except:
             return 1
 
-
     _columns = {
         'duty_code': fields.char('Duty code', size=20),
         'chunk': fields.char('Chunk per pack', size=20),
     }
+
 
 class EdiSoapOrder(orm.Model):
     """ Soap Soap Order
@@ -2078,6 +2079,7 @@ class EdiSoapLogisticPallet(orm.Model):
             'edi.soap.logistic.line', 'pallet_id', 'Logistic Lines'),
         }
 
+
 class EdiSoapLogistic(orm.Model):
     """ Soap logistic order relations
     """
@@ -2090,6 +2092,7 @@ class EdiSoapLogistic(orm.Model):
             'edi.soap.logistic.pallet', 'logistic_id', 'Pallet'),
         }
 
+
 class EdiSoapOrder(orm.Model):
     """ Soap Parameter for connection
     """
@@ -2101,6 +2104,7 @@ class EdiSoapOrder(orm.Model):
         'pallet_ids': fields.one2many(
             'edi.soap.logistic.pallet', 'order_id', 'Pallet'),
         }
+
 
 class ResPartner(orm.Model):
     """ Model name: Res partner
@@ -2130,5 +2134,3 @@ class ResPartner(orm.Model):
         'connection_id': fields.many2one(
             'edi.soap.connection', 'Connection'),
         }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

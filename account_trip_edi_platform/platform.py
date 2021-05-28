@@ -39,6 +39,19 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
-# -----------------------------------------------------------------------------
-# HTTP Request
-# -----------------------------------------------------------------------------
+
+class EdiSupplierOrder(orm.Model):
+    """ Model name: Edi Supplier Order
+    """
+
+    _name = 'edi.supplier.order'
+    _description = 'Supplier order'
+    _rec_name = 'name'
+    _order = 'name'
+
+    _columns = {
+        'name': fields.char(
+            'Name', size=64, required=True,
+            ),
+    }
+

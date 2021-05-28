@@ -18,41 +18,26 @@
 ###############################################################################
 
 {
-    'name': 'Account trip - Soap Order',
+    'name': 'Platform management',
     'version': '0.1',
     'category': 'EDI',
     'description': """
-        Manage call with SOAP Server and get new order
+        Manage call via HTTP request for platorm management
         """,
     'author': 'Micronaet S.r.l. - Nicola Riolini',
     'website': 'http://www.micronaet.it',
     'license': 'AGPL-3',
     'depends': [
         'base',
+        'account_trip',
         'account_trip_edi',
+        'http_request',
         ],
     'init_xml': [],
     'demo': [],
     'data': [
-        'security/soap_group.xml',
         'security/ir.model.access.csv',
-
-        # Wizard:
-        'wizard/split_line_view.xml',
-
-        # View:
-        'soap_view.xml',
-        'counter.xml',
-
-        # Init setup:
-        'data/connection_data.xml',
-        
-        
-        # Report:
-        'report/sscc_label_report.xml',
-        
-        # Scheduled action:
-        'scheduler.xml',
+        'platform_view.xml',
         ],
     'active': False,
     'installable': True,
