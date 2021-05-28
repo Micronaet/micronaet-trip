@@ -113,7 +113,7 @@ class HttpRequestEndpoint(orm.Model):
             cr, uid, [connection.id], context=context)
         url = '%s/%s' % (
             connection.root,
-            endpoint,
+            endpoint.endpoint,
         )
         header = {
             'Authorization': 'token %s' % token,
