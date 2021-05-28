@@ -127,7 +127,7 @@ class HttpRequestEndpoint(orm.Model):
         if reply.ok:
             reply_json = reply.json()
             _logger.warning('Result: %s' % reply_json)
-            return reply.json()  # todo keep as parameter
+            return reply.json()  # todo keep as parameter (json)
         else:
             raise osv.except_osv(
                 _('Endpoint error:'),
