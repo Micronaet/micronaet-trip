@@ -42,11 +42,13 @@
                                 <page string="End point">
                                     <group col="4" colspan="4">
                                         <separator string="Endpoint:" colspan="4"/>
-                                        <field name="endpoint_ids" colspan="4" nolabel="1" editable="bottom">
-                                            <field name="code"/>
-                                            <field name="name"/>
-                                            <field name="endpoint"/>
-                                            <button name="call_endpoint" string="Update token" type="object" />
+                                        <field name="endpoint_ids" colspan="4" nolabel="1" >
+                                            <tree string="Endpoint" editable="bottom">
+                                                <field name="code"/>
+                                                <field name="name"/>
+                                                <field name="endpoint"/>
+                                                <button name="call_endpoint" string="Update token" type="object" />
+                                            </tree>
                                         </field>
                                     </group>
                                 </page>
