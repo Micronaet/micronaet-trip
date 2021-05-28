@@ -122,7 +122,8 @@ class HttpRequestEndpoint(orm.Model):
         # content = {
         #    'content-type': endpoint.content,
         # }
-
+        _logger.info('Calling: %s\nParameter: %s' % (
+            url, header))
         reply = requests.get(url=url, headers=header)
         if reply.ok:
             reply_json = reply.json()
