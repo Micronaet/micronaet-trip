@@ -38,11 +38,11 @@
                                                 <field name="code"/>
                                                 <field name="name"/>
                                                 <field name="endpoint"/>
-                                                <button name="call_endpoint" string="Update token" type="object" icon="gtk-refresh" />
+                                                <button name="call_endpoint" string="Update token" type="object" icon="gtk-refresh" attrs="{'invisible': [('mode', '!=', 'get')]}"/>
                                             </tree>
                                             <form string="Endpoint" editable="bottom">
                                                 <header>
-                                                     <button name="call_endpoint" string="Update token" type="object" icon="gtk-refresh" />
+                                                     <button name="call_endpoint" string="Update token" type="object" icon="gtk-refresh" attrs="{'invisible': [('mode', '!=', 'get')]}"/>
                                                 </header>
                                                 <sheet>
                                                     <group col="4" colspan="4">
