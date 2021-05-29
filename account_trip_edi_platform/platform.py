@@ -47,7 +47,7 @@ class EdiCompany(orm.Model):
 
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
         """ Import supplier order from platform
-            Period always yesterday to today (lauched every day)
+            Period always yesterday to today (launched every day)
         """
         company = self.browse(cr, uid, ids, context=context)[0]
         # Call end point for get order:
