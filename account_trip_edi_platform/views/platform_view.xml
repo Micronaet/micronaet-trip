@@ -116,7 +116,7 @@
                                 </page>
                                 <page string="DDT">
                                     <group col="4" colspan="4">
-                                        <separator string="Esito invio DDT:" colspan="4"/>
+                                        <separator string="Esito invio DDT:" colspan="4" attrs="{'invisible': [('sent_message', '=', False)]}"/>
                                         <field name="sent_message" attrs="{'invisible': [('sent_message', '=', False)]}"/>
                                         <field name="sent_error" invisible="1"/>
 
