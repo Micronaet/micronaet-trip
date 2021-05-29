@@ -17,7 +17,7 @@
 
                     <field name="force_from_date" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <field name="force_to_date" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-
+                    <newline/>
 
                     <field name="edi_supplier_out_path" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <field name="separator" attrs="{'invisible': [('has_platform', '=', False)]}"/>
