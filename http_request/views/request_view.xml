@@ -40,24 +40,8 @@
                                                 <field name="endpoint"/>
                                                 <field name="content"/>
                                                 <button name="call_endpoint" string="Update token" type="object" icon="gtk-refresh" attrs="{'invisible': [('mode', '!=', 'get')]}"/>
+                                                <button name="endpoint_detail" string="Detail" type="object" icon="gtk-justify-fill" attrs="{'invisible': [('mode', '!=', 'post')]}"/>
                                             </tree>
-                                            <form string="Endpoint">
-                                                <header>
-                                                     <button name="call_endpoint" string="Update token" type="object" icon="gtk-refresh" attrs="{'invisible': [('mode', '!=', 'get')]}"/>
-                                                </header>
-                                                <sheet>
-                                                    <group col="4" colspan="4">
-                                                        <field name="mode"/>
-                                                        <field name="code"/>
-                                                        <field name="name"/>
-                                                        <field name="endpoint"/>
-                                                        <field name="content"/>
-                                                        <separator string="Payload" colspan="4"/>
-                                                        <field name="payload" colspan="4" nolabel="1"/>
-                                                    </group>
-                                                </sheet>
-
-                                            </form>
                                         </field>
                                     </group>
                                 </page>
@@ -85,6 +69,28 @@
             <field name="view_id" ref="view_http_request_connection_tree"/>
             <field name="context">{}</field>
             <field name="domain">[]</field>
+        </record>
+        <record model="ir.ui.view" id="view_http_endpoint_form">
+            <field name="name">http.request.endpoint.form</field>
+            <field name="model">http.request.endpoint</field>
+            <field name="arch" type="xml">
+                <form string="Endpoint">
+                    <header>
+                         <button name="call_endpoint" string="Update token" type="object" icon="gtk-refresh" attrs="{'invisible': [('mode', '!=', 'get')]}"/>
+                    </header>
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <field name="mode"/>
+                            <field name="code"/>
+                            <field name="name"/>
+                            <field name="endpoint"/>
+                            <field name="content"/>
+                            <separator string="Payload" colspan="4"/>
+                            <field name="payload" colspan="4" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
         </record>
 
         <menuitem

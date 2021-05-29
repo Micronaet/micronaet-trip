@@ -97,6 +97,27 @@ class HttpRequestEndpoint(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
+    def endpoint_detail(self, cr, uid, ids, context=None):
+        model_pool = self.pool.get('ir.model.data')
+        view_id = model_pool.get_object_reference(
+            cr, uid,
+            'http_request', 'view_http_endpoint_form')[1]
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Dettaglio end point'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': uid[0],
+            'res_model': 'http.connection.endpoint',
+            'view_id': view_id,
+            'views': [(view_id, 'form')],
+            'domain': [],
+            'context': context,
+            'target': 'new',
+            'nodestroy': False,
+            }
+
     def call_endpoint(self, cr, uid, ids, context=None):
         """ Call end point and return result
             context parameter:
