@@ -131,9 +131,9 @@ class HttpRequestEndpoint(orm.Model):
         # }
         _logger.info('Calling: %s\nParameter: %s' % (
             url, header))
-        if connection.mode == 'get':
+        if endpoint.mode == 'get':
             reply = requests.get(url=url, headers=header)
-        if connection.mode == 'post':
+        if endpoint.mode == 'post':
             reply = requests.post(url=url, headers=header)
 
         if reply.ok:
