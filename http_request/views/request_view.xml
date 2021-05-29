@@ -40,7 +40,7 @@
                                                 <field name="endpoint"/>
                                                 <button name="call_endpoint" string="Update token" type="object" icon="gtk-refresh" attrs="{'invisible': [('mode', '!=', 'get')]}"/>
                                             </tree>
-                                            <form string="Endpoint" editable="bottom">
+                                            <form string="Endpoint">
                                                 <header>
                                                      <button name="call_endpoint" string="Update token" type="object" icon="gtk-refresh" attrs="{'invisible': [('mode', '!=', 'get')]}"/>
                                                 </header>
