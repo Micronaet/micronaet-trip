@@ -23,14 +23,8 @@ import os
 import pdb
 import sys
 import logging
-import openerp
-import shutil
-import re
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from openerp import SUPERUSER_ID
-from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT,
@@ -63,6 +57,81 @@ class EdiCompany(orm.Model):
     def import_all_supplier_order(self, cr, uid, ids, context=None):
         """ Import DDT from account
         """
+        order_pool = self.pool.get('edi.supplier.order')
+        ddt_line_pool = self.pool.get('edi.supplier.order.ddt.line')
+
+        company = self.browse(cr, uid, ids, context=context)[0]
+        company_id = company.id
+        separator = company.separator or '|'
+        ddt_path = os.path.expanduser(company.edi_supplier_in_path)
+        for root, folders, files in os.walk(ddt_path):
+            for filename in files:
+                ddt_filename = os.path.join(root % filename)
+                if not filename.endswith('.csv'):
+                    _logger.warning('Jumped file: %s' % filename)
+                    continue
+
+                # todo Check if is a DDT for Portal
+                ddt_f = open(ddt_filename, 'r')
+                data = {  # Fixed data
+                    1: '',  # Order name
+                    2: '',  # DDT Number
+                }
+
+                row = 0
+                order_id = False
+                for line in ddt_f.readline():
+                    line = line.strip()
+                    row += 1
+                    if row in data:
+                        data[row] = line
+                        if row == 1:
+                            # Check if it is a platform file
+                            order_ids = order_pool.search(cr, uid, [
+                                ('company_id', '=', company_id),
+                                ('name', '=', line),
+                            ])
+
+                            if not order_ids:
+                                # todo remove file?
+                                _logger.error(
+                                    'Order %s not in platform, '
+                                    'file %s jumped' % (
+                                        line, filename,
+                                    ))
+                            order_id = False
+                        continue
+                    # todo check with Laura:
+                    sequence = line[:5]
+                    code = line[5:10]
+                    product_qty = line[10:20]
+                    product_uom = line[20:30]
+
+                    # Link to line:
+                    line_ids = order_pool.search(cr, uid, [
+                        ('order_id', '=', order_id),
+                        ('sequence', '=', sequence),
+                    ])
+                    if line_ids:
+                        line_id = line_ids[0]
+                    else:
+                        line_id = False  # todo consider raise error!
+                        _logger.error(
+                            'Cannot link to generator line [%s]!' %
+                            sequence)
+
+                    ddt_data = {
+                        'sequence': sequence,
+                        'name': data[2],
+                        'code': code,
+                        'uom_product': product_uom,
+                        'product_qty': product_qty,  # todo change in float
+
+                        'order_id': order_id,
+                        'line_id': line_id,
+                    }
+                    ddt_line_pool.create(cr, uid, ddt_data, context=context)
+                break  # Only first folder!
 
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
         """ Import supplier order from platform
