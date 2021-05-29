@@ -294,7 +294,7 @@ class EdiSupplierOrder(orm.Model):
                     'CODICE_ARTICOLO': ddt_line.code,  # 'AV040002'
                     'UM_ARTICOLO_PIATTAFORMA': ddt_line.uom_product,
                     'QTA': ddt_line.product_qty,  # todo 10 + 4
-                    'DATA_SCADENZA': ddt_line.deadline,
+                    'DATA_SCADENZA': ddt_line.deadline_lot,
                     'LOTTO': ddt_line.lot,
 
                     'CODICE_PRODUTTORE': order.supplier_code,  # '2288'
