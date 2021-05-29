@@ -212,11 +212,11 @@ class EdiSupplierOrder(orm.Model):
                 clean_ascii(line.note),
             ]
             # Fixed header
-            out_f.write(clean_ascii('%s%s%s\r\n' % (
+            out_f.write('%s%s%s\r\n' % (
                 header_part,
                 separator,
                 separator.join(data),
-            )))
+            ))
         out_f.close()
         return self.write(cr, uid, ids, {
             'extracted': True,
