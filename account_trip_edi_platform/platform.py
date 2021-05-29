@@ -48,8 +48,17 @@ class EdiCompany(orm.Model):
     def export_all_supplier_order(self, cr, uid, ids, context=None):
         """ Export all order not exported
         """
-
-        return True
+        order_pool = self.pool.get('edi.supplier.order')
+        order_ids = order_pool.search(cr, uid, [
+            ('extracted', '=', False),
+        ], context=context)
+        if not order_ids:
+            raise osv.except_osv(
+                _('Attenzione:'),
+                _('Non sono presenti ordini da estrarre'),
+                )
+        return order_pool.extract_supplier_order(
+            cr, uid, order_ids, context=context)
 
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
         """ Import supplier order from platform
@@ -187,6 +196,9 @@ class EdiSupplierOrder(orm.Model):
 
         for order in self.browse(cr, uid, ids, context=context):
             name = order.name
+            if order.extracted:
+                _logger.error('Order %s yet extracted, jump' % name)
+                continue
 
             # Read parameter for export:
             company = order.company_id
