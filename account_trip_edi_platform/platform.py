@@ -275,26 +275,41 @@ class EdiSupplierOrder(orm.Model):
         """ Send JSON data file to portal for DDT confirmed
         """
         pdb.set_trace()
+        endpoint_pool = self.pool.get('http.request.endpoint')
         for order in self.browse(cr, uid, ids, context=context):
             name = order.name
+            company = order.company_id
             if not order.ddt_line_ids:
                 _logger.error('%s Nothing to send (no DDT lines)!' % name)
                 continue
+            payload = []
             for ddt_line in order.ddt_line_ids:
                 order = ddt_line.order_id
-                payload = {
+                payload.append({
+                    'RIGA_ORDINE': ddt_line.sequence,
                     'NUMERO_DDT': ddt_line.name,
                     'CODICE_ARTICOLO': ddt_line.code,  # 'AV040002'
                     'UM_ARTICOLO_PIATTAFORMA': ddt_line.uom_product,
                     'QTA': ddt_line.product_qty,  # todo 10 + 4
 
-
                     'CODICE_SITO': order.dealer_code,  # '2288'
                     'DATA_DDT': ddt_line.date,  # (FORMATO AAAAMMGG)
                     'DATA_CONSEGNA_EFFETTIVA': ddt_line.date_received,
                     'NUMERO_ORDINE': order.name,
-                    'RIGA_ORDINE': order.sequence,
-                }
+                })
+            ctx = context.copy()
+            ctx['payload'] = payload
+            reply = endpoint_pool.call_endpoint(cr, uid, [
+                company.endpoint_ddt_id.id], context=ctx)
+            if not reply.ok:
+                raise osv.except_osv(
+                    _('Attenzione:'),
+                    _('Errore spedendo il DDT:\n %s' % reply.text),
+                )
+            # todo check error
+            self.write(cr, uid, [order.id], {
+                'sent': True,
+            }, context=context)
 
             # Reply
             #{"ElencoErroriAvvisi":[{

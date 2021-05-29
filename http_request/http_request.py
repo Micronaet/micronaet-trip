@@ -22,6 +22,7 @@
 import os
 import pdb
 import sys
+import json
 import logging
 import requests
 from openerp.osv import fields, osv, expression, orm
@@ -155,7 +156,8 @@ class HttpRequestEndpoint(orm.Model):
         if endpoint.mode == 'get':
             reply = requests.get(url=url, headers=header)
         if endpoint.mode == 'post':
-            reply = requests.post(url=url, headers=header, data=payload)
+            data = json.dumps(payload)
+            reply = requests.post(url=url, headers=header, data=data)
 
         if reply.ok:
             reply_json = reply.json()
