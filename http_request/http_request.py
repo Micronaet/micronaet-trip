@@ -98,6 +98,8 @@ class HttpRequestEndpoint(orm.Model):
     _order = 'name'
 
     def endpoint_detail(self, cr, uid, ids, context=None):
+        """ Open endpoint detail
+        """
         model_pool = self.pool.get('ir.model.data')
         view_id = model_pool.get_object_reference(
             cr, uid,
@@ -108,8 +110,8 @@ class HttpRequestEndpoint(orm.Model):
             'name': _('Dettaglio end point'),
             'view_type': 'form',
             'view_mode': 'form',
-            'res_id': uid[0],
-            'res_model': 'http.connection.endpoint',
+            'res_id': ids[0],
+            'res_model': 'http.request.endpoint',
             'view_id': view_id,
             'views': [(view_id, 'form')],
             'domain': [],

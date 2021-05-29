@@ -74,7 +74,7 @@
             <field name="name">http.request.endpoint.form</field>
             <field name="model">http.request.endpoint</field>
             <field name="arch" type="xml">
-                <form string="Endpoint">
+                <form string="Endpoint" version="7.0">
                     <header>
                          <button name="call_endpoint" string="Update token" type="object" icon="gtk-refresh" attrs="{'invisible': [('mode', '!=', 'get')]}"/>
                     </header>
