@@ -24,7 +24,7 @@
             <field name="name">edi.supplier.order.tree</field>
             <field name="model">edi.supplier.order</field>
             <field name="arch" type="xml">
-                <tree string="Ordine" colors="blue:token!=False">
+                <tree string="Ordine">
                     <field name="connection_id"/>
                     <field name="endpoint_id" />
                     <field name="name" />
