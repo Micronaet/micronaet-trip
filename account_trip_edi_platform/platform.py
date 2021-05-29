@@ -187,7 +187,6 @@ class EdiSupplierOrder(orm.Model):
         out_path = os.path.expanduser(company.edi_supplier_out_path)
         out_filename = os.path.join(out_path, '%s.csv' % name)
         out_f = open(out_filename, 'w')
-        pdb.set_trace()
         header = [
             order.name,
             clean_ascii(order.supplier_code),
