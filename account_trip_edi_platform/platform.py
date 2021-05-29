@@ -66,7 +66,7 @@ class EdiCompany(orm.Model):
         'has_platform': fields.boolean('Has platform'),
         'connection_id': fields.many2one(
             'http.request.connection', 'Connection'),
-        'endpoin_id': fields.many2one(
+        'endpoint_id': fields.many2one(
             'http.request.endpoint', 'Endpoint'),
     }
 
