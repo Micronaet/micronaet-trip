@@ -23,15 +23,9 @@ import os
 import pdb
 import sys
 import logging
-import openerp
-import shutil
-import re
 import requests
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from openerp import SUPERUSER_ID
-from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT,
