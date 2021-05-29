@@ -328,16 +328,16 @@ class EdiSupplierOrder(orm.Model):
                         status['Messaggio'],
                     )
 
+            if message_type == 'N':  # todo A is needed?
+                sent = True
+            else:
+                sent = False
             self.write(cr, uid, [order.id], {
-                'sent': True,
+                'sent': sent,
                 'sent_message': sent_message,
                 'sent_error': sent_error,
             }, context=context)
 
-            # Reply
-            # {"ElencoErroriAvvisi":[{
-            #    "Messaggio":"Impossibile salvare il D.d.T. ITA999998-...",
-            #     "Tipo":"E"
             # C=Errore critico, E = Errore generico, A = Avviso, N = Nota)
             return True
 
