@@ -117,7 +117,7 @@
                                 <page string="DDT">
                                     <group col="4" colspan="4">
                                         <separator string="Esito invio DDT:" colspan="4" attrs="{'invisible': [('sent_message', '=', False)]}"/>
-                                        <field name="sent_message" attrs="{'invisible': [('sent_message', '=', False)]}"/>
+                                        <field name="sent_message" attrs="{'invisible': [('sent_message', '=', False)]}" colspan="4" nolabel="1"/>
                                         <field name="sent_error" invisible="1"/>
 
                                         <separator string="Dettaglio DDT:" colspan="4"/>
