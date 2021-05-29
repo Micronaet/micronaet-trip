@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-        <record model="ir.ui.view" id="view_edi_supplier_order_form">
+        <record model="ir.ui.view" id="view_edi_company_platform_form">
             <field name="name">edi.company.form</field>
-            <field name="model">edi.company.order</field>
+            <field name="model">edi.company</field>
             <field name="inherit_id" ref="account_trip_edi.edi_company_trip_parameter_form_view"/>
             <field name="arch" type="xml">
                 <field name="trip_delete_folder" position="after">
@@ -14,6 +14,7 @@
             </field>
         </record>
 
+        <!--edi.supplier.order-->
         <record model="ir.ui.view" id="view_edi_supplier_order_tree">
             <field name="name">edi.supplier.order.tree</field>
             <field name="model">edi.supplier.order</field>
@@ -97,14 +98,20 @@
         </record>
 
         <menuitem
-            parent="base.menu_custom"
             id="menu_edi_supplier_order_root"
             name="Piattaforma"
             sequence="10"
-            />
+            /><!--parent="base.menu_custom"-->
+
             <menuitem
                 parent="menu_edi_supplier_order_root"
-                id="menu_edi_supplier_order_order"
+                id="menu_edi_supplier_order_management"
+                name="Produttore"
+                sequence="10"
+                />
+            <menuitem
+                parent="menu_edi_supplier_order_management"
+                id="menu_edi_supplier_producer_order"
                 action="action_edi_supplier_order"
                 sequence="10"
                 />
