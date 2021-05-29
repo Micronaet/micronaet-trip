@@ -184,6 +184,26 @@ class EdiSupplierOrder(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
+    def send_ddt_order(self, cr, uid, ids, context=None):
+        """ Send JSON data file to portal for DDT confirmed
+        """
+        json_data = {
+            "NUMERO_DDT": "abcdef",
+            "CODICE_ARTICOLO": "AV040002",
+            "UM_ARTICOLO_PIATTAFORMA": "KG",
+            # (ULTIME 4 CIFRE RAPPRESENTANO I DECIMALI –
+            # QUANTITA’ ESPRESSA NELL’UNITA’ DI MISURA DEL PIATTAFORMA)
+            "QTA": "00000000027000",
+
+
+            "CODICE_SITO": "2288",
+            "DATA_DDT": "20210406", #(FORMATO AAAAMMGG)
+            "DATA_CONSEGNA_EFFETTIVA": "20210408", #(FORMATO AAAAMMGG)
+            "NUMERO_ORDINE": "210083048_004",
+            "RIGA_ORDINE": "1",
+            }
+        return True
+
     def extract_supplier_order(self, cr, uid, ids, context=None):
         """ Estract order to file CSV
         """
@@ -293,17 +313,28 @@ class EdiSupplierOrderLine(orm.Model):
         'order_id': fields.many2one('edi.supplier.order', 'Ordine produttore'),
     }
 
-{
-"CODICE_SITO":"2288",
-"DATA_DDT":"20210406", (FORMATO AAAAMMGG)
-"DATA_CONSEGNA_EFFETTIVA":"20210408", (FORMATO AAAAMMGG)
-"NUMERO_DDT":"abcdef",
-"NUMERO_ORDINE":"210083048_004",
-"RIGA_ORDINE":"1",
-"CODICE_ARTICOLO":"AV040002",
-"UM_ARTICOLO_PIATTAFORMA":"KG",
-"QTA":"00000000027000", (ULTIME 4 CIFRE RAPPRESENTANO I DECIMALI – QUANTITA’ ESPRESSA NELL’UNITA’ DI MISURA DEL PIATTAFORMA)
-},
+
+class EdiSupplierOrderDDTLine(orm.Model):
+    """ Model name: Edi Supplier Order DDT Line
+    """
+
+    _name = 'edi.supplier.order.ddt.line'
+    _description = 'Supplier order DDT line'
+    _rec_name = 'name'
+    _order = 'sequence'
+
+    _columns = {
+        'sequence': fields.char('Seq.', size=4),
+        'name': fields.char(
+            'Numero DDT', size=20, required=True),
+        'code': fields.char('Codice articolo', size=20),
+        'uom_product': fields.char('UM prodotto', size=10),
+        'product_qty': fields.char('Q.', size=20),  # todo change in float
+
+        'order_id': fields.many2one('edi.supplier.order', 'Ordine produttore'),
+        'line_id': fields.many2one('edi.supplier.order.line', 'Riga ordine'),
+    }
+
 
 class EdiSupplierOrderRelation(orm.Model):
     """ Model name: Edi Supplier Order relation
@@ -313,6 +344,8 @@ class EdiSupplierOrderRelation(orm.Model):
 
     _columns = {
         'line_ids': fields.one2many(
-            'edi.supplier.order.line', 'order_id', 'Righe')
+            'edi.supplier.order.line', 'order_id', 'Righe OF')
+        'ddt_line_ids': fields.one2many(
+            'edi.supplier.order.ddt.line', 'order_id', 'Righe DDT')
     }
 
