@@ -58,8 +58,8 @@ class EdiCompany(orm.Model):
             '-', '')
         to_date = str(datetime.now())[:10].replace('-', '')
         ctx['endpoint_params'] = {
-            'data_from': company.force_from_date or from_date,
-            'data_to': company.force_to_date or to_date,
+            'from_date': company.force_from_date or from_date,
+            'to_date': company.force_to_date or to_date,
         }
 
         orders = connection_pool.call_endpoint(

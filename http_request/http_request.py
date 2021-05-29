@@ -108,7 +108,6 @@ class HttpRequestEndpoint(orm.Model):
                    'endpoint_params': {
                       'data_from': '20210101'}}
         """
-        pdb.set_trace()
         parameter = context.get('endpoint_params')
 
         connection_pool = self.pool.get('http.request.connection')
