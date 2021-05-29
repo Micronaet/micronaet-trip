@@ -151,11 +151,13 @@ class HttpRequestEndpoint(orm.Model):
             'Authorization': 'token %s' % token,
             'content-type': endpoint.content,
         }
-        _logger.info('Calling: %s\nParameter: %s' % (
-            url, header))
         if endpoint.mode == 'get':
+            _logger.info('Calling: %s\nHeader: %s' % (
+                url, header))
             reply = requests.get(url=url, headers=header)
         if endpoint.mode == 'post':
+            _logger.info('Calling: %s\nPayload: %s' % (
+                url, payload))
             data = json.dumps(payload)
             reply = requests.post(url=url, headers=header, data=data)
 
