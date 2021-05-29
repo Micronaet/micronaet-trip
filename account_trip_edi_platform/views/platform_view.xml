@@ -28,6 +28,12 @@
                     <field name="edi_supplier_in_path" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <field name="endpoint_ddt_id" attrs="{'invisible': [('has_platform', '=', False)]}" domain="[('connection_id', '=', connection_id)]"/>
                     <button name="import_all_supplier_order" type="object" string="Importa e invia tutti" icon="gtk-refresh" colspan="2" attrs="{'invisible': [('has_platform', '=', False)]}"/>
+
+                    <separator string="Stato magazzino:" colspan="6" attrs="{'invisible': [('has_platform', '=', False)]}"/>
+                    <field name="endpoint_stock_id" attrs="{'invisible': [('has_platform', '=', False)]}"/>
+                    <field name="last_stock_update" attrs="{'invisible': [('has_platform', '=', False)]}"/>
+                    <button name="update_stock_status" type="object" string="Invia stato di magazzino" icon="gtk-refresh" colspan="2" attrs="{'invisible': [('has_platform', '=', False)]}"/>
+
                     <newline/>
                 </field>
             </field>

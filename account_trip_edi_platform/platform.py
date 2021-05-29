@@ -300,6 +300,9 @@ class EdiCompany(orm.Model):
         'endpoint_id': fields.many2one('http.request.endpoint', 'Endpoint OF'),
         'endpoint_ddt_id': fields.many2one(
             'http.request.endpoint', 'Endpoint DDT'),
+        'endpoint_stock_id': fields.many2one(
+            'http.request.endpoint', 'Endpoint Stato magazzino'),
+        'last_stock_update': fields.datetime('Ultimo inviato'),
         'force_from_date': fields.char(
             'Forza dalla data', size=19,
             help='Forza la data di partenza per leggere gli ordini, formato: '
