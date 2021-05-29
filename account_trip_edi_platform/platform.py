@@ -22,6 +22,7 @@
 import os
 import pdb
 import sys
+import shutil
 import logging
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime, timedelta
@@ -62,18 +63,25 @@ class EdiCompany(orm.Model):
 
         company = self.browse(cr, uid, ids, context=context)[0]
         company_id = company.id
-        separator = company.separator or '|'
+        # separator = company.separator or '|'
         ddt_path = os.path.expanduser(company.edi_supplier_in_path)
+        history_path = os.path.join(ddt_path, 'history')
+        unused_path = os.path.join(ddt_path, 'unused')
+        log_path = os.path.join(ddt_path, 'log')
         for root, folders, files in os.walk(ddt_path):
             for filename in files:
-                ddt_filename = os.path.join(root % filename)
+                ddt_filename = os.path.join(root, filename)
                 if not filename.endswith('.csv'):
-                    _logger.warning('Jumped file: %s' % filename)
+                    _logger.warning('Jumped file (unused): %s' % filename)
+                    shutil.move(
+                        ddt_filename,
+                        os.path(unused_path, filename)
+                    )
                     continue
 
                 # todo Check if is a DDT for Portal
                 ddt_f = open(ddt_filename, 'r')
-                data = {  # Fixed data
+                fixed = {  # Fixed data
                     1: '',  # Order name
                     2: '',  # DDT Number
                 }
@@ -83,8 +91,8 @@ class EdiCompany(orm.Model):
                 for line in ddt_f.readline():
                     line = line.strip()
                     row += 1
-                    if row in data:
-                        data[row] = line
+                    if row in fixed:
+                        fixed[row] = line
                         if row == 1:
                             # Check if it is a platform file
                             order_ids = order_pool.search(cr, uid, [
@@ -93,12 +101,11 @@ class EdiCompany(orm.Model):
                             ])
 
                             if not order_ids:
-                                # todo remove file?
+                                # todo remove file when imported?
                                 _logger.error(
                                     'Order %s not in platform, '
-                                    'file %s jumped' % (
-                                        line, filename,
-                                    ))
+                                    'File %s jumped' % (line, filename),
+                                    )
                             order_id = False
                         continue
                     # todo check with Laura:
@@ -122,7 +129,7 @@ class EdiCompany(orm.Model):
 
                     ddt_data = {
                         'sequence': sequence,
-                        'name': data[2],
+                        'name': fixed[2],
                         'code': code,
                         'uom_product': product_uom,
                         'product_qty': product_qty,  # todo change in float
@@ -131,7 +138,13 @@ class EdiCompany(orm.Model):
                         'line_id': line_id,
                     }
                     ddt_line_pool.create(cr, uid, ddt_data, context=context)
+                    shutil.move(
+                        ddt_filename,
+                        os.path(history_path, filename)
+                    )
+
                 break  # Only first folder!
+        return True
 
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
         """ Import supplier order from platform
