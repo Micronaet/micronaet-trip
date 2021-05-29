@@ -85,6 +85,8 @@ class EdiCompany(orm.Model):
                 fixed = {  # Fixed data
                     1: '',  # Order name
                     2: '',  # DDT Number
+                    3: '',  # DDT Date
+                    4: '',  # DDT Received
                 }
 
                 row = 0
@@ -277,23 +279,28 @@ class EdiSupplierOrder(orm.Model):
             if not order.ddt_line_ids:
                 _logger.error('%s Nothing to send (no DDT lines)!' % name)
                 continue
+            for ddt_line in order.ddt_line_ids:
+                order = ddt_line.order_id
+                payload = {
+                    'NUMERO_DDT': ddt_line.name,
+                    'CODICE_ARTICOLO': ddt_line.code,  # 'AV040002'
+                    'UM_ARTICOLO_PIATTAFORMA': ddt_line.uom_product,
+                    'QTA': ddt_line.product_qty,  # todo 10 + 4
 
-            json_data = {
-                "NUMERO_DDT": "abcdef",
-                "CODICE_ARTICOLO": "AV040002",
-                "UM_ARTICOLO_PIATTAFORMA": "KG",
-                # (ULTIME 4 CIFRE RAPPRESENTANO I DECIMALI –
-                # QUANTITA’ ESPRESSA NELL’UNITA’ DI MISURA DEL PIATTAFORMA)
-                "QTA": "00000000027000",
 
-
-                "CODICE_SITO": "2288",
-                "DATA_DDT": "20210406", #(FORMATO AAAAMMGG)
-                "DATA_CONSEGNA_EFFETTIVA": "20210408", #(FORMATO AAAAMMGG)
-                "NUMERO_ORDINE": "210083048_004",
-                "RIGA_ORDINE": "1",
+                    'CODICE_SITO': order.dealer_code,  # '2288'
+                    'DATA_DDT': ddt_line.date,  # (FORMATO AAAAMMGG)
+                    'DATA_CONSEGNA_EFFETTIVA': ddt_line.date_received,
+                    'NUMERO_ORDINE': order.name,
+                    'RIGA_ORDINE': order.sequence,
                 }
-        return True
+
+            # Reply
+            #{"ElencoErroriAvvisi":[{
+            #    "Messaggio":"Impossibile salvare il D.d.T. ITA999998-...",
+            #     "Tipo":"E"
+            # C=Errore critico, E = Errore generico, A = Avviso, N = Nota)
+            return True
 
     def extract_supplier_order(self, cr, uid, ids, context=None):
         """ Extract order to file CSV
@@ -401,6 +408,8 @@ class EdiSupplierOrderLine(orm.Model):
         'supplier_name': fields.char(
             'Descrizione articolo produttore', size=90),
         'supplier_code': fields.char('Codice produttore', size=20),
+        'date': fields.char('Data DDT', size=20),
+        'date_received': fields.char('Data ricezion', size=20),
         'code': fields.char('Codice articolo', size=20),
         'uom_supplier': fields.char('UM fornitore', size=10),
         'uom_product': fields.char('UM prodotto', size=10),

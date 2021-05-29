@@ -9,6 +9,8 @@
                 <field name="trip_delete_folder" position="after">
                     <field name="has_platform" />
                     <newline/>
+
+                    <separator string="Funzionalità di scambio dati:" colspan="6" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <field name="connection_id" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <field name="endpoint_id" attrs="{'invisible': [('has_platform', '=', False)]}" domain="[('connection_id', '=', connection_id)]"/>
                     <button name="import_platform_supplier_order" type="object" string="Forza scaricamento" icon="gtk-refresh" colspan="2" attrs="{'invisible': [('has_platform', '=', False)]}"/>
@@ -16,7 +18,6 @@
                     <field name="force_from_date" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <field name="force_to_date" attrs="{'invisible': [('has_platform', '=', False)]}"/>
 
-                    <separator string="Scambio file:" colspan="6" attrs="{'invisible': [('has_platform', '=', False)]}"/>
 
                     <field name="edi_supplier_out_path" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <field name="separator" attrs="{'invisible': [('has_platform', '=', False)]}"/>
@@ -120,6 +121,8 @@
                                             <tree string="Righe" editable="bottom">
                                                 <field name="sequence"/>
                                                 <field name="name"/>
+                                                <field name="date"/>
+                                                <field name="date_received"/>
                                                 <field name="code"/>
                                                 <field name="uom_product"/>
                                                 <field name="product_qty"/>
