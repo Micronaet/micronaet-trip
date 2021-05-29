@@ -189,26 +189,26 @@ class EdiSupplierOrder(orm.Model):
         out_f = open(out_filename, 'w')
         header = [
             order.name,
-            order.supplier_code,
+            clean_ascii(order.supplier_code),
             clean_ascii(order.dealer),
-            order.dealer_code,
+            clean_ascii(order.dealer_code),
             clean_ascii(order.supplier),
-            order.order_date,
-            order.deadline_date,
+            clean_ascii(order.order_date),
+            clean_ascii(order.deadline_date),
             clean_ascii(order.note),
             ]
         header_part = separator.join(header)
         for line in order.line_ids:
             data = [
-                line.sequence,
+                clean_ascii(line.sequence),
                 clean_ascii(line.name),
                 clean_ascii(line.supplier_name),
-                line.supplier_code,
-                line.code,
-                line.uom_supplier,
-                line.uom_product,
-                line.product_qty,
-                line.order_product_qty,
+                clean_ascii(line.supplier_code),
+                clean_ascii(line.code),
+                clean_ascii(line.uom_supplier),
+                clean_ascii(line.uom_product),
+                clean_ascii(line.product_qty),
+                clean_ascii(line.order_product_qty),
                 clean_ascii(line.note),
             ]
             # Fixed header
