@@ -36,7 +36,7 @@
     'init_xml': [],
     'demo': [],
     'data': [
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
         
         'views/platform_view.xml',
         ],

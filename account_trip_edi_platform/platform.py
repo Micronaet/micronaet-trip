@@ -60,6 +60,10 @@ class EdiCompany(orm.Model):
         return order_pool.extract_supplier_order(
             cr, uid, order_ids, context=context)
 
+    def import_all_supplier_order(self, cr, uid, ids, context=None):
+        """ Import DDT from account
+        """
+
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
         """ Import supplier order from platform
             Period always yesterday to today (launched every day)
@@ -289,6 +293,17 @@ class EdiSupplierOrderLine(orm.Model):
         'order_id': fields.many2one('edi.supplier.order', 'Ordine produttore'),
     }
 
+{
+"CODICE_SITO":"2288",
+"DATA_DDT":"20210406", (FORMATO AAAAMMGG)
+"DATA_CONSEGNA_EFFETTIVA":"20210408", (FORMATO AAAAMMGG)
+"NUMERO_DDT":"abcdef",
+"NUMERO_ORDINE":"210083048_004",
+"RIGA_ORDINE":"1",
+"CODICE_ARTICOLO":"AV040002",
+"UM_ARTICOLO_PIATTAFORMA":"KG",
+"QTA":"00000000027000", (ULTIME 4 CIFRE RAPPRESENTANO I DECIMALI – QUANTITA’ ESPRESSA NELL’UNITA’ DI MISURA DEL PIATTAFORMA)
+},
 
 class EdiSupplierOrderRelation(orm.Model):
     """ Model name: Edi Supplier Order relation
