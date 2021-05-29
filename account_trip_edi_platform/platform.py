@@ -120,8 +120,11 @@ class EdiCompany(orm.Model):
 
             # Update order line deleting previous:
             order_pool.write(cr, uid, [order_id], {
-                'line_ids': [(6, 0, lines)],
+                'line_ids': [(6, 0, [])],
             }, context=context)
+
+            for line in lines:
+                line_pool.create(cr, uid, line, context=context)
         return True
 
     _columns = {
