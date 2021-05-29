@@ -301,7 +301,7 @@ class EdiSupplierOrder(orm.Model):
             reply = endpoint_pool.call_endpoint(cr, uid, [
                 company.endpoint_ddt_id.id], context=ctx)
 
-            _logger.warning('Reply: %s' (reply, ))
+            _logger.warning('Reply: %s' % (reply, ))
             pdb.set_trace()
             if not reply:
                 raise osv.except_osv(
