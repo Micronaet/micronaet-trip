@@ -8,17 +8,22 @@
             <field name="arch" type="xml">
                 <field name="trip_delete_folder" position="after">
                     <field name="has_platform" />
-                    <button name="import_platform_supplier_order" type="object" string="Forza scaricamento" icon="gtk-refresh" colspan="2" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <newline/>
                     <field name="connection_id" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <field name="endpoint_id" attrs="{'invisible': [('has_platform', '=', False)]}" domain="[('connection_id', '=', connection_id)]"/>
-                    <newline/>
+                    <button name="import_platform_supplier_order" type="object" string="Forza scaricamento" icon="gtk-refresh" colspan="2" attrs="{'invisible': [('has_platform', '=', False)]}"/>
+
                     <field name="force_from_date" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <field name="force_to_date" attrs="{'invisible': [('has_platform', '=', False)]}"/>
+
+                    <separator string="Scambio file:" colspan="6" attrs="{'invisible': [('has_platform', '=', False)]}"/>
+                    <field name="separator" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <newline/>
 
                     <field name="edi_supplier_out_path" attrs="{'invisible': [('has_platform', '=', False)]}"/>
+                    <button name="export_all_supplier_order" type="object" string="Esporta tutti" icon="gtk-refresh" colspan="2" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <field name="edi_supplier_in_path" attrs="{'invisible': [('has_platform', '=', False)]}"/>
+                    <button name="import_all_supplier_order" type="object" string="Esporta tutti" icon="gtk-refresh" colspan="2" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                 </field>
             </field>
         </record>

@@ -45,6 +45,12 @@ class EdiCompany(orm.Model):
     """
     _inherit = 'edi.company'
 
+    def export_all_supplier_order(self, cr, uid, ids, context=None):
+        """ Export all order not exported
+        """
+
+        return True
+
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
         """ Import supplier order from platform
             Period always yesterday to today (launched every day)
@@ -131,6 +137,7 @@ class EdiCompany(orm.Model):
 
     _columns = {
         'has_platform': fields.boolean('Has platform'),
+        'separator': fields.char('Separatore CSV', size=1),
         'connection_id': fields.many2one(
             'http.request.connection', 'Connection'),
         'endpoint_id': fields.many2one(
@@ -178,49 +185,50 @@ class EdiSupplierOrder(orm.Model):
                     res += replace
             return res
 
-        order = self.browse(cr, uid, ids, context=context)[0]
-        name = order.name
-        separator = '|'
+        for order in self.browse(cr, uid, ids, context=context):
+            name = order.name
 
-        # Read parameter for export:
-        company = order.company_id
-        out_path = os.path.expanduser(company.edi_supplier_out_path)
-        out_filename = os.path.join(out_path, '%s.csv' % name)
-        out_f = open(out_filename, 'w')
-        header = [
-            order.name,
-            clean_ascii(order.supplier_code),
-            clean_ascii(order.dealer),
-            clean_ascii(order.dealer_code),
-            clean_ascii(order.supplier),
-            clean_ascii(order.order_date),
-            clean_ascii(order.deadline_date),
-            clean_ascii(order.note),
-            ]
-        header_part = separator.join(header)
-        for line in order.line_ids:
-            data = [
-                clean_ascii(line.sequence),
-                clean_ascii(line.name),
-                clean_ascii(line.supplier_name),
-                clean_ascii(line.supplier_code),
-                clean_ascii(line.code),
-                clean_ascii(line.uom_supplier),
-                clean_ascii(line.uom_product),
-                clean_ascii(line.product_qty),
-                clean_ascii(line.order_product_qty),
-                clean_ascii(line.note),
-            ]
-            # Fixed header
-            out_f.write('%s%s%s\r\n' % (
-                header_part,
-                separator,
-                separator.join(data),
-            ))
-        out_f.close()
-        return self.write(cr, uid, ids, {
-            'extracted': True,
-        }, context=context)
+            # Read parameter for export:
+            company = order.company_id
+            separator = company.separator or '|'
+            out_path = os.path.expanduser(company.edi_supplier_out_path)
+            out_filename = os.path.join(out_path, '%s.csv' % name)
+            out_f = open(out_filename, 'w')
+            header = [
+                order.name,
+                clean_ascii(order.supplier_code),
+                clean_ascii(order.dealer),
+                clean_ascii(order.dealer_code),
+                clean_ascii(order.supplier),
+                clean_ascii(order.order_date),
+                clean_ascii(order.deadline_date),
+                clean_ascii(order.note),
+                ]
+            header_part = separator.join(header)
+            for line in order.line_ids:
+                data = [
+                    clean_ascii(line.sequence),
+                    clean_ascii(line.name),
+                    clean_ascii(line.supplier_name),
+                    clean_ascii(line.supplier_code),
+                    clean_ascii(line.code),
+                    clean_ascii(line.uom_supplier),
+                    clean_ascii(line.uom_product),
+                    clean_ascii(line.product_qty),
+                    clean_ascii(line.order_product_qty),
+                    clean_ascii(line.note),
+                ]
+                # Fixed header
+                out_f.write('%s%s%s\r\n' % (
+                    header_part,
+                    separator,
+                    separator.join(data),
+                ))
+            out_f.close()
+            self.write(cr, uid, ids, {
+                'extracted': True,
+            }, context=context)
+        return True
 
     _columns = {
         'company_id': fields.many2one(
