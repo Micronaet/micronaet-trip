@@ -167,6 +167,17 @@ class EdiSupplierOrder(orm.Model):
     def extract_supplier_order(self, cr, uid, ids, context=None):
         """ Estract order to file CSV
         """
+        def clean_ascii(value, replace='#'):
+            """ Clean not ascii char"""
+            value = value or ''
+            res = ''
+            for c in value:
+                if ord(c) < 127:
+                    res += value
+                else:
+                    res += replace
+            return res
+
         order = self.browse(cr, uid, ids, context=context)[0]
         name = order.name
         separator = '|'
@@ -179,33 +190,33 @@ class EdiSupplierOrder(orm.Model):
         header = [
             order.name,
             order.supplier_code,
-            order.dealer,
+            clean_ascii(order.dealer),
             order.dealer_code,
-            order.supplier,
+            clean_ascii(order.supplier),
             order.order_date,
             order.deadline_date,
-            order.note,
+            clean_ascii(order.note),
             ]
         header_part = separator.join(header)
         for line in order.line_ids:
             data = [
                 line.sequence,
-                line.name,
-                line.supplier_name,
+                clean_ascii(line.name),
+                clean_ascii(line.supplier_name),
                 line.supplier_code,
                 line.code,
                 line.uom_supplier,
                 line.uom_product,
                 line.product_qty,
                 line.order_product_qty,
-                line.note,
+                clean_ascii(line.note),
             ]
             # Fixed header
-            out_f.write('%s%s%s\r\n' % (
+            out_f.write(clean_ascii('%s%s%s\r\n' % (
                 header_part,
                 separator,
                 separator.join(data),
-            ))
+            )))
         out_f.close()
         return self.write(cr, uid, ids, {
             'extracted': True,
