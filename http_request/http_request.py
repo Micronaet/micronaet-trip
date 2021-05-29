@@ -123,6 +123,7 @@ class HttpRequestEndpoint(orm.Model):
             url = url.replace('{%s}' % name, parameter[name])
         header = {
             'Authorization': 'token %s' % token,
+            'content-type': 'application/json',
         }
         # todo needed?
         # content = {
@@ -130,7 +131,11 @@ class HttpRequestEndpoint(orm.Model):
         # }
         _logger.info('Calling: %s\nParameter: %s' % (
             url, header))
-        reply = requests.get(url=url, headers=header)
+        if connection.mode == 'get':
+            reply = requests.get(url=url, headers=header)
+        if connection.mode == 'post':
+            reply = requests.post(url=url, headers=header)
+
         if reply.ok:
             reply_json = reply.json()
             _logger.warning('Result: %s' % reply_json)
