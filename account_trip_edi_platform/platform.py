@@ -173,7 +173,7 @@ class EdiSupplierOrder(orm.Model):
             res = ''
             for c in value:
                 if ord(c) < 127:
-                    res += value
+                    res += c
                 else:
                     res += replace
             return res
