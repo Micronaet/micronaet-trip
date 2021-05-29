@@ -143,6 +143,15 @@ class EdiCompany(orm.Model):
             'Forza alla data', size=19,
             help='Forza la data di arrivo per leggere gli ordini, formato: '
                  'AAAAMMGG'),
+
+        'edi_supplier_out_path': fields.char(
+            'Cartella ordini produttore', size=50,
+            help='Cartella dove vengono depositati gli ordini produttore da '
+                 'importare nel gestionale'),
+        'edi_supplier_in_path': fields.char(
+            'Cartella DDT produttore', size=50,
+            help='Cartella dove vengono prelevati i DDT del roduttore da '
+                 'inviare al portale per copia conforme.'),
     }
 
 
