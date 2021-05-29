@@ -113,7 +113,6 @@ class EdiCompany(orm.Model):
                 'note': line['NOTA_RIGA'],
             })
 
-        pdb.set_trace()
         # Update lines:
         for name in order_db:
             order_id, lines = order_db[name]
