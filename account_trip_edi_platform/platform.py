@@ -47,20 +47,25 @@ class EdiCompany(orm.Model):
 
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
         """ Import supplier order from platform
+            Period always yesterday to today (lauched every day)
         """
         company = self.browse(cr, uid, ids, context=context)[0]
         # Call end point for get order:
         # 20210101 data format
         connection_pool = self.pool.get('http.request.endpoint')
         ctx = context.copy()
+        from_date = str(datetime.now() - timedelta(days=1))[:10].replace(
+            '-', '')
+        to_date = str(datetime.now())[:10].replace('-', '')
         ctx['endpoint_params'] = {
-            'data_from': '20210101',
-            'data_to': '20210101',
+            'data_from': company.force_from_date or from_date,
+            'data_to': company.force_to_date or to_date,
         }
 
         orders = connection_pool.call_endpoint(
             cr, uid, [company.endpoint_id.id], context=ctx)
 
+        _logger.info(str(orders))
 
     _columns = {
         'has_platform': fields.boolean('Has platform'),
