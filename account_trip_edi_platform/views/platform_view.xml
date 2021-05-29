@@ -2,8 +2,8 @@
 <openerp>
     <data>
         <record model="ir.ui.view" id="view_edi_supplier_order_form">
-            <field name="name">edi.supplier.order.form</field>
-            <field name="model">edi.supplier.order</field>
+            <field name="name">edi.company.form</field>
+            <field name="model">edi.company.order</field>
             <field name="inherit_id" ref="account_trip_edi.edi_company_trip_parameter_form_view"/>
             <field name="arch" type="xml">
                 <field name="trip_delete_folder" position="after">
