@@ -274,6 +274,7 @@ class EdiSupplierOrder(orm.Model):
     def send_ddt_order(self, cr, uid, ids, context=None):
         """ Send JSON data file to portal for DDT confirmed
         """
+        pdb.set_trace()
         for order in self.browse(cr, uid, ids, context=context):
             name = order.name
             if not order.ddt_line_ids:
@@ -432,7 +433,7 @@ class EdiSupplierOrderDDTLine(orm.Model):
         'name': fields.char(
             'Numero DDT', size=20, required=True),
         'date': fields.char('Data DDT', size=20),
-        'date_received': fields.char('Data ricezion', size=20),
+        'date_received': fields.char('Data ricezione', size=20),
         'code': fields.char('Codice articolo', size=20),
         'uom_product': fields.char('UM prodotto', size=10),
         'product_qty': fields.char('Q.', size=20),  # todo change in float
