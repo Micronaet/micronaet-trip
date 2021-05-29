@@ -123,12 +123,8 @@ class HttpRequestEndpoint(orm.Model):
             url = url.replace('{%s}' % name, parameter[name])
         header = {
             'Authorization': 'token %s' % token,
-            'content-type': 'application/json',
+            'content-type': endpoint.content,
         }
-        # todo needed?
-        # content = {
-        #    'content-type': endpoint.content,
-        # }
         _logger.info('Calling: %s\nParameter: %s' % (
             url, header))
         if endpoint.mode == 'get':
@@ -150,7 +146,7 @@ class HttpRequestEndpoint(orm.Model):
         'name': fields.char('Name', size=64, required=True),
         'code': fields.char('Code', size=30, required=True),
         'endpoint': fields.char('Endpoint', size=150, required=True),
-        # 'content': fields.char('Content type', size=40, required=True),
+        'content': fields.char('Content type', size=40, required=True),
         'connection_id': fields.many2one(
             'http.request.connection', 'Connection'),
         'payload': fields.text(
@@ -161,7 +157,7 @@ class HttpRequestEndpoint(orm.Model):
         ], string='Modalità', required=True)
     }
     _defaults = {
-        # 'content': lambda *x: 'application/json',
+        'content': lambda *x: 'application/json',
         'mode': lambda *x: 'get',
     }
 

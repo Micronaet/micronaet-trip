@@ -38,6 +38,7 @@
                                                 <field name="code"/>
                                                 <field name="name"/>
                                                 <field name="endpoint"/>
+                                                <field name="content"/>
                                                 <button name="call_endpoint" string="Update token" type="object" icon="gtk-refresh" attrs="{'invisible': [('mode', '!=', 'get')]}"/>
                                             </tree>
                                             <form string="Endpoint">
@@ -50,6 +51,7 @@
                                                         <field name="code"/>
                                                         <field name="name"/>
                                                         <field name="endpoint"/>
+                                                        <field name="content"/>
                                                         <separator string="Payload" colspan="4"/>
                                                         <field name="payload" colspan="4" nolabel="1"/>
                                                     </group>
