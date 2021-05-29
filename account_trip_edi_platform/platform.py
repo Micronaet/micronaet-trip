@@ -116,6 +116,8 @@ class EdiCompany(orm.Model):
                     code = line[5:10]
                     product_qty = line[10:20]
                     product_uom = line[20:30]
+                    lot = line[20:30]
+                    deadline_lot = line[20:30]
 
                     # Link to line:
                     line_ids = order_pool.search(cr, uid, [
@@ -136,6 +138,8 @@ class EdiCompany(orm.Model):
                         'code': code,
                         'uom_product': product_uom,
                         'product_qty': product_qty,  # todo change in float
+                        'lot': lot,
+                        'deadline_lot': deadline_lot,
 
                         'order_id': order_id,
                         'line_id': line_id,
@@ -290,12 +294,15 @@ class EdiSupplierOrder(orm.Model):
                     'CODICE_ARTICOLO': ddt_line.code,  # 'AV040002'
                     'UM_ARTICOLO_PIATTAFORMA': ddt_line.uom_product,
                     'QTA': ddt_line.product_qty,  # todo 10 + 4
+                    'DATA_SCADENZA': ddt_line.deadline,
+                    'LOTTO': ddt_line.lot,
 
-                    'CODICE_SITO': order.supplier_code,  # '2288'
+                    'CODICE_PRODUTTORE': order.supplier_code,  # '2288'
                     'DATA_DDT': ddt_line.date,  # (FORMATO AAAAMMGG)
-                    'DATA_CONSEGNA_EFFETTIVA': ddt_line.date_received,
+                    'DATA_ENTRATA_MERCE': ddt_line.date_received,
                     'NUMERO_ORDINE': order.name,
                 })
+
             ctx = context.copy()
             ctx['payload'] = payload
             reply = endpoint_pool.call_endpoint(cr, uid, [
@@ -472,6 +479,8 @@ class EdiSupplierOrderDDTLine(orm.Model):
         'date': fields.char('Data DDT', size=20),
         'date_received': fields.char('Data ricezione', size=20),
         'code': fields.char('Codice articolo', size=20),
+        'lot': fields.char('Lotto', size=20),
+        'deadline_lot': fields.char('Scadenza Lotto', size=20),
         'uom_product': fields.char('UM prodotto', size=10),
         'product_qty': fields.char('Q.', size=20),  # todo change in float
 
