@@ -48,7 +48,9 @@
                     <field name="order_date" />
                     <field name="deadline_date" />
                     <field name="extracted" />
+                    <field name="sent" />
                     <button name="extract_supplier_order" string="Estrai ordine" type="object" icon="gtk-save" attrs="{'invisible': [('extracted', '=', True)]}"/>
+                    <button name="send_ddt_order" string="Invia DDT" type="object" icon="gtk-save" attrs="{'invisible': [('sent', '=', True)]}"/>
                 </tree>
             </field>
         </record>
@@ -59,6 +61,7 @@
                 <form string="Ordine" version="7.0">
                     <header>
                         <button name="extract_supplier_order" string="Estrai ordine" type="object" icon="gtk-save" attrs="{'invisible': [('extracted', '=', True)]}"/>
+                        <button name="send_ddt_order" string="Invia DDT" type="object" icon="gtk-connect" attrs="{'invisible': [('sent', '=', True)]}"/>
                     </header>
                     <sheet>
                         <group col="4" colspan="4">
@@ -78,6 +81,7 @@
                             <field name="deadline_date" />
 
                             <field name="extracted" />  <!--todo visible only for admin?-->
+                            <field name="sent" />  <!--todo visible only for admin?-->
                             <notebook colspan="4">
                                 <page string="Ordine fornitore">
                                     <group col="4" colspan="4">

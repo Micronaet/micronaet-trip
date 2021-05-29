@@ -187,25 +187,31 @@ class EdiSupplierOrder(orm.Model):
     def send_ddt_order(self, cr, uid, ids, context=None):
         """ Send JSON data file to portal for DDT confirmed
         """
-        json_data = {
-            "NUMERO_DDT": "abcdef",
-            "CODICE_ARTICOLO": "AV040002",
-            "UM_ARTICOLO_PIATTAFORMA": "KG",
-            # (ULTIME 4 CIFRE RAPPRESENTANO I DECIMALI –
-            # QUANTITA’ ESPRESSA NELL’UNITA’ DI MISURA DEL PIATTAFORMA)
-            "QTA": "00000000027000",
+        for order in self.browse(cr, uid, ids, context=context):
+            name = order.name
+            if not order.ddt_line_ids:
+                _logger.error('%s Nothing to send (no DDT lines)!' % name)
+                continue
+
+            json_data = {
+                "NUMERO_DDT": "abcdef",
+                "CODICE_ARTICOLO": "AV040002",
+                "UM_ARTICOLO_PIATTAFORMA": "KG",
+                # (ULTIME 4 CIFRE RAPPRESENTANO I DECIMALI –
+                # QUANTITA’ ESPRESSA NELL’UNITA’ DI MISURA DEL PIATTAFORMA)
+                "QTA": "00000000027000",
 
 
-            "CODICE_SITO": "2288",
-            "DATA_DDT": "20210406", #(FORMATO AAAAMMGG)
-            "DATA_CONSEGNA_EFFETTIVA": "20210408", #(FORMATO AAAAMMGG)
-            "NUMERO_ORDINE": "210083048_004",
-            "RIGA_ORDINE": "1",
-            }
+                "CODICE_SITO": "2288",
+                "DATA_DDT": "20210406", #(FORMATO AAAAMMGG)
+                "DATA_CONSEGNA_EFFETTIVA": "20210408", #(FORMATO AAAAMMGG)
+                "NUMERO_ORDINE": "210083048_004",
+                "RIGA_ORDINE": "1",
+                }
         return True
 
     def extract_supplier_order(self, cr, uid, ids, context=None):
-        """ Estract order to file CSV
+        """ Extract order to file CSV
         """
         def clean_ascii(value, replace='#'):
             """ Clean not ascii char"""
@@ -284,7 +290,13 @@ class EdiSupplierOrder(orm.Model):
         'order_date': fields.char('Data ordine', size=20),
         'deadline_date': fields.char('Data consegna richiesta', size=20),
         'note': fields.text('Nota ordine'),
-        'extracted': fields.boolean('Estratto'),
+        'extracted': fields.boolean(
+            'Estratto',
+            help='Estratto per essere importato nel gestionale',
+        ),
+        'sent': fields.boolean(
+            'Inviato',
+            help='Inviato tramite il portale per conferma consegna'),
     }
 
 
@@ -333,6 +345,7 @@ class EdiSupplierOrderDDTLine(orm.Model):
 
         'order_id': fields.many2one('edi.supplier.order', 'Ordine produttore'),
         'line_id': fields.many2one('edi.supplier.order.line', 'Riga ordine'),
+        'sent': fields.boolean('Riga Inviata'),  # todo not used for now
     }
 
 
@@ -344,8 +357,7 @@ class EdiSupplierOrderRelation(orm.Model):
 
     _columns = {
         'line_ids': fields.one2many(
-            'edi.supplier.order.line', 'order_id', 'Righe OF')
+            'edi.supplier.order.line', 'order_id', 'Righe OF'),
         'ddt_line_ids': fields.one2many(
-            'edi.supplier.order.ddt.line', 'order_id', 'Righe DDT')
+            'edi.supplier.order.ddt.line', 'order_id', 'Righe DDT'),
     }
-
