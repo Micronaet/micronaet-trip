@@ -139,6 +139,7 @@ class EdiCompany(orm.Model):
                         'line_id': line_id,
                     }
                     ddt_line_pool.create(cr, uid, ddt_data, context=context)
+                    _logger.warning('History used file: %s' % filename)
                     shutil.move(
                         ddt_filename,
                         os.path.join(history_path, filename),
