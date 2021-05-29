@@ -39,7 +39,8 @@
                     <field name="supplier" />
                     <field name="order_date" />
                     <field name="deadline_date" />
-                    <button name="extract_supplier_order" string="Estrai ordine" type="object" icon="gtk-save" />
+                    <field name="extracted" />
+                    <button name="extract_supplier_order" string="Estrai ordine" type="object" icon="gtk-save" attrs="{'invisible': [('extracted', '=', True)]}"/>
                 </tree>
             </field>
         </record>
@@ -49,7 +50,7 @@
             <field name="arch" type="xml">
                 <form string="Ordine" version="7.0">
                     <header>
-                        <button name="extract_supplier_order" string="Estrai ordine" type="object" icon="gtk-save" />
+                        <button name="extract_supplier_order" string="Estrai ordine" type="object" icon="gtk-save" attrs="{'invisible': [('extracted', '=', True)]}"/>
                     </header>
                     <sheet>
                         <group col="4" colspan="4">
@@ -67,6 +68,8 @@
 
                             <field name="order_date" />
                             <field name="deadline_date" />
+
+                            <field name="extracted" />  <!--todo visible only for admin?-->
                             <notebook colspan="4">
                                 <page string="Dettaglio">
                                     <group col="4" colspan="4">
