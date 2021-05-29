@@ -108,7 +108,7 @@ class HttpRequestEndpoint(orm.Model):
                    'endpoint_params': {
                       'data_from': '20210101'}}
         """
-        parameter = context.get('endpoint_params')
+        parameter = context.get('endpoint_params', {})
 
         connection_pool = self.pool.get('http.request.connection')
         endpoint = self.browse(cr, uid, ids, context=context)[0]
