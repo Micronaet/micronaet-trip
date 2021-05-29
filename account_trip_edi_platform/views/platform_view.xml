@@ -1,6 +1,19 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <record model="ir.ui.view" id="view_edi_supplier_order_form">
+            <field name="name">edi.supplier.order.form</field>
+            <field name="model">edi.supplier.order</field>
+            <field name="inherit_id" ref="account_trip_edi.edi_company_trip_parameter_form_view"/>
+            <field name="arch" type="xml">
+                <field name="trip_delete_folder" position="after">
+                    <field name="has_platform" />
+                    <field name="connection_id" attrs="{'invisible': [('has_platform', '=', False)]}"/>
+                    <field name="endpoint_code" attrs="{'invisible': [('has_platform', '=', False)]}"/>
+                </field>
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="view_edi_supplier_order_tree">
             <field name="name">edi.supplier.order.tree</field>
             <field name="model">edi.supplier.order</field>

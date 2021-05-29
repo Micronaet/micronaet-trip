@@ -62,7 +62,7 @@ class EdiCompany(orm.Model):
         connection_pool.call_endpoint(cr, uid, ids, context=ctx)
 
     _columns = {
-        'has_platform': fields.Boolean('Has platform'),
+        'has_platform': fields.boolean('Has platform'),
         'connection_id': fields.many2one(
             'http.request.connection', 'Connection'),
         'endpoint_code': fields.char('Endpoint code', size=30),
