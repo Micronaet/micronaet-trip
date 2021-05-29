@@ -69,6 +69,7 @@ class EdiCompany(orm.Model):
         unused_path = os.path.join(ddt_path, 'unused')
         log_path = os.path.join(ddt_path, 'log')  # todo log events!
         _logger.info('Start check DDT files: %s' % ddt_path)
+        send_order_ids = []  # Order to be sent afters
         for root, folders, files in os.walk(ddt_path):
             for filename in files:
                 ddt_filename = os.path.join(root, filename)
@@ -119,6 +120,10 @@ class EdiCompany(orm.Model):
                     lot = line[20:30]
                     deadline_lot = line[20:30]
 
+                    # Order to be sent after:
+                    if order_id not in send_order_ids:
+                        send_order_ids.append(order_id)
+
                     # Link to line:
                     line_ids = order_pool.search(cr, uid, [
                         ('order_id', '=', order_id),
@@ -150,9 +155,9 @@ class EdiCompany(orm.Model):
                         ddt_filename,
                         os.path.join(history_path, filename),
                     )
-
                 break  # Only first folder!
-        return True
+        return order_pool.send_ddt_order(
+            cr, uid, send_order_ids, context=context)
 
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
         """ Import supplier order from platform

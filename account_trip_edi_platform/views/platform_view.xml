@@ -27,7 +27,7 @@
                     <separator string="Importazione DDT produttore in ERP e invio al portale:" colspan="6" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <field name="edi_supplier_in_path" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <field name="endpoint_ddt_id" attrs="{'invisible': [('has_platform', '=', False)]}" domain="[('connection_id', '=', connection_id)]"/>
-                    <button name="import_all_supplier_order" type="object" string="Importa tutti" icon="gtk-refresh" colspan="2" attrs="{'invisible': [('has_platform', '=', False)]}"/>
+                    <button name="import_all_supplier_order" type="object" string="Importa e invia tutti" icon="gtk-refresh" colspan="2" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <newline/>
                 </field>
             </field>
