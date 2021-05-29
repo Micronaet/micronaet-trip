@@ -168,8 +168,48 @@ class EdiSupplierOrder(orm.Model):
         """ Estract order to file CSV
         """
         order = self.browse(cr, uid, ids, context=context)[0]
+        name = order.name
+        separator = '|'
+
+        # Read parameter for export:
         company = order.company_id
-        return True
+        out_path = os.path.expanduser(company.edi_supplier_out_path)
+        out_filename = os.path.join(out_path, '%s.csv' % name)
+        out_f = open(out_filename, 'w')
+        header = [
+            order.name,
+            order.supplier_code,
+            order.dealer,
+            order.dealer_code,
+            order.supplier,
+            order.order_date,
+            order.deadline_date,
+            order.note,
+            ]
+        header_part = separator.join(header)
+        for line in order.line_ids:
+            data = [
+                line.sequence,
+                line.name,
+                line.supplier_name,
+                line.supplier_code,
+                line.code,
+                line.uom_supplier,
+                line.uom_product,
+                line.product_qty,
+                line.order_product_qty,
+                line.note,
+            ]
+            # Fixed header
+            out_f.write('%s%s%s\r\n' % (
+                header_part,
+                separator,
+                separator.join(data),
+            ))
+        out_f.close()
+        return self.write(cr, uid, ids, {
+            'extracted': True,
+        }, context=context)
 
     _columns = {
         'company_id': fields.many2one(
