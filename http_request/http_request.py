@@ -115,16 +115,6 @@ class HttpRequestEndpoint(orm.Model):
                       'data_from': '20210101'}}
         """
         parameter = context.get('endpoint_params')
-        endpoint_code = context.get('endpoint_code')
-        if endpoint_code:  # Force endpoint from code
-            ids = self.search(cr, uid, [
-                ('code', '=', endpoint_code),
-            ], context=context)
-            if not ids:
-                raise osv.except_osv(
-                    _('Endpoint error:'),
-                    _('Code not found: %s' % endpoint_code),
-                )
 
         connection_pool = self.pool.get('http.request.connection')
         endpoint = self.browse(cr, uid, ids, context=context)[0]
