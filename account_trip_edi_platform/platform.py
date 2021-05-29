@@ -196,9 +196,9 @@ class EdiSupplierOrderLine(orm.Model):
     _columns = {
         'sequence': fields.char('Seq.', size=4),
         'name': fields.char(
-            'Descrizione articolo', size=60, required=True),
+            'Descrizione articolo', size=90, required=True),
         'supplier_name': fields.char(
-            'Descrizione articolo produttore', size=60),
+            'Descrizione articolo produttore', size=90),
         'supplier_code': fields.char('Codice produttore', size=20),
         'code': fields.char('Codice articolo', size=20),
         'uom_supplier': fields.char('UM fornitore', size=10),
