@@ -68,6 +68,14 @@ class EdiCompany(orm.Model):
             'http.request.connection', 'Connection'),
         'endpoint_id': fields.many2one(
             'http.request.endpoint', 'Endpoint'),
+        'force_from_date': fields.char(
+            'Forza dalla data', size=19,
+            help='Forza la data di partenza per leggere gli ordini, formato: '
+                 'AAAAMMGG'),
+        'force_to_date': fields.char(
+            'Forza alla data', size=19,
+            help='Forza la data di arrivo per leggere gli ordini, formato: '
+                 'AAAAMMGG'),
     }
 
 

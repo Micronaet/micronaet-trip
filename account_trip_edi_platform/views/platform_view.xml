@@ -10,6 +10,8 @@
                     <field name="has_platform" />
                     <field name="connection_id" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <field name="endpoint_id" attrs="{'invisible': [('has_platform', '=', False)]}" domain="[('connection_id', '=', connection_id)]"/>
+                    <field name="force_from_date" />
+                    <field name="force_to_date" />
                 </field>
             </field>
         </record>
