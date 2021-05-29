@@ -116,6 +116,10 @@
                                 </page>
                                 <page string="DDT">
                                     <group col="4" colspan="4">
+                                        <separator string="Esito invio DDT:" colspan="4"/>
+                                        <field name="sent_message" attrs="{'invisible': [('sent_message', '=', False)]}"/>
+                                        <field name="sent_error" invisible="1"/>
+
                                         <separator string="Dettaglio DDT:" colspan="4"/>
                                         <field name="ddt_line_ids" colspan="4" nolabel="1" >
                                             <tree string="Righe" editable="bottom">

@@ -309,12 +309,26 @@ class EdiSupplierOrder(orm.Model):
                     _('Errore spedendo il DDT:\n %s' % reply),
                 )
             # todo check error
+            sent_message = ''
+            sent_error = False
+            if 'ElencoErroriAvvisi' in reply:
+                for status in reply['ElencoErroriAvvisi']:
+                    message_type = status['Tipo']
+                    if message_type and status['Tipo'] in 'CE':
+                        sent_error = True
+                    sent_message += '[%s] %s' % (
+                        message_type,
+                        status['Messaggio'],
+                    )
+
             self.write(cr, uid, [order.id], {
                 'sent': True,
+                'sent_message': sent_message,
+                'sent_error': sent_error,
             }, context=context)
 
             # Reply
-            #{"ElencoErroriAvvisi":[{
+            # {"ElencoErroriAvvisi":[{
             #    "Messaggio":"Impossibile salvare il D.d.T. ITA999998-...",
             #     "Tipo":"E"
             # C=Errore critico, E = Errore generico, A = Avviso, N = Nota)
@@ -400,13 +414,19 @@ class EdiSupplierOrder(orm.Model):
         'order_date': fields.char('Data ordine', size=20),
         'deadline_date': fields.char('Data consegna richiesta', size=20),
         'note': fields.text('Nota ordine'),
+
+        # Sent to Account:
         'extracted': fields.boolean(
             'Estratto',
             help='Estratto per essere importato nel gestionale',
         ),
+
+        # Sent to portal:
         'sent': fields.boolean(
             'Inviato',
             help='Inviato tramite il portale per conferma consegna'),
+        'sent_message': fields.text('Esito invio al portale'),
+        'sent_error': fields.text('Stato errore'),
     }
 
 
