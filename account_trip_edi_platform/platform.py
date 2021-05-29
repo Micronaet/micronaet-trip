@@ -49,6 +49,9 @@ class EdiCompany(orm.Model):
         """ Import supplier order from platform
             Period always yesterday to today (launched every day)
         """
+        order_pool = self.pool.get('edi.supplier.order')
+        line_pool = self.pool.get('edi.supplier.line')
+
         company = self.browse(cr, uid, ids, context=context)[0]
         # Call end point for get order:
         # 20210101 data format
@@ -62,10 +65,62 @@ class EdiCompany(orm.Model):
             'to_date': company.force_to_date or to_date,
         }
 
-        orders = connection_pool.call_endpoint(
-            cr, uid, [company.endpoint_id.id], context=ctx)
+        connection_id = company.connection_id.id
+        endpoint_id = company.endpoint_id.id
 
-        _logger.info(str(orders))
+        order_lines = connection_pool.call_endpoint(
+            cr, uid, [endpoint_id], context=ctx)
+
+        order_db = {}
+        for line in order_lines:
+            name = line['NUMERO_ORDINE']
+            if name not in order_db:
+                order_ids = order_pool.search(cr, uid, [
+                    ('name', '=', name),
+                ], context=context)
+                if order_ids:
+                    order_db[name] = [order_ids[0], []]
+                else:
+                    data = {
+                        'connection_id': connection_id,
+                        'endpoint_id': endpoint_id,
+                        'name': name,
+                        'supplier_code': line['CODICE_PRODUTTORE'],
+                        'dealer': line['CONCESSIONARIO'],
+                        'dealer_code': line['CODICE_CONCESSIONARIO'],
+                        'supplier': line['RAGIONE_SOCIALE_PRODUTTORE'],
+                        'order_date': line['DATA_ORDINE'],
+                        'deadline_date': line['DATA_CONSEGNA_RICHIESTA'],
+                        'note': line['NOTA_ORDINE'],
+                    }
+                    order_id = order_pool.create(
+                        cr, uid, data, context=context)
+                    order_db[name] = [order_id, []]
+            order_id, lines = order_db[name]
+            lines. append({
+                'order_id': order_id,
+
+                'sequence': line['RIGA_ORDINE'],
+                'name': line['DESCRIZIONE_ARTICOLO'],
+                'supplier_name': line['DESCRIZIONE_ARTICOLO_PRODUTTORE'],
+                'supplier_code': line['CODICE_ARTICOLO_PRODUTTORE'],
+                'code': line['CODICE_ARTICOLO'],
+                'uom_supplier': line['UM_ARTICOLO_PRODUTTORE'],
+                'uom_product': line['UM_ARTICOLO'],
+                'product_qty': line['QTA_ORDINE'],
+                # todo change in float
+                'order_product_qty': line['QTA_ORDINE_PRODUTTORE'],
+                'note': line['NOTA_RIGA'],
+            })
+
+            # Update lines:
+            for name in order_db:
+                order_id, lines = order_db[name]
+
+                # Update order line deleting previous:
+                order_pool.write(cr, uid, [order_id], {
+                    'line_ids': [(6, 0, lines)],
+                }, context=context)
 
     _columns = {
         'has_platform': fields.boolean('Has platform'),
@@ -94,6 +149,10 @@ class EdiSupplierOrder(orm.Model):
     _order = 'name'
 
     _columns = {
+        'connection_id': fields.many2one(
+            'http.request.connection', 'Connection'),
+        'endpoint_id': fields.many2one(
+            'http.request.endpoint', 'Endpoint'),
         'name': fields.char('Numero ordine', size=30, required=True),
         'supplier_code': fields.char(
             'Codice produttore', size=30, required=True),
@@ -104,11 +163,6 @@ class EdiSupplierOrder(orm.Model):
         'deadline_date': fields.char('Data consegna richiesta', size=20),
         'note': fields.text('Nota ordine'),
     }
-# 'NUMERO_ORDINE': u'210083054_000', 'RAGIONE_SOCIALE_PRODUTTORE':
-# u'PANAPESCA SPA', 'DATA_ORDINE': u'20210510', 'DATA_CONSEGNA_RICHIESTA':
-# u'20210505', 'NOTA_ORDINE': u'',
-# 'CONCESSIONARIO': u'PANAPESCA SPA' 'CODICE_CONCESSIONARIO': u'1335',
-# 'CODICE_PRODUTTORE': u'ITA000061',
 
 
 class EdiSupplierOrderLine(orm.Model):
@@ -135,15 +189,6 @@ class EdiSupplierOrderLine(orm.Model):
         'note': fields.char('Nota riga', size=40),
         'order_id': fields.many2one('edi.supplier.order', 'Ordine produttore'),
     }
-
-# 'RIGA_ORDINE': u'1', 'CODICE_ARTICOLO_PRODUTTORE': u'419490',
-# 'CODICE_ARTICOLO': u'AV030149',
-# 'UM_ARTICOLO_PRODUTTORE': u'KG', 'DESCRIZIONE_ARTICOLO_PRODUTTORE':
-# u'FILETTI DI PANGASIO CONGELATI',
-# 'QTA_ORDINE': u'00000004700000', 'UM_ARTICOLO': u'KG',
-# 'QTA_ORDINE_PRODUTTORE': u'00000004700000',
-# 'NOTA_RIGA': u'', 'DESCRIZIONE_ARTICOLO': u'PANGASIO FILETTI
-# SP 100-180GR GELO',
 
 
 class EdiSupplierOrderRelation(orm.Model):

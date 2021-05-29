@@ -25,6 +25,8 @@
             <field name="model">edi.supplier.order</field>
             <field name="arch" type="xml">
                 <tree string="Ordine" colors="blue:token!=False">
+                    <field name="connection_id"/>
+                    <field name="endpoint_id" />
                     <field name="name" />
                     <field name="supplier_code" />
                     <field name="dealer" />
@@ -45,6 +47,8 @@
                     </header>
                     <sheet>
                         <group col="4" colspan="4">
+                            <field name="connection_id"/>
+                            <field name="endpoint_id" />
                             <field name="name" />
                             <field name="supplier_code" />
                             <field name="dealer" />
