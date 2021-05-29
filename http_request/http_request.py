@@ -148,6 +148,12 @@ class HttpRequestEndpoint(orm.Model):
         # 'content': fields.char('Content type', size=40, required=True),
         'connection_id': fields.many2one(
             'http.request.connection', 'Connection'),
+        'payload': fields.text(
+            'Payload', help='Oggetto JSON passato alla chiamata POST'),
+        'mode': fields.selection([
+            ('get', 'GET'),
+            ('post', 'POST'),
+        ], string='Modalità', default='get', required=True)
     }
     _defaults = {
         # 'content': lambda *x: 'application/json',
