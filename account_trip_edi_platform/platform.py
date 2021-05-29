@@ -40,6 +40,55 @@ class EdiCompany(orm.Model):
     """
     _inherit = 'edi.company'
 
+    def send_stock_status(self, cr, uid, ids, context=None):
+        """ Send stock status from Account + not imported order
+        """
+        endpoint_pool = self.pool.get('http.request.endpoint')
+
+        endpoint_params = {
+            'date': datetime.now().strftime('%Y%m%d')
+        }
+        payload = []
+        payload.append({
+            'CODICE_PRODUTTORE': 'ITAXXXX',
+            'CODICE_ARTICOLO': 'AV040002',
+            'UM_ARTICOLO ': 'KG',
+            'DATA_SCADENZA': '20210705',  # (FORMATO AAAAMMGG),
+            'LOTTO': 'XXXX',
+            'QTA': '00000000027000',  # 10 + 4
+            })
+
+        company = self.browse(cr, uid, ids, context=context)[0]
+        ctx = context.copy()
+        ctx['endpoint_params'] = endpoint_params
+        ctx['payload'] = payload
+        reply = endpoint_pool.call_endpoint(cr, uid, [
+            company.endpoint_stock_id.id], context=ctx)
+
+        # Check reply:
+        sent_message = ''
+        sent_error = False
+        if 'ElencoErroriAvvisi' in reply:
+            for status in reply['ElencoErroriAvvisi']:
+                message_type = status['Tipo']
+                if message_type and status['Tipo'] in 'CE':
+                    sent_error = True
+                sent_message += '[%s] %s' % (
+                    message_type,
+                    status['Messaggio'],
+                )
+
+        # TODO add log data for last sent:
+        data = {
+            # 'sent_message': sent_message,
+            # 'sent_error': sent_error,
+        }
+        if message_type == 'N':  # todo A is needed?
+            data['last_sent'] = str(datetime.now())[:19]
+        # self.write(cr, uid, [company.id], data, context=context)
+
+        return True
+
     def export_all_supplier_order(self, cr, uid, ids, context=None):
         """ Export all order not exported
         """
@@ -67,7 +116,7 @@ class EdiCompany(orm.Model):
         ddt_path = os.path.expanduser(company.edi_supplier_in_path)
         history_path = os.path.join(ddt_path, 'history')
         unused_path = os.path.join(ddt_path, 'unused')
-        log_path = os.path.join(ddt_path, 'log')  # todo log events!
+        # log_path = os.path.join(ddt_path, 'log')  # todo log events!
         _logger.info('Start check DDT files: %s' % ddt_path)
         send_order_ids = []  # Order to be sent afters
         for root, folders, files in os.walk(ddt_path):
@@ -314,7 +363,6 @@ class EdiSupplierOrder(orm.Model):
                 company.endpoint_ddt_id.id], context=ctx)
 
             _logger.warning('Reply: %s' % (reply, ))
-            pdb.set_trace()
             if not reply:
                 raise osv.except_osv(
                     _('Attenzione:'),

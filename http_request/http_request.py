@@ -156,8 +156,8 @@ class HttpRequestEndpoint(orm.Model):
                 url, header))
             reply = requests.get(url=url, headers=header)
         if endpoint.mode == 'post':
-            _logger.info('Calling: %s\nPayload: %s' % (
-                url, payload))
+            _logger.info('Calling: %s\nHeader: %s\nPayload: %s' % (
+                url, header, payload))
             data = json.dumps(payload)
             reply = requests.post(url=url, headers=header, data=data)
 
