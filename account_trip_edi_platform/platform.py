@@ -72,7 +72,6 @@ class EdiCompany(orm.Model):
             cr, uid, [endpoint_id], context=ctx)
 
         order_db = {}
-        pdb.set_trace()
         for line in order_lines:
             name = line['NUMERO_ORDINE']
             if name not in order_db:
@@ -114,6 +113,7 @@ class EdiCompany(orm.Model):
                 'note': line['NOTA_RIGA'],
             })
 
+        pdb.set_trace()
         # Update lines:
         for name in order_db:
             order_id, lines = order_db[name]
