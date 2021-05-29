@@ -67,6 +67,7 @@ class EdiCompany(orm.Model):
 
         connection_id = company.connection_id.id
         endpoint_id = company.endpoint_id.id
+        company_id = company.id
 
         order_lines = connection_pool.call_endpoint(
             cr, uid, [endpoint_id], context=ctx)
@@ -76,12 +77,14 @@ class EdiCompany(orm.Model):
             name = line['NUMERO_ORDINE']
             if name not in order_db:
                 order_ids = order_pool.search(cr, uid, [
+                    ('company_id', '=', company_id),
                     ('name', '=', name),
                 ], context=context)
                 if order_ids:
                     order_db[name] = [order_ids[0], []]
                 else:
                     data = {
+                        'company_id': company_id,
                         'connection_id': connection_id,
                         'endpoint_id': endpoint_id,
                         'name': name,
@@ -152,11 +155,22 @@ class EdiSupplierOrder(orm.Model):
     _rec_name = 'name'
     _order = 'name'
 
+    def extract_supplier_order(self, cr, uid, ids, context=None):
+        """ Estract order to file CSV
+        """
+        order = self.browse(cr, uid, ids, context=context)[0]
+        company = order.company_id
+        return True
+
     _columns = {
+        'company_id': fields.many2one(
+            'edi.company', 'Company'),
+        # History parameter:
         'connection_id': fields.many2one(
-            'http.request.connection', 'Connection'),
+            'http.request.connection', 'Connessione'),
         'endpoint_id': fields.many2one(
             'http.request.endpoint', 'Endpoint'),
+
         'name': fields.char('Numero ordine', size=30, required=True),
         'supplier_code': fields.char(
             'Codice produttore', size=30, required=True),
@@ -166,6 +180,7 @@ class EdiSupplierOrder(orm.Model):
         'order_date': fields.char('Data ordine', size=20),
         'deadline_date': fields.char('Data consegna richiesta', size=20),
         'note': fields.text('Nota ordine'),
+        'extracted': fields.boolean('Estratto'),
     }
 
 
@@ -181,9 +196,9 @@ class EdiSupplierOrderLine(orm.Model):
     _columns = {
         'sequence': fields.char('Seq.', size=4),
         'name': fields.char(
-            'Descrizione articolo', size=40, required=True),
+            'Descrizione articolo', size=60, required=True),
         'supplier_name': fields.char(
-            'Descrizione articolo produttore', size=40),
+            'Descrizione articolo produttore', size=60),
         'supplier_code': fields.char('Codice produttore', size=20),
         'code': fields.char('Codice articolo', size=20),
         'uom_supplier': fields.char('UM fornitore', size=10),
