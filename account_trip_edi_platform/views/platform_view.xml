@@ -9,7 +9,7 @@
                 <field name="trip_delete_folder" position="after">
                     <field name="has_platform" />
                     <field name="connection_id" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-                    <field name="endpoint_code" attrs="{'invisible': [('has_platform', '=', False)]}"/>
+                    <field name="endpoint_id" attrs="{'invisible': [('has_platform', '=', False)]}" domain="[('connection_id', '=', connection_id)]"/>
                 </field>
             </field>
         </record>

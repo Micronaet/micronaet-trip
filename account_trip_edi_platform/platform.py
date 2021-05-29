@@ -57,15 +57,17 @@ class EdiCompany(orm.Model):
             'data_from': '20210101',
             'data_to': '20210101',
         }
-        ctx['endpoint_code'] = company.endpoint_code
 
-        connection_pool.call_endpoint(cr, uid, ids, context=ctx)
+        orders = connection_pool.call_endpoint(
+            cr, uid, [company.endpoint_id.id], context=ctx)
+
 
     _columns = {
         'has_platform': fields.boolean('Has platform'),
         'connection_id': fields.many2one(
             'http.request.connection', 'Connection'),
-        'endpoint_code': fields.char('Endpoint code', size=30),
+        'endpoin_id': fields.many2one(
+            'http.request.endpoint', 'Endpoint'),
     }
 
 
