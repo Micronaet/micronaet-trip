@@ -274,7 +274,6 @@ class EdiSupplierOrder(orm.Model):
     def send_ddt_order(self, cr, uid, ids, context=None):
         """ Send JSON data file to portal for DDT confirmed
         """
-        pdb.set_trace()
         endpoint_pool = self.pool.get('http.request.endpoint')
         for order in self.browse(cr, uid, ids, context=context):
             name = order.name
@@ -292,7 +291,7 @@ class EdiSupplierOrder(orm.Model):
                     'UM_ARTICOLO_PIATTAFORMA': ddt_line.uom_product,
                     'QTA': ddt_line.product_qty,  # todo 10 + 4
 
-                    'CODICE_SITO': order.dealer_code,  # '2288'
+                    'CODICE_SITO': order.supplier_code,  # '2288'
                     'DATA_DDT': ddt_line.date,  # (FORMATO AAAAMMGG)
                     'DATA_CONSEGNA_EFFETTIVA': ddt_line.date_received,
                     'NUMERO_ORDINE': order.name,
@@ -301,10 +300,13 @@ class EdiSupplierOrder(orm.Model):
             ctx['payload'] = payload
             reply = endpoint_pool.call_endpoint(cr, uid, [
                 company.endpoint_ddt_id.id], context=ctx)
-            if not reply.ok:
+
+            _logger.warning('Reply: %s' (reply, ))
+            pdb.set_trace()
+            if not reply:
                 raise osv.except_osv(
                     _('Attenzione:'),
-                    _('Errore spedendo il DDT:\n %s' % reply.text),
+                    _('Errore spedendo il DDT:\n %s' % reply),
                 )
             # todo check error
             self.write(cr, uid, [order.id], {
