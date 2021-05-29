@@ -8,8 +8,11 @@
             <field name="arch" type="xml">
                 <field name="trip_delete_folder" position="after">
                     <field name="has_platform" />
+                    <button name="import_platform_supplier_order" type="object" string="Forza scaricamento" icon="gtk-refresh"/>
+                    <newline/>
                     <field name="connection_id" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <field name="endpoint_id" attrs="{'invisible': [('has_platform', '=', False)]}" domain="[('connection_id', '=', connection_id)]"/>
+                    <newline/>
                     <field name="force_from_date" />
                     <field name="force_to_date" />
                 </field>
