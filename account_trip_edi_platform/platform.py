@@ -67,7 +67,8 @@ class EdiCompany(orm.Model):
         ddt_path = os.path.expanduser(company.edi_supplier_in_path)
         history_path = os.path.join(ddt_path, 'history')
         unused_path = os.path.join(ddt_path, 'unused')
-        log_path = os.path.join(ddt_path, 'log')
+        log_path = os.path.join(ddt_path, 'log')  # todo log events!
+        _logger.info('Start check DDT files: %s' % ddt_path)
         for root, folders, files in os.walk(ddt_path):
             for filename in files:
                 ddt_filename = os.path.join(root, filename)
@@ -75,7 +76,7 @@ class EdiCompany(orm.Model):
                     _logger.warning('Jumped file (unused): %s' % filename)
                     shutil.move(
                         ddt_filename,
-                        os.path(unused_path, filename)
+                        os.path.join(unused_path, filename)
                     )
                     continue
 
@@ -140,7 +141,7 @@ class EdiCompany(orm.Model):
                     ddt_line_pool.create(cr, uid, ddt_data, context=context)
                     shutil.move(
                         ddt_filename,
-                        os.path(history_path, filename)
+                        os.path.join(history_path, filename),
                     )
 
                 break  # Only first folder!
