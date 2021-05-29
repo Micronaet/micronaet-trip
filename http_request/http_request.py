@@ -127,11 +127,13 @@ class HttpRequestEndpoint(orm.Model):
                 context pass data for those parameter, ex.:
                 endpoint_xxx?from_date={data_from}
 
-                in context: context{
+                In context:
                    'endpoint_params': {
                       'data_from': '20210101'}}
+                   'payload': {},   # For POST call
         """
         parameter = context.get('endpoint_params', {})
+        payload = context.get('payload', {})
 
         connection_pool = self.pool.get('http.request.connection')
         endpoint = self.browse(cr, uid, ids, context=context)[0]
@@ -153,7 +155,7 @@ class HttpRequestEndpoint(orm.Model):
         if endpoint.mode == 'get':
             reply = requests.get(url=url, headers=header)
         if endpoint.mode == 'post':
-            reply = requests.post(url=url, headers=header)
+            reply = requests.post(url=url, headers=header, data=payload)
 
         if reply.ok:
             reply_json = reply.json()

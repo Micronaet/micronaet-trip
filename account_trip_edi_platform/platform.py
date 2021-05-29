@@ -237,8 +237,9 @@ class EdiCompany(orm.Model):
         'separator': fields.char('Separatore CSV', size=1),
         'connection_id': fields.many2one(
             'http.request.connection', 'Connection'),
-        'endpoint_id': fields.many2one(
-            'http.request.endpoint', 'Endpoint'),
+        'endpoint_id': fields.many2one('http.request.endpoint', 'Endpoint OF'),
+        'endpoint_ddt_id': fields.many2one(
+            'http.request.endpoint', 'Endpoint DDT'),
         'force_from_date': fields.char(
             'Forza dalla data', size=19,
             help='Forza la data di partenza per leggere gli ordini, formato: '
