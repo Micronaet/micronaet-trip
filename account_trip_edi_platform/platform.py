@@ -50,7 +50,7 @@ class EdiCompany(orm.Model):
             Period always yesterday to today (launched every day)
         """
         order_pool = self.pool.get('edi.supplier.order')
-        line_pool = self.pool.get('edi.supplier.line')
+        line_pool = self.pool.get('edi.supplier.order.line')
 
         company = self.browse(cr, uid, ids, context=context)[0]
         # Call end point for get order:
