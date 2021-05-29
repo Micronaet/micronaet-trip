@@ -408,8 +408,6 @@ class EdiSupplierOrderLine(orm.Model):
         'supplier_name': fields.char(
             'Descrizione articolo produttore', size=90),
         'supplier_code': fields.char('Codice produttore', size=20),
-        'date': fields.char('Data DDT', size=20),
-        'date_received': fields.char('Data ricezion', size=20),
         'code': fields.char('Codice articolo', size=20),
         'uom_supplier': fields.char('UM fornitore', size=10),
         'uom_product': fields.char('UM prodotto', size=10),
@@ -433,6 +431,8 @@ class EdiSupplierOrderDDTLine(orm.Model):
         'sequence': fields.char('Seq.', size=4),
         'name': fields.char(
             'Numero DDT', size=20, required=True),
+        'date': fields.char('Data DDT', size=20),
+        'date_received': fields.char('Data ricezion', size=20),
         'code': fields.char('Codice articolo', size=20),
         'uom_product': fields.char('UM prodotto', size=10),
         'product_qty': fields.char('Q.', size=20),  # todo change in float
