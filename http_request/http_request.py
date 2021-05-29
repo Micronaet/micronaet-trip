@@ -153,10 +153,11 @@ class HttpRequestEndpoint(orm.Model):
         'mode': fields.selection([
             ('get', 'GET'),
             ('post', 'POST'),
-        ], string='Modalità', default='get', required=True)
+        ], string='Modalità', required=True)
     }
     _defaults = {
         # 'content': lambda *x: 'application/json',
+        'mode': lambda *x: 'get',
     }
 
 
