@@ -121,6 +121,7 @@ class EdiCompany(orm.Model):
                 order_pool.write(cr, uid, [order_id], {
                     'line_ids': [(6, 0, lines)],
                 }, context=context)
+        return True
 
     _columns = {
         'has_platform': fields.boolean('Has platform'),
