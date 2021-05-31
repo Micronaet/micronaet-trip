@@ -35,28 +35,49 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 _logger = logging.getLogger(__name__)
 
 
+class EdiPlatformProduct(orm.Model):
+    """ Model name: Edi platform product
+    """
+
+    _name = 'edi.platform.product'
+    _description = 'Platform product'
+    _rec_name = 'product_id'
+    _order = 'product_id'
+
+    _columns = {
+        'product_id': fields.many2one('product.product', 'Product'),
+        'company_id': fields.many2one('edi.company', 'Company'),
+        # todo extra data for exchange product
+    }
+
+
 class EdiCompany(orm.Model):
     """ Model name: Edi Company
     """
     _inherit = 'edi.company'
 
-    def send_stock_status(self, cr, uid, ids, context=None):
+    # Button events:
+    def update_stock_status(self, cr, uid, ids, context=None):
         """ Send stock status from Account + not imported order
         """
         endpoint_pool = self.pool.get('http.request.endpoint')
-
+        # Date now:
         endpoint_params = {
             'date': datetime.now().strftime('%Y%m%d')
         }
+
         payload = []
-        payload.append({
-            'CODICE_PRODUTTORE': 'ITAXXXX',
-            'CODICE_ARTICOLO': 'AV040002',
-            'UM_ARTICOLO ': 'KG',
-            'DATA_SCADENZA': '20210705',  # (FORMATO AAAAMMGG),
-            'LOTTO': 'XXXX',
-            'QTA': '00000000027000',  # 10 + 4
-            })
+        # Loop on all platform product:
+        products = []  # todo list of platform product
+        for product in products:
+            payload.append({
+                'CODICE_PRODUTTORE': 'ITAXXXX',
+                'CODICE_ARTICOLO': 'AV040002',
+                'UM_ARTICOLO ': 'KG',
+                'DATA_SCADENZA': '20210705',  # (FORMATO AAAAMMGG),
+                'LOTTO': 'XXXX',
+                'QTA': '00000000027000',  # 10 + 4
+                })
 
         company = self.browse(cr, uid, ids, context=context)[0]
         ctx = context.copy()
@@ -133,6 +154,7 @@ class EdiCompany(orm.Model):
                 # todo Check if is a DDT for Portal
                 ddt_f = open(ddt_filename, 'r')
                 fixed = {  # Fixed data
+                    # ID ODOO
                     1: '',  # Order name
                     2: '',  # DDT Number
                     3: '',  # DDT Date
@@ -164,10 +186,10 @@ class EdiCompany(orm.Model):
                     # todo check with Laura:
                     sequence = line[:5]
                     code = line[5:10]
-                    product_qty = line[10:20]
                     product_uom = line[20:30]
-                    lot = line[20:30]
                     deadline_lot = line[20:30]
+                    lot = line[20:30]
+                    product_qty = line[10:20]
 
                     # Order to be sent after:
                     if order_id not in send_order_ids:
@@ -320,6 +342,7 @@ class EdiCompany(orm.Model):
             'Cartella DDT produttore', size=50,
             help='Cartella dove vengono prelevati i DDT del roduttore da '
                  'inviare al portale per copia conforme.'),
+        'product_ids': fields.one2many('edi.platform.product', 'product_id', 'Product'),
     }
 
 
@@ -424,11 +447,12 @@ class EdiSupplierOrder(orm.Model):
             out_filename = os.path.join(out_path, '%s.csv' % name)
             out_f = open(out_filename, 'w')
             header = [
-                order.name,
-                clean_ascii(order.supplier_code),
-                clean_ascii(order.dealer),
-                clean_ascii(order.dealer_code),
-                clean_ascii(order.supplier),
+                'ODOO' % order.id,
+                order.name,  # Order number
+                clean_ascii(order.supplier_code),  # ITA0000
+                # clean_ascii(order.dealer),
+                # clean_ascii(order.dealer_code),
+                # clean_ascii(order.supplier),
                 clean_ascii(order.order_date),
                 clean_ascii(order.deadline_date),
                 clean_ascii(order.note),
@@ -437,14 +461,14 @@ class EdiSupplierOrder(orm.Model):
             for line in order.line_ids:
                 data = [
                     clean_ascii(line.sequence),
-                    clean_ascii(line.name),
-                    clean_ascii(line.supplier_name),
-                    clean_ascii(line.supplier_code),
-                    clean_ascii(line.code),
-                    clean_ascii(line.uom_supplier),
-                    clean_ascii(line.uom_product),
-                    clean_ascii(line.product_qty),
-                    clean_ascii(line.order_product_qty),
+                    # clean_ascii(line.name),
+                    # clean_ascii(line.supplier_name),
+                    # clean_ascii(line.supplier_code),
+                    clean_ascii(line.code),  # AV000
+                    # clean_ascii(line.uom_supplier),
+                    # clean_ascii(line.uom_product),
+                    clean_ascii(line.product_qty),  # 12345678901234 (10+4)
+                    # clean_ascii(line.order_product_qty),  todo correct?
                     clean_ascii(line.note),
                 ]
                 # Fixed header

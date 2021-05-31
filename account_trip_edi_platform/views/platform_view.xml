@@ -9,6 +9,12 @@
                 <field name="trip_delete_folder" position="after">
                     <field name="has_platform" />
                     <newline/>
+                    <notebook attrs="{'invisible': [('has_platform', '=', False)]}" colspan="4">
+                        <page name="platform_page" string="Piattaforma" >
+                            <group>
+                            </group>
+                        </page>
+                    </notebook>
 
                     <separator string="Importazione pre-ordini dal portale:" colspan="6" attrs="{'invisible': [('has_platform', '=', False)]}"/>
                     <field name="connection_id" attrs="{'invisible': [('has_platform', '=', False)]}"/>
