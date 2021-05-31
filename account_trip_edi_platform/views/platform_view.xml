@@ -9,7 +9,7 @@
                 <field name="trip_delete_folder" position="after">
                     <field name="has_platform" />
                     <newline/>
-                    <notebook colspan="4" attrs="{'invisible': [('has_platform', '=', False)]}">
+                    <notebook colspan="6" attrs="{'invisible': [('has_platform', '=', False)]}">
                         <page name="platform_page" string="Piattaforma" >
                             <group colspan="4" col="6">
                                 <separator string="Importazione pre-ordini dal portale:" colspan="6"/>
@@ -41,7 +41,7 @@
                         <page name="platform_product_page" string="Prodotti" >
                             <group col="4" colspan="4">
                                 <separator string="Prodotti piattaforma:" colspan="4" />
-                                <field name="platform_product_ids">
+                                <field name="platform_product_ids" colspan="4" nolabel="1">
                                     <tree string="Prodotti piattaforma" editable="bottom">
                                         <field name="company_id"/>
                                         <field name="product_id"/>
