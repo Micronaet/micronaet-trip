@@ -240,6 +240,7 @@ class EdiCompany(orm.Model):
         """
         order_pool = self.pool.get('edi.supplier.order')
         line_pool = self.pool.get('edi.supplier.order.line')
+        product_pool = self.pool.get('edi.platform.product')
 
         company = self.browse(cr, uid, ids, context=context)[0]
         # Call end point for get order:
@@ -289,21 +290,38 @@ class EdiCompany(orm.Model):
                         cr, uid, data, context=context)
                     order_db[name] = [order_id, []]
             order_id, lines = order_db[name]
+            supplier_code = line['CODICE_ARTICOLO_PRODUTTORE']
+            supplier_name = line['DESCRIZIONE_ARTICOLO_PRODUTTORE']
+            uom_supplier = line['UM_ARTICOLO_PRODUTTORE']
             lines. append({
                 'order_id': order_id,
 
                 'sequence': line['RIGA_ORDINE'],
                 'name': line['DESCRIZIONE_ARTICOLO'],
-                'supplier_name': line['DESCRIZIONE_ARTICOLO_PRODUTTORE'],
-                'supplier_code': line['CODICE_ARTICOLO_PRODUTTORE'],
+                'supplier_name': supplier_name,
+                'supplier_code': supplier_code,
                 'code': line['CODICE_ARTICOLO'],
-                'uom_supplier': line['UM_ARTICOLO_PRODUTTORE'],
+                'uom_supplier': uom_supplier,
                 'uom_product': line['UM_ARTICOLO'],
                 'product_qty': line['QTA_ORDINE'],
                 # todo change in float
                 'order_product_qty': line['QTA_ORDINE_PRODUTTORE'],
                 'note': line['NOTA_RIGA'],
             })
+            # Update also platform product
+            platform_product_ids = product_pool.search(cr, uid, [
+                ('company_id', '=', company_id),
+                ('supplier_code', '=', supplier_code),
+            ], context=context)
+            if not platform_product_ids:
+                _logger.info('Create plaform product: %s' % supplier_code)
+                product_pool.create(cr, uid, {
+                    'company_id': company_id,
+                    # 'product_id': False,
+                    'supplier_code': supplier_code,
+                    'supplier_name': supplier_name,
+                    'uom_supplier': uom_supplier,
+                }, context=context)
 
         # Update lines:
         for name in order_db:
