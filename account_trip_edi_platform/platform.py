@@ -45,6 +45,7 @@ class EdiPlatformProduct(orm.Model):
     _order = 'product_id'
 
     _columns = {
+        'not_used': fields.boolean('Non usato'),
         'company_id': fields.many2one('edi.company', 'Company'),
         'product_id': fields.many2one('product.product', 'Product'),
         # 'code': fields.char('Codice articolo', size=20),
