@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-        <record model="ir.ui.view" id="view_edi_company_platform_tree">
+        <record model="ir.ui.view" id="view_edi_company_platform_object_tree">
             <field name="name">edi.platform.product.tree</field>
             <field name="model">edi.platform.product</field>
             <field name="arch" type="xml">
@@ -16,7 +16,7 @@
                 </tree>
             </field>
         </record>
-        <record model="ir.ui.view" id="view_edi_company_platform_form">
+        <record model="ir.ui.view" id="view_edi_company_platform_object_form">
             <field name="name">edi.platform.product.form</field>
             <field name="model">edi.platform.product</field>
             <field name="arch" type="xml">

@@ -48,7 +48,9 @@ class EdiPlatformProduct(orm.Model):
         """ Open detailed product (for lot)
         """
         model_pool = self.pool.get('ir.model.data')
-        view_id = model_pool.get_object_reference('account_trip_edi_platform', 'view_edi_company_platform_form')[1]
+        view_id = model_pool.get_object_reference(
+            cr, uid,
+            'account_trip_edi_platform', 'view_edi_company_platform_object_form')[1]
 
         return {
             'type': 'ir.actions.act_window',
