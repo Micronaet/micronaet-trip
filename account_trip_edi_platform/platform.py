@@ -73,9 +73,9 @@ class EdiPlatformProduct(orm.Model):
         'product_id': fields.many2one('product.product', 'Product'),
         # 'code': fields.char('Codice articolo', size=20),
 
-        'supplier_name': fields.char('Descrizione cliente', size=90),
-        'supplier_code': fields.char('Codice cliente', size=20),
-        'uom_supplier': fields.char('UM fornitore', size=10),
+        'customer_name': fields.char('Descrizione cliente', size=90),
+        'customer_code': fields.char('Codice cliente', size=20),
+        'customer_uom': fields.char('UM cliente', size=10),
     }
 
 
@@ -314,19 +314,19 @@ class EdiCompany(orm.Model):
                         cr, uid, data, context=context)
                     order_db[name] = [order_id, []]
             order_id, lines = order_db[name]
-            supplier_code = line['CODICE_ARTICOLO_PRODUTTORE']
-            supplier_name = line['DESCRIZIONE_ARTICOLO_PRODUTTORE']
-            uom_supplier = line['UM_ARTICOLO_PRODUTTORE']
+            customer_code = line['CODICE_ARTICOLO']
+            customer_name = line['DESCRIZIONE_ARTICOLO']
+            customer_uom = line['UM_ARTICOLO']
             lines. append({
                 'order_id': order_id,
 
                 'sequence': line['RIGA_ORDINE'],
-                'name': line['DESCRIZIONE_ARTICOLO'],
-                'supplier_name': supplier_name,
-                'supplier_code': supplier_code,
-                'code': line['CODICE_ARTICOLO'],
-                'uom_supplier': uom_supplier,
-                'uom_product': line['UM_ARTICOLO'],
+                'name': customer_name,
+                'supplier_name': line['DESCRIZIONE_ARTICOLO_PRODUTTORE'],
+                'supplier_code': line['CODICE_ARTICOLO_PRODUTTORE'],
+                'code': customer_code,
+                'uom_supplier': line['UM_ARTICOLO_PRODUTTORE'],
+                'uom_product': customer_uom,
                 'product_qty': line['QTA_ORDINE'],
                 # todo change in float
                 'order_product_qty': line['QTA_ORDINE_PRODUTTORE'],
@@ -335,16 +335,16 @@ class EdiCompany(orm.Model):
             # Update also platform product
             platform_product_ids = product_pool.search(cr, uid, [
                 ('company_id', '=', company_id),
-                ('supplier_code', '=', supplier_code),
+                ('customer_code', '=', customer_code),
             ], context=context)
             if not platform_product_ids:
-                _logger.info('Create plaform product: %s' % supplier_code)
+                _logger.info('Create plaform product: %s' % customer_code)
                 product_pool.create(cr, uid, {
                     'company_id': company_id,
                     # 'product_id': False,
-                    'supplier_code': supplier_code,
-                    'supplier_name': supplier_name,
-                    'uom_supplier': uom_supplier,
+                    'customer_code': customer_code,
+                    'customer_name': customer_name,
+                    'customer_uom': customer_uom,
                 }, context=context)
 
         # Update lines:
