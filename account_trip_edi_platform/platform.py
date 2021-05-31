@@ -44,6 +44,27 @@ class EdiPlatformProduct(orm.Model):
     _rec_name = 'product_id'
     _order = 'product_id'
 
+    def platform_product_detail(self, cr, uid, ids, context=None):
+        """ Open detailed product (for lot)
+        """
+        model_pool = self.pool.get('ir.model.data')
+        view_id = model_pool.get_object_reference('account_trip_edi_platform', 'view_edi_company_platform_form')[1]
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Dettaglio prodotto piattaforma'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': ids[0],
+            'res_model': 'edi.platform.product',
+            'view_id': view_id,
+            'views': [(view_id, 'form')],
+            'domain': [],
+            'context': context,
+            'target': 'new',
+            'nodestroy': False,
+            }
+
     _columns = {
         'not_used': fields.boolean('Non usato'),
         'company_id': fields.many2one('edi.company', 'Company'),
@@ -335,11 +356,6 @@ class EdiCompany(orm.Model):
 
             for line in lines:
                 line_pool.create(cr, uid, line, context=context)
-        return True
-
-    def platform_product_detail(self, cr, uid, ids, context=None):
-        """ Open detailed product (for lot)
-        """
         return True
 
     _columns = {
