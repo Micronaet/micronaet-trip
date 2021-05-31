@@ -369,7 +369,7 @@ class EdiCompany(orm.Model):
             'Cartella DDT produttore', size=50,
             help='Cartella dove vengono prelevati i DDT del roduttore da '
                  'inviare al portale per copia conforme.'),
-        'platform_product_ids': fields.one2many('edi.platform.product', 'product_id', 'Product'),
+        'platform_product_ids': fields.one2many('edi.platform.product', 'company_id', 'Product'),
     }
 
 
