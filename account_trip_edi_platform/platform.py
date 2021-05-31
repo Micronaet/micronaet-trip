@@ -45,9 +45,13 @@ class EdiPlatformProduct(orm.Model):
     _order = 'product_id'
 
     _columns = {
-        'product_id': fields.many2one('product.product', 'Product'),
         'company_id': fields.many2one('edi.company', 'Company'),
-        # todo extra data for exchange product
+        'product_id': fields.many2one('product.product', 'Product'),
+        # 'code': fields.char('Codice articolo', size=20),
+
+        'supplier_name': fields.char('Descrizione cliente', size=90),
+        'supplier_code': fields.char('Codice cliente', size=20),
+        'uom_supplier': fields.char('UM fornitore', size=10),
     }
 
 
@@ -314,6 +318,11 @@ class EdiCompany(orm.Model):
                 line_pool.create(cr, uid, line, context=context)
         return True
 
+    def platform_product_detail(self, cr, uid, ids, context=None):
+        """ Open detailed product (for lot)
+        """
+        return True
+
     _columns = {
         'has_platform': fields.boolean('Has platform'),
         'separator': fields.char('Separatore CSV', size=1),
@@ -342,7 +351,7 @@ class EdiCompany(orm.Model):
             'Cartella DDT produttore', size=50,
             help='Cartella dove vengono prelevati i DDT del roduttore da '
                  'inviare al portale per copia conforme.'),
-        'product_ids': fields.one2many('edi.platform.product', 'product_id', 'Product'),
+        'platform_product_ids': fields.one2many('edi.platform.product', 'product_id', 'Product'),
     }
 
 

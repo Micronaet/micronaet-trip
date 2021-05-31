@@ -9,38 +9,51 @@
                 <field name="trip_delete_folder" position="after">
                     <field name="has_platform" />
                     <newline/>
-                    <notebook attrs="{'invisible': [('has_platform', '=', False)]}" colspan="4">
+                    <notebook colspan="4" attrs="{'invisible': [('has_platform', '=', False)]}">
                         <page name="platform_page" string="Piattaforma" >
-                            <group>
+                            <group colspan="4" col="6">
+                                <separator string="Importazione pre-ordini dal portale:" colspan="6"/>
+                                <field name="connection_id" />
+                                <field name="endpoint_id"  domain="[('connection_id', '=', connection_id)]"/>
+                                <button name="import_platform_supplier_order" type="object" string="Forza scaricamento" icon="gtk-refresh" colspan="2" />
+
+                                <field name="force_from_date" />
+                                <field name="force_to_date" />
+                                <newline/>
+
+                                <separator string="Passaggio pre-ordini al gestionale:" colspan="6" />
+                                <field name="edi_supplier_out_path" />
+                                <field name="separator" />
+                                <button name="export_all_supplier_order" type="object" string="Esporta tutti" icon="gtk-refresh" colspan="2" />
+
+                                <separator string="Importazione DDT produttore in ERP e invio al portale:" colspan="6" />
+                                <field name="edi_supplier_in_path" />
+                                <field name="endpoint_ddt_id"  domain="[('connection_id', '=', connection_id)]"/>
+                                <button name="import_all_supplier_order" type="object" string="Importa e invia tutti" icon="gtk-refresh" colspan="2" />
+
+                                <separator string="Stato magazzino:" colspan="6" />
+                                <field name="endpoint_stock_id" />
+                                <field name="last_stock_update" />
+                                <button name="update_stock_status" type="object" string="Invia stato di magazzino" icon="gtk-refresh" colspan="2" />
+                                <newline/>
+                            </group>
+                        </page>
+                        <page name="platform_product_page" string="Prodotti" >
+                            <group col="4" colspan="4">
+                                <separator string="Prodotti piattaforma:" colspan="4" />
+                                <field name="platform_product_ids">
+                                    <tree string="Prodotti piattaforma" editable="bottom">
+                                        <field name="company_id"/>
+                                        <field name="product_id"/>
+                                        <field name="supplier_name"/>
+                                        <field name="supplier_code"/>
+                                        <field name="uom_supplier"/>
+                                        <button name="platform_product_detail" type="object" string="Dettaglio lotti" icon="gtk-ok" />
+                                    </tree>
+                                </field>
                             </group>
                         </page>
                     </notebook>
-
-                    <separator string="Importazione pre-ordini dal portale:" colspan="6" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-                    <field name="connection_id" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-                    <field name="endpoint_id" attrs="{'invisible': [('has_platform', '=', False)]}" domain="[('connection_id', '=', connection_id)]"/>
-                    <button name="import_platform_supplier_order" type="object" string="Forza scaricamento" icon="gtk-refresh" colspan="2" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-
-                    <field name="force_from_date" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-                    <field name="force_to_date" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-                    <newline/>
-
-                    <separator string="Passaggio pre-ordini al gestionale:" colspan="6" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-                    <field name="edi_supplier_out_path" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-                    <field name="separator" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-                    <button name="export_all_supplier_order" type="object" string="Esporta tutti" icon="gtk-refresh" colspan="2" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-
-                    <separator string="Importazione DDT produttore in ERP e invio al portale:" colspan="6" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-                    <field name="edi_supplier_in_path" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-                    <field name="endpoint_ddt_id" attrs="{'invisible': [('has_platform', '=', False)]}" domain="[('connection_id', '=', connection_id)]"/>
-                    <button name="import_all_supplier_order" type="object" string="Importa e invia tutti" icon="gtk-refresh" colspan="2" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-
-                    <separator string="Stato magazzino:" colspan="6" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-                    <field name="endpoint_stock_id" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-                    <field name="last_stock_update" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-                    <button name="update_stock_status" type="object" string="Invia stato di magazzino" icon="gtk-refresh" colspan="2" attrs="{'invisible': [('has_platform', '=', False)]}"/>
-
-                    <newline/>
                 </field>
             </field>
         </record>
