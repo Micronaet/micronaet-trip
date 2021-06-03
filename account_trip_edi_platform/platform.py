@@ -493,7 +493,7 @@ class EdiSupplierOrder(orm.Model):
             out_filename = os.path.join(out_path, '%s.csv' % name)
             out_f = open(out_filename, 'w')
             header = [
-                'ODOO' % order.id,
+                'ODOO%s' % order.id,
                 order.name,  # Order number
                 clean_ascii(order.supplier_code),  # ITA0000
                 # clean_ascii(order.dealer),
