@@ -255,7 +255,7 @@ class EdiCompany(orm.Model):
                         send_order_ids.append(order_id)
 
                     # Link to line:
-                    line_ids = order_pool.search(cr, uid, [
+                    line_ids = ddt_line_pool.search(cr, uid, [
                         ('order_id', '=', order_id),
                         ('sequence', '=', sequence),
                     ])
