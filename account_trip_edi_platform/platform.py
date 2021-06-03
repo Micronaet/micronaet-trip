@@ -87,8 +87,15 @@ class EdiCompany(orm.Model):
     # Utility:
     def iso_date_format(self, date, separator='/'):
         """ Change date format
+            Date now is 12/2021 or 14/12/2021
+            sometimes date + extra data not used
         """
+        date = (date or '').split(' ')[0].split(separator)
         date_part = (date or '').split(separator)
+        if len(date_part) == 2:
+            # Mode 12/2021 use 15 ad day
+            date_part = ['15'] + date_part
+
         if len(date_part) != 3:
             _logger.error('Error, not a date: %s' % date)
             return ''
@@ -236,12 +243,12 @@ class EdiCompany(orm.Model):
                     if len(line) != 6:
                         _logger.error('Line not in correct format')
                         continue
-                    sequence = line[0]
-                    code = line[1]
-                    product_uom = line[2]
-                    deadline_lot = line[3]
-                    lot = line[4]
-                    product_qty = line[5]
+                    sequence = line[0].strip()
+                    code = line[1].strip()
+                    product_uom = line[2].strip()
+                    deadline_lot = line[3].strip()
+                    lot = line[4].strip()
+                    product_qty = line[5].strip()
 
                     # Order to be sent after:
                     if order_id not in send_order_ids:
@@ -344,7 +351,7 @@ class EdiCompany(orm.Model):
             customer_code = line['CODICE_ARTICOLO']
             customer_name = line['DESCRIZIONE_ARTICOLO']
             customer_uom = line['UM_ARTICOLO']
-            lines. append({
+            lines.append({
                 'order_id': order_id,
 
                 'sequence': line['RIGA_ORDINE'],
