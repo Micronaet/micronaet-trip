@@ -104,6 +104,13 @@ class EdiCompany(orm.Model):
         return ''.join(date_part)
 
     # Button events:
+    def import_all_customer_order(self, cr, uid, ids, context=None):
+        """ Call original action
+        """
+        ddt_pool = self.pool.get('edi.customer.ddt.line')
+        return ddt_pool.import_all_customer_order(
+            cr, uid, ids, context=context)
+
     def update_stock_status(self, cr, uid, ids, context=None):
         """ Send stock status from Account + not imported order
         """
