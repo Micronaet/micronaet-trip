@@ -270,8 +270,8 @@ class EdiCompany(orm.Model):
                     ddt_data = {
                         'sequence': sequence,
                         'name': fixed[4],
-                        'date': fixed[2],
-                        'date_received': fixed[3],
+                        'date': self.iso_date_format(fixed[2]),
+                        'date_received': self.iso_date_format(fixed[3]),
                         'code': code,
                         'uom_product': product_uom,
                         'product_qty': product_qty,
