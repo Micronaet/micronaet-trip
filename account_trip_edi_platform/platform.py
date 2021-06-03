@@ -90,8 +90,8 @@ class EdiCompany(orm.Model):
             Date now is 12/2021 or 14/12/2021
             sometimes date + extra data not used
         """
-        date = (date or '').split(' ')[0].split(separator)
-        date_part = (date or '').split(separator)
+        pdb.set_trace()
+        date_part = (date or '').split(' ')[0].split(separator)
         if len(date_part) == 2:
             # Mode 12/2021 use 15 ad day
             date_part = ['15'] + date_part
@@ -246,7 +246,7 @@ class EdiCompany(orm.Model):
                     sequence = line[0].strip()
                     code = line[1].strip()
                     product_uom = line[2].strip()
-                    deadline_lot = line[3].strip()
+                    deadline_lot = self.iso_date_format(line[3].strip())
                     lot = line[4].strip()
                     product_qty = line[5].strip()
 
@@ -260,9 +260,9 @@ class EdiCompany(orm.Model):
                         ('sequence', '=', sequence),
                     ])
                     pdb.set_trace()
-                    if not line_ids:  # Never override (for multi delivery)
-                        # line_id = line_ids[0]
-                        # else:
+                    if line_ids:  # Never override (for multi delivery)
+                        line_id = line_ids[0]
+                    else:
                         line_id = False  # todo consider raise error!
                         _logger.error(
                             'Cannot link to generator line [%s]!' %
@@ -276,7 +276,7 @@ class EdiCompany(orm.Model):
                         'uom_product': product_uom,
                         'product_qty': product_qty,
                         'lot': lot,
-                        'deadline_lot': self.iso_date_format(deadline_lot),
+                        'deadline_lot': deadline_lot,
 
                         'order_id': order_id,
                         'line_id': line_id,
