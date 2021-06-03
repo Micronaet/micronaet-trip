@@ -172,7 +172,7 @@ class EdiCompany(orm.Model):
                         'order': fixed[5],
                         'site_code': fixed[1],
                         'date': self.iso_date_format(fixed[2]),
-                        'date_received': self.iso_date_format(fixed[3]),
+                        'date_send': self.iso_date_format(fixed[3]),
                         'code': code,
                         'uom_product': product_uom,
                         'product_qty': product_qty,
