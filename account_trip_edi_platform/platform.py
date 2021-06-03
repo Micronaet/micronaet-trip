@@ -156,13 +156,12 @@ class EdiCompany(orm.Model):
     def import_all_supplier_order(self, cr, uid, ids, context=None):
         """ Import DDT from account
         """
-        pdb.set_trace()
         order_pool = self.pool.get('edi.supplier.order')
         ddt_line_pool = self.pool.get('edi.supplier.order.ddt.line')
 
         company = self.browse(cr, uid, ids, context=context)[0]
         company_id = company.id
-        # separator = company.separator or '|'
+        separator = company.separator or '|'
         ddt_path = os.path.expanduser(company.edi_supplier_in_path)
         history_path = os.path.join(ddt_path, 'history')
         unused_path = os.path.join(ddt_path, 'unused')
@@ -192,7 +191,7 @@ class EdiCompany(orm.Model):
 
                 row = 0
                 order_id = False
-                for line in ddt_f.readline():
+                for line in ddt_f.read().split('\n'):
                     line = line.strip()
                     row += 1
                     if row in fixed:
@@ -207,7 +206,7 @@ class EdiCompany(orm.Model):
                             # Check if it is a platform file still present:
                             order_ids = order_pool.search(cr, uid, [
                                 ('company_id', '=', company_id),
-                                ('order_id', '=', order_id),
+                                ('id', '=', order_id),
                                 # ('name', '=', line),
                             ])
 
@@ -219,8 +218,8 @@ class EdiCompany(orm.Model):
                                     )
                                 break
                         continue
-                    # todo check with Laura:
-                    line = line.line.split('|')
+                    pdb.set_trace()
+                    line = line.split(separator)
                     if len(line) != 6:
                         _logger.error('Line not in correct format')
                         continue
