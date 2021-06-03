@@ -84,6 +84,19 @@ class EdiCompany(orm.Model):
     """
     _inherit = 'edi.company'
 
+    # Utility:
+    def iso_date_format(self, date, separator='/'):
+        """ Change date format
+        """
+        date_part = (date or '').split(separator)
+        if len(date_part) != 3:
+            _logger.error('Error, not a date: %s' % date)
+            return ''
+        if len(date_part[2]) == 2:
+            date_part[2] = '20' + date_part[2]
+        date_part.reverse()
+        return ''.join(date_part)
+
     # Button events:
     def update_stock_status(self, cr, uid, ids, context=None):
         """ Send stock status from Account + not imported order
@@ -255,7 +268,7 @@ class EdiCompany(orm.Model):
                         'uom_product': product_uom,
                         'product_qty': product_qty,
                         'lot': lot,
-                        'deadline_lot': deadline_lot,
+                        'deadline_lot': self.iso_date_format(deadline_lot),
 
                         'order_id': order_id,
                         'line_id': line_id,
