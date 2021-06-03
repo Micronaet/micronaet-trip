@@ -451,7 +451,7 @@ class EdiSupplierOrder(orm.Model):
             send_line_ids = []
             for ddt_line in order.ddt_line_ids:
                 if ddt_line.sent:
-                    _logger('Line yet sent jumped')
+                    _logger.error('Line yet sent jumped')
                     continue
 
                 order = ddt_line.order_id
