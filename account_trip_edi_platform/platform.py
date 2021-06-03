@@ -182,11 +182,11 @@ class EdiCompany(orm.Model):
                 # todo Check if is a DDT for Portal
                 ddt_f = open(ddt_filename, 'r')
                 fixed = {  # Fixed data
-                    # ID ODOO
-                    1: '',  # Order name
-                    2: '',  # DDT Number
-                    3: '',  # DDT Date
-                    4: '',  # DDT Received
+                    1: '',  # ID ODOO
+                    2: '',  # DDT Date
+                    3: '',  # DDT Received
+                    4: '',  # DDT Number
+                    5: '',  # Company Order name
                 }
 
                 row = 0
@@ -197,10 +197,17 @@ class EdiCompany(orm.Model):
                     if row in fixed:
                         fixed[row] = line
                         if row == 1:
-                            # Check if it is a platform file
+                            if not line.startswith('ODOO'):
+                                _logger.error(
+                                    'Order not start with ODOO, jumped')
+                                break  # Nothing else was ridden
+                            order_id = int(line[4:])
+
+                            # Check if it is a platform file still present:
                             order_ids = order_pool.search(cr, uid, [
                                 ('company_id', '=', company_id),
-                                ('name', '=', line),
+                                ('order_id', '=', order_id),
+                                # ('name', '=', line),
                             ])
 
                             if not order_ids:
@@ -209,15 +216,19 @@ class EdiCompany(orm.Model):
                                     'Order %s not in platform, '
                                     'File %s jumped' % (line, filename),
                                     )
-                            order_id = False
+                                break
                         continue
                     # todo check with Laura:
-                    sequence = line[:5]
-                    code = line[5:10]
-                    product_uom = line[20:30]
-                    deadline_lot = line[20:30]
-                    lot = line[20:30]
-                    product_qty = line[10:20]
+                    line = line.line.split('|')
+                    if len(line) != 6:
+                        _logger.error('Line not in correct format')
+                        continue
+                    sequence = line[0]
+                    code = line[1]
+                    product_uom = line[2]
+                    deadline_lot = line[3]
+                    lot = line[4]
+                    product_qty = line[5]
 
                     # Order to be sent after:
                     if order_id not in send_order_ids:
@@ -228,20 +239,21 @@ class EdiCompany(orm.Model):
                         ('order_id', '=', order_id),
                         ('sequence', '=', sequence),
                     ])
-                    if line_ids:
-                        line_id = line_ids[0]
-                    else:
+                    if not line_ids:  # Never override (for multi delivery)
+                        # line_id = line_ids[0]
+                        # else:
                         line_id = False  # todo consider raise error!
                         _logger.error(
                             'Cannot link to generator line [%s]!' %
                             sequence)
+                        break  # Not imported
 
                     ddt_data = {
                         'sequence': sequence,
                         'name': fixed[2],
                         'code': code,
                         'uom_product': product_uom,
-                        'product_qty': product_qty,  # todo change in float
+                        'product_qty': product_qty,
                         'lot': lot,
                         'deadline_lot': deadline_lot,
 
@@ -250,11 +262,13 @@ class EdiCompany(orm.Model):
                     }
                     ddt_line_pool.create(cr, uid, ddt_data, context=context)
                     _logger.warning('History used file: %s' % filename)
-                    shutil.move(
-                        ddt_filename,
-                        os.path.join(history_path, filename),
-                    )
-                break  # Only first folder!
+
+                # And only if all line loop works fine:
+                shutil.move(
+                    ddt_filename,
+                    os.path.join(history_path, filename),
+                )
+            break  # Only first folder!
         return order_pool.send_ddt_order(
             cr, uid, send_order_ids, context=context)
 
@@ -404,7 +418,10 @@ class EdiSupplierOrder(orm.Model):
     def send_ddt_order(self, cr, uid, ids, context=None):
         """ Send JSON data file to portal for DDT confirmed
         """
+        return True  # todo splitted action for now
+        pdb.set_trace()
         endpoint_pool = self.pool.get('http.request.endpoint')
+        line_pool = self.pool.get('edi.supplier.order.ddt.line')
         for order in self.browse(cr, uid, ids, context=context):
             name = order.name
             company = order.company_id
@@ -412,8 +429,14 @@ class EdiSupplierOrder(orm.Model):
                 _logger.error('%s Nothing to send (no DDT lines)!' % name)
                 continue
             payload = []
+            send_line_ids = []
             for ddt_line in order.ddt_line_ids:
+                if ddt_line.sent:
+                    _logger('Line yet sent jumped')
+                    continue
+
                 order = ddt_line.order_id
+                send_line_ids.append(ddt_line.id)
                 payload.append({
                     'RIGA_ORDINE': ddt_line.sequence,
                     'NUMERO_DDT': ddt_line.name,
@@ -457,8 +480,15 @@ class EdiSupplierOrder(orm.Model):
                 sent = True
             else:
                 sent = False
-            self.write(cr, uid, [order.id], {
+
+            # Update ddt lines:
+            line_pool.write(cr, uid, send_line_ids, {
                 'sent': sent,
+            })
+
+            # Update order line:
+            self.write(cr, uid, [order.id], {
+                # 'sent': sent,  # todo when order is closed?
                 'sent_message': sent_message,
                 'sent_error': sent_error,
             }, context=context)
@@ -612,7 +642,7 @@ class EdiSupplierOrderDDTLine(orm.Model):
 
         'order_id': fields.many2one('edi.supplier.order', 'Ordine produttore'),
         'line_id': fields.many2one('edi.supplier.order.line', 'Riga ordine'),
-        'sent': fields.boolean('Riga Inviata'),  # todo not used for now
+        'sent': fields.boolean('Riga Inviata'),
     }
 
 
