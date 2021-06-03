@@ -105,11 +105,91 @@ class EdiCompany(orm.Model):
 
     # Button events:
     def import_all_customer_order(self, cr, uid, ids, context=None):
-        """ Call original action
+        """ Import DDT from account
         """
-        ddt_pool = self.pool.get('edi.customer.ddt.line')
-        return ddt_pool.import_all_customer_order(
-            cr, uid, ids, context=context)
+        pdb.set_trace()
+        ddt_line_pool = self.pool.get('edi.customer.ddt.line')
+
+        company = self.browse(cr, uid, ids, context=context)[0]
+        company_id = company.id
+        separator = company.separator or '|'
+        ddt_path = os.path.expanduser(company.edi_customer_out_path)
+        history_path = os.path.join(ddt_path, 'history')
+        unused_path = os.path.join(ddt_path, 'unused')
+        # log_path = os.path.join(ddt_path, 'log')  # todo log events!
+        _logger.info('Start check customer DDT files: %s' % ddt_path)
+
+        send_line_ids = []  # Order to be sent afters
+        for root, folders, files in os.walk(ddt_path):
+            for filename in files:
+                ddt_filename = os.path.join(root, filename)
+                if not filename.endswith('.csv'):
+                    _logger.warning('Jumped file (unused): %s' % filename)
+                    shutil.move(
+                        ddt_filename,
+                        os.path.join(unused_path, filename)
+                    )
+                    continue
+
+                # todo Check if is a DDT for Portal
+                ddt_f = open(ddt_filename, 'r')
+                fixed = {  # Fixed data:
+                    1: '',  # Site code
+                    2: '',  # DDT Date
+                    3: '',  # DDT Received
+                    4: '',  # DDT Number
+                    5: '',  # Order name
+                }
+
+                row = 0
+                order_id = False
+                for line in ddt_f.read().split('\n'):
+                    line = line.strip()
+                    row += 1
+                    if row in fixed:
+                        fixed[row] = line
+                    line = line.split(separator)
+                    if len(line) != 4:
+                        _logger.error('Line not in correct format')
+                        continue
+                    sequence = line[0].strip()
+                    code = line[1].strip()
+                    product_uom = line[2].strip().upper()
+                    product_qty = line[3].strip()
+
+                    # Order to be sent after:
+
+                    # Link to line:
+                    # line_ids = line_pool.search(cr, uid, [
+                    #    ('order_id', '=', order_id),
+                    #    ('sequence', '=', sequence),
+                    # ])
+
+                    ddt_data = {
+                        'company_id': company_id,
+                        'sequence': sequence,
+                        'name': fixed[4],
+                        'order': fixed[5],
+                        'site_code': fixed[1],
+                        'date': self.iso_date_format(fixed[2]),
+                        'date_received': self.iso_date_format(fixed[3]),
+                        'code': code,
+                        'uom_product': product_uom,
+                        'product_qty': product_qty,
+                    }
+                    ddt_line_id = ddt_line_pool.create(
+                        cr, uid, ddt_data, context=context)
+                    send_line_ids.append(ddt_line_id)
+                    _logger.warning('History used file: %s' % filename)
+
+                # And only if all line loop works fine:
+                shutil.move(
+                    ddt_filename,
+                    os.path.join(history_path, filename),
+                )
+            break  # Only first folder!
+        return self.send_customer_ddt(
+            cr, uid, send_line_ids, context=context)
 
     def update_stock_status(self, cr, uid, ids, context=None):
         """ Send stock status from Account + not imported order
@@ -712,93 +792,6 @@ class EdiCustomerDDTLine(orm.Model):
     _description = 'Customer DDT line'
     _rec_name = 'name'
     _order = 'sequence'
-
-    def import_all_customer_order(self, cr, uid, ids, context=None):
-        """ Import DDT from account
-        """
-        pdb.set_trace()
-        ddt_line_pool = self.pool.get('edi.customer.ddt.line')
-
-        company = self.browse(cr, uid, ids, context=context)[0]
-        company_id = company.id
-        separator = company.separator or '|'
-        ddt_path = os.path.expanduser(company.edi_customer_out_path)
-        history_path = os.path.join(ddt_path, 'history')
-        unused_path = os.path.join(ddt_path, 'unused')
-        # log_path = os.path.join(ddt_path, 'log')  # todo log events!
-        _logger.info('Start check customer DDT files: %s' % ddt_path)
-
-        send_line_ids = []  # Order to be sent afters
-        for root, folders, files in os.walk(ddt_path):
-            for filename in files:
-                ddt_filename = os.path.join(root, filename)
-                if not filename.endswith('.csv'):
-                    _logger.warning('Jumped file (unused): %s' % filename)
-                    shutil.move(
-                        ddt_filename,
-                        os.path.join(unused_path, filename)
-                    )
-                    continue
-
-                # todo Check if is a DDT for Portal
-                ddt_f = open(ddt_filename, 'r')
-                fixed = {  # Fixed data:
-                    1: '',  # Site code
-                    2: '',  # DDT Date
-                    3: '',  # DDT Received
-                    4: '',  # DDT Number
-                    5: '',  # Order name
-                }
-
-                row = 0
-                order_id = False
-                for line in ddt_f.read().split('\n'):
-                    line = line.strip()
-                    row += 1
-                    if row in fixed:
-                        fixed[row] = line
-                    line = line.split(separator)
-                    if len(line) != 4:
-                        _logger.error('Line not in correct format')
-                        continue
-                    sequence = line[0].strip()
-                    code = line[1].strip()
-                    product_uom = line[2].strip().upper()
-                    product_qty = line[3].strip()
-
-                    # Order to be sent after:
-
-                    # Link to line:
-                    # line_ids = line_pool.search(cr, uid, [
-                    #    ('order_id', '=', order_id),
-                    #    ('sequence', '=', sequence),
-                    # ])
-
-                    ddt_data = {
-                        'company_id': company_id,
-                        'sequence': sequence,
-                        'name': fixed[4],
-                        'order': fixed[5],
-                        'site_code': fixed[1],
-                        'date': self.iso_date_format(fixed[2]),
-                        'date_received': self.iso_date_format(fixed[3]),
-                        'code': code,
-                        'uom_product': product_uom,
-                        'product_qty': product_qty,
-                    }
-                    ddt_line_id = ddt_line_pool.create(
-                        cr, uid, ddt_data, context=context)
-                    send_line_ids.append(ddt_line_id)
-                    _logger.warning('History used file: %s' % filename)
-
-                # And only if all line loop works fine:
-                shutil.move(
-                    ddt_filename,
-                    os.path.join(history_path, filename),
-                )
-            break  # Only first folder!
-        return self.send_customer_ddt(
-            cr, uid, send_line_ids, context=context)
 
     def send_customer_ddt(self, cr, uid, ids, context=None):
         """ Send JSON data file to portal for DDT confirmed
