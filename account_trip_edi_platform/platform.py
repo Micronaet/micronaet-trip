@@ -402,7 +402,9 @@ class EdiCompany(orm.Model):
             'http.request.connection', 'Connection'),
         'endpoint_id': fields.many2one('http.request.endpoint', 'Endpoint OF'),
         'endpoint_ddt_id': fields.many2one(
-            'http.request.endpoint', 'Endpoint DDT'),
+            'http.request.endpoint', 'Endpoint DDT in (BF)'),
+        'endpoint_ddt_out_id': fields.many2one(
+            'http.request.endpoint', 'Endpoint DDT out (BC)'),
         'endpoint_stock_id': fields.many2one(
             'http.request.endpoint', 'Endpoint Stato magazzino'),
         'last_stock_update': fields.datetime('Ultimo inviato'),
@@ -421,9 +423,14 @@ class EdiCompany(orm.Model):
                  'importare nel gestionale'),
         'edi_supplier_in_path': fields.char(
             'Cartella DDT produttore', size=50,
-            help='Cartella dove vengono prelevati i DDT del roduttore da '
+            help='Cartella dove vengono prelevati i DDT del produttore da '
                  'inviare al portale per copia conforme.'),
-        'platform_product_ids': fields.one2many('edi.platform.product', 'company_id', 'Product'),
+        'edi_customer_out_path': fields.char(
+            'Cartella DDT cliente', size=50,
+            help='Cartella dove vengono prelevati i DDT del cliente da '
+                 'inviare al portale per copia DDT.'),
+        'platform_product_ids': fields.one2many(
+            'edi.platform.product', 'company_id', 'Product'),
     }
 
 
@@ -688,4 +695,150 @@ class EdiSupplierOrderRelation(orm.Model):
             'edi.supplier.order.line', 'order_id', 'Righe OF'),
         'ddt_line_ids': fields.one2many(
             'edi.supplier.order.ddt.line', 'order_id', 'Righe DDT'),
+    }
+
+
+class EdiCustomerDDTLine(orm.Model):
+    """ Model name: Edi Customer Order DDT Line
+    """
+
+    def import_all_customer_order(self, cr, uid, ids, context=None):
+        """ Import DDT from account
+        """
+        ddt_line_pool = self.pool.get('edi.customer.ddt.line')
+
+        company = self.browse(cr, uid, ids, context=context)[0]
+        company_id = company.id
+        separator = company.separator or '|'
+        ddt_path = os.path.expanduser(company.edi_customer_out_path)
+        history_path = os.path.join(ddt_path, 'history')
+        unused_path = os.path.join(ddt_path, 'unused')
+        # log_path = os.path.join(ddt_path, 'log')  # todo log events!
+        _logger.info('Start check customer DDT files: %s' % ddt_path)
+        send_order_ids = []  # Order to be sent afters
+        for root, folders, files in os.walk(ddt_path):
+            for filename in files:
+                ddt_filename = os.path.join(root, filename)
+                if not filename.endswith('.csv'):
+                    _logger.warning('Jumped file (unused): %s' % filename)
+                    shutil.move(
+                        ddt_filename,
+                        os.path.join(unused_path, filename)
+                    )
+                    continue
+
+                # todo Check if is a DDT for Portal
+                ddt_f = open(ddt_filename, 'r')
+                fixed = {  # Fixed data
+                    1: '',  # ID ODOO
+                    2: '',  # DDT Date
+                    3: '',  # DDT Received
+                    4: '',  # DDT Number
+                    5: '',  # Company Order name
+                }
+
+                row = 0
+                order_id = False
+                for line in ddt_f.read().split('\n'):
+                    line = line.strip()
+                    row += 1
+                    if row in fixed:
+                        fixed[row] = line
+                        if row == 1:
+                            if not line.startswith('ODOO'):
+                                _logger.error(
+                                    'Order not start with ODOO, jumped')
+                                break  # Nothing else was ridden
+                            order_id = int(line[4:])
+
+                            # Check if it is a platform file still present:
+                            order_ids = order_pool.search(cr, uid, [
+                                ('company_id', '=', company_id),
+                                ('id', '=', order_id),
+                                # ('name', '=', line),
+                            ])
+
+                            if not order_ids:
+                                # todo remove file when imported?
+                                _logger.error(
+                                    'Order %s not in platform, '
+                                    'File %s jumped' % (line, filename),
+                                    )
+                                break
+                        continue
+                    line = line.split(separator)
+                    if len(line) != 6:
+                        _logger.error('Line not in correct format')
+                        continue
+                    sequence = line[0].strip()
+                    code = line[1].strip()
+                    product_uom = line[2].strip().upper()
+                    deadline_lot = self.iso_date_format(line[3].strip())
+                    lot = line[4].strip()
+                    product_qty = line[5].strip()
+
+                    # Order to be sent after:
+                    if order_id not in send_order_ids:
+                        send_order_ids.append(order_id)
+
+                    # Link to line:
+                    line_ids = line_pool.search(cr, uid, [
+                        ('order_id', '=', order_id),
+                        ('sequence', '=', sequence),
+                    ])
+                    if line_ids:  # Never override (for multi delivery)
+                        line_id = line_ids[0]
+                    else:
+                        line_id = False  # todo consider raise error!
+                        _logger.error(
+                            'Cannot link to generator line [%s]!' %
+                            sequence)
+                        break  # Not imported
+
+                    ddt_data = {
+                        'sequence': sequence,
+                        'name': fixed[4],
+                        'date': self.iso_date_format(fixed[2]),
+                        'date_received': self.iso_date_format(fixed[3]),
+                        'code': code,
+                        'uom_product': product_uom,
+                        'product_qty': product_qty,
+                        'lot': lot,
+                        'deadline_lot': deadline_lot,
+
+                        'order_id': order_id,
+                        'line_id': line_id,
+                    }
+                    ddt_line_pool.create(cr, uid, ddt_data, context=context)
+                    _logger.warning('History used file: %s' % filename)
+
+                # And only if all line loop works fine:
+                shutil.move(
+                    ddt_filename,
+                    os.path.join(history_path, filename),
+                )
+            break  # Only first folder!
+        return order_pool.send_ddt_order(
+            cr, uid, send_order_ids, context=context)
+
+
+
+    _name = 'edi.customer.ddt.line'
+    _description = 'Customer DDT line'
+    _rec_name = 'name'
+    _order = 'sequence'
+
+    _columns = {
+        'site_code': fields.char('Codice sito', size=20),
+        'date': fields.char('Data DDT', size=20),
+        'date_received': fields.char('Data ricezione', size=20),
+        'name': fields.char(
+            'Numero DDT', size=20, required=True),
+        'order': fields.char(
+            'Numero Ordine', size=20, required=True),
+        'sequence': fields.char('Seq.', size=4),
+        'code': fields.char('Codice articolo', size=20),
+        'uom_product': fields.char('UM prodotto', size=10),
+        'product_qty': fields.char('Q.', size=20),  # todo change in float
+        'sent': fields.boolean('Riga DDT Inviata'),
     }
