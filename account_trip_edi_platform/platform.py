@@ -178,6 +178,7 @@ class EdiCompany(orm.Model):
         """
         order_pool = self.pool.get('edi.supplier.order')
         ddt_line_pool = self.pool.get('edi.supplier.order.ddt.line')
+        line_pool = self.pool.get('edi.supplier.order.line')
 
         company = self.browse(cr, uid, ids, context=context)[0]
         company_id = company.id
@@ -238,7 +239,6 @@ class EdiCompany(orm.Model):
                                     )
                                 break
                         continue
-                    pdb.set_trace()
                     line = line.split(separator)
                     if len(line) != 6:
                         _logger.error('Line not in correct format')
@@ -255,10 +255,11 @@ class EdiCompany(orm.Model):
                         send_order_ids.append(order_id)
 
                     # Link to line:
-                    line_ids = ddt_line_pool.search(cr, uid, [
+                    line_ids = line_pool.search(cr, uid, [
                         ('order_id', '=', order_id),
                         ('sequence', '=', sequence),
                     ])
+                    pdb.set_trace()
                     if not line_ids:  # Never override (for multi delivery)
                         # line_id = line_ids[0]
                         # else:
