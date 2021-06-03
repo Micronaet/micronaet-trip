@@ -167,6 +167,8 @@
                                                         <field name="uom_product"/>
                                                         <field name="product_qty"/>
                                                         <field name="order_product_qty"/>
+                                                        <separator string="DDT" colspan="4"/>
+                                                        <field name="ddt_line_ids" colspan="4" nolabel="1"/>
                                                         <separator string="Note" colspan="4"/>
                                                         <field name="note" colspan="4" nolabel="1"/>
                                                     </group>
@@ -183,7 +185,7 @@
 
                                         <separator string="Dettaglio DDT:" colspan="4"/>
                                         <field name="ddt_line_ids" colspan="4" nolabel="1" >
-                                            <tree string="Righe" editable="bottom">
+                                            <tree string="Righe" editable="bottom" colors="green:sent==True">
                                                 <field name="sequence"/>
                                                 <field name="name"/>
                                                 <field name="date"/>
@@ -193,6 +195,7 @@
                                                 <field name="deadline_lot"/>
                                                 <field name="uom_product"/>
                                                 <field name="product_qty"/>
+                                                <field name="sent"/>
                                             </tree>
                                         </field>
                                     </group>

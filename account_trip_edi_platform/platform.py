@@ -461,7 +461,7 @@ class EdiSupplierOrder(orm.Model):
                     'NUMERO_DDT': ddt_line.name,
                     'CODICE_ARTICOLO': ddt_line.code,  # 'AV040002'
                     'UM_ARTICOLO_PIATTAFORMA': ddt_line.uom_product,
-                    'QTA': ddt_line.product_qty,  # todo 10 + 4
+                    'QTA': ddt_line.product_qty,  # 10 + 4
                     'DATA_SCADENZA': ddt_line.deadline_lot,
                     'LOTTO': ddt_line.lot,
 
@@ -662,6 +662,18 @@ class EdiSupplierOrderDDTLine(orm.Model):
         'order_id': fields.many2one('edi.supplier.order', 'Ordine produttore'),
         'line_id': fields.many2one('edi.supplier.order.line', 'Riga ordine'),
         'sent': fields.boolean('Riga Inviata'),
+    }
+
+
+class EdiSupplierOrderLineRelation(orm.Model):
+    """ Model name: Edi Supplier Order Line relation
+    """
+
+    _inherit = 'edi.supplier.order.line'
+
+    _columns = {
+        'ddt_line_ids': fields.one2many(
+            'edi.supplier.order.ddt.line', 'line_id', 'DDT collegati'),
     }
 
 
