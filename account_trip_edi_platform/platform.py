@@ -795,10 +795,7 @@ class EdiCustomerDDTLine(orm.Model):
     def send_customer_ddt(self, cr, uid, ids, context=None):
         """ Send JSON data file to portal for DDT confirmed
         """
-        pdb.set_trace()
-
         endpoint_pool = self.pool.get('http.request.endpoint')
-        pdb.set_trace()
         payload_connection = {}
         for ddt_line in self.browse(cr, uid, ids, context=context):
             if ddt_line.sent:
@@ -824,6 +821,7 @@ class EdiCustomerDDTLine(orm.Model):
             })
             payload_connection[company][0].append(ddt_line.id)
 
+        pdb.set_trace()
         for company in payload_connection:
             payload, ddt_line_ids = payload_connection[company]
 
