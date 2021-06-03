@@ -854,6 +854,7 @@ class EdiCustomerDDTLine(orm.Model):
                     'sent': True,
                 })
             else:
+                pass
             # todo save message? (where)
             # Update order line:
             # self.write(cr, uid, [order.id], {
