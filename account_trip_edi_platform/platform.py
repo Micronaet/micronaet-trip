@@ -118,7 +118,6 @@ class EdiCompany(orm.Model):
         # log_path = os.path.join(ddt_path, 'log')  # todo log events!
         _logger.info('Start check customer DDT files: %s' % ddt_path)
 
-        send_line_ids = []  # Order to be sent afters
         for root, folders, files in os.walk(ddt_path):
             for filename in files:
                 ddt_filename = os.path.join(root, filename)
@@ -178,7 +177,6 @@ class EdiCompany(orm.Model):
                     }
                     ddt_line_id = ddt_line_pool.create(
                         cr, uid, ddt_data, context=context)
-                    send_line_ids.append(ddt_line_id)
                     _logger.warning('History used file: %s' % filename)
 
                 # And only if all line loop works fine:
@@ -188,7 +186,7 @@ class EdiCompany(orm.Model):
                 )
             break  # Only first folder!
         return ddt_line_pool.send_customer_ddt(
-            cr, uid, send_line_ids, context=context)
+            cr, uid, False, context=context)
 
     def update_stock_status(self, cr, uid, ids, context=None):
         """ Send stock status from Account + not imported order
@@ -797,6 +795,12 @@ class EdiCustomerDDTLine(orm.Model):
         """
         endpoint_pool = self.pool.get('http.request.endpoint')
         payload_connection = {}
+        if not ids:
+            ids = self.search(cr, uid, [
+                ('sent', '=', False),
+            ], context=context)
+            _logger.warning('Forced line non sent, # %s' % len(ids))
+
         for ddt_line in self.browse(cr, uid, ids, context=context):
             if ddt_line.sent:
                 _logger.error('Line yet sent jumped')
@@ -821,7 +825,6 @@ class EdiCustomerDDTLine(orm.Model):
             })
             payload_connection[company][1].append(ddt_line.id)
 
-        pdb.set_trace()
         for company in payload_connection:
             payload, ddt_line_ids = payload_connection[company]
 
