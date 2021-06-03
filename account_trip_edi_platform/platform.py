@@ -90,7 +90,6 @@ class EdiCompany(orm.Model):
             Date now is 12/2021 or 14/12/2021
             sometimes date + extra data not used
         """
-        pdb.set_trace()
         date_part = (date or '').split(' ')[0].split(separator)
         if len(date_part) == 2:
             # Mode 12/2021 use 15 ad day
@@ -245,7 +244,7 @@ class EdiCompany(orm.Model):
                         continue
                     sequence = line[0].strip()
                     code = line[1].strip()
-                    product_uom = line[2].strip()
+                    product_uom = line[2].strip().upper()
                     deadline_lot = self.iso_date_format(line[3].strip())
                     lot = line[4].strip()
                     product_qty = line[5].strip()
@@ -259,7 +258,6 @@ class EdiCompany(orm.Model):
                         ('order_id', '=', order_id),
                         ('sequence', '=', sequence),
                     ])
-                    pdb.set_trace()
                     if line_ids:  # Never override (for multi delivery)
                         line_id = line_ids[0]
                     else:
@@ -271,7 +269,9 @@ class EdiCompany(orm.Model):
 
                     ddt_data = {
                         'sequence': sequence,
-                        'name': fixed[2],
+                        'name': fixed[4],
+                        'date': fixed[2],
+                        'date_received': fixed[3],
                         'code': code,
                         'uom_product': product_uom,
                         'product_qty': product_qty,
