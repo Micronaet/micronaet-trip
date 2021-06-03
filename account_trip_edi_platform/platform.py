@@ -142,12 +142,12 @@ class EdiCompany(orm.Model):
                 }
 
                 row = 0
-                order_id = False
                 for line in ddt_f.read().split('\n'):
                     line = line.strip()
                     row += 1
                     if row in fixed:
                         fixed[row] = line
+                        continue
                     line = line.split(separator)
                     if len(line) != 4:
                         _logger.error('Line not in correct format')
