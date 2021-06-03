@@ -819,7 +819,7 @@ class EdiCustomerDDTLine(orm.Model):
                 'UM_ARTICOLO_PIATTAFORMA': ddt_line.uom_product,
                 'QTA': ddt_line.product_qty,
             })
-            payload_connection[company][0].append(ddt_line.id)
+            payload_connection[company][1].append(ddt_line.id)
 
         pdb.set_trace()
         for company in payload_connection:
