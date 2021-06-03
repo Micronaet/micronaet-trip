@@ -107,7 +107,6 @@ class EdiCompany(orm.Model):
     def import_all_customer_order(self, cr, uid, ids, context=None):
         """ Import DDT from account
         """
-        pdb.set_trace()
         ddt_line_pool = self.pool.get('edi.customer.ddt.line')
 
         company = self.browse(cr, uid, ids, context=context)[0]
@@ -188,7 +187,7 @@ class EdiCompany(orm.Model):
                     os.path.join(history_path, filename),
                 )
             break  # Only first folder!
-        return self.send_customer_ddt(
+        return ddt_line_pool.send_customer_ddt(
             cr, uid, send_line_ids, context=context)
 
     def update_stock_status(self, cr, uid, ids, context=None):
@@ -796,6 +795,8 @@ class EdiCustomerDDTLine(orm.Model):
     def send_customer_ddt(self, cr, uid, ids, context=None):
         """ Send JSON data file to portal for DDT confirmed
         """
+        pdb.set_trace()
+
         endpoint_pool = self.pool.get('http.request.endpoint')
         pdb.set_trace()
         payload_connection = {}
