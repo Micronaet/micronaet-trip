@@ -243,6 +243,62 @@
             </field>
         </record>
 
+        <!--edi.customer.ddt.line-->
+        <record model="ir.ui.view" id="view_edi_customer_ddt_line_tree">
+            <field name="name">edi.customer.ddt.line.tree</field>
+            <field name="model">edi.customer.ddt.line</field>
+            <field name="arch" type="xml">
+                <tree string="Righe DDT" editable="bottom" colors="green:sent==True">
+                    <field name="company_id"/>
+                    <field name="sequence"/>
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="date_send"/>
+                    <field name="code"/>
+                    <field name="site_code"/>
+                    <field name="uom_product"/>
+                    <field name="product_qty"/>
+                    <field name="sent"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_edi_customer_ddt_line_form">
+            <field name="name">edi.customer.ddt.line.form</field>
+            <field name="model">edi.customer.ddt.line</field>
+            <field name="arch" type="xml">
+                <form string="Righe DDT" version="7.0">
+                    <sheet>
+                        <group colspan="4" col="4">
+                            <field name="company_id"/>
+                            <field name="sequence"/>
+
+                            <field name="name"/>
+                            <field name="date"/>
+
+                            <field name="date_send"/>
+                            <field name="code"/>
+
+                            <field name="site_code"/>
+                            <field name="uom_product"/>
+
+                            <field name="product_qty"/>
+                            <field name="sent"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_edi_customer_ddt_line">
+            <field name="name">DDT clienti</field>
+            <field name="res_model">edi.customer.ddt.line</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_edi_customer_ddt_line_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
+
         <menuitem
             id="menu_edi_supplier_order_root"
             name="Piattaforma"
@@ -252,15 +308,27 @@
             <menuitem
                 parent="menu_edi_supplier_order_root"
                 id="menu_edi_supplier_order_management"
-                name="Produttore"
+                name="Consegne in entrata"
                 sequence="10"
                 />
+                <menuitem
+                    parent="menu_edi_supplier_order_management"
+                    id="menu_edi_supplier_producer_order"
+                    action="action_edi_supplier_order"
+                    sequence="10"
+                    />
             <menuitem
-                parent="menu_edi_supplier_order_management"
-                id="menu_edi_supplier_producer_order"
-                action="action_edi_supplier_order"
-                sequence="10"
+                parent="menu_edi_supplier_order_root"
+                id="menu_edi_customer_ddt_management"
+                name="DDT uscita"
+                sequence="20"
                 />
+                <menuitem
+                    parent="menu_edi_customer_ddt_management"
+                    id="menu_edi_customer_ddt_out"
+                    action="action_edi_customer_ddt_line"
+                    sequence="10"
+                    />
 
     </data>
 </openerp>

@@ -701,10 +701,15 @@ class EdiSupplierOrderRelation(orm.Model):
 class EdiCustomerDDTLine(orm.Model):
     """ Model name: Edi Customer Order DDT Line
     """
+    _name = 'edi.customer.ddt.line'
+    _description = 'Customer DDT line'
+    _rec_name = 'name'
+    _order = 'sequence'
 
     def import_all_customer_order(self, cr, uid, ids, context=None):
         """ Import DDT from account
         """
+        pdb.set_trace()
         ddt_line_pool = self.pool.get('edi.customer.ddt.line')
 
         company = self.browse(cr, uid, ids, context=context)[0]
@@ -715,7 +720,8 @@ class EdiCustomerDDTLine(orm.Model):
         unused_path = os.path.join(ddt_path, 'unused')
         # log_path = os.path.join(ddt_path, 'log')  # todo log events!
         _logger.info('Start check customer DDT files: %s' % ddt_path)
-        send_order_ids = []  # Order to be sent afters
+
+        send_line_ids = []  # Order to be sent afters
         for root, folders, files in os.walk(ddt_path):
             for filename in files:
                 ddt_filename = os.path.join(root, filename)
@@ -729,12 +735,12 @@ class EdiCustomerDDTLine(orm.Model):
 
                 # todo Check if is a DDT for Portal
                 ddt_f = open(ddt_filename, 'r')
-                fixed = {  # Fixed data
-                    1: '',  # ID ODOO
+                fixed = {  # Fixed data:
+                    1: '',  # Site code
                     2: '',  # DDT Date
                     3: '',  # DDT Received
                     4: '',  # DDT Number
-                    5: '',  # Company Order name
+                    5: '',  # Order name
                 }
 
                 row = 0
@@ -744,72 +750,38 @@ class EdiCustomerDDTLine(orm.Model):
                     row += 1
                     if row in fixed:
                         fixed[row] = line
-                        if row == 1:
-                            if not line.startswith('ODOO'):
-                                _logger.error(
-                                    'Order not start with ODOO, jumped')
-                                break  # Nothing else was ridden
-                            order_id = int(line[4:])
-
-                            # Check if it is a platform file still present:
-                            order_ids = order_pool.search(cr, uid, [
-                                ('company_id', '=', company_id),
-                                ('id', '=', order_id),
-                                # ('name', '=', line),
-                            ])
-
-                            if not order_ids:
-                                # todo remove file when imported?
-                                _logger.error(
-                                    'Order %s not in platform, '
-                                    'File %s jumped' % (line, filename),
-                                    )
-                                break
-                        continue
                     line = line.split(separator)
-                    if len(line) != 6:
+                    if len(line) != 4:
                         _logger.error('Line not in correct format')
                         continue
                     sequence = line[0].strip()
                     code = line[1].strip()
                     product_uom = line[2].strip().upper()
-                    deadline_lot = self.iso_date_format(line[3].strip())
-                    lot = line[4].strip()
-                    product_qty = line[5].strip()
+                    product_qty = line[3].strip()
 
                     # Order to be sent after:
-                    if order_id not in send_order_ids:
-                        send_order_ids.append(order_id)
 
                     # Link to line:
-                    line_ids = line_pool.search(cr, uid, [
-                        ('order_id', '=', order_id),
-                        ('sequence', '=', sequence),
-                    ])
-                    if line_ids:  # Never override (for multi delivery)
-                        line_id = line_ids[0]
-                    else:
-                        line_id = False  # todo consider raise error!
-                        _logger.error(
-                            'Cannot link to generator line [%s]!' %
-                            sequence)
-                        break  # Not imported
+                    # line_ids = line_pool.search(cr, uid, [
+                    #    ('order_id', '=', order_id),
+                    #    ('sequence', '=', sequence),
+                    # ])
 
                     ddt_data = {
+                        'company_id': company_id,
                         'sequence': sequence,
                         'name': fixed[4],
+                        'order': fixed[5],
+                        'site_code': fixed[1],
                         'date': self.iso_date_format(fixed[2]),
                         'date_received': self.iso_date_format(fixed[3]),
                         'code': code,
                         'uom_product': product_uom,
                         'product_qty': product_qty,
-                        'lot': lot,
-                        'deadline_lot': deadline_lot,
-
-                        'order_id': order_id,
-                        'line_id': line_id,
                     }
-                    ddt_line_pool.create(cr, uid, ddt_data, context=context)
+                    ddt_line_id = ddt_line_pool.create(
+                        cr, uid, ddt_data, context=context)
+                    send_line_ids.append(ddt_line_id)
                     _logger.warning('History used file: %s' % filename)
 
                 # And only if all line loop works fine:
@@ -818,20 +790,87 @@ class EdiCustomerDDTLine(orm.Model):
                     os.path.join(history_path, filename),
                 )
             break  # Only first folder!
-        return order_pool.send_ddt_order(
-            cr, uid, send_order_ids, context=context)
+        return self.send_customer_ddt(
+            cr, uid, send_line_ids, context=context)
 
+    def send_customer_ddt(self, cr, uid, ids, context=None):
+        """ Send JSON data file to portal for DDT confirmed
+        """
+        endpoint_pool = self.pool.get('http.request.endpoint')
+        pdb.set_trace()
+        payload_connection = {}
+        for ddt_line in self.browse(cr, uid, ids, context=context):
+            if ddt_line.sent:
+                _logger.error('Line yet sent jumped')
+                continue
+            company = ddt_line.company_id
+            if company not in payload_connection:
+                payload_connection[company] = [
+                    [],  # payload
+                    [],  # line_ids (for mark as sent)
+                ]
 
+            payload_connection[company][0].append({
+                'CODICE_SITO': ddt_line.site_code,
+                'DATA_DDT': ddt_line.date,
+                'DATA_CONSEGNA_EFFETTIVA': ddt_line.date_send,
+                'NUMERO_DDT': ddt_line.name,
+                'NUMERO_ORDINE': ddt_line.order,
+                'RIGA_ORDINE': ddt_line.sequence,
+                'CODICE_ARTICOLO': ddt_line.code,
+                'UM_ARTICOLO_PIATTAFORMA': ddt_line.uom_product,
+                'QTA': ddt_line.product_qty,
+            })
+            payload_connection[company][0].append(ddt_line.id)
 
-    _name = 'edi.customer.ddt.line'
-    _description = 'Customer DDT line'
-    _rec_name = 'name'
-    _order = 'sequence'
+        for company in payload_connection:
+            payload, ddt_line_ids = payload_connection[company]
+
+            ctx = context.copy()
+            ctx['payload'] = payload
+            reply = endpoint_pool.call_endpoint(cr, uid, [
+                company.endpoint_ddt_out_id.id], context=ctx)
+
+            _logger.warning('Reply: %s' % (reply, ))
+            if not reply:
+                _logger.error(_('Errore spedendo il DDT:\n %s' % reply))
+                continue
+
+            # todo check error
+            sent_message = ''
+            sent_error = False
+            if 'ElencoErroriAvvisi' in reply:
+                for status in reply['ElencoErroriAvvisi']:
+                    message_type = status['Tipo']
+                    if message_type and status['Tipo'] in 'CE':
+                        sent_error = True
+                    sent_message += '[%s] %s' % (
+                        message_type,
+                        status['Messaggio'],
+                    )
+
+            if message_type == 'N':  # todo A is needed?
+                self.write(cr, uid, ddt_line_ids, {
+                    'sent': True,
+                })
+            else:
+            # todo save message? (where)
+            # Update order line:
+            # self.write(cr, uid, [order.id], {
+            #    # 'sent': sent,  # todo when order is closed?
+            #    'sent_message': sent_message,
+            #    'sent_error': sent_error,
+            # }, context=context)
+            # C=Errore critico, E = Errore generico, A = Avviso, N = Nota)
+        return True
+
 
     _columns = {
+        'company_id': fields.many2one(
+            'edi.company', 'Company'),
         'site_code': fields.char('Codice sito', size=20),
         'date': fields.char('Data DDT', size=20),
-        'date_received': fields.char('Data ricezione', size=20),
+        'date_send': fields.char('Data invio', size=20),
         'name': fields.char(
             'Numero DDT', size=20, required=True),
         'order': fields.char(
