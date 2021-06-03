@@ -218,6 +218,26 @@
             <field name="domain">[]</field>
         </record>
 
+        <!--wordpress.sale.order.ddt.line-->
+        <record model="ir.ui.view" id="view_edi_supplier_order_ddt_line_tree">
+            <field name="name">edi.supplier.order.ddt.line.form</field>
+            <field name="model">edi.supplier.order.ddt.line</field>
+            <field name="arch" type="xml">
+                <tree string="Righe DDT" editable="bottom" colors="green:sent==True">
+                    <field name="sequence"/>
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="date_received"/>
+                    <field name="code"/>
+                    <field name="lot"/>
+                    <field name="deadline_lot"/>
+                    <field name="uom_product"/>
+                    <field name="product_qty"/>
+                    <field name="sent"/>
+                </tree>
+            </field>
+        </record>
+
         <menuitem
             id="menu_edi_supplier_order_root"
             name="Piattaforma"
