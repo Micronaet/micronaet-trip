@@ -6,7 +6,7 @@
             <field name="name">edi.platform.log.search</field>
             <field name="model">edi.platform.log</field>
             <field name="arch" type="xml">
-                <search string="Cerca log">        
+                <search string="Cerca log">
                     <field name="name" />
                     <field name="company_id" filter_domain="[('partner_id','=',self)]"/>
                     <filter name="state_error" string="Errati" domain="[('mode','in','EC')]"/>
@@ -15,7 +15,7 @@
                         <filter name="group_date" string="Data" context="{'group_by': 'create_date'}"/>
                         <filter name="group_mode" string="Tipo" context="{'group_by': 'mode'}"/>
                         <filter name="group_company" string="Azienda" context="{'group_by': 'company_id'}"/>
-                    </group>                
+                    </group>
                 </search>
             </field>
         </record>
@@ -46,7 +46,7 @@
                     </sheet>
                 </form>
             </field>
-        </record>        
+        </record>
         <record model="ir.actions.act_window" id="action_edi_company_platform_log">
             <field name="name">Log messaggi</field>
             <field name="res_model">edi.platform.log</field>
@@ -288,6 +288,7 @@
                 <tree string="Righe DDT" editable="bottom" colors="green:sent==True">
                     <field name="sequence"/>
                     <field name="name"/>
+                    <field name="order"/>
                     <field name="date"/>
                     <field name="date_received"/>
                     <field name="code"/>
@@ -309,6 +310,7 @@
                     <field name="company_id"/>
                     <field name="sequence"/>
                     <field name="name"/>
+                    <field name="order"/>
                     <field name="date"/>
                     <field name="date_send"/>
                     <field name="code"/>
@@ -330,15 +332,17 @@
                             <field name="sequence"/>
 
                             <field name="name"/>
+                            <field name="order"/>
+
                             <field name="date"/>
-
                             <field name="date_send"/>
-                            <field name="code"/>
 
-                            <field name="site_code"/>
+                            <field name="code"/>
                             <field name="uom_product"/>
 
                             <field name="product_qty"/>
+                            <field name="site_code"/>
+
                             <field name="sent"/>
                         </group>
                     </sheet>
