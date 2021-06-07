@@ -143,8 +143,8 @@ class EdiCompany(orm.Model):
                             continue
                         # document = line[0].strip()  # not used
                         site_code = line[1].strip()
-                        date = self.iso_date_format(line[2])
-                        date_send = self.iso_date_format(line[3])
+                        date = line[2]
+                        date_send = line[3]
                         number = line[4].strip()
                         order_number = line[5].strip()
                         sequence = line[6].strip()
