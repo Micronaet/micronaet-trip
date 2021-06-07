@@ -143,14 +143,14 @@ class EdiCompany(orm.Model):
                             continue
                         # document = line[0].strip()  # not used
                         site_code = line[1].strip()
-                        date = line[2]
-                        date_send = line[3]
+                        date = line[2].strip()
+                        date_send = line[3].strip()
                         number = line[4].strip()
                         order_number = line[5].strip()
                         sequence = line[6].strip()
-                        code = line[5].strip()
-                        product_uom = line[6].strip().upper()
-                        product_qty = line[7].strip()
+                        code = line[7].strip()
+                        product_uom = line[8].strip().upper()
+                        product_qty = line[9].strip()
 
                         # Order to be sent after:
                         # Link to line:
