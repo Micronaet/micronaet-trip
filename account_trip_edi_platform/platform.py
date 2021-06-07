@@ -818,65 +818,77 @@ class EdiCustomerDDTLine(orm.Model):
                 _logger.error('Line yet sent jumped')
                 continue
             company = ddt_line.company_id
+            ddt_number = ddt_line.name
             if company not in payload_connection:
-                payload_connection[company] = [
+                payload_connection[company] = {}
+
+            if ddt_number not in payload_connection[company]:
+                payload_connection[company][ddt_number] = [
                     [],  # payload
                     [],  # line_ids (for mark as sent)
                 ]
 
-            payload_connection[company][0].append({
+            payload_connection[company][ddt_number][0].append({
                 'CODICE_SITO': ddt_line.site_code,
                 'DATA_DDT': ddt_line.date,
                 'DATA_CONSEGNA_EFFETTIVA': ddt_line.date_send,
-                'NUMERO_DDT': ddt_line.name,
+                'NUMERO_DDT': ddt_number,
                 'NUMERO_ORDINE': ddt_line.order,
                 'RIGA_ORDINE': ddt_line.sequence,
                 'CODICE_ARTICOLO': ddt_line.code,
                 'UM_ARTICOLO_PIATTAFORMA': ddt_line.uom_product,
                 'QTA': ddt_line.product_qty,
             })
-            payload_connection[company][1].append(ddt_line.id)
-
+            payload_connection[company][ddt_number][1].append(ddt_line.id)
+        pdb.set_trace()
         for company in payload_connection:
-            payload, ddt_line_ids = payload_connection[company]
+            for ddt_number in payload_connection[company]:
+                try:
+                    payload, ddt_line_ids = \
+                        payload_connection[company][ddt_number]
 
-            ctx = context.copy()
-            ctx['payload'] = payload
-            reply = endpoint_pool.call_endpoint(cr, uid, [
-                company.endpoint_ddt_out_id.id], context=ctx)
+                    ctx = context.copy()
+                    ctx['payload'] = payload
+                    reply = endpoint_pool.call_endpoint(cr, uid, [
+                        company.endpoint_ddt_out_id.id], context=ctx)
 
-            _logger.warning('Reply: %s' % (reply, ))
-            if not reply:
-                _logger.error(_('Errore spedendo il DDT:\n %s' % reply))
-                continue
+                    _logger.warning('Reply: %s' % (reply, ))
+                    if not reply:
+                        _logger.error(
+                            _('Errore spedendo il DDT:\n %s' % reply))
+                        continue
 
-            # todo check error
-            sent_message = ''
-            sent_error = False
-            if 'ElencoErroriAvvisi' in reply:
-                for status in reply['ElencoErroriAvvisi']:
-                    message_type = status['Tipo']
-                    if message_type and status['Tipo'] in 'CE':
-                        sent_error = True
-                    sent_message += '[%s] %s' % (
-                        message_type,
-                        status['Messaggio'],
-                    )
+                    # todo check error
+                    sent_message = ''
+                    sent_error = False
+                    if 'ElencoErroriAvvisi' in reply:
+                        for status in reply['ElencoErroriAvvisi']:
+                            message_type = status['Tipo']
+                            if message_type and status['Tipo'] in 'CE':
+                                sent_error = True
+                            sent_message += '[%s] %s' % (
+                                message_type,
+                                status['Messaggio'],
+                            )
 
-            if message_type == 'N':  # todo A is needed?
-                self.write(cr, uid, ddt_line_ids, {
-                    'sent': True,
-                })
-            else:
-                pass
-            # todo save message? (where)
-            # Update order line:
-            # self.write(cr, uid, [order.id], {
-            #    # 'sent': sent,  # todo when order is closed?
-            #    'sent_message': sent_message,
-            #    'sent_error': sent_error,
-            # }, context=context)
-            # C=Errore critico, E = Errore generico, A = Avviso, N = Nota)
+                    if message_type == 'N':  # todo A is needed?
+                        self.write(cr, uid, ddt_line_ids, {
+                            'sent': True,
+                        })
+                    else:
+                        pass
+                    # todo save message? (where)
+                    # Update order line:
+                    # self.write(cr, uid, [order.id], {
+                    #    # 'sent': sent,  # todo when order is closed?
+                    #    'sent_message': sent_message,
+                    #    'sent_error': sent_error,
+                    # }, context=context)
+                    # C=Errore critico, E = Errore generico,
+                    # A = Avviso, N = Nota)
+                except:
+                    _logger.error('Error sending DDT number: %s' % ddt_number)
+                    continue
         return True
 
     _columns = {
