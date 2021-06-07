@@ -120,71 +120,72 @@ class EdiCompany(orm.Model):
 
         for root, folders, files in os.walk(ddt_path):
             for filename in files:
-                ddt_filename = os.path.join(root, filename)
-                if not filename.endswith('.csv'):
-                    _logger.warning('Jumped file (unused): %s' % filename)
+                try:
+                    ddt_filename = os.path.join(root, filename)
+                    if not filename.endswith('.csv'):
+                        _logger.warning('Jumped file (unused): %s' % filename)
+                        shutil.move(
+                            ddt_filename,
+                            os.path.join(unused_path, filename)
+                        )
+                        continue
+
+                    # todo Check if is a DDT for Portal
+                    ddt_f = open(ddt_filename, 'r')
+                    row = 0
+                    for line in ddt_f.read().split('\n'):
+                        row += 1
+                        line = line.strip().split(';')  # todo separator
+                        if len(line) != 7:
+                            _logger.error(
+                                '%s. Line not in correct format' % row)
+                            continue
+                        # document = line[0].strip()  # not used
+                        site_code = line[1].strip()
+                        date = self.iso_date_format(line[2])
+                        date_send = self.iso_date_format(line[3])
+                        number = line[4].strip()
+                        order_number = line[5].strip()
+                        sequence = line[6].strip()
+                        code = line[5].strip()
+                        product_uom = line[6].strip().upper()
+                        product_qty = line[7].strip()
+
+                        # Order to be sent after:
+                        # Link to line:
+                        # line_ids = line_pool.search(cr, uid, [
+                        #    ('order_id', '=', order_id),
+                        #    ('sequence', '=', sequence),
+                        # ])
+
+                        ddt_data = {
+                            'company_id': company_id,
+                            'sequence': sequence,
+                            'name': number,
+                            'order': order_number,
+                            'site_code': site_code,
+                            'date': date,
+                            'date_send': date_send,
+                            'code': code,
+                            'uom_product': product_uom,
+                            'product_qty': product_qty,
+                        }
+                        ddt_line_pool.create(
+                            cr, uid, ddt_data, context=context)
+                        _logger.warning('History used file: %s' % filename)
+
+                    # And only if all line loop works fine:
                     shutil.move(
                         ddt_filename,
-                        os.path.join(unused_path, filename)
+                        os.path.join(history_path, filename),
                     )
+                except:
+                    _logger.error('File %s not imported\n%s' % (
+                        filename, sys.exc_info()))
                     continue
-
-                # todo Check if is a DDT for Portal
-                ddt_f = open(ddt_filename, 'r')
-                fixed = {  # Fixed data:
-                    1: '',  # Site code
-                    2: '',  # DDT Date
-                    3: '',  # DDT Received
-                    4: '',  # DDT Number
-                    5: '',  # Order name
-                }
-
-                row = 0
-                for line in ddt_f.read().split('\n'):
-                    line = line.strip()
-                    row += 1
-                    if row in fixed:
-                        fixed[row] = line
-                        continue
-                    line = line.split(separator)
-                    if len(line) != 4:
-                        _logger.error('Line not in correct format')
-                        continue
-                    sequence = line[0].strip()
-                    code = line[1].strip()
-                    product_uom = line[2].strip().upper()
-                    product_qty = line[3].strip()
-
-                    # Order to be sent after:
-
-                    # Link to line:
-                    # line_ids = line_pool.search(cr, uid, [
-                    #    ('order_id', '=', order_id),
-                    #    ('sequence', '=', sequence),
-                    # ])
-
-                    ddt_data = {
-                        'company_id': company_id,
-                        'sequence': sequence,
-                        'name': fixed[4],
-                        'order': fixed[5],
-                        'site_code': fixed[1],
-                        'date': self.iso_date_format(fixed[2]),
-                        'date_send': self.iso_date_format(fixed[3]),
-                        'code': code,
-                        'uom_product': product_uom,
-                        'product_qty': product_qty,
-                    }
-                    ddt_line_id = ddt_line_pool.create(
-                        cr, uid, ddt_data, context=context)
-                    _logger.warning('History used file: %s' % filename)
-
-                # And only if all line loop works fine:
-                shutil.move(
-                    ddt_filename,
-                    os.path.join(history_path, filename),
-                )
             break  # Only first folder!
+
+        # Send all imported data (after all):
         return ddt_line_pool.send_customer_ddt(
             cr, uid, False, context=context)
 
@@ -793,6 +794,8 @@ class EdiCustomerDDTLine(orm.Model):
     def send_customer_ddt(self, cr, uid, ids, context=None):
         """ Send JSON data file to portal for DDT confirmed
         """
+        return True
+        # todo debug from here
         endpoint_pool = self.pool.get('http.request.endpoint')
         payload_connection = {}
         if not ids:
