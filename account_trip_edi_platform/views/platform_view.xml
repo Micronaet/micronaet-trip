@@ -1,6 +1,46 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <!--edi.platform.log-->
+        <record model="ir.ui.view" id="view_edi_company_platform_log_tree">
+            <field name="name">edi.platform.log.tree</field>
+            <field name="model">edi.platform.log</field>
+            <field name="arch" type="xml">
+                <tree string="Log messaggi" editable="bottom" colors="red: mode in ('E', 'C')">
+                    <field name="company_id" />
+                    <field name="create_date" />
+                    <field name="mode" />
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_edi_company_platform_log_form">
+            <field name="name">edi.platform.log.form</field>
+            <field name="model">edi.platform.log</field>
+            <field name="arch" type="xml">
+                <form string="Log messaggi" version="7.0">
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <field name="company_id" />
+                            <field name="create_date" />
+                            <field name="mode" />
+                            <field name="name" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_edi_company_platform_log">
+            <field name="name">Log messaggi</field>
+            <field name="res_model">edi.platform.log</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_edi_company_platform_log_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
+        <!--edi.platform.product-->
         <record model="ir.ui.view" id="view_edi_company_platform_object_tree">
             <field name="name">edi.platform.product.tree</field>
             <field name="model">edi.platform.product</field>
@@ -327,6 +367,18 @@
                     parent="menu_edi_customer_ddt_management"
                     id="menu_edi_customer_ddt_out"
                     action="action_edi_customer_ddt_line"
+                    sequence="10"
+                    />
+            <menuitem
+                parent="menu_edi_supplier_order_root"
+                id="menu_edi_company_platform_log"
+                name="Log sistema"
+                sequence="30"
+                />
+                <menuitem
+                    parent="menu_edi_company_platform_log"
+                    id="action_edi_company_platform_log_portal"
+                    action="action_edi_company_platform_log"
                     sequence="10"
                     />
 

@@ -907,3 +907,29 @@ class EdiCustomerDDTLine(orm.Model):
         'product_qty': fields.char('Q.', size=20),  # todo change in float
         'sent': fields.boolean('Riga DDT Inviata'),
     }
+
+
+class EdiPlatformLog(orm.Model):
+    """ Model name: Edi platform log
+    """
+    _name = 'edi.platform.log'
+    _description = 'EDI platform log'
+    _rec_name = 'name'
+    _order = 'create_date'
+
+    _columns = {
+        'company_id': fields.many2one(
+            'edi.company', 'Company'),
+        'create_date': fields.datetime('Data creazione'),
+        'name': fields.text('Oggetto'),
+        'mode': fields.selection([
+            ('N', 'Notifica'),
+            ('A', 'Avviso'),
+            ('E', 'Errore generico'),
+            ('C', 'Errore critico'),
+        ], 'Tipologia'),
+    }
+
+    _defaults = {
+        # 'mode': lambda *x: 'N',
+    }
