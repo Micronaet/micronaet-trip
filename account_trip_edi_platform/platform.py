@@ -818,6 +818,7 @@ class EdiCustomerDDTLine(orm.Model):
                 _logger.error('Line yet sent jumped')
                 continue
             company = ddt_line.company_id
+            company_id = company.id
             ddt_number = ddt_line.name
             if company not in payload_connection:
                 payload_connection[company] = {}
@@ -840,7 +841,7 @@ class EdiCustomerDDTLine(orm.Model):
                 'QTA': ddt_line.product_qty,
             })
             payload_connection[company][ddt_number][1].append(ddt_line.id)
-        pdb.set_trace()
+
         for company in payload_connection:
             for ddt_number in payload_connection[company]:
                 try:
@@ -873,6 +874,7 @@ class EdiCustomerDDTLine(orm.Model):
 
                             # Save log message:
                             log_pool.create(cr, uid, {
+                                'company_id': company_id,
                                 'mode': status['Tipo'],
                                 'name': status['Messaggio'],
                             }, context=context)

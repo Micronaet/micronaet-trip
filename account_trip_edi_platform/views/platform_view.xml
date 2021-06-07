@@ -2,15 +2,32 @@
 <openerp>
     <data>
         <!--edi.platform.log-->
+        <record model="ir.ui.view" id="view_edi_company_platform_log_search">
+            <field name="name">edi.platform.log.search</field>
+            <field name="model">edi.platform.log</field>
+            <field name="arch" type="xml">
+                <search string="Cerca log">        
+                    <field name="name" />
+                    <field name="company_id" filter_domain="[('partner_id','=',self)]"/>
+                    <filter name="state_error" string="Errati" domain="[('mode','in','EC')]"/>
+                    <filter name="state_ok" string="Corretti" domain="[('mode','not in', 'EC')]"/>
+                    <group expand="0" string="Group By...">
+                        <filter name="group_date" string="Data" context="{'group_by': 'create_date'}"/>
+                        <filter name="group_mode" string="Tipo" context="{'group_by': 'mode'}"/>
+                        <filter name="group_company" string="Azienda" context="{'group_by': 'company_id'}"/>
+                    </group>                
+                </search>
+            </field>
+        </record>
         <record model="ir.ui.view" id="view_edi_company_platform_log_tree">
             <field name="name">edi.platform.log.tree</field>
             <field name="model">edi.platform.log</field>
             <field name="arch" type="xml">
                 <tree string="Log messaggi" editable="bottom" colors="red: mode in ('E', 'C')">
-                    <field name="company_id" />
-                    <field name="create_date" />
-                    <field name="mode" />
-                    <field name="name" />
+                    <field name="company_id" readonly="1"/>
+                    <field name="create_date" readonly="1" />
+                    <field name="mode" readonly="1" />
+                    <field name="name" readonly="1" />
                 </tree>
             </field>
         </record>
@@ -21,15 +38,15 @@
                 <form string="Log messaggi" version="7.0">
                     <sheet>
                         <group col="4" colspan="4">
-                            <field name="company_id" />
-                            <field name="create_date" />
-                            <field name="mode" />
-                            <field name="name" />
+                            <field name="company_id" readonly="1" />
+                            <field name="create_date" readonly="1" />
+                            <field name="mode" readonly="1" />
+                            <field name="name" readonly="1" />
                         </group>
                     </sheet>
                 </form>
             </field>
-        </record>
+        </record>        
         <record model="ir.actions.act_window" id="action_edi_company_platform_log">
             <field name="name">Log messaggi</field>
             <field name="res_model">edi.platform.log</field>
