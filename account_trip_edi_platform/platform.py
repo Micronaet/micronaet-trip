@@ -135,7 +135,17 @@ class EdiCompany(orm.Model):
                     row = 0
                     for line in ddt_f.read().split('\n'):
                         row += 1
-                        line = line.strip().split(';')  # todo separator
+                        if not row % 10:
+                            _logger.info('File %s importing, # %s lines' % (
+                                filename, row,
+                            ))
+                        line = line.strip()
+                        if not line:
+                            _logger.error(
+                                '%s. Jump empty line' % row)
+                            continue
+
+                        line = line.split(';')  # todo use separator
                         if len(line) != 10:
                             _logger.error(
                                 '%s. Line not in correct format' % row)
