@@ -118,6 +118,7 @@ class EdiCompany(orm.Model):
         # log_path = os.path.join(ddt_path, 'log')  # todo log events!
         _logger.info('Start check customer DDT files: %s' % ddt_path)
 
+        pdb.set_trace()
         for root, folders, files in os.walk(ddt_path):
             for filename in files:
                 try:
@@ -136,7 +137,7 @@ class EdiCompany(orm.Model):
                     for line in ddt_f.read().split('\n'):
                         row += 1
                         line = line.strip().split(';')  # todo separator
-                        if len(line) != 7:
+                        if len(line) != 10:
                             _logger.error(
                                 '%s. Line not in correct format' % row)
                             continue
