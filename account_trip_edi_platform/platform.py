@@ -135,7 +135,7 @@ class EdiCompany(orm.Model):
                     row = 0
                     for line in ddt_f.read().split('\n'):
                         row += 1
-                        if not row % 10:
+                        if not row % 50:
                             _logger.info('File %s importing, # %s lines' % (
                                 filename, row,
                             ))
