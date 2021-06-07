@@ -804,7 +804,6 @@ class EdiCustomerDDTLine(orm.Model):
     def send_customer_ddt(self, cr, uid, ids, context=None):
         """ Send JSON data file to portal for DDT confirmed
         """
-        return True
         log_pool = self.pool.get('edi.platform.log')
         endpoint_pool = self.pool.get('http.request.endpoint')
         payload_connection = {}
