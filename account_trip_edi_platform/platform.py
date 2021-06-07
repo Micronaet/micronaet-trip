@@ -145,7 +145,7 @@ class EdiCompany(orm.Model):
                                 '%s. Jump empty line' % row)
                             continue
 
-                        line = line.split(';')  # todo use separator
+                        line = line.split(separator)
                         if len(line) != 10:
                             _logger.error(
                                 '%s. Line not in correct format' % row)
