@@ -9,8 +9,8 @@
                 <search string="Cerca log">
                     <field name="name" />
                     <field name="company_id" filter_domain="[('partner_id','=',self)]"/>
-                    <filter name="state_error" string="Errati" domain="[('mode','in','EC')]"/>
-                    <filter name="state_ok" string="Corretti" domain="[('mode','not in', 'EC')]"/>
+                    <filter name="state_error" string="Errati" domain="[('mode','in', ('E', 'C')]"/>
+                    <filter name="state_ok" string="Corretti" domain="[('mode','not in', ('E', 'C')]"/>
                     <group expand="0" string="Group By...">
                         <filter name="group_date" string="Data" context="{'group_by': 'create_date'}"/>
                         <filter name="group_mode" string="Tipo" context="{'group_by': 'mode'}"/>
