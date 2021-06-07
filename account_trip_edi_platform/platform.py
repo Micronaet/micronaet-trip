@@ -804,7 +804,7 @@ class EdiCustomerDDTLine(orm.Model):
     def send_customer_ddt(self, cr, uid, ids, context=None):
         """ Send JSON data file to portal for DDT confirmed
         """
-        pdb.set_trace()
+        log_pool = self.pool.get('edi.platform.log')
         endpoint_pool = self.pool.get('http.request.endpoint')
         payload_connection = {}
         if not ids:
@@ -871,21 +871,26 @@ class EdiCustomerDDTLine(orm.Model):
                                 status['Messaggio'],
                             )
 
+                            # Save log message:
+                            log_pool.create(cr, uid, {
+                                'mode': status['Tipo'],
+                                'name': status['Messaggio'],
+                            }, context=context)
+                            # todo linked all lines to log message?
+
                     if message_type == 'N':  # todo A is needed?
                         self.write(cr, uid, ddt_line_ids, {
                             'sent': True,
                         })
                     else:
                         pass
-                    # todo save message? (where)
+
                     # Update order line:
                     # self.write(cr, uid, [order.id], {
                     #    # 'sent': sent,  # todo when order is closed?
                     #    'sent_message': sent_message,
                     #    'sent_error': sent_error,
                     # }, context=context)
-                    # C=Errore critico, E = Errore generico,
-                    # A = Avviso, N = Nota)
                 except:
                     _logger.error('Error sending DDT number: %s' % ddt_number)
                     continue
