@@ -173,9 +173,9 @@ class EdiCompany(orm.Model):
                         }
                         ddt_line_pool.create(
                             cr, uid, ddt_data, context=context)
-                        _logger.warning('History used file: %s' % filename)
 
                     # And only if all line loop works fine:
+                    _logger.warning('History used file: %s' % filename)
                     shutil.move(
                         ddt_filename,
                         os.path.join(history_path, filename),
