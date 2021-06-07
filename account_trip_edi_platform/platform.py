@@ -141,7 +141,7 @@ class EdiCompany(orm.Model):
                             ))
                         line = line.strip()
                         if not line:
-                            _logger.error(
+                            _logger.warning(
                                 '%s. Jump empty line' % row)
                             continue
 
@@ -804,8 +804,7 @@ class EdiCustomerDDTLine(orm.Model):
     def send_customer_ddt(self, cr, uid, ids, context=None):
         """ Send JSON data file to portal for DDT confirmed
         """
-        return True
-        # todo debug from here
+        pdb.set_trace()
         endpoint_pool = self.pool.get('http.request.endpoint')
         payload_connection = {}
         if not ids:
@@ -879,7 +878,6 @@ class EdiCustomerDDTLine(orm.Model):
             # }, context=context)
             # C=Errore critico, E = Errore generico, A = Avviso, N = Nota)
         return True
-
 
     _columns = {
         'company_id': fields.many2one(
