@@ -611,7 +611,7 @@ class EdiCompany(orm.Model):
                 edi_product_id = edi_product_pool.create(cr, uid, {
                     'product_id': product_id,
                     'company_id': edi_company_id,
-                    'uom': uom,
+                    'customer_uom': uom,
                 }, context=context)
                 # todo better raise when not present?
                 # raise osv.except_osv(
