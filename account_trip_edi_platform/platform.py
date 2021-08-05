@@ -582,7 +582,11 @@ class EdiCompany(orm.Model):
             counter += 1
             if counter <= 2:
                 continue  # Jump header
-            row = line.strip().split(separator)
+            line = line.strip()
+            if not line:
+                _logger.warning('Empty line jumped!')
+                continue
+            row = line.split(separator)
             default_code = row[0][:11]
             lot_code = row[0][11:]
             deadline = get_edi_date(row[7])
