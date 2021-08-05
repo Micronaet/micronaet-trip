@@ -588,7 +588,7 @@ class EdiCompany(orm.Model):
             lot_code = row[0][11:]
             deadline = get_edi_date(row[7])
             uom = row[2]
-            stock_status = get_float(row[3])
+            stock_status = get_edi_float(row[3])
 
             # -----------------------------------------------------------------
             # Account Product:
