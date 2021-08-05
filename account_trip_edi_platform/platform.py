@@ -531,8 +531,14 @@ class EdiCompany(orm.Model):
             self, cr, uid, ids, context=None):
         """ Import platform product
         """
+        def get_edi_float(value):
+            """ Extract float
+            """
+            value = value.strip().replace(',', '.')
+            return float(value)
+
         def get_edi_date(value):
-            """ Ectract date
+            """ Extract date
             """
             date = value.strip().split(' ')
             date_part = date[0].split('/')
@@ -582,7 +588,7 @@ class EdiCompany(orm.Model):
             lot_code = row[0][11:]
             deadline = get_edi_date(row[7])
             uom = row[2]
-            stock_status = row[3]
+            stock_status = get_float(row[3])
 
             # -----------------------------------------------------------------
             # Account Product:
