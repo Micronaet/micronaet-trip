@@ -557,7 +557,7 @@ class EdiCompany(orm.Model):
 
         edi_company_id = ids[0]
         partner = self.browse(cr, uid, edi_company_id, context=context)
-        fullname = partner.platform_status_fullname
+        fullname = os.path.expanduser(partner.platform_status_fullname)
         separator = partner.platform_status_separator
         status_file = open(fullname, 'r')
         counter = 0
