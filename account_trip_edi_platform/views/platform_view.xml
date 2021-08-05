@@ -363,7 +363,7 @@
         </record>
 
         <record model="ir.actions.act_window" id="action_edi_company_platform_trip_parameter">
-            <field name="name">Aziende piattagorma</field>
+            <field name="name">Aziende piattaforma</field>
             <field name="res_model">edi.company</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
