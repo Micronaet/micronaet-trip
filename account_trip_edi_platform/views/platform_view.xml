@@ -127,6 +127,10 @@
                                 <button name="import_all_customer_order" type="object" string="Importa e invia tutti i DDT in uscita" icon="gtk-refresh" colspan="2" />
 
                                 <separator string="Stato magazzino:" colspan="6" />
+                                <field name="platform_status_fullname" />
+                                <field name="platform_status_separator" />
+                                <button name="import_product_platform_account_status" type="object" string="Importa stato da contabilità" icon="gtk-refresh" colspan="2" />
+
                                 <field name="endpoint_stock_id" />
                                 <field name="last_stock_update" />
                                 <button name="update_stock_status" type="object" string="Invia stato di magazzino" icon="gtk-refresh" colspan="2" />

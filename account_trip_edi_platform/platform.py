@@ -50,7 +50,8 @@ class EdiPlatformProduct(orm.Model):
         model_pool = self.pool.get('ir.model.data')
         view_id = model_pool.get_object_reference(
             cr, uid,
-            'account_trip_edi_platform', 'view_edi_company_platform_object_form')[1]
+            'account_trip_edi_platform',
+            'view_edi_company_platform_object_form')[1]
 
         return {
             'type': 'ir.actions.act_window',
@@ -69,13 +70,49 @@ class EdiPlatformProduct(orm.Model):
 
     _columns = {
         'not_used': fields.boolean('Non usato'),
-        'company_id': fields.many2one('edi.company', 'Company'),
-        'product_id': fields.many2one('product.product', 'Product'),
-        # 'code': fields.char('Codice articolo', size=20),
+        'company_id': fields.many2one('edi.company', 'Azienda EDI'),
+        'product_id': fields.many2one('product.product', 'Prodotto'),
 
         'customer_name': fields.char('Descrizione cliente', size=90),
         'customer_code': fields.char('Codice cliente', size=20),
         'customer_uom': fields.char('UM cliente', size=10),
+    }
+
+
+class EdiPlatformProductInherit(orm.Model):
+    """ Model name: Edi platform product
+    """
+
+    _inherit = 'edi.platform.product'
+
+    _columns = {
+        'lot_ids': fields.one2many(
+            'edi.platform.product.lot', 'product_id', 'Lotti')
+    }
+
+
+class EdiPlatformProductLot(orm.Model):
+    """ Model name: Edi platform product lot
+    """
+
+    _name = 'edi.platform.product.lot'
+    _description = 'Platform lot'
+    _rec_name = 'name'
+    _order = 'name'
+
+    _columns = {
+        'ended': fields.boolean('Lotto finito'),
+        'edi_product_id': fields.many2one(
+            'edi.platform.product', 'Prodotto Piattaforma'),
+        'name': fields.char('Descrizione cliente', size=90),
+        'deadline': fields.date('Scadenza'),
+
+        'stock_status': fields.float('Esistenza', digits=(10, 2)),
+        'order_pending': fields.float(
+            'Ordini pendenti', digits=(10, 2),
+            help='Gli ordini pendenti sono quelli non ancora caricati a '
+                 'gestionale, vengono calcolati al momento della importazione'
+                 'esistenza dal programma di contabilità'),
     }
 
 
@@ -490,6 +527,129 @@ class EdiCompany(orm.Model):
                 line_pool.create(cr, uid, line, context=context)
         return True
 
+    def import_product_platform_account_status(
+            self, cr, uid, ids, context=None):
+        """ Import platform product
+        """
+        def get_edi_date(value):
+            """ Ectract date
+            """
+            date = value.strip().split(' ')
+            date_part = date.split('/')
+            if len(date_part) == 2:
+                return '20%s-%s-15' % (
+                    date_part[1],
+                    date_part[0],
+                )
+            if len(date_part) == 3:
+                return '20%s-%s-%s' % (
+                    date_part[2],
+                    date_part[1],
+                    date_part[0],
+                )
+            else:
+                _logger.error('Cannot find data value: %s' % value)
+                return False
+
+        pdb.set_trace()
+        product_pool = self.pool.get('product.product')
+        edi_product_pool = self.pool.get('edi.platform.product')
+        edi_lot_pool = self.pool.get('edi.platform.product.lot')
+
+        edi_company_id = ids[0]
+        partner = self.browse(cr, uid, edi_company_id, context=context)
+        fullname = partner.platform_status_fullname
+        separator = partner.platform_status_separator
+        status_file = open(fullname, 'r')
+        counter = 0
+        _logger.info('Reading Account status file: %s' % fullname)
+
+        # Mark as ended all order (after will be updated only present lot)
+        ended_ids = edi_lot_pool.search(cr, uid, [
+            ('edi_product_id.company_id', '=', edi_company_id),
+        ], context=context)
+        edi_lot_pool.write(cr, uid, ended_ids, {
+            'ended': True,
+        }, context=context)
+
+        update_pending_order = {}
+        for line in status_file:
+            counter += 1
+            if counter <= 2:
+                continue  # Jump header
+            row = line.split(separator)
+            default_code = row[0][:12]
+            lot_code = row[0][12:]
+            deadline = get_edi_date(row[6])
+            stock_status = row[3]
+
+            # -----------------------------------------------------------------
+            # Account Product:
+            # -----------------------------------------------------------------
+            product_ids = product_pool.search(cr, uid, [
+                ('default_code', '=', default_code),
+            ], context=context)
+            if product_ids:
+                product_id = product_ids[0]
+            else:
+                raise osv.except_osv(
+                    _('Attenzione:'),
+                    _('Prodotto non presente in OpenERP: %s' % default_code),
+                )
+
+            # -----------------------------------------------------------------
+            # EDI Product for platform
+            # -----------------------------------------------------------------
+            edi_product_ids = edi_product_pool.search(cr, uid, [
+                ('product_id', '=', product_id),
+                ('company_id', '=', edi_company_id),
+            ], context=context)
+            if edi_product_ids:
+                edi_product_id = edi_product_ids[0]
+            else:
+                raise osv.except_osv(
+                    _('Attenzione:'),
+                    _('Prodotto EDI non abbinato in OpenERP: %s' %
+                      default_code),
+                )
+
+            # -----------------------------------------------------------------
+            # EDI Platform Lot:
+            # -----------------------------------------------------------------
+            edi_lot_ids = edi_lot_pool.search(cr, uid, [
+                ('edi_product_id', '=', edi_product_id),
+            ], context=context)
+
+            # Update stock status
+            if edi_lot_ids:
+                edi_lot_pool.write(cr, uid, edi_lot_ids, {
+                    'ended': False,
+                    'stock_status': stock_status,
+                }, context=context)
+            else:
+                edi_lot_pool.create(cr, uid, {
+                    'edi_product_id': edi_product_id,
+                    'name': lot_code,
+                    'ended': False,
+                    'deadline': deadline,
+                    'stock_status': stock_status,
+                }, context=context)
+            if default_code not in update_pending_order:
+                update_pending_order[default_code] = []
+            update_pending_order[default_code][lot_code] = [
+                deadline, stock_status]
+
+        # Update with stock pending order EDI:
+        # todo search product code in pending order and get list sorted with
+        # quantity to update
+        product_pending = {}  # product_code > quantity
+
+        for default_code in update_pending_order:
+            for lot_block in update_pending_order[default_code]:
+                deadline, stock_status = \
+                    update_pending_order[default_code][lot_block]
+        return True
+
     _columns = {
         'has_platform': fields.boolean('Has platform'),
         'separator': fields.char('Separatore CSV', size=1),
@@ -526,6 +686,18 @@ class EdiCompany(orm.Model):
                  'inviare al portale per copia DDT.'),
         'platform_product_ids': fields.one2many(
             'edi.platform.product', 'company_id', 'Product'),
+
+        'platform_status_fullname': fields.char(
+            'File stato prodotti', size=100,
+            help='Percorso file piattaforma'),
+        'platform_status_separator': fields.char(
+            'File stato prodotti', size=5,
+            help='Percorso file piattaforma'),
+    }
+
+    _defaults = {
+        'separator': lambda *x: '|',
+        'platform_separator': lambda *x: ';',
     }
 
 
