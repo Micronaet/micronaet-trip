@@ -578,7 +578,6 @@ class EdiCompany(orm.Model):
         }, context=context)
 
         update_pending_order = {}
-        pdb.set_trace()
         for line in status_file:
             counter += 1
             if counter <= 2:
@@ -607,6 +606,8 @@ class EdiCompany(orm.Model):
             # -----------------------------------------------------------------
             # EDI Product for platform
             # -----------------------------------------------------------------
+            print row
+            pdb.set_trace()
             edi_product_ids = edi_product_pool.search(cr, uid, [
                 ('product_id', '=', product_id),
                 ('company_id', '=', edi_company_id),
