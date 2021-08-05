@@ -362,6 +362,14 @@
             <field name="domain">[]</field>
         </record>
 
+        <record model="ir.actions.act_window" id="action_edi_company_platform_trip_parameter">
+            <field name="name">Aziende piattagorma</field>
+            <field name="res_model">edi.company</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('has_platform', '=', True)]</field>
+            <field name="view_id" ref="account_trip_edi.edi_company_trip_parameter_tree_view"/>
+        </record>
 
         <menuitem
             id="menu_edi_supplier_order_root"
@@ -404,6 +412,12 @@
                     id="action_edi_company_platform_log_portal"
                     action="action_edi_company_platform_log"
                     sequence="10"
+                    />
+                <menuitem
+                    parent="menu_edi_company_platform_log"
+                    id="menu_edi_company_platform_trip_parameter"
+                    action="action_edi_company_platform_trip_parameter"
+                    sequence="20"
                     />
 
     </data>

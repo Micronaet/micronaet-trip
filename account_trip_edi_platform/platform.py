@@ -87,7 +87,7 @@ class EdiPlatformProductInherit(orm.Model):
 
     _columns = {
         'lot_ids': fields.one2many(
-            'edi.platform.product.lot', 'product_id', 'Lotti')
+            'edi.platform.product.lot', 'edi_product_id', 'Lotti')
     }
 
 

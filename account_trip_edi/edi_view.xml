@@ -8,7 +8,7 @@
             <field name="model_id" ref="account_trip_edi.model_trip_edi_line"/>
             <field name="code">action = pool.get('trip.edi.line').load_edi_list(cr, uid, context.get('active_ids', []), context)</field>
             <field name="name">Reload EDI</field>
-        </record> 
+        </record>
         <record id="ir_trip_stock_status_server_action" model="ir.actions.server">
             <field name="sequence" eval="5"/>
             <field name="state">code</field>
@@ -16,9 +16,9 @@
             <field name="model_id" ref="account_trip_edi.model_edi_company"/>
             <field name="code">action = pool.get('edi.company').generate_future_order_data_report(cr, uid, False, context)</field>
             <field name="name">Stampa progressivi di magazzino</field>
-        </record> 
-         
-        
+        </record>
+
+
         <!--res.partner (inherit)-->
         <record model="ir.ui.view" id="view_res_partner_destination_form">
             <field name="name">res.partner.form</field>
@@ -32,7 +32,7 @@
                 </xpath>
             </field>
         </record>
-            
+
         <record model="ir.ui.view" id="view_res_partner_destination_edi_tree">
             <field name="name">res.partner.tree</field>
             <field name="model">res.partner</field>
@@ -40,17 +40,17 @@
             <field name="arch" type="xml">
                 <field name="active_order" position="after">
                    <field name="active_order_wait" sum="Total"/>
-                </field>    
+                </field>
 
                 <button name="none" position="replace">
                     <button name="none" string="Order not present" type="workflow" attrs="{'invisible':['|',('active_order','>',0),('active_order_wait','>',0)]}" icon="gtk-no"/>
                 </button>
                 <button name="open_destination_order" position="replace">
                     <button name="open_destination_order" string="Order present" type="object" attrs="{'invisible':[('active_order','=',0),('active_order_wait','=',0)]}" icon="gtk-yes"/>
-                </button>    
+                </button>
             </field>
         </record>
-            
+
         <!--Destinations:-->
     <record id="view_res_partner_destination_extra_search" model="ir.ui.view">
         <field name="name">res_partner_destination</field>
@@ -58,19 +58,19 @@
         <field name="inherit_id" ref="account_trip.view_res_partner_destination_search" />
         <field name="arch" type="xml">
            <field name="tour1_id" position="after">
-               <field name="trip_supplier_facility_code" />                   
-               <field name="trip_supplier_destination_code" />               
+               <field name="trip_supplier_facility_code" />
+               <field name="trip_supplier_destination_code" />
            </field>
         </field>
-    </record>       
+    </record>
     <record model="ir.ui.view" id="view_res_partner_destination_extra_form">
         <field name="name">res.partner.form</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="account_trip.view_res_partner_destination_form" />
         <field name="arch" type="xml">
             <field name="tour2_id" position="after">
-               <field name="trip_supplier_facility_code" />                   
-               <field name="trip_supplier_destination_code" />                               
+               <field name="trip_supplier_facility_code" />
+               <field name="trip_supplier_destination_code" />
             </field>
         </field>
     </record>
@@ -80,12 +80,12 @@
         <field name="name">Trip company</field>
         <field name="model">edi.company</field>
         <field name="arch" type="xml">
-            <form string="EDI Company" version="7.0">                
+            <form string="EDI Company" version="7.0">
                 <group colspan="4" col="6">
                     <field name="import" />
                     <field name="name" />
                     <newline />
-                    
+
                     <field name="partner_id" />
                     <field name="type_importation_id" />
                     <newline />
@@ -135,8 +135,8 @@
 			        </group>
                 </page>
             </xpath>
-        </field>    
-      </record>        
+        </field>
+      </record>
 
        <!-- trip.edi.line-->
        <record id="trip_edi_line_search_view" model="ir.ui.view">
@@ -156,7 +156,7 @@
                    <field name="tour1_id" />
                    <field name="tour2_id" />
                    <field name="tour1_id" string="All tour" filter_domain="['|',('tour1_id','=',self),('tour2_id','=',self)]" />
-                                      
+
                    <separator/>
                    <filter name="type_create" string="Create" domain="[('type','=','create')]"/>
                    <filter name="type_force" string="Force" domain="[('type','=','force')]"/>
@@ -168,9 +168,9 @@
 
                    <filter name="priority_high" string="Urgent" domain="[('priority','=','high')]"/>
                    <separator/>
-                   <filter name="recursion_test" string="Recursion" domain="[('recursion','>',1)]"/>                   
-                   <filter name="destination_test" string="Destination missing" domain="[('type','=','create'),('destination_id','=',False)]"/>                   
-                   <filter name="trip_test" string="Trip not present" domain="[('type','=','create'),('tour1_id','=',False),('tour2_id','=',False)]"/>                   
+                   <filter name="recursion_test" string="Recursion" domain="[('recursion','>',1)]"/>
+                   <filter name="destination_test" string="Destination missing" domain="[('type','=','create'),('destination_id','=',False)]"/>
+                   <filter name="trip_test" string="Trip not present" domain="[('type','=','create'),('tour1_id','=',False),('tour2_id','=',False)]"/>
 
                    <separator/>
                     <group expand="1" string="Group By...">
@@ -185,10 +185,10 @@
                         <filter name="group_company_id" string="Company" domain="[]" context="{'group_by':'company_id'}"/>
                         <filter name="group_tour1_id" string="Trip 1" domain="[]" context="{'group_by':'tour1_id'}"/>
                         <filter name="group_tour2_id" string="Trip 2" domain="[]" context="{'group_by':'tour2_id'}"/>
-                    </group>                   
+                    </group>
                 </search>
             </field>
-       </record>         
+       </record>
 
        <record id="trip_edi_line_tree_view" model="ir.ui.view">
             <field name="name">EDI line</field>
@@ -209,19 +209,19 @@
                    <field name="type" />
                    <field name="priority" invisible="1"/>
                    <button name="action_null" string="Urgent" type="object" icon="gtk-about" attrs="{'invisible': [('priority','!=','high')]}"/>
-                   <field name="name" />                   
+                   <field name="name" />
                    <button name="delete_order" type="object" string="Delete order" icon="gtk-delete" attrs="{'invisible':[('recursion','=',1),('type','=','create')]}" /><!--invisible="context.get('hide_delete',True)"-->
 
                    <!--Standard mode:-->
                    <button name="force_import" type="object" string="Force import order" icon="gtk-refresh" attrs="{'invisible':['|',('recursion','>',1),('type','!=','create')]}" invisible="context.get('force_button_on', False)"/>
                    <button name="unforce_import" type="object" string="Unforce import order" icon="gtk-undo" attrs="{'invisible':[('type','!=','forced')]}" invisible="context.get('force_button_on', False)"/>
-                   
+
                    <!--Change mode:-->
                    <button name="force_import" type="object" string="Force import order" icon="gtk-refresh" attrs="{'invisible':[('type','!=','change')]}" invisible="not context.get('force_button_on', False)" />
                    <!--<button name="unforce_import" type="object" string="Unforce import order" icon="gtk-undo" attrs="{'invisible':[('type','!=','forced')]}" invisible="not context.get('force_button_on', False)" />-->
                 </tree>
             </field>
-       </record>         
+       </record>
        <record id="trip_edi_line_check_destination_tree_view" model="ir.ui.view">
             <field name="name">EDI check destination</field>
             <field name="model">trip.edi.line</field>
@@ -247,7 +247,7 @@
                    <button name="unforce_import" type="object" string="Unforce import order" icon="gtk-undo" attrs="{'invisible':[('type','!=','forced')]}" />
                 </tree>
             </field>
-       </record>         
+       </record>
 
        <record id="trip_edi_line_form_view" model="ir.ui.view">
             <field name="name">EDI line</field>
@@ -262,7 +262,7 @@
                        <group colspan="4" col="4">
                            <field name="company_id" />
                            <newline />
-                       
+
                            <field name="timestamp" />
                            <field name="date"/>
 
@@ -278,16 +278,16 @@
 
                            <field name="tour1_id" />
                            <field name="tour2_id" />
-                           
+
                            <field name="customer" />
                            <separator string="Details" colspan="4"/>
                            <field name="information" widget="html" colspan="4" nolabel="1"/>
                        </group>
                    </sheet>
-                </form>    
+                </form>
             </field>
        </record>
-       
+
       <record model="ir.actions.act_window" id="action_trip_edi_line_view_list">
           <field name="name">EDI order</field>
           <field name="res_model">trip.edi.line</field>
@@ -348,9 +348,9 @@
              <menuitem parent="menu_trip_view" id="menu_trip_view_recursion" name="Recursion check" sequence="30" action="action_trip_edi_line_view_recursion"/>
              <menuitem parent="menu_trip_view" id="menu_trip_view_change" name="Change check" sequence="35" action="action_trip_edi_line_view_change"/>
              <menuitem parent="menu_trip_view" id="menu_trip_view_check_destination" name="Check destination" sequence="40" action="action_trip_edi_line_check_destination_view_list"/>
-      
+
     <menuitem parent="account_trip.menu_trip_configuration" id="menu_edi_company_trip_parameter" name="EDI Company" sequence="90" action="action_edi_company_trip_parameter"/>
 
-      
+
    </data>
-</openerp>   
+</openerp>
