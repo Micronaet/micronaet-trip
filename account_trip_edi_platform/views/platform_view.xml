@@ -141,7 +141,7 @@
                             <group col="4" colspan="4">
                                 <separator string="Prodotti piattaforma:" colspan="4" />
                                 <field name="platform_product_ids" colspan="4" nolabel="1">
-                                    <tree string="Prodotti piattaforma" colors="grey: not_used == True; red:product_id == False">
+                                    <tree string="Prodotti piattaforma" editable="bottom" colors="grey: not_used == True; red:product_id == False">
                                         <field name="not_used"/>
                                         <field name="company_id" invisible="1"/>
                                         <field name="product_id"/>
@@ -150,20 +150,6 @@
                                         <field name="customer_uom"/>
                                         <button name="platform_product_detail" type="object" string="Dettaglio lotti" icon="gtk-ok" />
                                     </tree>
-                                    <form string="Prodotti piattaforma">
-                                        <header>
-                                            <button name="platform_product_detail" type="object" string="Dettaglio lotti" icon="gtk-ok" />
-                                        </header>
-                                        <sheet>
-                                            <group colspan="4" col="4">
-                                                <field name="not_used"/>
-                                                <field name="product_id" />
-                                                <field name="customer_name"/>
-                                                <field name="customer_code"/>
-                                                <field name="customer_uom"/>
-                                            </group>
-                                        </sheet>
-                                    </form>
                                 </field>
                             </group>
                         </page>
