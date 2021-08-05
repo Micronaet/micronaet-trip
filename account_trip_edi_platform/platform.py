@@ -581,6 +581,7 @@ class EdiCompany(orm.Model):
             default_code = row[0][:11]
             lot_code = row[0][11:]
             deadline = get_edi_date(row[7])
+            uom = row[2]
             stock_status = row[3]
 
             # -----------------------------------------------------------------
@@ -607,11 +608,17 @@ class EdiCompany(orm.Model):
             if edi_product_ids:
                 edi_product_id = edi_product_ids[0]
             else:
-                raise osv.except_osv(
-                    _('Attenzione:'),
-                    _('Prodotto EDI non abbinato in OpenERP: %s' %
-                      default_code),
-                )
+                edi_product_id = edi_product_pool.create(cr, uid, {
+                    'product_id': product_id,
+                    'company_id': edi_company_id,
+                    'uom': uom,
+                }, context=context)
+                # todo better raise when not present?
+                # raise osv.except_osv(
+                #    _('Attenzione:'),
+                #    _('Prodotto EDI non abbinato in OpenERP: %s' %
+                #      default_code),
+                #)
 
             # -----------------------------------------------------------------
             # EDI Platform Lot:
