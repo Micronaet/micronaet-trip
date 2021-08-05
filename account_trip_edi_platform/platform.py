@@ -551,7 +551,6 @@ class EdiCompany(orm.Model):
                 _logger.error('Cannot find data value: %s' % value)
                 return False
 
-        pdb.set_trace()
         product_pool = self.pool.get('product.product')
         edi_product_pool = self.pool.get('edi.platform.product')
         edi_lot_pool = self.pool.get('edi.platform.product.lot')
@@ -573,14 +572,15 @@ class EdiCompany(orm.Model):
         }, context=context)
 
         update_pending_order = {}
+        pdb.set_trace()
         for line in status_file:
             counter += 1
             if counter <= 2:
                 continue  # Jump header
-            row = line.split(separator)
-            default_code = row[0][:12]
-            lot_code = row[0][12:]
-            deadline = get_edi_date(row[6])
+            row = line.strip().split(separator)
+            default_code = row[0][:11]
+            lot_code = row[0][11:]
+            deadline = get_edi_date(row[7])
             stock_status = row[3]
 
             # -----------------------------------------------------------------
