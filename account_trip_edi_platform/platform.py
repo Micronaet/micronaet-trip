@@ -535,7 +535,7 @@ class EdiCompany(orm.Model):
             """ Ectract date
             """
             date = value.strip().split(' ')
-            date_part = date.split('/')
+            date_part = date[0].split('/')
             if len(date_part) == 2:
                 return '20%s-%s-15' % (
                     date_part[1],
