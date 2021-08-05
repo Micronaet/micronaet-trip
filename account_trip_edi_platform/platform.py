@@ -648,7 +648,7 @@ class EdiCompany(orm.Model):
                     'stock_status': stock_status,
                 }, context=context)
             if default_code not in update_pending_order:
-                update_pending_order[default_code] = []
+                update_pending_order[default_code] = {}
             update_pending_order[default_code][lot_code] = [
                 deadline, stock_status]
 
