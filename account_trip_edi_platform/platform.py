@@ -697,7 +697,7 @@ class EdiCompany(orm.Model):
 
     _defaults = {
         'separator': lambda *x: '|',
-        'platform_separator': lambda *x: ';',
+        'platform_status_separator': lambda *x: ';',
     }
 
 
