@@ -2,7 +2,7 @@
 <openerp>
     <data>
         <!--edi.platform.product.lot-->
-        <record model="ir.ui.view" id="view_edi.platform.product.lot_tree">
+        <record model="ir.ui.view" id="view_edi_platform_product_lot_tree">
             <field name="name">edi.platform.product.lot.tree</field>
             <field name="model">edi.platform.product.lot</field>
             <field name="arch" type="xml">
