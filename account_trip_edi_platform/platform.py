@@ -262,8 +262,9 @@ class EdiCompany(orm.Model):
                     'UM_ARTICOLO': product.customer_uom or '',
                     'DATA_SCADENZA': deadline.replace('-', ''),
                     'LOTTO': lot.name,
-                    'QTA_GIACENTE': '%010d' %  int(stock_status * 10000),
-                    # STATO_MERCE
+                    # 'QTA_GIACENTE': '%010d' %  int(stock_status * 10000),
+                    'QTA_GIACENTE': '%.2f' %  stock_status,
+                    'STATO_MERCE': 'DIS',  # todo ???
                     })
 
         ctx = context.copy()
