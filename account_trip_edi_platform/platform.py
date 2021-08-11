@@ -249,7 +249,8 @@ class EdiCompany(orm.Model):
         payload = []
         # todo append also pending order q.
         # Loop on all platform product:
-        for product in self.platform_product_ids:
+        company = self.browse(cr, uid, ids, context=context)[0]
+        for product in company.platform_product_ids:
             for lot in product.lot_ids:
                 deadline = lot.deadline or ''
                 payload.append({
@@ -261,7 +262,6 @@ class EdiCompany(orm.Model):
                     'QTA': '%010d' %  int(lot.stock_status * 10000),
                     })
 
-        company = self.browse(cr, uid, ids, context=context)[0]
         ctx = context.copy()
         ctx['endpoint_params'] = endpoint_params
         ctx['payload'] = payload
