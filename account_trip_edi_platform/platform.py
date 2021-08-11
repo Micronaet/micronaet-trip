@@ -239,7 +239,6 @@ class EdiCompany(orm.Model):
     def update_stock_status(self, cr, uid, ids, context=None):
         """ Send stock status from Account + not imported order
         """
-        pdb.set_trace()
         endpoint_pool = self.pool.get('http.request.endpoint')
         # Date now:
         endpoint_params = {
@@ -262,6 +261,7 @@ class EdiCompany(orm.Model):
                     'QTA': '%010d' %  int(lot.stock_status * 10000),
                     })
 
+        pdb.set_trace()
         ctx = context.copy()
         ctx['endpoint_params'] = endpoint_params
         ctx['payload'] = payload
