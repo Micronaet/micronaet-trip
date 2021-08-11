@@ -251,14 +251,18 @@ class EdiCompany(orm.Model):
         company = self.browse(cr, uid, ids, context=context)[0]
         for product in company.platform_product_ids:
             for lot in product.lot_ids:
+                stock_status = lot.stock_status
+                if stock_status <= 0:
+                    _logger.warning('Lot not present: %s' % lot.name)
+                    continue
                 deadline = lot.deadline or ''
                 payload.append({
-                    'CODICE_PRODUTTORE': 'ITA000061',
+                    'CODICE_PRODUTTORE': 'ITA000061',  # todo change
                     'CODICE_ARTICOLO': product.customer_code or '',
                     'UM_ARTICOLO ': product.customer_uom or '',
                     'DATA_SCADENZA': deadline.replace('-', ''),
                     'LOTTO': lot.name,
-                    'QTA': '%010d' %  int(lot.stock_status * 10000),
+                    'QTA': '%010d' %  int(stock_status * 10000),
                     })
 
         pdb.set_trace()
