@@ -272,7 +272,6 @@ class EdiCompany(orm.Model):
         ctx['payload'] = payload
         reply = endpoint_pool.call_endpoint(cr, uid, [
             company.endpoint_stock_id.id], context=ctx)
-        pdb.set_trace()
 
         # Check reply:
         sent_message = ''
@@ -286,7 +285,7 @@ class EdiCompany(orm.Model):
                     message_type,
                     status['Messaggio'],
                 )
-
+        _logger.error('Sent message: %s' % sent_message)
         # TODO add log data for last sent:
         data = {
             # 'sent_message': sent_message,
@@ -294,7 +293,7 @@ class EdiCompany(orm.Model):
         }
         if message_type == 'N':  # todo A is needed?
             data['last_sent'] = str(datetime.now())[:19]
-        # self.write(cr, uid, [company.id], data, context=context)
+        self.write(cr, uid, [company.id], data, context=context)
 
         return True
 
