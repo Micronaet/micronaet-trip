@@ -266,12 +266,12 @@ class EdiCompany(orm.Model):
                     # STATO_MERCE
                     })
 
-        pdb.set_trace()
         ctx = context.copy()
         ctx['endpoint_params'] = endpoint_params
         ctx['payload'] = payload
         reply = endpoint_pool.call_endpoint(cr, uid, [
             company.endpoint_stock_id.id], context=ctx)
+        pdb.set_trace()
 
         # Check reply:
         sent_message = ''
