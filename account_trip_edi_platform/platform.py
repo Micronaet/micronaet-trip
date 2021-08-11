@@ -239,6 +239,7 @@ class EdiCompany(orm.Model):
     def update_stock_status(self, cr, uid, ids, context=None):
         """ Send stock status from Account + not imported order
         """
+        pdb.set_trace()
         endpoint_pool = self.pool.get('http.request.endpoint')
         # Date now:
         endpoint_params = {
@@ -246,17 +247,19 @@ class EdiCompany(orm.Model):
         }
 
         payload = []
+        # todo append also pending order q.
         # Loop on all platform product:
-        products = []  # todo list of platform product
-        for product in products:
-            payload.append({
-                'CODICE_PRODUTTORE': 'ITAXXXX',
-                'CODICE_ARTICOLO': 'AV040002',
-                'UM_ARTICOLO ': 'KG',
-                'DATA_SCADENZA': '20210705',  # (FORMATO AAAAMMGG),
-                'LOTTO': 'XXXX',
-                'QTA': '00000000027000',  # 10 + 4
-                })
+        for product in self.platform_product_ids:
+            for lot in product.lot_ids:
+                deadline = lot.deadline or ''
+                payload.append({
+                    'CODICE_PRODUTTORE': 'ITA000061',
+                    'CODICE_ARTICOLO': product.customer_code or '',
+                    'UM_ARTICOLO ': product.customer_uom or '',
+                    'DATA_SCADENZA': deadline.replace('-', ''),
+                    'LOTTO': lot.name,
+                    'QTA': '%010d' %  int(lot.stock_status * 10000),
+                    })
 
         company = self.browse(cr, uid, ids, context=context)[0]
         ctx = context.copy()
