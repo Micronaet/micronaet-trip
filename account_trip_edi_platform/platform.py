@@ -263,7 +263,7 @@ class EdiCompany(orm.Model):
                     'DATA_SCADENZA': deadline.replace('-', ''),
                     'LOTTO': lot.name,
                     # 'QTA_GIACENTE': '%010d' %  int(stock_status * 10000),
-                    'QTA_GIACENTE': '%.2f' %  stock_status,
+                    'QTA_GIACENTE': '%d' %  int(stock_status),
                     'STATO_MERCE': 'DIS',  # todo ???
                     })
 
