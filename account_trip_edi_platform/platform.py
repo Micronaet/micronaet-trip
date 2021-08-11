@@ -259,10 +259,11 @@ class EdiCompany(orm.Model):
                 payload.append({
                     'CODICE_PRODUTTORE': 'ITA000061',  # todo change
                     'CODICE_ARTICOLO': product.customer_code or '',
-                    'UM_ARTICOLO ': product.customer_uom or '',
+                    'UM_ARTICOLO': product.customer_uom or '',
                     'DATA_SCADENZA': deadline.replace('-', ''),
                     'LOTTO': lot.name,
-                    'QTA': '%010d' %  int(stock_status * 10000),
+                    'QTA_GIACENTE': '%010d' %  int(stock_status * 10000),
+                    # STATO_MERCE
                     })
 
         pdb.set_trace()
