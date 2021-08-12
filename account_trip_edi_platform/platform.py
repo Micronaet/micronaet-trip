@@ -276,7 +276,6 @@ class EdiCompany(orm.Model):
         # Check reply:
         sent_message = ''
         sent_error = False
-        pdb.set_trace()
         if 'ElencoErroriAvvisi' in reply:
             for status in reply['ElencoErroriAvvisi']:
                 message_type = status['Tipo']
