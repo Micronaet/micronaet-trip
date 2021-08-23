@@ -52,9 +52,9 @@ class edi_company_c3(orm.Model):
     #                     Abstract function and property:
     # -------------------------------------------------------------------------
     # Not mandatory:
-    start_structure = 3 # char
+    start_structure = 3  # char
 
-    structured = { # field > block
+    structured = {  # field > block
         'number': 'BGM',
         'date': 'BGM',
         'customer': 'BGM',
@@ -105,10 +105,10 @@ class edi_company_c3(orm.Model):
         return False
 
     def get_timestamp_from_file(self, file_in, path_in=None):
-        # TODO
         """ Get timestamp value from file name
             File is: COMPANY_orderdate_order_deadline.eur
         """
+        # todo
         part = file_in.split('_')
         return "%s-%s-%s" % (
             part[1][:4],
@@ -147,8 +147,8 @@ class edi_company_c3(orm.Model):
         """
         return value
 
-    def format_float(self, value, decimal=3, with_separator=False,
-            separator='.'):
+    def format_float(
+            self, value, decimal=3, with_separator=False, separator='.'):
         """ EDI float format
         """
         try:
@@ -165,4 +165,3 @@ class edi_company_c3(orm.Model):
         """ EDI file string
         """
         return value.strip()
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
