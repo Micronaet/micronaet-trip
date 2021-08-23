@@ -32,39 +32,39 @@ from openerp import SUPERUSER_ID
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
 
 
 _logger = logging.getLogger(__name__)
 
 class edi_company_c3(orm.Model):
-    ''' Add model for parametrize function for Company 3
+    """ Add model for parametrize function for Company 3
         Model has only function for a sort of abstract class
-    '''
+    """
 
     _name = 'edi.company.c3'
     _description = 'EDI Company 3'
 
-    # -------------------------------------------------------------------------    
+    # -------------------------------------------------------------------------
     #                     Abstract function and property:
-    # -------------------------------------------------------------------------    
+    # -------------------------------------------------------------------------
     # Not mandatory:
     start_structure = 3 # char
-    
+
     structured = { # field > block
         'number': 'BGM',
         'date': 'BGM',
         'customer': 'BGM',
 
         'deadline': 'DTM',
-        
+
         'destination_facility': 'NAD',
         'destination_cost': 'NAD',
         'destination_site': 'NAD',
-        
+
         'detail_code': 'LIN',
         'detail_description': 'LIN',
         'detail_um': 'LIN',
@@ -82,87 +82,87 @@ class edi_company_c3(orm.Model):
 
         # DTM
         'deadline': (3, 11), #8
-        
+
         # NAS - Destination blocks:
-        'destination_facility': (0, 0), # 35 
-        'destination_cost': (0, 0), # 30 
+        'destination_facility': (0, 0), # 35
+        'destination_cost': (0, 0), # 30
         'destination_site': (3, 20), # 17
         'destination_description': (23, 93), # 70
         # TODO address?
-        
+
         # LIN'
-        'detail_code': (82, 117), # 35
-        'detail_description': (152, 187), # 35
-        'detail_um': (205, 208), # 3
-        'detail_quantity': (190, 205), # 15
-        'detail_price': (208, 223), # 15
-        'detail_total': (0, 0), 
+        'detail_code': (82, 117),  # 35
+        'detail_description': (152, 187),  # 35
+        'detail_um': (205, 208),  # 3
+        'detail_quantity': (190, 205),  # 15
+        'detail_price': (208, 223),  # 15
+        'detail_total': (0, 0),
         }
 
     def is_an_invalid_row(self, row):
-        ''' Always valid
-        '''
+        """ Always valid
+        """
         return False
 
     def get_timestamp_from_file(self, file_in, path_in=None):
         # TODO
-        ''' Get timestamp value from file name
+        """ Get timestamp value from file name
             File is: COMPANY_orderdate_order_deadline.eur
-        '''
-        part = file_in.split('_')        
+        """
+        part = file_in.split('_')
         return "%s-%s-%s" % (
-            part[1][:4], 
-            part[1][4:6], 
-            part[1][6:8], 
+            part[1][:4],
+            part[1][4:6],
+            part[1][6:8],
             )
-        
+
     def get_state_of_file(self, file_in, forced_list):
-        ''' Test state of file depend on name and forced presence
+        """ Test state of file depend on name and forced presence
             2 state: forced or create (no update here)
-        '''
+        """
         if file_in in forced_list: # Forced (pickle file)
             return 'forced'
         return 'create'
 
     def get_destination(self, facility, cost, site):
-        ''' Mask for code destination (only the last: site is used here)
-        '''
+        """ Mask for code destination (only the last: site is used here)
+        """
         return "[%s]" % site
 
     def get_destination_id(self, cr, uid, facility, cost, site, context=None):
-        ''' Get 3 parameters for destination and return ID get from res.partner
+        """ Get 3 parameters for destination and return ID get from res.partner
             generated during importation
-        '''
+        """
         return self.pool.get('res.partner').search_supplier_destination(
             cr, uid, "", site, context=context)
 
     def get_priority(self, cr, uid, file_in):
-        ''' Always normal (no priority management)
-        '''
-        return 'normal'    
-    
+        """ Always normal (no priority management)
+        """
+        return 'normal'
+
     # Format:
     def format_int(self, value):
-        ''' EDI integer format
-        '''
+        """ EDI integer format
+        """
         return value
 
-    def format_float(self, value, decimal=3, with_separator=False, 
+    def format_float(self, value, decimal=3, with_separator=False,
             separator='.'):
-        ''' EDI float format
-        '''
+        """ EDI float format
+        """
         try:
             return float("%s.%s" % (value[:-3], value[-3:]))
         except:
-            return 0.0 # error    
+            return 0.0 # error
 
     def format_date(self, value, date_format='ISO'):
-        ''' EDI file date format YYYYMMDD
-        '''        
+        """ EDI file date format YYYYMMDD
+        """
         return "%s-%s-%s" % (value[:4], value[4:6], value[6:8])
 
     def format_string(self, value):
-        ''' EDI file string 
-        '''
+        """ EDI file string
+        """
         return value.strip()
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
