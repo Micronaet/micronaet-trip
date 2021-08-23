@@ -109,7 +109,7 @@ class EdiSoapConnection(orm.Model):
             if passed namespace and wsdl root use that, instead of read from
             parameters
         """
-        if not wsdl_root: # Read from parameters
+        if not wsdl_root:  # Read from parameters
             parameter = self.browse(cr, uid, ids, context=context)[0]
             namespace = parameter.namespace
             wsdl_root = parameter.wsdl_root
@@ -302,11 +302,11 @@ class EdiSoapConnection(orm.Model):
 
             key = start[key]  # Read list of keys form start
             text = text.strip()
-            if type(key) in (tuple, list): # multiple
+            if type(key) in (tuple, list):  # multiple
                 for item in key:
                     if text.startswith(item):
                         return text[len(item):].strip()
-                return False # not found
+                return False  # not found
             else:  # single
                 if text.startswith(key):
                     return text[len(key):].strip()
@@ -457,7 +457,7 @@ class EdiSoapConnection(orm.Model):
                     # ---------------------------------------------------------
                     #                         Header data:
                     # ---------------------------------------------------------
-                    elif data['i'] == start['customer_order']: # Custom. order
+                    elif data['i'] == start['customer_order']:  # Custom. order
                         data['customer_order'] = line
                     elif data['i'] == start['invoice']:  # Invoice number
                         data['invoice'] = line
@@ -934,14 +934,14 @@ class EdiSoapOrder(orm.Model):
         """
         line_pool = self.pool.get('edi.soap.logistic.pallet')
         if context is None:
-            context = []
+            context = {}
         context['order_id'] = ids[0]
         return line_pool.print_label(cr, uid, False, context=context)
 
     def generate_pallet_list(self, cr, uid, ids, context=None):
         """ Generate list of pallet from order weight
         """
-        extra_pallet = 0 # TODO Param for print more labels
+        extra_pallet = 0  # TODO Param for print more labels
 
         # Pool used:
         pallet_pool = self.pool.get('edi.soap.logistic.pallet')
@@ -979,8 +979,8 @@ class EdiSoapOrder(orm.Model):
                 }, context=context))
         return True
 
-    def create_new_order(self, cr, uid, connection_id, order, force=False,
-            context=None):
+    def create_new_order(
+            self, cr, uid, connection_id, order, force=False, context=None):
         """ Create new order from order object
         """
         # Pool used:
@@ -1033,47 +1033,47 @@ class EdiSoapOrder(orm.Model):
         header = {
             'connection_id': connection_id,
             'name': self._safe_get(
-                order, 'poNumber'), # '2110479-FB04023'
+                order, 'poNumber'),  # '2110479-FB04023'
             'delivery_date': self._safe_get(
-                order, 'deliveryDate'), # None,
-            'entity_name': entity_name,# 'MV Poesia',
+                order, 'deliveryDate'),  # None,
+            'entity_name': entity_name,  # 'MV Poesia',
             'mode': mode,
             'delivery_port_nam': self._safe_get(
-                order, 'deliveryPortName'), # u'Wa\xfcnde',
+                order, 'deliveryPortName'),  # u'Wa\xfcnde',
             'status': self._safe_get(
-                order, 'status'),# 'Emitted',
+                order, 'status'),  # 'Emitted',
             'po_create_date': self._safe_get(
-                order, 'createDate'),# None,
+                order, 'createDate'),  # None,
             'currency': self._safe_get(
-                order, 'currency'),# 'EUR',
+                order, 'currency'),  # 'EUR',
             'fullname': self._safe_get(
-                order, 'fullName'),# 'xxx yyy',
+                order, 'fullName'),  # 'xxx yyy',
             'document_value': self._safe_get(
-                order, 'documentValue'),#: Decimal('234.20000')
+                order, 'documentValue'),  #: Decimal('234.20000')
             'buyer_group': self._safe_get(
-                order, 'buyerGroup'),#: 'Buyers',
+                order, 'buyerGroup'),  #: 'Buyers',
             'delivery_terms': self._safe_get(
-                order, 'deliveryTerms'),#: None,
+                order, 'deliveryTerms'),  #: None,
             'info_container': self._safe_get(
-                order, 'infoContainer'),#: None,
+                order, 'infoContainer'),  #: None,
             'document_comment': self._safe_get(
-                order, 'documentComment'),#: None,
+                order, 'documentComment'),  #: None,
             'invoice_holder': self._safe_get(
-                order, 'invoiceHolder'),#: 'Cruises',
+                order, 'invoiceHolder'),  #: 'Cruises',
             'invoice_address': self._safe_get(
-                order, 'invoiceAddress'),#: u'Eug\xe8ne 40 120 GENEVA (CH)'
+                order, 'invoiceAddress'),  #: u'Eug\xe8ne 40 120 GENEVA (CH)'
             'invoice_vatcode': self._safe_get(
-                order, 'invoiceVatcode'),#: 'CHE-123.808.357 TVA',
+                order, 'invoiceVatcode'),  #: 'CHE-123.808.357 TVA',
             'delivery_at': self._safe_get(
-                order, 'deliveryAt'),# 'Comando nave',
+                order, 'deliveryAt'),  # 'Comando nave',
             'delivery_address': self._safe_get(
-                order, 'deliveryAddress'),# 'Via X 91 Genova 16162 Italy',
+                order, 'deliveryAddress'),  # 'Via X 91 Genova 16162 Italy',
             'delivery_ship': self._safe_get(
-                order, 'deliveryShip'),#: None,
+                order, 'deliveryShip'),  #: None,
             'logistic': self._safe_get(
-                order, 'logistic'),# False,
+                order, 'logistic'),  # False,
             'requires_logistic': self._safe_get(
-                order, 'requiresLogistic'),# None,
+                order, 'requiresLogistic'),  # None,
             }
 
         # Create order not present:
@@ -1086,10 +1086,10 @@ class EdiSoapOrder(orm.Model):
             # -----------------------------------------------------------------
             # Detail data:
             # -----------------------------------------------------------------
-            uom = self._safe_get(line, 'itemReceivingUnit') # 'KG'
+            uom = self._safe_get(line, 'itemReceivingUnit')  # 'KG'
             confirmed_qty = float(self._safe_get(
-                    line, 'quantityConfirmed', 0.0)) # Decimal('230.00000'),
-            name = self._safe_get(line, 'itemCode') # 'F0000801'
+                    line, 'quantityConfirmed', 0.0))  # Decimal('230.00000'),
+            name = self._safe_get(line, 'itemCode')  # 'F0000801'
 
             # Update total for pallet label calc:
             if uom in weight:
@@ -1113,28 +1113,28 @@ class EdiSoapOrder(orm.Model):
                 'name': name,
                 'product_id': product_id,
                 'description': self._safe_get(
-                    line, 'itemDescription'), # 'CORN KERNEL WHOLE FRZ',
+                    line, 'itemDescription'),  # 'CORN KERNEL WHOLE FRZ',
                 'item_price': self._safe_get(
                     line, 'itemPrice'), # Decimal('0.93000'),
                 'uom': uom,
                 'ordered_qty': float(self._safe_get(
-                    line, 'quantityOrdered', 0.0)), # Decimal('230.00000'),
+                    line, 'quantityOrdered', 0.0)),  # Decimal('230.00000'),
                 'confirmed_qty': confirmed_qty,
                 'logistic_qty': float(self._safe_get(
-                    line, 'quantityLogistic', 0.0)), # None,
+                    line, 'quantityLogistic', 0.0)),  # None,
 
                 'cd_gtin': self._safe_get(
-                    line, 'cdGtin'), # None,
+                    line, 'cdGtin'),  # None,
                 'cd_voce_doganale': self._safe_get(
-                    line, 'cdVoceDoganale'), # None,
+                    line, 'cdVoceDoganale'),  # None,
                 'nr_pz_conf': self._safe_get(
-                    line, 'nrPzConf'), # None,
+                    line, 'nrPzConf'),  # None,
                 'cd_paese_origine': self._safe_get(
-                    line, 'cdPaeseOrigine'), # None,
+                    line, 'cdPaeseOrigine'),  # None,
                 'cd_paese_provenienza': self._safe_get(
-                    line, 'cdPaeseProvenienza'), # None,
+                    line, 'cdPaeseProvenienza'),  # None,
                 'fl_dogana': self._safe_get(
-                    line, 'flDogana'), # None
+                    line, 'flDogana'),  # None
                 }
             line_pool.create(cr, uid, line, context=context)
 
@@ -1143,7 +1143,7 @@ class EdiSoapOrder(orm.Model):
             self.write(cr, uid, [order_id], {
                 'total_weight': weight,
                 'total_pallet': pallet_extra + (weight / pallet_weight) + \
-                    1 if weight % pallet_weight > 0 else 0
+                                1 if weight % pallet_weight > 0 else 0
                 }, context=context)
 
         if destination_id:
@@ -1168,8 +1168,8 @@ class EdiSoapOrder(orm.Model):
         # ---------------------------------------------------------------------
         # Utility:
         # ---------------------------------------------------------------------
-        def clean_text(text, length, uppercase=False, error=None,
-                truncate=False):
+        def clean_text(
+                text, length, uppercase=False, error=None, truncate=False):
             """ Return clean text with limit cut
                 Log in error if over length
             """
@@ -1186,14 +1186,14 @@ class EdiSoapOrder(orm.Model):
                 return text.upper()
             return text
 
-        def clean_date(italian_date, separator='', out_format='iso',
-                error=None):
+        def clean_date(
+                italian_date, separator='', out_format='iso', error=None):
             """ Return clean text with limit cut
                 Log in error if over length
             """
             if error is None:
                 error = []
-            italian_date = italian_date.split(' ')[0] # remove hour block
+            italian_date = italian_date.split(' ')[0]  # remove hour block
             if len(italian_date) != 10:
                 error.append('Error not italian date: %s' % italian_date)
                 # not stopped
@@ -1222,7 +1222,7 @@ class EdiSoapOrder(orm.Model):
                     italian_date[-4:],
                     )
             else: # incorrect format:
-                return italian_date # nothing todo
+                return italian_date  # nothing todo
 
         def clean_float(value, length, decimal=3, separator='.', error=None):
             """ Clean float and return float format
@@ -1283,7 +1283,7 @@ class EdiSoapOrder(orm.Model):
             subtotal = line.confirmed_qty * line.item_price
 
             row = mask % (
-                csv_code, # 3 Company
+                csv_code,  # 3 Company
                 deadline,
                 clean_text(
                     destination_code, 8, error=error),
@@ -1297,11 +1297,11 @@ class EdiSoapOrder(orm.Model):
                     product.name, 60, error=error, truncate=True),
                 clean_text(
                     line.uom, 2, uppercase=True, error=error),
-                clean_float( # quantity
+                clean_float(  # quantity
                     line.confirmed_qty, 15, 2, error=error),
-                clean_float( # price
+                clean_float(  # price
                     line.item_price, 15, 3, error=error),
-                clean_float( # subtotal
+                clean_float(  # subtotal
                     subtotal, 15, 3, error=error),
                 date,
                 today,
@@ -1352,7 +1352,7 @@ class EdiSoapOrder(orm.Model):
             'views': [(False, 'form'), (False, 'tree')],
             'domain': [],
             'context': context,
-            'target': 'current', # 'new'
+            'target': 'current',  # 'new'
             'nodestroy': False,
             }
 
@@ -1375,7 +1375,7 @@ class EdiSoapOrder(orm.Model):
             'edi.soap.connection', 'Connection', required=True),
         'destination_id': fields.many2one(
             'res.partner', 'Destination',
-            #domain='[("sql_destination_code", "!=", False)]'
+            # domain='[("sql_destination_code", "!=", False)]'
             ),
         'mode': fields.selection([
             ('WH', 'Warehouse'),
@@ -1383,8 +1383,8 @@ class EdiSoapOrder(orm.Model):
             ], 'Mode'),
 
         'company_order': fields.char('Company order', size=20),
-        'delivery_date': fields.date('Delivery date'), # required=True
-        'po_create_date': fields.date('PO Create date'), # required=True
+        'delivery_date': fields.date('Delivery date'),  # required=True
+        'po_create_date': fields.date('PO Create date'),  # required=True
         'entity_name': fields.char('Entity name', size=40),
         'delivery_port_nam': fields.char('Delivery Port Nam', size=40),
         'status': fields.char('Status', size=40),
@@ -1392,10 +1392,10 @@ class EdiSoapOrder(orm.Model):
         'fullname': fields.char('Full name', size=40),
         'buyer_group': fields.char('Buyer Group', size=30),
 
-        'document_value': fields.float('Document value', digits=(16, 3)), #documentValue #: 234.20000,
-        'delivery_terms': fields.char('Delivery Terms', size=30), # deliveryTerms # None
-        'info_container': fields.char('Info container', size=40), # infoContainer # None
-        'document_comment': fields.char('Document Comment', size=30), # documentComment #: None
+        'document_value': fields.float('Document value', digits=(16, 3)),
+        'delivery_terms': fields.char('Delivery Terms', size=30),
+        'info_container': fields.char('Info container', size=40),
+        'document_comment': fields.char('Document Comment', size=30),
 
         'invoice_holder': fields.char('Invoice Holder', size=40),
         'invoice_address': fields.char('Invoice Address', size=60),
@@ -1403,9 +1403,9 @@ class EdiSoapOrder(orm.Model):
         'delivery_at': fields.char('Delivery at', size=40),
         'delivery_address': fields.char('Delivery Address', size=40),
 
-        'delivery_ship': fields.char('Delivery ship', size=50), # deliveryShip # None
-        'logistic': fields.boolean('Invoice VAT code'), # logistic # False
-        'requires_logistic': fields.char('Requires logistic', size=50), # requiresLogistic # None
+        'delivery_ship': fields.char('Delivery ship', size=50),
+        'logistic': fields.boolean('Invoice VAT code'),
+        'requires_logistic': fields.char('Requires logistic', size=50),
 
         'total_weight': fields.integer('Total weight'),
         'total_pallet': fields.integer('Total pallet'),
@@ -1418,6 +1418,7 @@ class EdiSoapOrder(orm.Model):
             store=False),
 
         }
+
 
 class EdiSoapOrderLine(orm.Model):
     """ Soap order line
@@ -1465,8 +1466,8 @@ class EdiSoapOrderLine(orm.Model):
     # -------------------------------------------------------------------------
     # Oncange:
     # -------------------------------------------------------------------------
-    def onchange_company_product_id(self, cr, uid, ids, order_id, name,
-            product_id, context=None):
+    def onchange_company_product_id(
+            self, cr, uid, ids, order_id, name, product_id, context=None):
         """ Update mapped product
         """
         res = {}
@@ -1491,8 +1492,7 @@ class EdiSoapOrderLine(orm.Model):
             ], context=context)
 
         if len(mapping_ids) > 1:
-           _logger.error('More than one mapping: %s' % name)
-
+            _logger.error('More than one mapping: %s' % name)
 
         # ---------------------------------------------------------------------
         # Mapping operation:
@@ -1510,8 +1510,8 @@ class EdiSoapOrderLine(orm.Model):
 
     _columns = {
         'name': fields.char('Code', size=40, required=True),
-        'order_id': fields.many2one('edi.soap.order', 'Order',
-            ondelete='cascade'),
+        'order_id': fields.many2one(
+            'edi.soap.order', 'Order', ondelete='cascade'),
         'product_id': fields.many2one('product.product', 'Company product'),
 
         'duty_code': fields.related(
@@ -1528,12 +1528,13 @@ class EdiSoapOrderLine(orm.Model):
         'item_price': fields.float('Price', digits=(16, 5)),
 
         'cd_gtin': fields.char('GTIN', size=40), # cdGtin
-        'cd_voce_doganale': fields.char('Duty code', size=40), #cdVoceDoganale
-        'nr_pz_conf': fields.char('Q. x pack', size=5), # nrPxConf
-        'cd_paese_origine': fields.char('Origin', size=40), # cdPaeseOrigine
-        'cd_paese_provenienza': fields.char('Derived', size=40), # cdPaeseProvenienza
-        'fl_dogana': fields.char('Duty', size=20), # Duty code
+        'cd_voce_doganale': fields.char('Duty code', size=40), # cdVoceDoganale
+        'nr_pz_conf': fields.char('Q. x pack', size=5),  # nrPxConf
+        'cd_paese_origine': fields.char('Origin', size=40),  # cdPaeseOrigine
+        'cd_paese_provenienza': fields.char('Derived', size=40),  # cdPaeseProvenienza
+        'fl_dogana': fields.char('Duty', size=20),  # Duty code
         }
+
 
 # -----------------------------------------------------------------------------
 #                              LOGISTIC ORDER:
@@ -1552,6 +1553,7 @@ class EdiSoapLogistic(orm.Model):
         return self.write(cr, uid, ids, {
             'soap_not_sent': True,
             }, context=context)
+
     def open_logistic_lines(self, cr, uid, ids, context=None):
         """ Logistic line details
         """
@@ -1571,9 +1573,9 @@ class EdiSoapLogistic(orm.Model):
             'name': _('Detail lines'),
             'view_type': 'form',
             'view_mode': 'tree',
-            #'res_id': 1,
+            # 'res_id': 1,
             'res_model': 'edi.soap.logistic.line',
-            'view_id': view_id, # False
+            'view_id': view_id,  # False
             'views': [(False, 'tree'), ],
             'domain': [('id', 'in', line_ids)],
             'context': context,
@@ -1762,9 +1764,9 @@ class EdiSoapLogistic(orm.Model):
         'mode': fields.related(
             'order_id', 'mode',
             type='selection', string='Mode'),
-            #('WH', 'Warehouse'),
-            #('SH', 'Ship'),
-            #], 'Mode'),
+            # ('WH', 'Warehouse'),
+            # ('SH', 'Ship'),
+            # ], 'Mode'),
         'state': fields.selection([
             ('draft', 'Draft'), # To be worked
             ('working', 'Working'), # Start assign pallet
@@ -1777,6 +1779,7 @@ class EdiSoapLogistic(orm.Model):
         'pallet': lambda *x: 1,
         'state': lambda *x: 'draft',
         }
+
 
 class EdiSoapLogisticPallet(orm.Model):
     """ Soap logistic order
@@ -1807,6 +1810,7 @@ class EdiSoapLogisticPallet(orm.Model):
             'type': 'ir.actions.client',
             'tag': 'reload',
             }
+
     def _get_pallet_totals(self, cr, uid, ids, fields, args, context=None):
         """ Fields function for calculate
         """
@@ -1824,7 +1828,7 @@ class EdiSoapLogisticPallet(orm.Model):
             # XXX check chunk?
             res[pallet.id] = {
                 'total_line': len(line_ids),
-                #'total_weight': sum([
+                # 'total_weight': sum([
                 #    (float(line.product_id.chunk or 1) * line.lord_qty) \
                 #        for line in lines])
                 'total_weight': sum([line.lord_qty for line in lines])
@@ -1845,6 +1849,7 @@ class EdiSoapLogisticPallet(orm.Model):
             type='float', digits=(16, 3), string='Total line', multi=True),
         }
 
+
 class EdiSoapLogisticLine(orm.Model):
     """ Soap logistic order
     """
@@ -1856,7 +1861,8 @@ class EdiSoapLogisticLine(orm.Model):
     # -------------------------------------------------------------------------
     # Onchange:
     # -------------------------------------------------------------------------
-    def onchange_pallet_code(self, cr, uid, ids, logistic_id, pallet_code,
+    def onchange_pallet_code(
+            self, cr, uid, ids, logistic_id, pallet_code,
             field_name='pallet_id', context=None):
         """ Save correct element
             Called also from wizard new_pallet reference
@@ -1904,21 +1910,21 @@ class EdiSoapLogisticLine(orm.Model):
     _columns = {
         # ---------------------------------------------------------------------
         # XXX Remember duplication wizard when add fields!!!
-        'logistic_id': fields.many2one('edi.soap.logistic', 'Logistic order',
-            ondelete='cascade'),
+        'logistic_id': fields.many2one(
+            'edi.soap.logistic', 'Logistic order', ondelete='cascade'),
         'pallet': fields.integer('Pallet'),
-        'pallet_id': fields.many2one('edi.soap.logistic.pallet', 'Pallet',
-            ondelete='set null'),
+        'pallet_id': fields.many2one(
+            'edi.soap.logistic.pallet', 'Pallet', ondelete='set null'),
         'order_id': fields.related(
             'logistic_id', 'order_id',
             type='many2one', relation='edi.soap.order',
             string='Order', ondelete='set null'),
-        'mapping_id': fields.many2one('edi.soap.mapping', 'Mapping',
-            ondelete='set null'),
+        'mapping_id': fields.many2one(
+            'edi.soap.mapping', 'Mapping', ondelete='set null'),
         'product_id': fields.many2one(
             'product.product', 'Product', ondelete='set null'),
 
-        # XXX Use mapping - product ducy code (not product)
+        # XXX Use mapping - product duty code (not product)
         'duty_code': fields.related(
             'mapping_id', 'duty_code', type='char', string='Duty code'),
         'variable_weight': fields.related(
@@ -1954,6 +1960,7 @@ class EdiSoapLogisticLine(orm.Model):
         # ---------------------------------------------------------------------
         }
 
+
 class EdiSoapLogisticPallet(orm.Model):
     """ Soap logistic order relations
     """
@@ -1969,9 +1976,9 @@ class EdiSoapLogisticPallet(orm.Model):
         pos = 0
 
         for c in fixed:
-            pos+=1
+            pos += 1
             number = int(c)
-            if pos % 2 == 0 :
+            if pos % 2 == 0:
                 tot += number
             else:
                 tot += number * 3
@@ -2018,7 +2025,7 @@ class EdiSoapLogisticPallet(orm.Model):
                 ], context=context)
 
         datas = {
-            'pallet_ids': ids, # single or list
+            'pallet_ids': ids,  # single or list
             }
 
         return { # action report

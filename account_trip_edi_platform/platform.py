@@ -618,7 +618,7 @@ class EdiCompany(orm.Model):
             # -----------------------------------------------------------------
             # EDI Product for platform
             # -----------------------------------------------------------------
-            print row
+            print(row)
             pdb.set_trace()
             edi_product_ids = edi_product_pool.search(cr, uid, [
                 ('product_id', '=', product_id),
