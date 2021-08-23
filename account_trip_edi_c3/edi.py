@@ -74,20 +74,20 @@ class edi_company_c3(orm.Model):
         }
 
     # Mandatory:
-    trace = { # structured:
+    trace = {  # structured:
         # BGM
         'number': (115, 150),
-        'date': (150, 158), # 8
-        'customer': (0, 0), # not used
+        'date': (150, 158),  # 8
+        'customer': (0, 0),  # not used
 
         # DTM
-        'deadline': (3, 11), #8
+        'deadline': (3, 11),  # 8
 
         # NAS - Destination blocks:
-        'destination_facility': (0, 0), # 35
-        'destination_cost': (0, 0), # 30
-        'destination_site': (3, 20), # 17
-        'destination_description': (23, 93), # 70
+        'destination_facility': (0, 0),  # 35
+        'destination_cost': (0, 0),  # 30
+        'destination_site': (3, 20),  # 17
+        'destination_description': (23, 93),  # 70
         # TODO address?
 
         # LIN'
@@ -120,7 +120,7 @@ class edi_company_c3(orm.Model):
         """ Test state of file depend on name and forced presence
             2 state: forced or create (no update here)
         """
-        if file_in in forced_list: # Forced (pickle file)
+        if file_in in forced_list:  # Forced (pickle file)
             return 'forced'
         return 'create'
 
