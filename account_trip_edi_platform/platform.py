@@ -270,6 +270,7 @@ class EdiCompany(orm.Model):
         ctx = context.copy()
         ctx['endpoint_params'] = endpoint_params
         ctx['payload'] = payload
+        import json
         print(json.dump(payload))
         pdb.set_trace()
         reply = endpoint_pool.call_endpoint(cr, uid, [
