@@ -276,6 +276,7 @@ class EdiCompany(orm.Model):
         # Check reply:
         sent_message = ''
         sent_error = False
+        message_type = ''  # Reply not present
         if 'ElencoErroriAvvisi' in reply:
             for status in reply['ElencoErroriAvvisi']:
                 message_type = status['Tipo']
@@ -285,7 +286,7 @@ class EdiCompany(orm.Model):
                     message_type,
                     status['Messaggio'],
                 )
-        _logger.error('Sent message: %s' % sent_message)
+        _logger.warning('Sent message: %s' % sent_message)
         # TODO add log data for last sent:
         data = {
             # 'sent_message': sent_message,
@@ -293,6 +294,8 @@ class EdiCompany(orm.Model):
         }
         if message_type == 'N':  # todo A is needed?
             data['last_sent'] = str(datetime.now())[:19]
+        elif not message_type:
+            _logger.error('Risposta non conforme: %s' % (reply, ))
         self.write(cr, uid, [company.id], data, context=context)
 
         return True
