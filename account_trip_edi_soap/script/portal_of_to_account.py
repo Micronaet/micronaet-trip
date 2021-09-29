@@ -31,7 +31,7 @@ import ConfigParser
 import pdb; pdb.set_trace()
 
 # From config file:
-cfg_file = os.path.expanduser('./openerp.cfg')
+cfg_file = os.path.expanduser('./company.cfg')
 
 config = ConfigParser.ConfigParser()
 config.read([cfg_file])

@@ -831,7 +831,7 @@ class EdiSupplierOrder(orm.Model):
                 else:
                     res += replace
             return res
-        pdb.set_trace()
+
         for order in self.browse(cr, uid, ids, context=context):
             name = order.name
             if order.extracted:
