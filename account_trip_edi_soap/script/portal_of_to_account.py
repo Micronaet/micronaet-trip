@@ -22,19 +22,16 @@
 import os
 import sys
 import erppeek
+from datetime import datetime, timedelta
 import ConfigParser
 
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
 import pdb; pdb.set_trace()
-# Command line parameter:
-company = sys.argv[1]
-odoo_order = sys.argv[2]
-company_order = sys.argv[3]
 
 # From config file:
-cfg_file = os.path.expanduser('./%s.cfg' % company)
+cfg_file = os.path.expanduser('./openerp.cfg')
 
 config = ConfigParser.ConfigParser()
 config.read([cfg_file])
@@ -43,8 +40,6 @@ user = config.get('dbaccess', 'user')
 pwd = config.get('dbaccess', 'pwd')
 server = config.get('dbaccess', 'server')
 port = config.get('dbaccess', 'port')   # verify if it's necessary: getint
-
-connection_id = int(config.get('connection', 'id'))
 
 # -----------------------------------------------------------------------------
 # Connect to ODOO:
@@ -58,14 +53,18 @@ odoo = erppeek.Client(
     )
 
 # Pool used:
-order_pool = odoo.model('edi.soap.order')
-order_ids = order_pool.search([
-    ('connection_id', '=', connection_id),
-    ('name', '=', odoo_order),
-    ])
-if order_ids:
-    order_pool.write(order_ids, {
-        'company_order': company_order,
-        })
-else:
-    print('[%s] Order not found: %s' % (company, odoo_order))
+connection_pool = odoo.model('http.request.connection')
+connection_ids = connection_pool.search([])
+
+# Update date period:
+from_date = datetime.now().strftime('%Y-%m-%d')
+to_date = (datetime.now() + timedelta(days=-7)).strftime('%Y-%m-%d')
+connection_pool.write(connection_ids, {
+    'force_from_date': from_date,
+    'force_to_date': to_date,
+})
+
+for connection in connection_pool.browse(connection_ids):
+    # Call import OF order:
+    connection.import_platform_supplier_order()
+    connection.export_all_supplier_order()
