@@ -53,18 +53,23 @@ odoo = erppeek.Client(
     )
 
 # Pool used:
+company_pool = odoo.model('edi.company')
+
 connection_pool = odoo.model('http.request.connection')
-connection_ids = connection_pool.search([])
+company_ids = company_pool.search([
+    ('connection_id', '!=', False),
+])
 
 # Update date period:
 from_date = (datetime.now() + timedelta(days=-7)).strftime('%Y-%m-%d')
 to_date = datetime.now().strftime('%Y-%m-%d')
-connection_pool.write(connection_ids, {
+
+company_pool.write(company_ids, {
     'force_from_date': from_date,
     'force_to_date': to_date,
 })
 
-for connection in connection_pool.browse(connection_ids):
+for company in company_pool.browse(company_ids):
     # Call import OF order:
-    connection.import_platform_supplier_order()
-    connection.export_all_supplier_order()
+    company.import_platform_supplier_order()
+    company.export_all_supplier_order()
