@@ -440,6 +440,8 @@ class EdiCompany(orm.Model):
         """ Import supplier order from platform
             Period always yesterday to today (launched every day)
         """
+        if context is None:
+            context = {}
         order_pool = self.pool.get('edi.supplier.order')
         line_pool = self.pool.get('edi.supplier.order.line')
         product_pool = self.pool.get('edi.platform.product')
