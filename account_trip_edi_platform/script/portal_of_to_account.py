@@ -67,7 +67,6 @@ company_pool.write(company_ids, {
     'force_from_date': from_date,
     'force_to_date': to_date,
 })
-pdb.set_trace()
 for company in company_pool.browse(company_ids):
     # Call import OF order:
     company_pool.import_platform_supplier_order([company.id])
