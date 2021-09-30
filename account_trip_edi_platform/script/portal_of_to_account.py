@@ -71,5 +71,5 @@ company_pool.write(company_ids, {
 
 for company in company_pool.browse(company_ids):
     # Call import OF order:
-    company.import_platform_supplier_order()
-    company.export_all_supplier_order()
+    company_pool.import_platform_supplier_order([company.id])
+    company_pool.export_all_supplier_order([company.id])
