@@ -57,8 +57,8 @@ connection_pool = odoo.model('http.request.connection')
 connection_ids = connection_pool.search([])
 
 # Update date period:
-from_date = datetime.now().strftime('%Y-%m-%d')
-to_date = (datetime.now() + timedelta(days=-7)).strftime('%Y-%m-%d')
+from_date = (datetime.now() + timedelta(days=-7)).strftime('%Y-%m-%d')
+to_date = datetime.now().strftime('%Y-%m-%d')
 connection_pool.write(connection_ids, {
     'force_from_date': from_date,
     'force_to_date': to_date,
