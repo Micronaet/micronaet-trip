@@ -61,19 +61,8 @@ company_ids = company_pool.search([
 ])
 
 # Update date period:
-from_date = str(datetime.now() - timedelta(days=1))[:10].replace('-', '')
+from_date = str(datetime.now() - timedelta(days=3))[:10].replace('-', '')
 to_date = str(datetime.now())[:10].replace('-', '')
-
-from_date = '%s/%s/%s' % (
-    from_date[-2:],
-    from_date[5:7],
-    from_date[:4],
-)
-to_date = '%s/%s/%s' % (
-    to_date[-2:],
-    to_date[5:7],
-    to_date[:4],
-)
 
 company_pool.write(company_ids, {
     'force_from_date': from_date,
