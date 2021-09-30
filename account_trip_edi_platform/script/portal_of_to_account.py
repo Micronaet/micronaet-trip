@@ -19,6 +19,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
+import os
+import sys
+import erppeek
+from datetime import datetime, timedelta
+import ConfigParser
+
+# -----------------------------------------------------------------------------
+# Read configuration parameter:
+# -----------------------------------------------------------------------------
 # From config file:
 cfg_file = os.path.expanduser('./company.cfg')
 
