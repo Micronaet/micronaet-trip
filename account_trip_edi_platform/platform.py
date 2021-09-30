@@ -742,6 +742,8 @@ class EdiSupplierOrder(orm.Model):
     def send_ddt_order(self, cr, uid, ids, context=None):
         """ Send JSON data file to portal for DDT confirmed
         """
+        if context is None:
+            context = {}
         endpoint_pool = self.pool.get('http.request.endpoint')
         line_pool = self.pool.get('edi.supplier.order.ddt.line')
         for order in self.browse(cr, uid, ids, context=context):
