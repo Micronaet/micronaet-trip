@@ -63,12 +63,22 @@ company_ids = company_pool.search([
 # Update date period:
 from_date = (datetime.now() + timedelta(days=-7)).strftime('%Y-%m-%d')
 to_date = datetime.now().strftime('%Y-%m-%d')
+from_date = '%s/%s/%s' % (
+    from_date[-2:],
+    from_date[5:7],
+    from_date[:4],
+)
+to_date = '%s/%s/%s' % (
+    to_date[-2:],
+    to_date[5:7],
+    to_date[:4],
+)
 
 company_pool.write(company_ids, {
     'force_from_date': from_date,
     'force_to_date': to_date,
 })
-
+pdb.set_trace()
 for company in company_pool.browse(company_ids):
     # Call import OF order:
     company_pool.import_platform_supplier_order([company.id])
