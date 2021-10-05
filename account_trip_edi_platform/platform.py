@@ -356,7 +356,7 @@ class EdiCompany(orm.Model):
                 row = 0
                 order_id = False
                 for line in ddt_f.read().split('\n'):
-                    line = line.strip()
+                    line = line.strip().replace('\r', '')
                     row += 1
                     if row in fixed:
                         fixed[row] = line
