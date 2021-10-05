@@ -318,6 +318,7 @@ class EdiCompany(orm.Model):
     def import_all_supplier_order(self, cr, uid, ids, context=None):
         """ Import DDT from account
         """
+        pdb.set_trace()
         order_pool = self.pool.get('edi.supplier.order')
         ddt_line_pool = self.pool.get('edi.supplier.order.ddt.line')
         line_pool = self.pool.get('edi.supplier.order.line')
@@ -744,6 +745,8 @@ class EdiSupplierOrder(orm.Model):
     def send_ddt_order(self, cr, uid, ids, context=None):
         """ Send JSON data file to portal for DDT confirmed
         """
+        pdb.set_trace()
+
         if context is None:
             context = {}
         endpoint_pool = self.pool.get('http.request.endpoint')
