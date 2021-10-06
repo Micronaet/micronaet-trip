@@ -426,10 +426,10 @@ class EdiCompany(orm.Model):
                     else:
                         # todo not correct way to manage link to OF lines
                         line_id = False  # todo consider raise error!
-                        _logger.error(
+                        _logger.warning(
                             'Cannot link to generator line [%s]!' %
                             sequence)
-                        break  # Not imported
+                        # break  # Not imported
 
                     ddt_data = {
                         'sequence': sequence,
