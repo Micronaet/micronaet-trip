@@ -419,7 +419,8 @@ class EdiCompany(orm.Model):
                     # Link to line:
                     line_ids = line_pool.search(cr, uid, [
                         ('order_id', '=', order_id),
-                        ('sequence', '=', sequence),
+                        ('code', '=', code),
+                        # ('sequence', '=', sequence),
                     ])
                     if line_ids:  # Never override (for multi delivery)
                         line_id = line_ids[0]
