@@ -269,7 +269,8 @@
 
                                         <separator string="Dettaglio DDT:" colspan="4"/>
                                         <field name="ddt_line_ids" colspan="4" nolabel="1" >
-                                            <tree string="Righe" editable="bottom" colors="green:sent==True">
+                                            <tree string="Righe" editable="bottom" colors="green:sent==True;red:line_id==False">
+                                                <field name="line_id" invisible="1"/>
                                                 <field name="sequence"/>
                                                 <field name="name"/>
                                                 <field name="date"/>
