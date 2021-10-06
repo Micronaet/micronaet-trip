@@ -333,7 +333,6 @@ class EdiCompany(orm.Model):
         send_order_ids = []  # Order to be sent afters
         for root, folders, files in os.walk(ddt_path):
             for filename in files:
-                pdb.set_trace()
                 ddt_filename = os.path.join(root, filename)
                 if not filename.endswith('.csv'):
                     _logger.warning('Jumped file (unused): %s' % filename)
@@ -374,6 +373,7 @@ class EdiCompany(orm.Model):
 
                 row = 0
                 order_id = False
+                pdb.set_trace()
                 for line in ddt_lines:
                     row += 1
                     if row in fixed:
