@@ -333,6 +333,7 @@ class EdiCompany(orm.Model):
         send_order_ids = []  # Order to be sent afters
         for root, folders, files in os.walk(ddt_path):
             for filename in files:
+                pdb.set_trace()
                 ddt_filename = os.path.join(root, filename)
                 if not filename.endswith('.csv'):
                     _logger.warning('Jumped file (unused): %s' % filename)
@@ -342,28 +343,42 @@ class EdiCompany(orm.Model):
                     )
                     continue
 
-                # todo Check if is a DDT for Portal
+                # Pre read all lines (multi write)
+                start = True
+                new_path = history_path  # Was moved here after all
                 ddt_f = open(ddt_filename, 'r')
+                ddt_lines = []  # If no ODOO file
+                for line in ddt_f.read().split('\n'):
+                    if start and not line.startswith('ODOO'):
+                        _logger.error(
+                            'Order not start with ODOO, jumped')
+                        new_path = unused_path
+                        break  # Nothing else was ridden
+                    if start:
+                        start = False
+
+                    line = line.strip().replace('\r', '')
+                    if line.startswith('ODOO'):
+                        ddt_lines = []
+                    ddt_lines.append(line)
+
+                # todo Check if is a DDT for Portal
                 fixed = {  # Fixed data
                     1: '',  # ID ODOO
-                    2: '',  # DDT Date
-                    3: '',  # DDT Received
-                    4: '',  # DDT Number
-                    5: '',  # Company Order name
+                    2: '',  # Site code
+                    3: '',  # DDT Date
+                    4: '',  # DDT Received
+                    5: '',  # DDT Number
+                    6: '',  # Company Order name
                 }
 
                 row = 0
                 order_id = False
-                for line in ddt_f.read().split('\n'):
-                    line = line.strip().replace('\r', '')
+                for line in ddt_lines:
                     row += 1
                     if row in fixed:
                         fixed[row] = line
                         if row == 1:
-                            if not line.startswith('ODOO'):
-                                _logger.error(
-                                    'Order not start with ODOO, jumped')
-                                break  # Nothing else was ridden
                             order_id = int(line[4:])
 
                             # Check if it is a platform file still present:
@@ -381,16 +396,19 @@ class EdiCompany(orm.Model):
                                     )
                                 break
                         continue
+
+                    # Detail lines:
                     line = line.split(separator)
-                    if len(line) != 6:
+                    if len(line) != 7:
                         _logger.error('Line not in correct format')
                         continue
                     sequence = line[0].strip()
                     code = line[1].strip()
-                    product_uom = line[2].strip().upper()
-                    deadline_lot = self.iso_date_format(line[3].strip())
-                    lot = line[4].strip()
-                    product_qty = line[5].strip()
+                    company_code = line[2].strip()  # todo remove?
+                    product_uom = line[3].strip().upper()
+                    deadline_lot = self.iso_date_format(line[4].strip())
+                    lot = line[5].strip()
+                    product_qty = line[6].strip()
 
                     # Order to be sent after:
                     if order_id not in send_order_ids:
@@ -412,10 +430,11 @@ class EdiCompany(orm.Model):
 
                     ddt_data = {
                         'sequence': sequence,
-                        'name': fixed[4],
-                        'date': self.iso_date_format(fixed[2]),
-                        'date_received': self.iso_date_format(fixed[3]),
+                        'name': fixed[5],
+                        'date': self.iso_date_format(fixed[3]),
+                        'date_received': self.iso_date_format(fixed[4]),
                         'code': code,
+                        # todo company_code?
                         'uom_product': product_uom,
                         'product_qty': product_qty,
                         'lot': lot,
@@ -430,7 +449,7 @@ class EdiCompany(orm.Model):
                 # And only if all line loop works fine:
                 shutil.move(
                     ddt_filename,
-                    os.path.join(history_path, filename),
+                    os.path.join(new_path, filename),
                 )
             break  # Only first folder!
         return order_pool.send_ddt_order(
