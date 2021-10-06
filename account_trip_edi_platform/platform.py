@@ -331,6 +331,7 @@ class EdiCompany(orm.Model):
         # log_path = os.path.join(ddt_path, 'log')  # todo log events!
         _logger.info('Start check DDT files: %s' % ddt_path)
         send_order_ids = []  # Order to be sent afters
+        move_file_list = []  # File operation
         for root, folders, files in os.walk(ddt_path):
             for filename in files:
                 ddt_filename = os.path.join(root, filename)
@@ -423,6 +424,7 @@ class EdiCompany(orm.Model):
                     if line_ids:  # Never override (for multi delivery)
                         line_id = line_ids[0]
                     else:
+                        # todo not correct way to manage link to OF lines
                         line_id = False  # todo consider raise error!
                         _logger.error(
                             'Cannot link to generator line [%s]!' %
@@ -431,7 +433,7 @@ class EdiCompany(orm.Model):
 
                     ddt_data = {
                         'sequence': sequence,
-                        'name': fixed[5],
+                        'name': fixed[5],  # DDT number
                         'date': self.iso_date_format(fixed[3]),
                         'date_received': self.iso_date_format(fixed[4]),
                         'code': code,
@@ -442,19 +444,28 @@ class EdiCompany(orm.Model):
                         'deadline_lot': deadline_lot,
 
                         'order_id': order_id,
-                        'line_id': line_id,
+                        'line_id': line_id,  # todo manage correct link!!!!!!!!
                     }
                     ddt_line_pool.create(cr, uid, ddt_data, context=context)
                     _logger.warning('History used file: %s' % filename)
 
                 # And only if all line loop works fine:
-                shutil.move(
+                move_file_list.append((
                     ddt_filename,
                     os.path.join(new_path, filename),
-                )
+                ))
             break  # Only first folder!
-        return order_pool.send_ddt_order(
+
+        # Send operation:
+        send_esit = order_pool.send_ddt_order(
             cr, uid, send_order_ids, context=context)
+        # todo manage error if partially sent
+
+        # File operation (at the end):
+        for from_file, to_file in move_file_list:
+            shutil.move(from_file, to_file)
+
+        return send_esit
 
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
         """ Import supplier order from platform
