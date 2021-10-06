@@ -447,7 +447,6 @@ class EdiCompany(orm.Model):
                         'line_id': line_id,  # todo manage correct link!!!!!!!!
                     }
                     ddt_line_pool.create(cr, uid, ddt_data, context=context)
-                    _logger.warning('History used file: %s' % filename)
 
                 # And only if all line loop works fine:
                 move_file_list.append((
@@ -463,6 +462,8 @@ class EdiCompany(orm.Model):
 
         # File operation (at the end):
         for from_file, to_file in move_file_list:
+            _logger.warning('History used file: %s >> %s' % (
+                from_file, to_file))
             shutil.move(from_file, to_file)
 
         return send_esit
