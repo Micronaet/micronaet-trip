@@ -399,7 +399,7 @@ class EdiCompany(orm.Model):
 
                     # Detail lines:
                     line = line.split(separator)
-                    if len(line) != 7:
+                    if len(line) != 8:
                         _logger.error('Line not in correct format')
                         continue
                     sequence = line[0].strip()
@@ -409,6 +409,7 @@ class EdiCompany(orm.Model):
                     deadline_lot = self.iso_date_format(line[4].strip())
                     lot = line[5].strip()
                     product_qty = line[6].strip()
+                    # 7 not present
 
                     # Order to be sent after:
                     if order_id not in send_order_ids:
