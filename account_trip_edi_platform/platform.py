@@ -806,7 +806,8 @@ class EdiSupplierOrder(orm.Model):
 
                     'CODICE_PRODUTTORE': order.supplier_code,  # '2288'
                     'DATA_DDT': ddt_line.date,  # (FORMATO AAAAMMGG)
-                    'DATA_ENTRATA_MERCE': ddt_line.date_received,
+                    'DATA_ENTRATA_MERCE': ddt_line.date,
+                    # ddt_line.date_received,
                     'NUMERO_ORDINE': order.name,
                 })
 
