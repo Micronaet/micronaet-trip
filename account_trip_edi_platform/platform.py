@@ -374,7 +374,6 @@ class EdiCompany(orm.Model):
 
                 row = 0
                 order_id = False
-                pdb.set_trace()
                 for line in ddt_lines:
                     row += 1
                     if row in fixed:
@@ -396,6 +395,7 @@ class EdiCompany(orm.Model):
                                     'File %s jumped' % (line, filename),
                                     )
                                 break
+                        pdb.set_trace()
                         continue
 
                     # Detail lines:
