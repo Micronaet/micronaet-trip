@@ -466,7 +466,7 @@ class EdiCompany(orm.Model):
                 from_file, to_file))
             shutil.move(from_file, to_file)
 
-        return send_esit
+        return send_esit or True
 
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
         """ Import supplier order from platform
