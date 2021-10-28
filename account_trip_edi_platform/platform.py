@@ -395,7 +395,6 @@ class EdiCompany(orm.Model):
                                     'File %s jumped' % (line, filename),
                                     )
                                 break
-                        pdb.set_trace()
                         continue
 
                     # Detail lines:
