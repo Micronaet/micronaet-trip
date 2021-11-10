@@ -41,7 +41,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 _logger = logging.getLogger(__name__)
 
 
-class edi_company_c6(orm.Model):
+class edi_company_c8(orm.Model):
     """ Add model for parametrize function for Company 6
         Model has only function for a sort of abstract class
     """
