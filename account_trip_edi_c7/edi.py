@@ -32,25 +32,25 @@ from openerp import SUPERUSER_ID
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
 
 
 _logger = logging.getLogger(__name__)
 
 class edi_company_c7(orm.Model):
-    ''' Add model for parametrize function for Company 7
+    """ Add model for parametrize function for Company 7
         Model has only function for a sort of abstract class
-    '''
+    """
 
     _name = 'edi.company.c7'
     _description = 'EDI Company 7'
 
-    # -------------------------------------------------------------------------    
+    # -------------------------------------------------------------------------
     #                     Abstract function and property:
-    # -------------------------------------------------------------------------    
+    # -------------------------------------------------------------------------
     trace = {
         'number': (221, 231),
         'date': (378, 386), # Insert with parser function
@@ -62,7 +62,7 @@ class edi_company_c7(orm.Model):
         'detail_quantity': (330, 345),
         'detail_price': (346, 361),
         'detail_total': (362, 377), # XXX not present
-        
+
         # Destination blocks:
         'destination_facility': (0, 0), # not present
         'destination_cost': (0, 0), # XXX not present
@@ -72,81 +72,79 @@ class edi_company_c7(orm.Model):
 
     def get_timestamp_from_file(self, file_in, path_in=None):
         # TODO
-        ''' Get timestamp value from file name            
+        """ Get timestamp value from file name
             File is: 20151231_120000_NAME.ASC
                      Date Time Filename
-        '''
+        """
         # TODO better is manage data in file instead change name!!
         return "%s/%s/%s %s:%s:%s" % (
-            file_in[:4], 
-            file_in[4:6], 
+            file_in[:4],
+            file_in[4:6],
             file_in[6:8],
 
-            file_in[9:11], 
-            file_in[11:13], 
-            file_in[13:15],            
+            file_in[9:11],
+            file_in[11:13],
+            file_in[13:15],
             )
 
     def is_an_invalid_row(self, row):
-        ''' Always valid
-        '''
+        """ Always valid
+        """
         return False
-        
+
     def get_state_of_file(self, file_in, forced_list):
-        ''' Test state of file depend on name and forced presence
-        '''
+        """ Test state of file depend on name and forced presence
+        """
         # Always create (no modify management)
         try:
             if file_in in forced_list: # Forced (pickle file)
                 return 'forced'
-            else:        
+            else:
                 file_part = file_in.split('_')
                 command = file_part[4][:3].upper()
-                if command == 'NEW': 
+                if command == 'NEW':
                     return 'create'
-                elif command == 'CAN': 
+                elif command == 'CAN':
                     return 'deleting' # TODO delete?
                 else: # UPD
                     return 'change'
         except:
-            return 'anomaly'            
+            return 'anomaly'
 
     def get_destination(self, facility, cost, site):
-        ''' Mask for code destination (only the last: site is used)'''
+        """ Mask for code destination (only the last: site is used)"""
         return "[%s]" % site
 
     def get_destination_id(self, cr, uid, facility, cost, site, context=None):
-        ''' Get 3 parameters for destination and return ID get from res.partner
+        """ Get 3 parameters for destination and return ID get from res.partner
             generated during importation
-        '''
+        """
         return self.pool.get('res.partner').search_supplier_destination(
             cr, uid, '', site, context=context)
 
     def get_priority(self, cr, uid, file_in):
-        ''' Always normal (no priority management)
-        '''
-        return 'normal'    
+        """ Always normal (no priority management)
+        """
+        return 'normal'
 
     # Format:
     def format_int(self, value):
-        ''' EDI integer format
-        '''
+        """ EDI integer format
+        """
         return value
 
-    def format_float(self, value, decimal=3, with_separator=False, 
+    def format_float(self, value, decimal=3, with_separator=False,
             separator='.'):
-        ''' EDI float format
-        '''
+        """ EDI float format
+        """
         return value
 
     def format_date(self, value, date_format='ISO'):
-        ''' EDI file date format YYYYMMDD
-        '''        
+        """ EDI file date format YYYYMMDD
+        """
         return "%s-%s-%s" % (value[:4], value[4:6], value[6:8])
 
     def format_string(self, value):
-        ''' EDI file string 
-        '''
+        """ EDI file string
+        """
         return value.strip()
-            
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
