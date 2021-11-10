@@ -36,7 +36,7 @@ def sort_line(row):
     start_2 = code[:2]
 
     # Test based on 1 or 2 start char:
-    if start_1 in 'HO' or start_2 == 'SP': # XXX has S - SP problem so first
+    if start_1 in 'HO' or start_2 == 'SP':  # XXX has S - SP problem so first
         return 3, code  # dry
     elif start_1 in 'CDFPSV':  # XXX has S - SP problem so second test
         return 1, code  # freeze
