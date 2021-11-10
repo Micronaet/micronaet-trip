@@ -23,6 +23,7 @@ import shutil
 import ConfigParser
 from datetime import datetime
 
+
 # -----------------------------------------------------------------------------
 # Utility:
 # -----------------------------------------------------------------------------
@@ -65,6 +66,7 @@ def sort_line(row):
         print('Char not found %s - %s - %s' % (start_1, start_2, start_3))
         f_error.close()
         return (5, code)
+
 
 def clean_text(text, length, uppercase=False, error=None, truncate=False):
     """ Return clean text with limit cut
@@ -120,6 +122,7 @@ def clean_date(italian_date, separator='', out_format='iso', error=None):
     else: # incorrect format:
         return italian_date # nothing todo
 
+
 def clean_float(value, length, decimal=3, separator='.', error=None):
     """ Clean float and return float format
     """
@@ -136,6 +139,7 @@ def clean_float(value, length, decimal=3, separator='.', error=None):
     res = mask % float_value
     res = res.replace('.', separator)
     return res
+
 
 def log_on_file(message, mode='INFO', file_list=None, verbose=True):
     """ Write message in file list passed
