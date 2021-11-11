@@ -24,6 +24,7 @@ import shutil
 import ConfigParser
 from datetime import datetime
 
+
 # -----------------------------------------------------------------------------
 # Utility:
 # -----------------------------------------------------------------------------
@@ -40,7 +41,7 @@ def sort_line(row):
     # 3 char test start:
     # -------------------------------------------------------------------------
     if start_3 == 'SPA':
-        return 4, code # pasta
+        return 4, code  # pasta
 
     # -------------------------------------------------------------------------
     # 2 char test start:
@@ -67,6 +68,7 @@ def sort_line(row):
         f_error.close()
         return (5, code)
 
+
 def clean_text(text, length, uppercase=False, error=None, truncate=False):
     """ Return clean text with limit cut
         Log in error if over length
@@ -83,6 +85,7 @@ def clean_text(text, length, uppercase=False, error=None, truncate=False):
     if uppercase:
         return text.upper()
     return text
+
 
 def clean_date(italian_date, separator='', out_format='iso', error=None):
     """ Return clean text with limit cut
@@ -118,8 +121,8 @@ def clean_date(italian_date, separator='', out_format='iso', error=None):
             separator,
             italian_date[-4:],
             )
-    else: # incorrect format:
-        return italian_date # nothing todo
+    else:  # incorrect format:
+        return italian_date  # nothing todo
 
 
 def clean_float(value, length, decimal=3, separator='.', error=None):
@@ -199,8 +202,8 @@ separator = config.get('file', 'separator')
 tot_col = eval(config.get('file', 'tot_col'))
 
 # Calculated parameters:
-f_in_schedule = False # open(in_schedule, 'a')
-f_in_log = False #open(in_log, 'a')
+f_in_schedule = False  # open(in_schedule, 'a')
+f_in_log = False  # open(in_log, 'a')
 
 f_out_schedule = open(out_schedule, 'a')
 f_out_log = open(out_log, 'a')
@@ -285,7 +288,7 @@ for root, dirs, files in os.walk(in_path):
             # -----------------------------------------------------------------
             # Read fields:
             # -----------------------------------------------------------------
-            date = create_date[:8] # From create date
+            date = create_date[:8]  # From create date
 
             # Char:
             cdc = clean_text(row[0], 9, error=error)
