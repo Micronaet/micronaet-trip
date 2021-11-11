@@ -253,7 +253,8 @@ for root, dirs, files in os.walk(in_path):
 
         file_out = os.path.join(
             out_path, '%s' % (
-                '%s_%s_%s' % (create_date, f, command),
+                '%s_%s_%s.txt' % (
+                    create_date, f[:-4], command),
                 ))  # TODO change name
 
         # ---------------------------------------------------------------------
