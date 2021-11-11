@@ -416,7 +416,6 @@ for root, dirs, files in os.walk(in_path):
                 error, mode='ERROR', file_list=[f_in_log, f_out_log])
             # XXX TODO delete OUT file
             continue
-        break  # todo remove line (debug mode)
     break  # only root folder is read
 
 log_on_file(
