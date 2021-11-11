@@ -231,7 +231,7 @@ class trip_import_edi_wizard(orm.Model):
                             line[trace['deadline'][0]:trace['deadline'][1]])
                         # NOTE: removed for color test on OpenERP (instead of
                         # have all grey
-                        #if deadline < reference_date: # Next importation
+                        # if deadline < reference_date: # Next importation
                         #    mode_type = 'importing'
 
                         customer = False
@@ -247,7 +247,7 @@ class trip_import_edi_wizard(orm.Model):
                             # -------------------------------------------------
                             #                       HEADER
                             # -------------------------------------------------
-                            line_type = line[0: start_structure] # for struct.
+                            line_type = line[0: start_structure]  # for struct.
                             if structured:
                                 # ---------------------------------------------
                                 #                 STRUCTURED
@@ -287,7 +287,6 @@ class trip_import_edi_wizard(orm.Model):
                                         line[
                                             trace['customer'][0]:
                                             trace['customer'][1]])
-
 
                                 # Read all destination code (max 3 parts):
                                 # NOTE: All 3 parts stay on same line (for now)
@@ -475,7 +474,7 @@ class trip_import_edi_wizard(orm.Model):
 
                 if destination_not_found:
                     _logger.warning(_('\n\nDestination not found: \n[%s]') % (
-                        destination_not_found, )  )
+                        destination_not_found, ))
             except:
                 _logger.error("Generic error: %s" % (sys.exc_info(), ))
 
