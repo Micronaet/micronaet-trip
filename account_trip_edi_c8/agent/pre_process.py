@@ -240,7 +240,7 @@ for root, dirs, files in os.walk(in_path):
 
     for f in files:
         file_part = f.split('_')
-        command = 'New'  # (file_part[2][:3]).upper()  # New, Upd, Can
+        command = 'NEW'  # Only this!
 
         # Fullname needed:
         file_in = os.path.join(root, f)
@@ -253,7 +253,7 @@ for root, dirs, files in os.walk(in_path):
 
         file_out = os.path.join(
             out_path, '%s' % (
-                '%s_%s' % (create_date, f),
+                '%s_%s_%s' % (create_date, f, command),
                 ))  # TODO change name
 
         # ---------------------------------------------------------------------
@@ -326,10 +326,10 @@ for root, dirs, files in os.walk(in_path):
             # Convert row input file:
             # -----------------------------------------------------------------
             row_out.append(
-                '%3s|%10s|%-10s|%-10s|%8s|'
-                '%-13s|%4s|%16s|%60s|%2s|%-15s|'
-                '%-16s|%60s|%2s|%15s|'
-                '%8s|%40s|%40s|%15s\r\n' % (
+                '%-3s|%-10s|%-10s|%-10s|%-8s|'
+                '%-13s|%4s|%-16s|%-60s|%-2s|%15s|'
+                '%-16s|%-60s|%-2s|%15s|'
+                '%-8s|%-40s|%-40s|%-15s\r\n' % (
                     # Header:
                     company,  # depend on parameter
                     cdc,

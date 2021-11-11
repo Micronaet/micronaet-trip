@@ -22,21 +22,9 @@
 import os
 import sys
 import logging
-import openerp
-import openerp.netsvc as netsvc
-import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from openerp import SUPERUSER_ID
-from openerp import tools
 from openerp.tools.translate import _
-from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
-    DEFAULT_SERVER_DATETIME_FORMAT,
-    DATETIME_FORMATS_MAP,
-    float_compare)
-
 
 _logger = logging.getLogger(__name__)
 
@@ -53,39 +41,39 @@ class edi_company_c8(orm.Model):
     #                     Abstract function and property:
     # -------------------------------------------------------------------------
     trace = {
-        'number': (221, 231),
-        'date': (378, 386),  # Insert with parser function
-        'deadline': (8, 16),
+        'number': (46, 59),
+        'date': (259, 267),  # Insert with parser function
+        'deadline': (37, 45),
         'customer': (0, 0),  # XXX not present
-        'detail_code': (249, 265),
-        'detail_description': (266, 326),
-        'detail_um': (327, 329),
-        'detail_quantity': (330, 345),
-        'detail_price': (346, 361),
-        'detail_total': (362, 377),  # XXX not present
+        'detail_code': (162, 178),
+        'detail_description': (179, 239),
+        'detail_um': (240, 242),
+        'detail_quantity': (243, 258),
+        'detail_price': (0, 0),  # Not present
+        'detail_total': (0, 0),  # Not present
 
         # Destination blocks:
-        'destination_facility': (0, 0),  # not present
-        'destination_cost': (0, 0),  # XXX not present
-        'destination_site': (17, 26),
-        'destination_description': (27, 87),
+        'destination_facility': (4, 14),
+        'destination_cost': (15, 25),
+        'destination_site': (26, 36),
+        'destination_description': (0, 0),  # Not present
         }
 
     def get_timestamp_from_file(self, file_in, path_in=None):
-        # TODO
         """ Get timestamp value from file name
             File is: 20151231_120000_NAME.ASC
                      Date Time Filename
         """
         # TODO better is manage data in file instead change name!!
+        date_block = file_in[30:]
         return "%s/%s/%s %s:%s:%s" % (
-            file_in[:4],
-            file_in[4:6],
-            file_in[6:8],
+            date_block[:4],
+            date_block[4:6],
+            date_block[6:8],
 
-            file_in[9:11],
-            file_in[11:13],
-            file_in[13:15],
+            date_block[9:11],
+            date_block[11:13],
+            date_block[13:15],
             )
 
     def is_an_invalid_row(self, row):
@@ -102,12 +90,13 @@ class edi_company_c8(orm.Model):
                 return 'forced'
             else:
                 file_part = file_in.split('_')
-                command = file_part[4][:3].upper()
+                command = file_part[6][:3].upper()
                 if command == 'NEW':
                     return 'create'
+                # todo not used:
                 elif command == 'CAN':
                     return 'deleting'  # TODO delete?
-                else: # UPD
+                else:  # UPD
                     return 'change'
         except:
             return 'anomaly'
