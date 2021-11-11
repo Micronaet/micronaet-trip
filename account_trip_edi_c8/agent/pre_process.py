@@ -326,7 +326,7 @@ for root, dirs, files in os.walk(in_path):
             # Convert row input file:
             # -----------------------------------------------------------------
             row_out.append(
-                '%3s|%9s|%-9s|%-9s|%8s|'
+                '%3s|%10s|%-10s|%-10s|%8s|'
                 '%-10s|%4s|%16s|%60s|%2s|%-15s|'
                 '%-16s|%60s|%2s|%15s|'
                 '%8s|%40s|%40s|%15s\r\n' % (
