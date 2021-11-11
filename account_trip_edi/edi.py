@@ -97,8 +97,8 @@ class trip_import_edi_wizard(orm.Model):
         log_file.close()
 
         order_info = {
-            'create': {},   # last numer created
-            'deleting': [], # list of order to deleting
+            'create': {},  # last numer created
+            'deleting': [],  # list of order to deleting
             'anomaly': [],  # list order to delete without create (warning)
             }
 
@@ -566,9 +566,9 @@ class trip_import_edi_wizard(orm.Model):
                 datetime.now(), uid, file_proxy.name, file_proxy.number))
 
         log_file.close()
-        if modified: # only if changed:
-            edi_pool.store_forced(cr, uid, company_id, forced_list,
-                context=context)
+        if modified:  # only if changed:
+            edi_pool.store_forced(
+                cr, uid, company_id, forced_list, context=context)
 
         # Set record to importing
         self.write(cr, uid, ids, {
@@ -648,7 +648,6 @@ class trip_import_edi_wizard(orm.Model):
                 _("Error"),
                 _("Error deleting file %s") % (sys.exc_info(), ),
                 )
-            return False
 
     _columns = {
         'name': fields.char('Name', size=80, required=True, readonly=True),
@@ -660,8 +659,8 @@ class trip_import_edi_wizard(orm.Model):
         'destination': fields.char('Destination (customer)', size=110,
             readonly=True),
         'company_id':fields.many2one('edi.company', 'Company', required=True),
-        'destination_id': fields.many2one('res.partner',
-            'Destination (internal)',
+        'destination_id': fields.many2one(
+            'res.partner', 'Destination (internal)',
             readonly=True, domain=[('is_address', '=', True)],
             ondelete='set null'),
         'destination_description': fields.char('Destination description',
@@ -681,18 +680,19 @@ class trip_import_edi_wizard(orm.Model):
             ], 'Priority'),
         'type': fields.selection([
             ('importing', 'To importing'),   # Next importation files
-            ('anomaly', 'Delete (Anomaly)'), # Delete, not found create before
+            ('anomaly', 'Delete (Anomaly)'),  # Delete, not found create before
             ('create', 'Create'),            # Create
             ('change', 'Change'),            # Change an order
             ('deleting', 'To delete'),       # Create, but delete before
             ('forced', 'To force'),          # Force to load next importation
-            ('delete', 'Delete')], 'Type', required=True), # To delete
+            ('delete', 'Delete')], 'Type', required=True),  # To delete
         'recursion': fields.integer('Recursion')
         }
 
     _defaults = {
         'type': lambda *x: 'create',
         }
+
 
 class res_partner(osv.osv):
     """ Add extra info for calculate waiting order for destination
@@ -760,8 +760,8 @@ class edi_company(orm.Model):
     # -------------------------------------------------------------------------
     #                             Utility function
     # -------------------------------------------------------------------------
-    def get_trip_import_edi_folder(self, cr, uid, company_id, value='folder',
-            context=None):
+    def get_trip_import_edi_folder(
+            self, cr, uid, company_id, value='folder', context=None):
         """ Read parameter for default EDI folder (set up in company)
             value: 'folder' (default) folder of EDI in file
                    'file' for file used to pass forced list
@@ -789,7 +789,7 @@ class edi_company(orm.Model):
             filename = self.get_trip_import_edi_folder(
                 cr, uid, company_id, value='file', context=context)
 
-            pickle.dump(forced_list, open(filename, "wb" ) )
+            pickle.dump(forced_list, open(filename, 'wb'))
             return True
         except:
             return False
@@ -827,11 +827,10 @@ class edi_company(orm.Model):
         'trip_todo_file': fields.char(
             'Trip TODO file', size=150, required=True,
             help="File export where indicate TODO element, used by import "
-                "file script for force some future importation order. "
-                "Write a tuple, like: ('~', 'etl', 'export', 'todo.txt')"),
+                 "file script for force some future importation order. "
+                 "Write a tuple, like: ('~', 'etl', 'export', 'todo.txt')"),
         }
 
     _defaults = {
         'import': lambda *x: False,
         }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

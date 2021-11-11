@@ -44,7 +44,7 @@ class edi_company_c8(orm.Model):
         'number': (46, 59),
         'date': (259, 267),  # Insert with parser function
         'deadline': (37, 45),
-        'customer': (0, 0),  # XXX not present
+        'customer': (0, 0),  # Not present
         'detail_code': (162, 178),
         'detail_description': (179, 239),
         'detail_um': (240, 242),
