@@ -92,8 +92,9 @@ def clean_date(italian_date, separator='', out_format='iso', error=None):
     """
     if error is None:
         error = []
-    italian_date = italian_date.split(' ')[0] # remove hour block
-    if len(italian_date) != 10:
+    italian_date = italian_date.split(' ')[0]  # remove hour block
+    italian_date = italian_date.replace(separator, '')  # remove separator
+    if len(italian_date) != 8:
         error.append('Error not italian date: %s' % italian_date)
         # not stopped
     if out_format == 'iso':
