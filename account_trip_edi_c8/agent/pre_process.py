@@ -267,6 +267,7 @@ for root, dirs, files in os.walk(in_path):
             mode='INFO',
             file_list=[f_in_log, f_out_log])
         for line in f_in:
+            line = line.strip()
             row = line.split(separator)
             if row[0] == 'TM':
                 # Start header:
