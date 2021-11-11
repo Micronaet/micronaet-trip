@@ -300,8 +300,7 @@ for root, dirs, files in os.walk(in_path):
             cdc = clean_text(row[0], 10, error=error)
             code = clean_text(row[1], 10, error=error)
             cook_center = clean_text(row[2], 10, error=error)
-            deadline = clean_date(
-                row[3], separator='', out_format='iso', error=error)
+            deadline = row[3].strip()
             order = clean_text(row[4], 10, error=error)
             sequence = clean_text(row[5], 4, error=error)
             default_code = clean_text(row[6], 16, uppercase=True, error=error)
