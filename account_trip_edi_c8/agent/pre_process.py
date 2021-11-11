@@ -265,16 +265,20 @@ for root, dirs, files in os.walk(in_path):
             'Parsing file: %s [%s]' % (file_in, company),
             mode='INFO',
             file_list=[f_in_log, f_out_log])
+        counter = 0
         for line in f_in:
             line = line.strip()
             row = line.split(separator)
             if row[0] == 'TM':
+                if counter:
+                    # Double order
+                    pdb.set_trace()
                 # Start header:
                 print('Found header in %s file' % f)
                 continue
+            counter += 1
             if row[0] == 'FM':
                 pdb.set_trace()
-
                 # End order:
                 # todo check total lines?
                 print('Found end of line in %s file' % f)
@@ -412,6 +416,7 @@ for root, dirs, files in os.walk(in_path):
                 error, mode='ERROR', file_list=[f_in_log, f_out_log])
             # XXX TODO delete OUT file
             continue
+        break  # todo remove line (debug mode)
     break # only root folder is read
 
 log_on_file(
