@@ -17,7 +17,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
-import pdb
 import sys
 import os
 import shutil
@@ -35,38 +34,23 @@ def sort_line(row):
     code = row.split('|')[11].upper()
     start_1 = code[:1]
     start_2 = code[:2]
-    start_3 = code[:3]
 
-    # -------------------------------------------------------------------------
-    # 3 char test start:
-    # -------------------------------------------------------------------------
-    if start_3 == 'SPA':
-        return 4, code  # pasta
-
-    # -------------------------------------------------------------------------
-    # 2 char test start:
-    # -------------------------------------------------------------------------
-    if start_2 in ('SP', 'SS'):
-        return 1, code  # freeze
-
-    # -------------------------------------------------------------------------
-    # 1 char test start:
-    # -------------------------------------------------------------------------
-    if start_1 in 'CDFPSV':
+    # Test based on 1 or 2 start char:
+    if start_1 in 'HO' or start_2 == 'SP':  # XXX has S - SP problem so first
+        return 3, code  # dry
+    elif start_1 in 'CDFPSV':  # XXX has S - SP problem so second test
         return 1, code  # freeze
     elif start_1 in 'BILT':
         return 2, code  # fresh
-    elif start_1 in 'HO':
-        return 3, code  # dry
     elif start_1 in 'G':
         return 4, code  # pasta
     else: # Error list
+        # Log error:
         f_error = open('./sort_error.log', 'w')
-        f_error.write(
-            'Char not found %s - %s -%s\n' % (start_1, start_2, start_3))
-        print('Char not found %s - %s - %s' % (start_1, start_2, start_3))
+        f_error.write('Char not found %s - %s\n' % (start_1, start_2))
+        print('Char not found %s - %s' % (start_1, start_2))
         f_error.close()
-        return (5, code)
+        return 5, code
 
 
 def clean_text(text, length, uppercase=False, error=None, truncate=False):
@@ -87,42 +71,16 @@ def clean_text(text, length, uppercase=False, error=None, truncate=False):
     return text
 
 
-def clean_date(italian_date, separator='', out_format='iso', error=None):
+def clean_date(date, error=None):
     """ Return clean text with limit cut
         Log in error if over length
     """
     if error is None:
         error = []
-    italian_date = italian_date.split(' ')[0] # remove hour block
-    if len(italian_date) != 10:
-        error.append('Error not italian date: %s' % italian_date)
-        # not stopped
-    if out_format == 'iso':
-        return '%s%s%s%s%s' % (
-            italian_date[-4:],
-            separator,
-            italian_date[3:5],
-            separator,
-            italian_date[:2],
-            )
-    elif out_format == 'italian':
-        return '%s%s%s%s%s' % (
-            italian_date[:2],
-            separator,
-            italian_date[3:5],
-            separator,
-            italian_date[-4:],
-            )
-    elif out_format == 'english':
-        return '%s%s%s%s%s' % (
-            italian_date[3:5],
-            separator,
-            italian_date[:2],
-            separator,
-            italian_date[-4:],
-            )
-    else:  # incorrect format:
-        return italian_date  # nothing todo
+    date = date or ''
+    if len(date) != 8:
+        error.append('Error not date: %s' % date)
+    return date
 
 
 def clean_float(value, length, decimal=3, separator='.', error=None):
@@ -133,6 +91,7 @@ def clean_float(value, length, decimal=3, separator='.', error=None):
     try:
         value = value.replace(',', '.')
         float_value = float(value.strip())
+        float_value = float_value / (10 ^ decimal)
     except:
         error.append('Not a float: %s' % value)
         float_value = 0.0
@@ -163,7 +122,6 @@ def log_on_file(message, mode='INFO', file_list=None, verbose=True):
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
-pdb.set_trace()
 try:
     company = sys.argv[1]
     if len(company) > 3:
@@ -203,8 +161,8 @@ separator = config.get('file', 'separator')
 tot_col = eval(config.get('file', 'tot_col'))
 
 # Calculated parameters:
-f_in_schedule = False  # open(in_schedule, 'a')
-f_in_log = False  # open(in_log, 'a')
+f_in_schedule = False # open(in_schedule, 'a')
+f_in_log = False #open(in_log, 'a')
 
 f_out_schedule = open(out_schedule, 'a')
 f_out_log = open(out_log, 'a')
@@ -241,7 +199,18 @@ for root, dirs, files in os.walk(in_path):
 
     for f in files:
         file_part = f.split('_')
-        command = (file_part[2][:3]).upper()  # New, Upd, Can
+        if f[:2] == 'OF':
+            command = 'NEW'
+        elif f[:2] == 'CF':
+            command = 'UPD'
+        else:
+            log_on_file(
+                'File %s unmanaged [%s]' % (f, company),
+                mode='ERROR',
+                file_list=[f_in_log, f_out_log])
+            continue
+
+        command = (file_part[2][:3]).upper() # New, Upd, Can
 
         # Fullname needed:
         file_in = os.path.join(root, f)
@@ -255,7 +224,7 @@ for root, dirs, files in os.walk(in_path):
         file_out = os.path.join(
             out_path, '%s' % (
                 '%s_%s' % (create_date, f),
-                )) # TODO change name
+                ))  # TODO change name
 
         # ---------------------------------------------------------------------
         # Read input file:
@@ -269,16 +238,9 @@ for root, dirs, files in os.walk(in_path):
             file_list=[f_in_log, f_out_log])
         for line in f_in:
             row = line.split(separator)
-            if row[0] == 'TM':
-                # Start header:
-                print('Found header in %s file' % f)
+            if line[:2] in ('TM', 'FM'):
+                # Not used (start and end line)
                 continue
-            if row[0] == 'FM':
-                # End order:
-                # todo check total lines?
-                print('Found end of line in %s file' % f)
-                continue
-
             if len(row) != tot_col:
                 log_on_file(
                     'Different number columns: %s [%s]' % (file_in, company),
@@ -288,66 +250,59 @@ for root, dirs, files in os.walk(in_path):
             # -----------------------------------------------------------------
             # Read fields:
             # -----------------------------------------------------------------
-            date = create_date[:8]  # From create date
+            date = create_date[:8] # From create date
+            deadline = clean_date(row[3], separator='', out_format='iso',
+                error=error)
 
             # Char:
-            cdc = clean_text(row[0], 9, error=error)
             code = clean_text(row[1], 9, error=error)
-            cook_center = clean_text(row[2], 9, error=error)
-            deadline = clean_date(
-                row[3], separator='', out_format='iso', error=error)
-            order = clean_text(row[4], 10, error=error)
-            sequence = clean_text(row[5], 4, error=error)
-            default_code = clean_text(row[6], 16, uppercase=True, error=error)
-            name = clean_text(row[7], 60, error=error, truncate=True)
-            um = clean_text(row[8], 2, uppercase=True, error=error)
-            quantity = clean_float(row[9], 15, 2, error=error)
-
-            # Company fields:
+            cook_center = ('%s-%s' % (
+                clean_text(row[1], 20, error=error),
+                clean_text(row[2], 20, error=error),
+                ))[:60]  # XXX Trunc
+            address = ''  # clean_text(row[3], 60, error=error)
+            cap = ''  # clean_text(row[4], 5, error=error) # XXX Check
+            city = ''  # clean_text(row[5], 60, error=error) # XXX Check
+            province = ''  # clean_text(row[6], 4, uppercase=True, error=error)
+            order = clean_text(row[4], 15, error=error)  # TODO different
+            default_code = clean_text(row[10], 16, uppercase=True, error=error)
             default_code_supplier = clean_text(
-                row[10], 16, uppercase=True, error=error)
-            name_supplier = clean_text(row[11], 60, error=error, truncate=True)
-            um_supplier = clean_text(row[12], 2, uppercase=True, error=error)
-            quantity_supplier = clean_float(row[13], 15, 2, error=error)
+                row[6], 16, uppercase=True, error=error)
+            name = clean_text(row[11], 60, error=error, truncate=True)
+            um = clean_text(row[12], 2, uppercase=True, error=error)
 
-            order_note = clean_text(
-                row[14], 40, error=error, truncate=True)
-            line_note = clean_text(
-                row[15], 40, error=error, truncate=True)
-            cig = clean_text(
-                row[16], 15, error=error)
+            # Float:
+            quantity = clean_float(row[13], 15, 3, error=error)
+            price = ''  # clean_float(row[13], 15, 3, error=error)
+            cost = ''  # clean_float(row[14], 15, 3, error=error)
 
             # -----------------------------------------------------------------
             # Convert row input file:
             # -----------------------------------------------------------------
             row_out.append(
-                '%3s|%9s|%-9s|%-9s|%8s|%-10s|%4s|%16s|%60s|%2s|%-15s|'
-                '%-16s|%60s|%2s|%15s|%8s|%40s|%40s|%15\r\n' % (
+                '%3s|%3s|%-8s|%-9s|%-60s|%-60s|%-5s|%-60s|%-4s|%-15s|%-16s|'
+                '%-16s|%-60s|%-2s|%-15s|%-15s|%-15s|%-8s\r\n' % (
                     # Header:
                     company,  # depend on parameter
-                    cdc,
+                    command,
+                    deadline,
                     code,
                     cook_center,
-                    deadline,
+                    address,
+                    cap,
+                    city,
+                    province,
+                    order,  # 15
 
-                    order,
-                    sequence,
+                    # Row:
                     default_code,
+                    default_code_supplier,
                     name,
                     um,
                     quantity,
-
-                    default_code_supplier,
-                    name_supplier,
-                    um_supplier,
-                    quantity_supplier,
-
+                    price,
+                    cost,
                     date,
-
-                    # New:
-                    order_note,
-                    line_note,
-                    cig,
                     ))
         f_in.close()
 
@@ -364,7 +319,10 @@ for root, dirs, files in os.walk(in_path):
         # Convert file:
         f_out = open(file_out, 'w')
 
-        for line in sorted(row_out, key=lambda x: sort_line(x)):
+        # sorted_row = sorted(row_out, key=lambda x: sort_line(x))  # TODO
+        sorted_row = row_out
+
+        for line in sorted_row:
             f_out.write(line)
         f_out.close()
 
