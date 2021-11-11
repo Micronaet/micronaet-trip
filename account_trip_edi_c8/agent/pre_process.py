@@ -177,7 +177,7 @@ except:
 
 config = ConfigParser.ConfigParser()
 config.read([cfg_file])
-pdb.set_trace()
+
 # In parameters:
 in_check = os.path.expanduser(config.get('in', 'check'))
 in_path = os.path.expanduser(config.get('in', 'path'))
@@ -223,6 +223,8 @@ if out_check:
             'Cannot mount OUT folder: %s' % out_path, mode='ERROR', file_list=[
                 f_in_schedule, f_out_schedule])
         sys.exit()
+
+pdb.set_trace()
 
 # -----------------------------------------------------------------------------
 # Read IN folder:
