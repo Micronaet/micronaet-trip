@@ -301,7 +301,7 @@ for root, dirs, files in os.walk(in_path):
             code = clean_text(row[1], 10, error=error)
             cook_center = clean_text(row[2], 10, error=error)
             deadline = row[3].strip()
-            order = clean_text(row[4], 10, error=error)
+            order = clean_text(row[4], 13, error=error)
             sequence = clean_text(row[5], 4, error=error)
             default_code = clean_text(row[6], 16, uppercase=True, error=error)
             name = clean_text(row[7], 60, error=error, truncate=True)
@@ -327,7 +327,7 @@ for root, dirs, files in os.walk(in_path):
             # -----------------------------------------------------------------
             row_out.append(
                 '%3s|%10s|%-10s|%-10s|%8s|'
-                '%-10s|%4s|%16s|%60s|%2s|%-15s|'
+                '%-13s|%4s|%16s|%60s|%2s|%-15s|'
                 '%-16s|%60s|%2s|%15s|'
                 '%8s|%40s|%40s|%15s\r\n' % (
                     # Header:
