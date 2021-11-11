@@ -278,14 +278,12 @@ for root, dirs, files in os.walk(in_path):
                 # Start header:
                 print('Found header in %s file' % f)
                 continue
-            counter += 1
-            if row[0] == 'FM':
-                pdb.set_trace()
-                # End order:
+            if row[0] == 'FM':  # End order:
                 # todo check total lines?
                 print('Found end of line in %s file' % f)
                 continue
 
+            counter += 1
             if len(row) != tot_col:
                 log_on_file(
                     'Different number columns: %s [%s]' % (file_in, company),

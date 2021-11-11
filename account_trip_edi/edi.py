@@ -157,7 +157,7 @@ class trip_import_edi_wizard(orm.Model):
                 cr, uid, company.id, context=context)
 
             if not path_in:
-                pass # TODO comunicate error
+                pass  # TODO comunicate error
 
             file_list = []
             try:
