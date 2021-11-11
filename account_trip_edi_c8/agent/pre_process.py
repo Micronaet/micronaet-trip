@@ -296,9 +296,9 @@ for root, dirs, files in os.walk(in_path):
             date = create_date[:8]  # From create date
 
             # Char:
-            cdc = clean_text(row[0], 9, error=error)
-            code = clean_text(row[1], 9, error=error)
-            cook_center = clean_text(row[2], 9, error=error)
+            cdc = clean_text(row[0], 10, error=error)
+            code = clean_text(row[1], 10, error=error)
+            cook_center = clean_text(row[2], 10, error=error)
             deadline = clean_date(
                 row[3], separator='', out_format='iso', error=error)
             order = clean_text(row[4], 10, error=error)
