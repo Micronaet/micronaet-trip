@@ -417,7 +417,7 @@ for root, dirs, files in os.walk(in_path):
             # XXX TODO delete OUT file
             continue
         break  # todo remove line (debug mode)
-    break # only root folder is read
+    break  # only root folder is read
 
 log_on_file(
     'End import order mode: %s' % company, mode='INFO', file_list=[
