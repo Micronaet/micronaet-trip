@@ -231,7 +231,6 @@ log_on_file(
     'Start import order mode: %s' % company, mode='INFO', file_list=[
         f_in_schedule, f_out_schedule])
 
-pdb.set_trace()
 for root, dirs, files in os.walk(in_path):
     log_on_file(
         'Read root folder: %s [%s]' % (root, company),
@@ -274,6 +273,8 @@ for root, dirs, files in os.walk(in_path):
                 print('Found header in %s file' % f)
                 continue
             if row[0] == 'FM':
+                pdb.set_trace()
+
                 # End order:
                 # todo check total lines?
                 print('Found end of line in %s file' % f)
