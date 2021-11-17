@@ -98,7 +98,7 @@ class trip_import_edi_wizard(orm.Model):
         log_file.close()
 
         order_info = {
-            'create': {},  # last numer created
+            'create': {},  # last number created
             'deleting': [],  # list of order to deleting
             'anomaly': [],  # list order to delete without create (warning)
             }
