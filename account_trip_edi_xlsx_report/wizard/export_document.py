@@ -351,6 +351,7 @@ class QualityExportExcelReport(orm.TransientModel):
                 data[13] = (sign * clean_float(item[3]), f_number)
                 data[14] = (clean_float(item[4]), f_number)
                 data[15] = (clean_float(item[5]), f_number)
+                pdb.set_trace()
 
                 key = (data[10], data[11], data[12])
 
