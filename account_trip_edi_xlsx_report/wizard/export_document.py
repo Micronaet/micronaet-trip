@@ -58,7 +58,7 @@ class QualityExportExcelReport(orm.TransientModel):
             """ Clean Value
             """
             try:
-                float(value.replace('|', '').strip())
+                float(value.replace('|', '').strip().replace(',', '.'))
                 return value
             except:
                 _logger.error('Error converting: %s' % value)
