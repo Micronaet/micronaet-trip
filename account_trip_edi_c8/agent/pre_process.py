@@ -125,9 +125,14 @@ def clean_date(italian_date, separator='', out_format='iso', error=None):
         return italian_date  # nothing todo
 
 
-def clean_float(value, length, decimal=3, separator='.', error=None):
+def clean_float(
+        value, length, decimal=3, multiple=1.0, separator='.', error=None):
     """ Clean float and return float format
     """
+    value = value.strip()
+    if not value:
+        return 0.0
+
     if error is None:
         error = []
     try:
@@ -136,7 +141,7 @@ def clean_float(value, length, decimal=3, separator='.', error=None):
     except:
         error.append('Not a float: %s' % value)
         float_value = 0.0
-
+    float_value /= multiple
     mask = '%%%s.%sf' % (length, decimal)
     res = mask % float_value
     res = res.replace('.', separator)
@@ -305,7 +310,7 @@ for root, dirs, files in os.walk(in_path):
             default_code = clean_text(row[6], 16, uppercase=True, error=error)
             name = clean_text(row[7], 60, error=error, truncate=True)
             um = clean_text(row[8], 2, uppercase=True, error=error)
-            quantity = clean_float(row[9], 15, 2, error=error) / 1000.0
+            quantity = clean_float(row[9], 15, 2, 1000.0, error=error)
 
             # Company fields:
             default_code_supplier = clean_text(
@@ -313,7 +318,7 @@ for root, dirs, files in os.walk(in_path):
             name_supplier = clean_text(row[11], 60, error=error, truncate=True)
             um_supplier = clean_text(row[12], 2, uppercase=True, error=error)
             quantity_supplier = \
-                clean_float(row[13], 15, 2, error=error) / 1000.0
+                clean_float(row[13], 15, 2, 1000.0, error=error)
 
             order_note = clean_text(
                 row[14], 40, error=error, truncate=True)
