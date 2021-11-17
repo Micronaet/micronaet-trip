@@ -43,20 +43,30 @@ _logger = logging.getLogger(__name__)
 
 
 class QualityExportExcelReport(orm.TransientModel):
-    ''' Wizard for export data in Excel
-    '''
+    """ Wizard for export data in Excel
+    """
     _name = 'edi.export.excel.report'
 
     # --------------------
     # Wizard button event:
     # --------------------
     def action_print(self, cr, uid, ids, context=None):
-        ''' Event for print report
-        '''
+        """ Event for print report
+        """
         # Utility:
+        def clean_float(value):
+            """ Clean Value
+            """
+            try:
+                float(value.replace('|', '').strip())
+                return value
+            except:
+                _logger.error('Error converting: %s' % value)
+                return 0.0
+
         def parse_html_to_detail(html):
-            ''' Explode line from HTML table text:
-            '''
+            """ Explode line from HTML table text:
+            """
             res = []
 
             start = False
@@ -90,8 +100,8 @@ class QualityExportExcelReport(orm.TransientModel):
             return res
 
         def write_order_detail(excel_pool, ws_name, row, order, details):
-            ''' Write order details on sheet
-            '''
+            """ Write order details on sheet
+            """
             # TODO
             return row
 
@@ -335,15 +345,9 @@ class QualityExportExcelReport(orm.TransientModel):
                 data[10] = item[0]
                 data[11] = item[1]
                 data[12] = item[2]
-                data[13] = (sign * float(
-                    item[3].replace('|', '').strip()), f_number)
-                try:
-                    data[14] = (float(
-                        item[4].replace('|', '').strip()), f_number)
-                except:
-                    pdb.set_trace()
-                data[15] = (
-                    float(item[5].replace('|', '').strip()), f_number)
+                data[13] = (sign * clean_float(item[3]), f_number)
+                data[14] = (clean_float(item[4]), f_number)
+                data[15] = (clean_float(item[5]), f_number)
 
                 key = (data[10], data[11], data[12])
 
