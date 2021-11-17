@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-# ODOO (ex OpenERP) 
+# ODOO (ex OpenERP)
 # Open Source Management Solution
 # Copyright (C) 2001-2015 Micronaet S.r.l. (<http://www.micronaet.it>)
 # Developer: Nicola Riolini @thebrush (<https://it.linkedin.com/in/thebrush>)
@@ -12,7 +12,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
@@ -22,6 +22,7 @@
 
 
 import os
+import pdb
 import sys
 import logging
 import openerp
@@ -32,9 +33,9 @@ from dateutil.relativedelta import relativedelta
 from openerp import SUPERUSER_ID
 from openerp import tools
 from openerp.tools.translate import _
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
 
 
@@ -57,7 +58,7 @@ class QualityExportExcelReport(orm.TransientModel):
             ''' Explode line from HTML table text:
             '''
             res = []
-            
+
             start = False
             record_on = False
             for line in html.split('\n'):
@@ -66,7 +67,7 @@ class QualityExportExcelReport(orm.TransientModel):
                     start = True
                     continue
                 if not start:
-                    continue    
+                    continue
 
                 if line.startswith('</tr>'):
                     # record end:
@@ -79,34 +80,34 @@ class QualityExportExcelReport(orm.TransientModel):
                     record_on = True
                     record = []
                     continue
-                    
+
                 if record_on:
                     record.append(
                         line.replace(
                             '&nbsp;', '').replace(
                                 '<td>', '').replace('</td>', ''))
-                    continue                
+                    continue
             return res
-        
+
         def write_order_detail(excel_pool, ws_name, row, order, details):
             ''' Write order details on sheet
             '''
-            # TODO 
+            # TODO
             return row
-            
-        if context is None: 
-            context = {}        
+
+        if context is None:
+            context = {}
 
         # Pool used:
         excel_pool = self.pool.get('excel.writer')
         wiz_proxy = self.browse(cr, uid, ids, context=context)[0]
-            
+
         # ---------------------------------------------------------------------
         # Domain creation:
         # ---------------------------------------------------------------------
         domain = []
         filter_description = _('Lista movimenti EDI')
-        
+
         # Text:
         if wiz_proxy.ref:
             domain.append(('number', 'ilike', wiz_proxy.ref))
@@ -134,13 +135,13 @@ class QualityExportExcelReport(orm.TransientModel):
             filter_description += _(', Alla scadenza: %s') % \
                 wiz_proxy.to_deadline
 
-        # Selection: 
+        # Selection:
         if wiz_proxy.type:
             domain.append(('type', '=', wiz_proxy.type))
             filter_description += _(', Tipo: %s') % \
                 wiz_proxy.type
-        
-        # One2many:    
+
+        # One2many:
         if wiz_proxy.company_id:
             domain.append(('company_id', '=', wiz_proxy.company_id.id))
             filter_description += _(', Azienda: %s') % \
@@ -149,7 +150,7 @@ class QualityExportExcelReport(orm.TransientModel):
             domain.append(('destination_id', '=', wiz_proxy.destination_id.id))
             filter_description += _(', Destinazione: %s') % \
                 wiz_proxy.destination_id.name
-                
+
         if wiz_proxy.tour1_id:
             domain.append(('tour1_id', '=', wiz_proxy.tour1_id.id))
             filter_description += _(', Viaggio 1: %s') % \
@@ -161,9 +162,9 @@ class QualityExportExcelReport(orm.TransientModel):
 
         # Filter for details:
         filter_code = wiz_proxy.filter_code or False
-        if filter_code: 
+        if filter_code:
             filter_description += _(', Codice prodotto: %s') % filter_code
-        
+
         # ---------------------------------------------------------------------
         # Trip:
         # ---------------------------------------------------------------------
@@ -173,16 +174,16 @@ class QualityExportExcelReport(orm.TransientModel):
         ws_detail_name = _('Dettaglio')
         ws_total_name = _('Totali')
 
-        name_of_file = _('ordini.xlsx')            
-        
-        # ---------------------------------------------------------------------         
-        # Create Excel file:    
-        # ---------------------------------------------------------------------        
+        name_of_file = _('ordini.xlsx')
+
+        # ---------------------------------------------------------------------
+        # Create Excel file:
+        # ---------------------------------------------------------------------
         # Worksheet:
         excel_pool.create_worksheet(ws_name, extension=extension)
         excel_pool.create_worksheet(ws_detail_name)
         excel_pool.create_worksheet(ws_total_name)
-        
+
         # Format:
         excel_pool.set_format(number_format='0.#0')
         excel_pool.get_format() # Update workbook
@@ -198,11 +199,11 @@ class QualityExportExcelReport(orm.TransientModel):
         format_number_green = excel_pool.get_format('number_green')
         format_number_blue = excel_pool.get_format('number_blue')
         format_number_red = excel_pool.get_format('number_red')
-        
+
         # Column setup width:
         col_width = [
-            7, 20, 12, 50,            
-            12, 12,            
+            7, 20, 12, 50,
+            12, 12,
             10, 6,
             8, 8
             ]
@@ -210,7 +211,7 @@ class QualityExportExcelReport(orm.TransientModel):
         col_width.extend([15, 30, 5, 10, 10])
         excel_pool.column_width(ws_detail_name, col_width)
         excel_pool.column_width(ws_total_name, [15, 40, 5, 10])
-            
+
         # Title:
         row = row_detail = row_total = 0
         excel_pool.write_xls_line(ws_name, row, [
@@ -224,23 +225,23 @@ class QualityExportExcelReport(orm.TransientModel):
             _('Totale prodotti per codice e UM:'),
             ], format_title)
 
-        # Header:            
+        # Header:
         header = [
             _('Azienda'),
             _('Cliente'),
             _('Rif.'),
             _('Destinazione cliente'),
-            
+
             _('Data'),
             _('Scadenza'),
-            
+
             _('Tipo'),
             _('Ricors.'),
 
             _('Viaggio 1'),
             _('Viaggio 2'),
             ]
-            
+
         row = row_detail = row_total = 2
         excel_pool.write_xls_line(ws_name, row, header, format_header)
         header.extend([
@@ -251,7 +252,7 @@ class QualityExportExcelReport(orm.TransientModel):
             _('Prezzo'),
             _('Totale'),
             ])
-        excel_pool.write_xls_line(ws_detail_name, row_detail, header, 
+        excel_pool.write_xls_line(ws_detail_name, row_detail, header,
             format_header)
         excel_pool.write_xls_line(ws_total_name, row_total, [
             _('Codice'),
@@ -260,9 +261,9 @@ class QualityExportExcelReport(orm.TransientModel):
             _('Totale'),
             ], format_header)
 
-        # -----------------------------------------------------------------            
-        # Load data:            
-        # -----------------------------------------------------------------            
+        # -----------------------------------------------------------------
+        # Load data:
+        # -----------------------------------------------------------------
         trip_pool = self.pool.get('trip.edi.line')
         trip_ids = trip_pool.search(cr, uid, domain, context=context)
         _logger.info('Trip selected: %s [%s]' % (
@@ -273,16 +274,16 @@ class QualityExportExcelReport(orm.TransientModel):
         res_total = {}
         for trip in sorted(
                 trip_pool.browse(
-                    cr, uid, trip_ids, context=context), 
+                    cr, uid, trip_ids, context=context),
                 key=lambda x: (x.date, x.number)):
 
-            # Get detail of line:            
+            # Get detail of line:
             if trip.type in ('deleting', 'delete', 'anomaly'):
                 sign = -1
                 if trip.type == 'delete': # delete has no data
                     f_text = format_text_blue
                     f_number = format_number_blue
-                else:    
+                else:
                     f_text = format_text_red
                     f_number = format_number_red
             else:
@@ -296,7 +297,7 @@ class QualityExportExcelReport(orm.TransientModel):
 
             # -----------------------------------------------------------------
             # Write header page:
-            # -----------------------------------------------------------------    
+            # -----------------------------------------------------------------
             data = [
                 trip.company_id.name or '',
                 trip.customer,
@@ -305,16 +306,16 @@ class QualityExportExcelReport(orm.TransientModel):
 
                 excel_pool.format_date(trip.date),
                 excel_pool.format_date(trip.deadline),
-                
+
                 trip.type or '',
                 'X' if trip.recursion > 1 else '',
-                
+
                 trip.tour1_id.name or '',
                 trip.tour2_id.name or '',
-                
+
                 '', '', '', '', '', '',
                 ]
-                
+
             # Extra data for detail sheet:
             information = parse_html_to_detail(trip.information)
             filter_code_present = False
@@ -324,60 +325,63 @@ class QualityExportExcelReport(orm.TransientModel):
                     continue
 
                 filter_code_present = True
-                
-                # -------------------------------------------------------------        
+
+                # -------------------------------------------------------------
                 # Write detail page:
-                # -------------------------------------------------------------        
+                # -------------------------------------------------------------
                 row_detail += 1
-                
+
                 # Update product information:
                 data[10] = item[0]
                 data[11] = item[1]
                 data[12] = item[2]
                 data[13] = (sign * float(
                     item[3].replace('|', '').strip()), f_number)
-                data[14] = (float(
-                    item[4].replace('|', '').strip()), f_number)
+                try:
+                    data[14] = (float(
+                        item[4].replace('|', '').strip()), f_number)
+                except:
+                    pdb.set_trace()
                 data[15] = (
                     float(item[5].replace('|', '').strip()), f_number)
-                
+
                 key = (data[10], data[11], data[12])
-                        
-                # -------------------------------------------------------------        
+
+                # -------------------------------------------------------------
                 # Write total page:
-                # -------------------------------------------------------------        
+                # -------------------------------------------------------------
                 # Keep only positive numbers:
                 current = data[13][0]
                 if current < 0.0:
                     current = 0.0
                 if key in res_total:
                     res_total[key] += current
-                else:    
+                else:
                     res_total[key] = current
-                # Write in total page:    
+                # Write in total page:
                 excel_pool.write_xls_line(
                     ws_detail_name, row_detail, data, f_text)
-           
+
             # Write now header data (for filter code test):
             if not filter_code or filter_code_present:
-                row += 1    
+                row += 1
                 excel_pool.write_xls_line(ws_name, row, data[:10], f_text)
-         
+
 
         for item in sorted(res_total):
             row_total += 1
             tot = res_total[item]
-            
+
             excel_pool.write_xls_line(ws_total_name, row_total, [
-                item[0], 
-                item[1], 
-                item[2], 
+                item[0],
+                item[1],
+                item[2],
                 (tot, f_number),
                 ], format_text)
-            
-                            
-        return excel_pool.return_attachment(cr, uid, ws_name, 
-            name_of_file='estrazione_viaggi_selezionati.xls', version='7.0', 
+
+
+        return excel_pool.return_attachment(cr, uid, ws_name,
+            name_of_file='estrazione_viaggi_selezionati.xls', version='7.0',
             php=True, context=context)
 
     _columns = {
@@ -385,7 +389,7 @@ class QualityExportExcelReport(orm.TransientModel):
         'ref': fields.char('Ref.', size=20),
         'partner_name': fields.char('Partner', size=80),
         'filter_code': fields.char('Product', size=80),
-        
+
         # Many 2 one
         'company_id': fields.many2one('edi.company', 'Company'),
 
@@ -393,7 +397,7 @@ class QualityExportExcelReport(orm.TransientModel):
 
         'tour1_id': fields.many2one('trip.tour', 'Tour 1'),
         'tour2_id': fields.many2one('trip.tour', 'Tour 2'),
-    
+
         # Date filter:
         'from_date': fields.date('From date'),
         'to_date': fields.date('To date'),
@@ -409,6 +413,6 @@ class QualityExportExcelReport(orm.TransientModel):
             ('deleting', 'To delete'),
             ('forced', 'To force'),
             ('delete', 'Delete'),
-            ], 'Type'), 
-        }        
+            ], 'Type'),
+        }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
