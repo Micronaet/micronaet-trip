@@ -305,14 +305,15 @@ for root, dirs, files in os.walk(in_path):
             default_code = clean_text(row[6], 16, uppercase=True, error=error)
             name = clean_text(row[7], 60, error=error, truncate=True)
             um = clean_text(row[8], 2, uppercase=True, error=error)
-            quantity = clean_float(row[9], 15, 2, error=error)
+            quantity = clean_float(row[9], 15, 2, error=error) / 1000.0
 
             # Company fields:
             default_code_supplier = clean_text(
                 row[10], 16, uppercase=True, error=error)
             name_supplier = clean_text(row[11], 60, error=error, truncate=True)
             um_supplier = clean_text(row[12], 2, uppercase=True, error=error)
-            quantity_supplier = clean_float(row[13], 15, 2, error=error)
+            quantity_supplier = \
+                clean_float(row[13], 15, 2, error=error) / 1000.0
 
             order_note = clean_text(
                 row[14], 40, error=error, truncate=True)

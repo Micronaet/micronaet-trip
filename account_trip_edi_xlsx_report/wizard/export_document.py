@@ -196,7 +196,7 @@ class QualityExportExcelReport(orm.TransientModel):
 
         # Format:
         excel_pool.set_format(number_format='0.#0')
-        excel_pool.get_format() # Update workbook
+        excel_pool.get_format()  # Update workbook
         format_title = excel_pool.get_format('title')
         format_header = excel_pool.get_format('header')
 
@@ -262,8 +262,8 @@ class QualityExportExcelReport(orm.TransientModel):
             _('Prezzo'),
             _('Totale'),
             ])
-        excel_pool.write_xls_line(ws_detail_name, row_detail, header,
-            format_header)
+        excel_pool.write_xls_line(
+            ws_detail_name, row_detail, header, format_header)
         excel_pool.write_xls_line(ws_total_name, row_total, [
             _('Codice'),
             _('Nome'),
@@ -298,7 +298,7 @@ class QualityExportExcelReport(orm.TransientModel):
                     f_number = format_number_red
             else:
                 sign = +1
-                if trip.type == 'forced': # delete has no data
+                if trip.type == 'forced':  # delete has no data
                     f_text = format_text_green
                     f_number = format_number_green
                 else:
@@ -371,7 +371,6 @@ class QualityExportExcelReport(orm.TransientModel):
                 row += 1
                 excel_pool.write_xls_line(ws_name, row, data[:10], f_text)
 
-
         for item in sorted(res_total):
             row_total += 1
             tot = res_total[item]
@@ -383,8 +382,8 @@ class QualityExportExcelReport(orm.TransientModel):
                 (tot, f_number),
                 ], format_text)
 
-
-        return excel_pool.return_attachment(cr, uid, ws_name,
+        return excel_pool.return_attachment(
+            cr, uid, ws_name,
             name_of_file='estrazione_viaggi_selezionati.xls', version='7.0',
             php=True, context=context)
 
