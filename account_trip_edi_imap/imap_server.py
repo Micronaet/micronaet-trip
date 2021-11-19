@@ -266,7 +266,6 @@ class ImapServer(orm.Model):
 
         return name or email, email
 
-
     _columns = {
         'name': fields.char('Email', size=80, required=True),
         'host': fields.char(

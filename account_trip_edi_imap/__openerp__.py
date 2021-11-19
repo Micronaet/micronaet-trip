@@ -29,6 +29,7 @@
     'license': 'AGPL-3',
     'depends': [
         'base',
+        'account_trip',
         'account_trip_edi',
         ],
     'init_xml': [],
