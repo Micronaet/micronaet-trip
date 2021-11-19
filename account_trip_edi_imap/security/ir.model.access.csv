@@ -1,0 +1,5 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_imap_server_category_user,imap.server.category,model_imap_server_category,base.group_user,1,1,1,1
+access_imap_server_user,imap.server,model_imap_server,base.group_user,1,1,1,1
+access_imap_server_mail_user,imap.server.mail,model_imap_server_mail,base.group_user,1,1,1,1
+

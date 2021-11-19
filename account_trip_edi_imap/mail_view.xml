@@ -1,0 +1,245 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!--imap.server.mail-->
+        <record model="ir.ui.view" id="view_imap_server_mail_search">
+            <field name="name">imap.server.mail.search</field>
+            <field name="model">imap.server.mail</field>
+            <field name="arch" type="xml">
+                <search string="IMAP Mail" version="7.0">
+                    <field name="subject" />
+                    <field name="partner_id" filter_domain="[('partner_id','=',self)]"/>
+                    <filter name="state_draft" string="Bozza" domain="[('state','=','draft')]"/>
+                    <filter name="state_draft" string="Analizzate" domain="[('state','=','completed')]"/>
+                    <group expand="0" string="Raggruppa per...">
+                        <filter name="group_partner" string="Partner" context="{'group_by': 'partner_id'}"/>
+                        <filter string="Stato" context="{'group_by': 'state'}" />
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_imap_server_mail_tree">
+            <field name="name">imap.server.mail.tree</field>
+            <field name="model">imap.server.mail</field>
+            <field name="arch" type="xml">
+                <tree string="IMAP mail" colors="blue:new_partner==True;red:partner_id==False and state=='confirmed'">
+                    <field name="server_id" />
+                    <field name="message_id" />
+                    <field name="new_partner" />
+                    <field name="partner_id" />
+                    <field name="to" />
+                    <field name="from" />
+                    <field name="received" />
+                    <field name="subject" />
+                    <field name="date" />
+                    <button name="download_file_eml" type="object" string="Download EML" icon="gtk-zoom-in"/>
+                    <button name="workflow_confirm" type="object" string="Conferma importazione" attrs="{'invisible': [('state', '=', 'completed')]}" icon="gtk-ok"/>
+                    <field name="state" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_imap_server_mail_form">
+            <field name="name">imap.server.mail.form</field>
+            <field name="model">imap.server.mail</field>
+            <field name="arch" type="xml">
+                <form string="IMAP mail">
+                    <header>
+                        <button name="download_file_eml" type="object" string="Download EML" icon="gtk-zoom-in"/>
+                        <button name="workflow_confirm" type="object" string="Conferma importazione" attrs="{'invisible': [('state', '=', 'completed')]}" icon="gtk-ok"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <field name="server_id" />
+                            <field name="date" />
+
+                            <field name="partner_id" />
+                            <field name="to" />
+
+                            <field name="from" />
+                            <field name="received" />
+
+                            <field name="message_id" />
+                            <field name="new_partner" />
+
+                            <field name="subject" colspan="4"/>
+                            <field name="message" colspan="4" attrs="{'invisible': [('message', '=', False)]}"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_imap_server_mail">
+            <field name="name">IMAP Mail</field>
+            <field name="res_model">imap.server.mail</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_imap_server_mail_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
+        <!--imap.server.category-->
+        <record model="ir.ui.view" id="view_imap_server_category_tree">
+            <field name="name">imap.server.category.tree</field>
+            <field name="model">imap.server.category</field>
+            <field name="arch" type="xml">
+                <tree string="IMAP Category">
+                    <field name="is_active" />
+                    <field name="code" />
+                    <field name="name" />
+                    <field name="note" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_imap_server_category_form">
+            <field name="name">imap.server.category.form</field>
+            <field name="model">imap.server.category</field>
+            <field name="arch" type="xml">
+                <form string="IMAP Category" version="7.0">
+                    <sheet>
+                        <group colspan="4" col="4">
+                            <field name="is_active" />
+                            <field name="code" />
+                            <field name="name" colspan="4"/>
+
+                            <separator string="Auto setup" colspan="4"/>
+                            <field name="newsletter_category_id" />
+
+                            <separator string="Note" colspan="4"/>
+                            <field name="note" colspan="4" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_imap_server_category">
+            <field name="name">IMAP Category</field>
+            <field name="res_model">imap.server.category</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_imap_server_category_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
+        <!--imap.server-->
+        <record model="ir.ui.view" id="view_imap_server_tree">
+            <field name="name">imap.server.tree</field>
+            <field name="model">imap.server</field>
+            <field name="arch" type="xml">
+                <tree string="IMAP Server">
+                    <field name="name" />
+                    <field name="is_active" />
+                    <field name="name" />
+                    <field name="host" />
+                    <field name="port" />
+                    <field name="user" />
+                    <field name="store_folder" />
+                    <field name="remove" />
+                    <field name="category_id" />
+                    <button name="force_import_email_document" type="object" string="Forza scarico mail"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_imap_server_form">
+            <field name="name">imap.server.form</field>
+            <field name="model">imap.server</field>
+            <field name="arch" type="xml">
+                <form string="IMAP Server" version="7.0">
+                    <header>
+                        <button name="force_import_email_document" type="object" string="Forza scarico mail"/>
+                    </header>
+                    <sheet>
+                        <notebook>
+                            <page name="imap_data" string="Server">
+                                <group colspan="4" col="4">
+                                    <field name="is_active" />
+                                    <field name="name" />
+
+                                    <field name="host" />
+                                    <field name="port" />
+
+                                    <field name="user" />
+                                    <field name="password" />
+
+                                    <field name="folder" />
+                                    <field name="SSL" />
+
+                                    <field name="remove" />
+                                    <field name="category_id" />
+
+                                    <field name="store_as_file" />
+                                    <field name="store_folder" attrs="{'invisible': [('store_as_file', '=', False)], 'required': [('store_as_file', '=', True)]}"/>
+
+                                    <field name="authorized" colspan="4"/>
+                                </group>
+                            </page>
+                            <page name="imap_comment" string="Comment">
+                                <group colspan="4" col="4">
+                                    <separator string="Comment" colspan="4"/>
+                                    <field name="comment" colspan="4" nolabel="1"/>
+                                </group>
+                            </page>
+                        </notebook>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_imap_server">
+            <field name="name">IMAP Server</field>
+            <field name="res_model">imap.server</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_imap_server_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
+        <record id="view_partners_mail_button_form" model="ir.ui.view">
+            <field name="name">res.partner.mail.button.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//div[@name='buttons']" position="inside">
+                        <button class="oe_inline oe_stat_button" type="action"
+                            name="%(action_imap_server_mail)d"
+                            icon="fa-envelope"
+                            context="{'search_default_partner_id': active_id}">
+                            <field string="E-mail" name="email_count" widget="statinfo"/>
+                        </button>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+
+        <menuitem
+            parent="base.menu_base_config"
+            id="menu_imap_server_root"
+            name="IMAP Server"
+            sequence="30"
+            />
+            <menuitem
+                parent="menu_imap_server_root"
+                id="menu_imap_server"
+                action="action_imap_server"
+                sequence="10"
+                />
+            <menuitem
+                parent="menu_imap_server_root"
+                id="menu_imap_server_mail"
+                action="action_imap_server_mail"
+                sequence="20"
+                />
+            <menuitem
+                parent="menu_imap_server_root"
+                id="menu_imap_server_category"
+                action="action_imap_server_category"
+                sequence="90"
+                />
+
+    </data>
+</openerp>
+
