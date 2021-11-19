@@ -295,10 +295,10 @@ class EdiCompany(orm.Model):
             help='Questo provider EDI invia gli ordini via mail'),
         'imap_id': fields.many2one('imap.server', 'Casella IMAP'),
         'mail_from': fields.char(
-            'From', size=50,
+            'Mittente', size=50,
             help='Indica da quale indirizzo viene ricevuta la mail'),
         'mail_subject': fields.char(
-            'From', size=50,
+            'Iniziale oggetto', size=50,
             help='Indicare la parte iniziale dell\'oggetto'),
         'mail_eml_folder': fields.char(
             'Cartella EML', size=80,
