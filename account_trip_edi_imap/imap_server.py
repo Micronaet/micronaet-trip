@@ -196,7 +196,7 @@ class ImapServer(orm.Model):
                     company_records[company].append(record)
 
                 # todo manage commit roll back also in email
-                mail.store(msg_id, '+FLAGS', 'Archive')
+                mail.store(msg_id, '+FLAGS', 'INBOX/EDI')
                 _logger.info('Read mail: To: %s - From: %s - Subject: %s' % (
                     record['To'],
                     record['From'],
