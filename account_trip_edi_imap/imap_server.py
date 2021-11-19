@@ -277,7 +277,7 @@ class EdiCompany(orm.Model):
         """ Check if email belong to this company
         """
         imap_pool = self.pool.get('imap.server')
-        email = imaplib.get_email_address(record['From'])
+        email = imap_pool.get_email_address(record['From'])
         if company.mail_from != email:
             return False
         if not record['Subject'] or not \
