@@ -132,7 +132,6 @@ class ImapServer(orm.Model):
             # -----------------------------------------------------------------
             # Read all email:
             # -----------------------------------------------------------------
-            pdb.set_trace()
             server = address.host  # '%s:%s' % (address.host, address.port)
             if_error = _('Error find imap server: %s' % server)
             try:
@@ -189,6 +188,7 @@ class ImapServer(orm.Model):
 
                 # todo if not record['Message-Id']:
                 for company in company_touched:
+                    pdb.set_trace()
                     if not company_pool.email_belong_to(company, record):
                         continue  # Mail not belong to this company
 
@@ -233,20 +233,13 @@ class ImapServer(orm.Model):
         return self.force_import_email_document(
             cr, uid, False, context=context)
 
-    def parse_address(self, address, subject):
+    def get_email_address(self, email):
         """ Extract name and email from address
         """
-        token = '-'
-        if not address:
-            return '', ''
-        split_value = address.split('<')
-        email = split_value[-1].split('>')[0]
-        if token in subject:
-            name = subject.split(token)[0].strip()
-        else:
-            name = '<'.join(split_value[:-1]).strip().strip('"').strip()
-
-        return name or email, email
+        if not email:
+            return ''
+        split_value = email.split('<')
+        return split_value[-1].split('>')[0]
 
     _columns = {
         'is_active': fields.boolean('Attiva'),
@@ -283,7 +276,9 @@ class EdiCompany(orm.Model):
     def email_belong_to(self, company, record):
         """ Check if email belong to this company
         """
-        if company.mail_from != record['From']:
+        imap_pool = self.pool.get('imap.server')
+        email = imaplib.get_email_address(record['From'])
+        if company.mail_from != email:
             return False
         if not record['Subject'] or not \
                 record['Subject'].startswith(company.mail_subject):
