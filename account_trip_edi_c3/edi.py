@@ -134,7 +134,7 @@ class edi_company_c3(orm.Model):
             generated during importation
         """
         return self.pool.get('res.partner').search_supplier_destination(
-            cr, uid, "", 'B' % site, context=context)
+            cr, uid, "", 'B%s' % site, context=context)
 
     def get_priority(self, cr, uid, file_in):
         """ Always normal (no priority management)
