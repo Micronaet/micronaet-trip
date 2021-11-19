@@ -56,16 +56,17 @@ class ImapServer(orm.Model):
         }
         content_type = company.mail_content_type
         extension = company.attachment_extension
-        utility = self.pool.get(company.type_importation_id.object)
+        utility = self.pool.get(company.type_importation_id.object)  # xxx
         pdb.set_trace()
 
         for record in records:
+            order_name = utility.get_order_number(record)
+
             # EML file:
-            filename = '%s.eml' % record['Message-Id']  # todo better!
+            filename = '%s.eml' % order_name
             fullname = os.path.join(folder['eml'], filename)
 
             # Attachment file:
-            order_name = utility.get_order_number(record)
             attach_filename = '%s.%s' % (
                 order_name,
                 extension,
@@ -191,7 +192,6 @@ class ImapServer(orm.Model):
 
                 # todo if not record['Message-Id']:
                 for company in company_touched:
-                    pdb.set_trace()
                     if not company_pool.email_belong_to(company, record):
                         continue  # Mail not belong to this company
 
