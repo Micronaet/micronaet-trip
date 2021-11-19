@@ -114,7 +114,8 @@ class ImapServer(orm.Model):
             company_touched = []
             company_records = {}
             company_ids = company_pool.search(cr, uid, [
-                ('imap_id', '=', address.id),
+                ('import', '=', True),  # Only active company
+                ('imap_id', '=', address.id),  # For this active IMAP
             ], context=context)
             if not company_ids:
                 _logger.error(
@@ -322,7 +323,7 @@ class EdiCompany(orm.Model):
             help='Content type allegato da prendere in considereazione per la'
                  'procedura di import'),
         'attachment_extension': fields.char(
-            'Cartella EML', size=6,
+            'Estensione allegato', size=6,
             help='Estensione utilizzata per salvare il file allegato'),
     }
 
