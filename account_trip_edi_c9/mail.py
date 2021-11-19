@@ -33,23 +33,13 @@ class edi_company_c9(orm.Model):
     """ Add model for parametrize function for Company 9
         Model has only function for a sort of abstract class
     """
-
     _inherit = 'edi.company.c9'
 
     # -------------------------------------------------------------------------
     #                     Abstract function for mail:
     # -------------------------------------------------------------------------
-    def email_subject_validate(self, edi_company, subject):
-        """ EDI mail: Validate email (subject syntax check)
+    def get_order_number(self, record):
+        """ EDI mail: Extract order number
         """
-        return True
-
-    def email_extract_order_file(self, edi_company, email):
-        """ EDI mail: Extract data file from email
-        """
-        return True
-
-    def email_parse_order_file(self, edi_company, order_file):
-        """ EDI mail: Extract data file from email
-        """
-        return True
+        subject = record['Subject']
+        return subject.split(':')[1]  # todo write correct parse!

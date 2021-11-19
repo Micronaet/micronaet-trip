@@ -51,11 +51,13 @@ class ImapServer(orm.Model):
         """ Try to extract the attachments from all files in company folder
         """
         folder = {
-            'eml': company.mail_eml_folder,
-            'attachment': company.mail_attach_folder,
+            'eml': os.path.expanduser(company.mail_eml_folder),
+            'attachment': os.path.expanduser(company.mail_attach_folder),
         }
         content_type = company.mail_content_type
         extension = company.attachment_extension
+        utility = self.pool.get(company.type_importation_id.object)
+        pdb.set_trace()
 
         for record in records:
             # EML file:
@@ -63,14 +65,15 @@ class ImapServer(orm.Model):
             fullname = os.path.join(folder['eml'], filename)
 
             # Attachment file:
+            order_name = utility.get_order_number(record)
             attach_filename = '%s.%s' % (
-                record['Message-Id'],
+                order_name,
                 extension,
             )  # todo better!
             attach_fullname = os.path.join(
                 folder['attachment'], attach_filename)
 
-            message = record['message']
+            message = record['Message']
 
             # Loop on part:
             for part in message.walk():
