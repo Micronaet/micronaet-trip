@@ -47,69 +47,54 @@ class ImapServer(orm.Model):
     # -------------------------------------------------------------------------
     # File procedure:
     # -------------------------------------------------------------------------
-    def save_attachment_from_eml_file(self, cr, uid, ids, context=None):
+    def save_attachment_from_eml_file(self, company, records):
         """ Try to extract the attachments from all files in company folder
         """
-        company_pool = self.pool.get('edi.company')
-        company_ids = company_pool.search(cr, uid, [
-            ('mail_order_input', '=', True),
-        ], context=context)
-        for company in company_pool.browse(
-                cr, uid, company_ids, context=context):
-            folder = {
-                'eml': company.mail_eml_folder,
-                'history': company.mail_eml_history,
-                'attachment': company.mail_attach_folder,
-            }
-            content_type = company.mail_content_type
-            extension = company.attachment_extention
-            # os.path.exists(folder) or os.makedirs(folder)
+        folder = {
+            'eml': company.mail_eml_folder,
+            'attachment': company.mail_attach_folder,
+        }
+        content_type = company.mail_content_type
+        extension = company.attachment_extention
 
-            for root, folders, files in os.walk(folder['eml']):
-                for filename in files:
-                    if filename.split('.')[-1].lower() != 'eml':
-                        _logger.warning('File ignored: %s' % filename)
-                        continue
-                    attach_filename = '%s.%s' % (
-                        filename.split('.')[0],
-                        extension,
-                    )
+        for record in records:
+            # EML file:
+            filename = '%s.eml' % record['Message-Id']  # todo better!
+            fullname = os.path.join(folder['eml'], filename)
 
-                    fullname = os.path.join(
-                        root, filename)
-                    history_fullname = os.path.join(
-                        folder['history'], filename)
-                    attach_fullname = os.path.join(
-                        folder['attachment'], attach_filename)
-                    try:
-                        with open(filename, 'r') as eml_f:
-                            message = email.message_from_file(eml_f)
+            # Attachment file:
+            attach_filename = '%s.%s' % (
+                record['Message-Id'],
+                extension,
+            )  # todo better!
+            attach_fullname = os.path.join(
+                folder['attachment'], attach_filename)
 
-                        # Loop on part:
-                        for part in message.walk():
-                            if part.get_content_type() == content_type:
-                                name = part['Content-Disposition']
-                                # attachment_id = part['Content-ID']
-                                # attachment_format =
-                                #     part['Content-Transfer-Encoding']
-                                attach_b64 = base64.b64decode(
-                                    part.get_payload())
-                                with open(attach_fullname, 'wb') as attach_f:
-                                    attach_f.write(attach_b64)
+            message = record['message']
 
-                                # Move parsed email in history:
-                                shutil.move(fullname, history_fullname)
-                                _logger.warning('EML history: %s in %s' % (
-                                    fullname, history_fullname))
-                                break  # todo Check only first attach
-                        else:  # Only if not break
-                            _logger.error('No attachment in %s format %s' % (
-                                content_type,
-                                fullname,
-                            ))
-                    except:
-                        _logger.error('Cannot read: %s' % fullname)
-                break  # Only this folder
+            # Loop on part:
+            for part in message.walk():
+                if part.get_content_type() == content_type:
+                    # Move parsed email in history:
+                    # todo save EML file?
+                    # with open(attach_fullname, 'wb') as attach_f:
+                    #    attach_f.write(attach_b64)
+
+                    # name = part['Content-Disposition']
+                    # attachment_id = part['Content-ID']
+                    # attachment_format =
+                    #     part['Content-Transfer-Encoding']
+
+                    # Save Attachment:
+                    attach_b64 = base64.b64decode(part.get_payload())
+                    with open(attach_fullname, 'wb') as attach_f:
+                        attach_f.write(attach_b64)
+                    break  # todo Check only first attach
+            else:  # Only if not break
+                _logger.error('No attachment in %s format %s' % (
+                    content_type,
+                    fullname,
+                ))
 
     # -------------------------------------------------------------------------
     # Download IMAP server procedure:
@@ -117,22 +102,37 @@ class ImapServer(orm.Model):
     def force_import_email_document(self, cr, uid, ids, context=None):
         """ Force import passed server import all email in object
         """
-        mail_pool = self.pool.get('imap.server.mail')
+        pdb.set_trace()
+        company_pool = self.pool.get('edi.company')
 
-        _logger.info('Start read # %s IMAP server' % (
-            len(ids),
-            ))
+        _logger.info('Start read IMAP server')
 
-        # Read all server:
-        for address in self.browse(cr, uid, ids, context=context):
-            server = address.host  # '%s:%s' % (address.host, address.port)
-            store_as_file = address.store_as_file
-            authorized = [item.strip() for item in
-                          address.authorized.split('|')]
+        # Read all server active:
+        address_ids = self.search(cr, uid, [
+            ('is_active', '=', True),
+        ], context=context)
+        for address in self.browse(cr, uid, address_ids, context=context):
+            company_touched = []
+            company_records = []
+            company_ids = company_pool.search(cr, uid, [
+                ('imap_id', '=', address.id),
+            ], context=context)
+            if not company_ids:
+                _logger.error('IMAP %s not associated to EDI company!' %
+                              address.name)
+                continue
+
+            # Collect list of company touched for utility part:
+            for company in company_pool.browse(
+                    cr, uid, company_ids, context=context):
+                # company_object = company.type_importation_id.object
+                company_touched.append(company)
+                company_records[company] = []
 
             # -----------------------------------------------------------------
             # Read all email:
             # -----------------------------------------------------------------
+            server = '%s:%s' % (address.host, address.port)
             if_error = _('Error find imap server: %s' % server)
             try:
                 if address.SSL:
@@ -157,9 +157,19 @@ class ImapServer(orm.Model):
             for msg_id in result[0].split():
                 tot += 1
 
-                # Read and parse result:
+                # Parse message in record dict for common field used:
                 esit, result = mail.fetch(msg_id, '(RFC822)')
                 eml_string = result[0][1]
+
+                # -------------------------------------------------------------
+                # Write on file:
+                # -------------------------------------------------------------
+                # Loop on company:
+                # _logger.info('...Saving %s' % fullname)
+                # f_eml = open(fullname, 'w')
+                # f_eml.write(eml_string)
+                # f_eml.close()
+
                 message = email.message_from_string(eml_string)
                 record = {
                     'To': False,
@@ -168,58 +178,23 @@ class ImapServer(orm.Model):
                     'Received': False,
                     'Message-Id': False,
                     'Subject': False,
+                    'Message': message,
                     }
 
                 # Populate parameters:
                 for (param, value) in message.items():
                     if param in record:
                         record[param] = value
-                address_from = record['From']
-                address_to = record['To']
-                odoo_data = {
-                    'to': address_to,
-                    'from': address_from,
-                    'date': record['Date'],
-                    'received': record['Received'],
-                    'message_id': record['Message-Id'],
-                    'subject': record['Subject'],
-                    'state': 'draft',
-                    'server_id': address.id,
-                    }
 
-                # if server_mail in address_to:
-                #    _logger.warning('Jumped server mail is in CCN')
-                #    continue
+                # todo if not record['Message-Id']:
+                for company in company_touched:
+                    if not company_pool.email_belong_to(company, record):
+                        continue  # Mail not belong to this company
 
-                # is_authorized = False
-                # for check_mail in authorized:
-                #    if check_mail in address_from:
-                #        is_authorized = True
-                #        break
-                # if not is_authorized:
-                #    _logger.warning('Jumped mail not authorized')
-                #    continue
+                    # Save attachment as file (after all):
+                    company_records[company].append(record)
 
-                # if not record['Message-Id']:
-                #    _logger.warning('No message ID for this email')
-                # if not store_as_file:
-                #    odoo_data['message'] = message
-
-                # todo not in odoo:
-                # mail_id = mail_pool.create(
-                #    cr, uid, odoo_data, context=context)
-
-                # -------------------------------------------------------------
-                # Write on file:
-                # -------------------------------------------------------------
-                # if store_as_file:
-                fullname = 'prova.xml' # todo mail_pool.get_fullname(cr, uid, mail_id, context=context)
-                _logger.info('...Saving %s' % fullname)
-                f_eml = open(fullname, 'w')
-                f_eml.write(eml_string)
-                f_eml.close()
-
-                # TODO manage commit roll back also in email
+                # todo manage commit roll back also in email
                 mail.store(msg_id, '+FLAGS', '\\Deleted')
                 _logger.info('Read mail: To: %s - From: %s - Subject: %s' % (
                     record['To'],
@@ -239,7 +214,11 @@ class ImapServer(orm.Model):
             mail.close()
             mail.logout()
             _logger.info('End read IMAP server')
-            # todo operation with email
+
+            _logger.info('Parse attachment mail read')
+            for company in company_records:
+                self.save_attachment_from_eml_file(
+                    company, company_records[company])
         return True
 
     # -------------------------------------------------------------------------
@@ -267,6 +246,7 @@ class ImapServer(orm.Model):
         return name or email, email
 
     _columns = {
+        'is_active': fields.boolean('Attiva'),
         'name': fields.char('Email', size=80, required=True),
         'host': fields.char(
             'IMAP server', size=64, help='Email IMAP server', required=True),
@@ -294,11 +274,30 @@ class EdiCompany(orm.Model):
     """
     _inherit = 'edi.company'
 
+    # -------------------------------------------------------------------------
+    # Utility:
+    # -------------------------------------------------------------------------
+    def email_belong_to(self, company, record):
+        """ Check if email belong to this company
+        """
+        if company.mail_from != record['From']:
+            return False
+        if not record['Subject'] or not \
+                record['Subject'].startswith(company.mail_subject):
+            return False
+        return True
+
     _columns = {
         'mail_order_input': fields.boolean(
             'Ordini via mail',
             help='Questo provider EDI invia gli ordini via mail'),
         'imap_id': fields.many2one('imap.server', 'Casella IMAP'),
+        'mail_from': fields.char(
+            'From', size=50,
+            help='Indica da quale indirizzo viene ricevuta la mail'),
+        'mail_subject': fields.char(
+            'From', size=50,
+            help='Indicare la parte iniziale dell\'oggetto'),
         'mail_eml_folder': fields.char(
             'Cartella EML', size=80,
             help='Cartella dove vengono esporate le mail scaricate dalla '

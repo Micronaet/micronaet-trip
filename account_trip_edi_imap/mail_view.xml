@@ -6,7 +6,8 @@
             <field name="name">imap.server.tree</field>
             <field name="model">imap.server</field>
             <field name="arch" type="xml">
-                <tree string="IMAP Server">
+                <tree string="IMAP Server" colors="grey:is_active==False">
+                    <field name="is_active" />
                     <field name="name" />
                     <field name="host" />
                     <field name="port" />
@@ -28,6 +29,8 @@
                         <notebook>
                             <page name="imap_data" string="Server">
                                 <group colspan="4" col="4">
+                                    <field name="is_active" />
+                                    <newline/>
                                     <field name="name" />
                                     <field name="folder" />
 
@@ -75,12 +78,16 @@
                         <page name="email_page" string="EDI sorgente email" >
                             <group colspan="4" col="4">
                                 <field name="imap_id" attrs="{'required': [('mail_order_input', '=', True)]}"/>
-                                <newline/>
+                                <newline />
+                                <field name="mail_from" attrs="{'required': [('mail_order_input', '=', True)]}"/>
+                                <field name="mail_subject" attrs="{'required': [('mail_order_input', '=', True)]}"/>
+
                                 <field name="mail_content_type" attrs="{'required': [('mail_order_input', '=', True)]}"/>
                                 <field name="attachment_extension" attrs="{'required': [('mail_order_input', '=', True)]}"/>
+
                                 <separator string="Cartelle dati:" colspan="4"/>
-                                <field name="mail_eml_folder" attrs="{'required': [('mail_order_input', '=', True)]}"/>
-                                <field name="mail_eml_history" attrs="{'required': [('mail_order_input', '=', True)]}"/>
+                                <!--<field name="mail_eml_folder" attrs="{'required': [('mail_order_input', '=', True)]}"/>
+                                <field name="mail_eml_history" attrs="{'required': [('mail_order_input', '=', True)]}"/>-->
                                 <field name="mail_attach_folder" attrs="{'required': [('mail_order_input', '=', True)]}"/>
                                 <field name="mail_attach_history" attrs="{'required': [('mail_order_input', '=', True)]}"/>
                             </group>
@@ -92,16 +99,10 @@
 
         <menuitem
             parent="account_trip.menu_trip_configuration"
-            id="menu_imap_server_root"
-            name="IMAP Server"
-            sequence="30"
+            id="menu_imap_server"
+            action="action_imap_server"
+            sequence="10"
             />
-            <menuitem
-                parent="menu_imap_server_root"
-                id="menu_imap_server"
-                action="action_imap_server"
-                sequence="10"
-                />
     </data>
 </openerp>
 
