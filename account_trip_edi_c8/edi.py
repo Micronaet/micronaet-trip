@@ -102,7 +102,8 @@ class edi_company_c8(orm.Model):
             return 'anomaly'
 
     def get_destination(self, facility, cost, site):
-        """ Mask for code destination (only the last: site is used)"""
+        """ Mask for code destination (only the last: site is used)
+        """
         return "[%s]" % cost
 
     def get_destination_id(self, cr, uid, facility, cost, site, context=None):
