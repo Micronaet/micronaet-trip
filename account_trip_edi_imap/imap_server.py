@@ -55,7 +55,7 @@ class ImapServer(orm.Model):
             'attachment': company.mail_attach_folder,
         }
         content_type = company.mail_content_type
-        extension = company.attachment_extention
+        extension = company.attachment_extension
 
         for record in records:
             # EML file:
@@ -196,7 +196,7 @@ class ImapServer(orm.Model):
                     company_records[company].append(record)
 
                 # todo manage commit roll back also in email
-                mail.store(msg_id, '+FLAGS', '\\Deleted')
+                mail.store(msg_id, '+FLAGS', 'Archive')
                 _logger.info('Read mail: To: %s - From: %s - Subject: %s' % (
                     record['To'],
                     record['From'],
