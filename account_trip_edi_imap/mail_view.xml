@@ -74,15 +74,15 @@
                     <notebook colspan="6" attrs="{'invisible': [('mail_order_input', '=', False)]}">
                         <page name="email_page" string="EDI sorgente email" >
                             <group colspan="4" col="4">
-                                <field name="imap_id"/>
+                                <field name="imap_id" attrs="{'required': [('mail_order_input', '=', True)]}"/>
                                 <newline/>
-                                <field name="mail_content_type" />
-                                <field name="attachment_extension"/>
+                                <field name="mail_content_type" attrs="{'required': [('mail_order_input', '=', True)]}"/>
+                                <field name="attachment_extension" attrs="{'required': [('mail_order_input', '=', True)]}"/>
                                 <separator string="Cartelle dati:" colspan="4"/>
-                                <field name="mail_eml_folder" />
-                                <field name="mail_eml_history" />
-                                <field name="mail_attach_folder" />
-                                <field name="mail_attach_history" />
+                                <field name="mail_eml_folder" attrs="{'required': [('mail_order_input', '=', True)]}"/>
+                                <field name="mail_eml_history" attrs="{'required': [('mail_order_input', '=', True)]}"/>
+                                <field name="mail_attach_folder" attrs="{'required': [('mail_order_input', '=', True)]}"/>
+                                <field name="mail_attach_history" attrs="{'required': [('mail_order_input', '=', True)]}"/>
                             </group>
                         </page>
                     </notebook>
