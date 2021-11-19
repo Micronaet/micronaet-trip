@@ -127,14 +127,14 @@ class edi_company_c3(orm.Model):
     def get_destination(self, facility, cost, site):
         """ Mask for code destination (only the last: site is used here)
         """
-        return "[%s]" % site
+        return "[B%s]" % site
 
     def get_destination_id(self, cr, uid, facility, cost, site, context=None):
         """ Get 3 parameters for destination and return ID get from res.partner
             generated during importation
         """
         return self.pool.get('res.partner').search_supplier_destination(
-            cr, uid, "", site, context=context)
+            cr, uid, "", 'B' % site, context=context)
 
     def get_priority(self, cr, uid, file_in):
         """ Always normal (no priority management)
