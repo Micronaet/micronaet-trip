@@ -51,7 +51,7 @@ class ImapServer(orm.Model):
         """ Try to extract the attachments from all files in company folder
         """
         folder = {
-            'eml': os.path.expanduser(company.mail_eml_folder),
+            # 'eml': os.path.expanduser(company.mail_eml_folder),
             'attachment': os.path.expanduser(company.mail_attach_folder),
         }
         content_type = company.mail_content_type
@@ -63,8 +63,8 @@ class ImapServer(orm.Model):
             order_name = utility.get_order_number(record)
 
             # EML file:
-            filename = '%s.eml' % order_name
-            fullname = os.path.join(folder['eml'], filename)
+            # filename = '%s.eml' % order_name
+            # fullname = os.path.join(folder['eml'], filename)
 
             # Attachment file:
             attach_filename = '%s.%s' % (
@@ -97,7 +97,7 @@ class ImapServer(orm.Model):
             else:  # Only if not break
                 _logger.error('No attachment in %s format %s' % (
                     content_type,
-                    fullname,
+                    attach_fullname,
                 ))
 
     # -------------------------------------------------------------------------
@@ -199,7 +199,7 @@ class ImapServer(orm.Model):
                     company_records[company].append(record)
 
                 # todo manage commit roll back also in email
-                mail.store(msg_id, '+FLAGS', 'INBOX/EDI')
+                mail.store(msg_id, '+FLAGS', 'Trash')
                 _logger.info('Read mail: To: %s - From: %s - Subject: %s' % (
                     record['To'],
                     record['From'],
