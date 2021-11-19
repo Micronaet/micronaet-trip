@@ -102,7 +102,6 @@ class ImapServer(orm.Model):
     def force_import_email_document(self, cr, uid, ids, context=None):
         """ Force import passed server import all email in object
         """
-        pdb.set_trace()
         company_pool = self.pool.get('edi.company')
 
         _logger.info('Start read IMAP server')
@@ -113,13 +112,13 @@ class ImapServer(orm.Model):
         ], context=context)
         for address in self.browse(cr, uid, address_ids, context=context):
             company_touched = []
-            company_records = []
+            company_records = {}
             company_ids = company_pool.search(cr, uid, [
                 ('imap_id', '=', address.id),
             ], context=context)
             if not company_ids:
-                _logger.error('IMAP %s not associated to EDI company!' %
-                              address.name)
+                _logger.error(
+                    'IMAP %s not associated to EDI company!' % address.name)
                 continue
 
             # Collect list of company touched for utility part:
@@ -132,7 +131,8 @@ class ImapServer(orm.Model):
             # -----------------------------------------------------------------
             # Read all email:
             # -----------------------------------------------------------------
-            server = '%s:%s' % (address.host, address.port)
+            pdb.set_trace()
+            server = address.host  # '%s:%s' % (address.host, address.port)
             if_error = _('Error find imap server: %s' % server)
             try:
                 if address.SSL:
@@ -217,8 +217,10 @@ class ImapServer(orm.Model):
 
             _logger.info('Parse attachment mail read')
             for company in company_records:
-                self.save_attachment_from_eml_file(
-                    company, company_records[company])
+                records = company_records[company]
+                if records:
+                    self.save_attachment_from_eml_file(
+                        company, records)
         return True
 
     # -------------------------------------------------------------------------
