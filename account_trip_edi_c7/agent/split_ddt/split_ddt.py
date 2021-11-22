@@ -42,20 +42,11 @@ def log_event(comment, log_type='info'):
     return True
 
 
-def new_file(invoice):
-    """ Operation for get new file:
-    """
-    out_filename = join(output_folder, invoice)
-    log_event("Output on file: %s" % out_filename)
-    return open(out_filename, 'w')
-
-
 # -----------------------------------------------------------------------------
 #                                  Start procedure:
 # -----------------------------------------------------------------------------
 now = datetime.now()
-output_file = False
-for root, folders, files in os.path(input_folder):
+for root, folders, files in os.walk(input_folder):
     for input_file in files:
         log_event('Start splitting on file: %s' % input_file)
 
@@ -69,17 +60,21 @@ for root, folders, files in os.path(input_folder):
                     continue
 
                 # Check if need new file:
-                if not output_file or line.startswith('FM|'):
+                if line.startswith('TM'):
+                    try:
+                        out_f.close()  # Close previous if present
+                    except:
+                        pass
+
                     output_filename = '%s_%s.csv' % (
                         start_filename,
                         now.strftime(DATETIME_FORMAT),
                     )
+                    log_event('Output on file: %s' % output_filename)
+
                     now += timedelta(seconds=1)  # For new file
                     output_file = os.path.join(output_folder, output_filename)
-                    if output_filename:
-                        out_f.close()
                     out_f = open(output_file, 'w')
-                    log_event("Line write on file = %s" % i)
                     i = 0
 
                     # Read invoice number:
@@ -107,3 +102,5 @@ for root, folders, files in os.path(input_folder):
         except:
             log_event('Error splitting: %s\n' % (sys.exc_info(), ), 'error')
             sys.exit()
+
+        break  # Only first folder read
