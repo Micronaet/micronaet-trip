@@ -105,6 +105,7 @@ class ImapServer(orm.Model):
     def force_import_email_document(self, cr, uid, ids, context=None):
         """ Force import passed server import all email in object
         """
+        pdb.set_trace()
         company_pool = self.pool.get('edi.company')
 
         _logger.info('Start read IMAP server')
