@@ -199,7 +199,11 @@ class ImapServer(orm.Model):
 
                 # todo manage commit roll back also in email
                 # todo move in different folder!
-                mail.store(msg_id, '+FLAGS', '\\Deleted')
+                pdb.set_trace()
+                result = mail.uid('COPY', msg_id, '\\EDI')
+
+                if result[0] == 'OK':
+                    mail.store(msg_id, '+FLAGS', '\\Deleted')
                 _logger.info('Read mail: To: %s - From: %s - Subject: %s' % (
                     record['To'],
                     record['From'],
