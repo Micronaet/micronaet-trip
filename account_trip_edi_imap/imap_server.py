@@ -80,6 +80,7 @@ class ImapServer(orm.Model):
             # Loop on part:
             for part in message.walk():
                 attachment_content = part.get_content_type()
+                filename = part.get_filename()
                 # attachment_name = part['Content-Disposition']
                 # attachment_id = part['Content-ID']
                 # attachment_format = part['Content-Transfer-Encoding']
@@ -89,8 +90,8 @@ class ImapServer(orm.Model):
                 #    attachment_format,
                 #    attachment_content,
                 # ))
-                if attachment_content == content_type:
-                    pdb.set_trace()
+                if attachment_content == content_type and \
+                        filename == attach_filename:
                     # Move parsed email in history:
                     # todo save EML file?
                     # with open(attach_fullname, 'wb') as attach_f:
