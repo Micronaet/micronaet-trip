@@ -70,24 +70,15 @@ class ImapServer(orm.Model):
             # Loop on part:
             message = record['Message']
             for part in message.walk():
-                attachment_content = part.get_content_type()
-                filename = part.get_filename()
-                _logger.warning('Analyse attach name: %s' % filename)
                 # part['Content-Disposition'] ['Content-ID']
                 # ['Content-Transfer-Encoding']
-                if attachment_content == content_type and \
-                        filename == attach_filename:
-                    # Move parsed email in history:
-                    # todo save EML file?
-                    # with open(attach_fullname, 'wb') as attach_f:
-                    #    attach_f.write(attach_b64)
-
-
+                if utility.is_order_attachment(
+                        part, content_type, attach_filename):
                     # Save Attachment:
                     attach_b64 = base64.b64decode(part.get_payload())
                     with open(attach_fullname, 'wb') as attach_f:
                         attach_f.write(attach_b64)
-                    break  # todo Check only first attach
+                    break  # Check only first attach
             else:  # Only if not break
                 _logger.error('No attachment in %s format %s' % (
                     content_type,

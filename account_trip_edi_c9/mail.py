@@ -39,6 +39,22 @@ class edi_company_c9(orm.Model):
     # -------------------------------------------------------------------------
     #                     Abstract function for mail:
     # -------------------------------------------------------------------------
+    def is_order_attachment(
+            self, part, content_type, attach_filename, verbose=True):
+        """ Check if the attachment is in correct format
+        """
+        attachment_content = part.get_content_type()
+        filename = part.get_filename()
+        if attachment_content == content_type and \
+                filename == attach_filename:
+            if verbose:
+                _logger.warning('Found order, attach: %s' % filename)
+            return True
+
+        if verbose:
+            _logger.warning('Not Found order, attach: %s' % filename)
+        return False
+
     def get_order_number(self, record):
         """ EDI mail: Extract order number
             Format: 'INVIO ORDINE 21A083770 22/11/21
