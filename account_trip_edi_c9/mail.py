@@ -42,4 +42,4 @@ class edi_company_c9(orm.Model):
         """ EDI mail: Extract order number
         """
         subject = record['Subject']
-        return subject.split(':')[1].strip()  # todo write correct parse!
+        return subject.split(':')[1].strip()  # todo write correct parse value!
