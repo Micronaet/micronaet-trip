@@ -79,16 +79,21 @@ class ImapServer(orm.Model):
 
             # Loop on part:
             for part in message.walk():
-                attachment_name = part['Content-Disposition']
-                attachment_id = part['Content-ID']
-                attachment_format = part['Content-Transfer-Encoding']
                 attachment_content = part.get_content_type()
-                _logger.info('Attachment param:\n%s\n%s\n%s\n%s' % (
-                    attachment_name,
-                    attachment_id,
-                    attachment_format,
-                    attachment_content,
-                ))
+                # attachment_name = part['Content-Disposition']
+                # attachment_id = part['Content-ID']
+                # attachment_format = part['Content-Transfer-Encoding']
+                # _logger.info('Attachment param:\n%s\n%s\n%s\n%s' % (
+                #    attachment_name,
+                #    attachment_id,
+                #    attachment_format,
+                #    attachment_content,
+                # ))
+                attach_b64 = base64.b64decode(part.get_payload())
+                with open(attach_fullname, 'wb') as attach_f:
+                    attach_f.write(attach_b64)
+                pdb.set_trace()
+
                 if attachment_content == content_type:
                     # Move parsed email in history:
                     # todo save EML file?
