@@ -44,6 +44,5 @@ class edi_company_c10(orm.Model):
             Format: 'Ordine n.30451/21 - VETROPACK - RISTORAZIONE - 29/11/2021'
         """
         subject = record['Subject']
-        #  .replace('/', '-')
-        return subject.split('-')[0].split('.')[-1].strip()
+        return subject.split('-')[0].split('.')[-1].strip().replace('/', '_')
 
