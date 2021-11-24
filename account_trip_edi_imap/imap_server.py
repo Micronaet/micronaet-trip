@@ -81,15 +81,8 @@ class ImapServer(orm.Model):
             for part in message.walk():
                 attachment_content = part.get_content_type()
                 filename = part.get_filename()
-                # attachment_name = part['Content-Disposition']
-                # attachment_id = part['Content-ID']
-                # attachment_format = part['Content-Transfer-Encoding']
-                # _logger.info('Attachment param:\n%s\n%s\n%s\n%s' % (
-                #    attachment_name,
-                #    attachment_id,
-                #    attachment_format,
-                #    attachment_content,
-                # ))
+                # part['Content-Disposition'] ['Content-ID']
+                # ['Content-Transfer-Encoding']
                 if attachment_content == content_type and \
                         filename == attach_filename:
                     # Move parsed email in history:
