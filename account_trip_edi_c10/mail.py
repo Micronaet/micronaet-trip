@@ -46,7 +46,7 @@ class edi_company_c10(orm.Model):
         # attachment_content = part.get_content_type()
         # attachment_content == content_type and \
         filename = part.get_filename()
-        if filename and filename.endswith('_2.txt'):
+        if filename and filename.endswith('_v2.txt'):
             if verbose:
                 _logger.warning('Found order, attach: %s' % filename)
             return True
