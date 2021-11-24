@@ -80,6 +80,7 @@ class ImapServer(orm.Model):
             for part in message.walk():
                 attachment_content = part.get_content_type()
                 filename = part.get_filename()
+                _logger.warning('Analyse attach name: %s' % filename)
                 # part['Content-Disposition'] ['Content-ID']
                 # ['Content-Transfer-Encoding']
                 if attachment_content == content_type and \
