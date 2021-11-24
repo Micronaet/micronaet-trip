@@ -53,11 +53,13 @@ class ImapServer(orm.Model):
         folder = {
             # 'eml': os.path.expanduser(company.mail_eml_folder),
             'attachment': os.path.expanduser(company.mail_attach_folder),
+            'history': os.path.expanduser(company.mail_attach_history),
         }
         content_type = company.mail_content_type
         extension = company.attachment_extension
         utility = self.pool.get(company.type_importation_id.object)  # xxx
 
+        pdb.set_trace()
         for record in records:
             order_name = utility.get_order_number(record)
 
@@ -105,7 +107,6 @@ class ImapServer(orm.Model):
     def force_import_email_document(self, cr, uid, ids, context=None):
         """ Force import passed server import all email in object
         """
-        pdb.set_trace()
         company_pool = self.pool.get('edi.company')
 
         _logger.info('Start read IMAP server')
@@ -225,7 +226,6 @@ class ImapServer(orm.Model):
             _logger.info('End read IMAP server')
 
             _logger.info('Parse attachment mail read')
-            pdb.set_trace()
             for company in company_records:
                 records = company_records[company]
                 if records:
