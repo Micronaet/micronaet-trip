@@ -89,13 +89,8 @@ class ImapServer(orm.Model):
                 #    attachment_format,
                 #    attachment_content,
                 # ))
-                if attachment_content == 'application/octet-stream':
-                    attach_b64 = base64.b64decode(part.get_payload())
-                    with open(attach_fullname, 'wb') as attach_f:
-                        attach_f.write(attach_b64)
-                    pdb.set_trace()
-
                 if attachment_content == content_type:
+                    pdb.set_trace()
                     # Move parsed email in history:
                     # todo save EML file?
                     # with open(attach_fullname, 'wb') as attach_f:
@@ -337,6 +332,7 @@ class EdiCompany(orm.Model):
         'mail_content_type': fields.selection([
             ('application/vnd.openxmlformats-officedocument.'
              'spreadsheetml.sheet', 'File XLSX'),
+            ('application/octet-stream', 'Octect stream'),
             ], 'Content type',
             help='Content type allegato da prendere in considereazione per la'
                  'procedura di import'),
