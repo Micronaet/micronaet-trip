@@ -89,10 +89,11 @@ class ImapServer(orm.Model):
                 #    attachment_format,
                 #    attachment_content,
                 # ))
-                attach_b64 = base64.b64decode(part.get_payload())
-                with open(attach_fullname, 'wb') as attach_f:
-                    attach_f.write(attach_b64)
-                pdb.set_trace()
+                if content_type == 'application/octet-stream':
+                    attach_b64 = base64.b64decode(part.get_payload())
+                    with open(attach_fullname, 'wb') as attach_f:
+                        attach_f.write(attach_b64)
+                    pdb.set_trace()
 
                 if attachment_content == content_type:
                     # Move parsed email in history:
