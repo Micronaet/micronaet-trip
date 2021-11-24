@@ -20,6 +20,7 @@
 ###############################################################################
 
 import os
+import pdb
 import sys
 import logging
 from openerp.osv import fields, osv, expression, orm
@@ -41,5 +42,6 @@ class edi_company_c9(orm.Model):
     def get_order_number(self, record):
         """ EDI mail: Extract order number
         """
+        pdb.set_trace()
         subject = record['Subject']
         return subject.split(':')[1].strip()  # todo write correct parse value!
