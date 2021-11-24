@@ -204,7 +204,8 @@ class ImapServer(orm.Model):
                 result = mail.uid('COPY', msg_id, '\\EDI')
 
                 if result[0] == 'OK':
-                    mail.store(msg_id, '+FLAGS', '\\Deleted')
+                    if address.remove:
+                        mail.store(msg_id, '+FLAGS', '\\Deleted')
                 _logger.info('Read mail: To: %s - From: %s - Subject: %s' % (
                     record['To'],
                     record['From'],
