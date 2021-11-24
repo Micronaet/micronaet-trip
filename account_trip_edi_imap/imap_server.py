@@ -89,7 +89,7 @@ class ImapServer(orm.Model):
                 #    attachment_format,
                 #    attachment_content,
                 # ))
-                if content_type == 'application/octet-stream':
+                if attachment_content == 'application/octet-stream':
                     attach_b64 = base64.b64decode(part.get_payload())
                     with open(attach_fullname, 'wb') as attach_f:
                         attach_f.write(attach_b64)
