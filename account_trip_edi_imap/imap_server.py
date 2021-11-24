@@ -286,8 +286,10 @@ class EdiCompany(orm.Model):
         """
         imap_pool = self.pool.get('imap.server')
         email = imap_pool.get_email_address(record['From'])
+
         if not email.endswith(company.mail_from):  # Check final part of addr.
             return False
+
         if not record['Subject'] or not \
                 record['Subject'].startswith(company.mail_subject):
             return False
