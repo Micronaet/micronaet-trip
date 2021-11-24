@@ -62,21 +62,13 @@ class ImapServer(orm.Model):
         for record in records:
             order_name = utility.get_order_number(record)
 
-            # EML file:
-            # filename = '%s.eml' % order_name
-            # fullname = os.path.join(folder['eml'], filename)
-
             # Attachment file:
-            attach_filename = '%s.%s' % (
-                order_name,
-                extension,
-            )  # todo better!
+            attach_filename = '%s.%s' % (order_name, extension)
             attach_fullname = os.path.join(
                 folder['attachment'], attach_filename)
 
-            message = record['Message']
-
             # Loop on part:
+            message = record['Message']
             for part in message.walk():
                 attachment_content = part.get_content_type()
                 filename = part.get_filename()
