@@ -41,7 +41,7 @@ class edi_company_c9(orm.Model):
     # -------------------------------------------------------------------------
     def get_order_number(self, record):
         """ EDI mail: Extract order number
+            Format: 'INVIO ORDINE 21A083770 22/11/21
         """
-        pdb.set_trace()
         subject = record['Subject']
-        return subject.split(':')[1].strip()  # todo write correct parse value!
+        return subject.split()[2].strip()
