@@ -18,12 +18,12 @@
 ###############################################################################
 
 {
-    'name': 'Account trip - EDI order import procedure for Company 8',
+    'name': 'Account trip - EDI order import procedure for Company 9',
     'version': '0.1',
     'category': 'EDI',
     'description': """
         Import function for load EDI files
-        this is a model of importation for Company 8
+        this is a model of importation for Company 9
         This type of module are linked to edi.company for parametrize
         function for importation.
         Import procedure is in account_trip_edi 
