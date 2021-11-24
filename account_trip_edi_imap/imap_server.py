@@ -162,8 +162,8 @@ class ImapServer(orm.Model):
                 tot += 1
 
                 # Parse message in record dict for common field used:
-                esit, result = mail.fetch(msg_id, '(RFC822)')
-                eml_string = result[0][1]
+                esit, result_mail = mail.fetch(msg_id, '(RFC822)')
+                eml_string = result_mail[0][1]
 
                 # -------------------------------------------------------------
                 # Write on file:
@@ -200,10 +200,9 @@ class ImapServer(orm.Model):
 
                 # todo manage commit roll back also in email
                 # todo move in different folder!
-                pdb.set_trace()
-                result = mail.uid('COPY', msg_id, '\\EDI')
+                result_operation = mail.uid('COPY', msg_id, '\\EDI')
 
-                if result[0] == 'OK':
+                if result_operation[0] == 'OK':
                     if address.remove:
                         mail.store(msg_id, '+FLAGS', '\\Deleted')
                 _logger.info('Read mail: To: %s - From: %s - Subject: %s' % (
@@ -226,6 +225,7 @@ class ImapServer(orm.Model):
             _logger.info('End read IMAP server')
 
             _logger.info('Parse attachment mail read')
+            pdb.set_trace()
             for company in company_records:
                 records = company_records[company]
                 if records:
