@@ -188,6 +188,7 @@ class ImapServer(orm.Model):
                 esit, result_mail = imap.fetch(msg_id, '(RFC822)')
                 eml_string = result_mail[0][1]
 
+                # Populate parameters:
                 message = email.message_from_string(eml_string)
                 record = {
                     'To': False,
@@ -198,8 +199,6 @@ class ImapServer(orm.Model):
                     'Subject': False,
                     'Message': message,
                     }
-
-                # Populate parameters:
                 for (param, value) in message.items():
                     if param in record:
                         record[param] = value
