@@ -136,6 +136,7 @@ def log_on_file(message, mode='INFO', file_list=None, verbose=True):
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
+pdb.set_trace()
 try:
     company = sys.argv[1]
     if len(company) > 3:
