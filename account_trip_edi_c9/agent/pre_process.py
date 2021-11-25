@@ -244,6 +244,7 @@ for root, dirs, files in os.walk(in_path):
         try:
            wb = xlrd.open_workbook(file_in)
         except:
+            print('Errore: %s' % (sys.exc_info(), ))
             log_on_file(
                 'Error opening file: %s [%s]' % (file_in, company),
                 mode='ERROR', file_list=[f_in_log, f_out_log])
