@@ -21,6 +21,7 @@ import pdb
 import sys
 import os
 import shutil
+import xlrd
 import ConfigParser
 from datetime import datetime
 
@@ -87,10 +88,10 @@ def clean_text(text, length, uppercase=False, error=None, truncate=False):
     return text
 
 
-def clean_date(company_date):
+def clean_date(company_date):  # todo!!!
     """ Current format: YYMMDD
     """
-    return '20%s' % company_date.strip()
+    return company_date.strip()
 
 
 def clean_float(
@@ -176,6 +177,8 @@ mail_info = config.get('mail', 'info')
 f_in_schedule = open(in_schedule, 'a')
 f_in_log = open(in_log, 'a')
 
+start = 0
+
 f_out_schedule = open(out_schedule, 'a')
 f_out_log = open(out_log, 'a')
 
@@ -202,7 +205,7 @@ if out_check:
 log_on_file(
     'Start import order mode: %s' % company, mode='INFO', file_list=[
         f_in_schedule, f_out_schedule])
-
+pdb.set_trace()
 for root, dirs, files in os.walk(in_path):
     log_on_file(
         'Read root folder: %s [%s]' % (root, company),
@@ -210,7 +213,6 @@ for root, dirs, files in os.walk(in_path):
         file_list=[f_in_log, f_out_log])
 
     for f in files:
-        # file_part = f.split('_')
         command = 'NEW'  # Only this!
 
         # Fullname needed:
@@ -224,98 +226,111 @@ for root, dirs, files in os.walk(in_path):
 
         file_out = os.path.join(
             out_path, '%s' % (
-                '%s_%s_%s.txt' % (  # todo change date creation?
+                '%s_%s_%s.txt' % (
                     create_date, f[:-4], command),
-                ))  # TODO change name
+                ))
 
         # ---------------------------------------------------------------------
-        # Read input file:
+        #                    Read Excel files:
         # ---------------------------------------------------------------------
         error = []
-        f_in = open(file_in, 'r')
+        try:
+           wb = xlrd.open_workbook(file_in)
+        except:
+            log_on_file(
+                'Error opening file: %s [%s]' % (file_in, company),
+                mode='ERROR', file_list=[f_in_log, f_out_log])
+            sys.exit()
+
+        ws = wb.sheet_by_index(0)
         row_out = []
         log_on_file(
             'Parsing file: %s [%s]' % (file_in, company),
-            mode='INFO',
-            file_list=[f_in_log, f_out_log])
+            mode='INFO', file_list=[f_in_log, f_out_log])
 
-        counter = 0
-        for line in f_in:
-            counter += 1
-            line = line.strip()
-            if line.startswith('01'):  # Header block:
-                header = {
-                    'type': line[:2].strip(),
-                    'sequence': line[2:7].strip(),
-                    'order': line[7:23].strip(),
-                    'date': line[23:29].strip(),
-                    'deadline': line[29:35].strip(),
-                    'company_code': line[35:51].strip(),
-                    'destination_code': line[51:67].strip(),
-                    'document': line[67:69].strip(),
-                }
-                continue
-            # Detail lines:
-            detail = {
-                'type': line[:2].strip(),
-                'sequence': line[2:7].strip(),
-                'code': line[7:23].strip(),
-                'name': line[23:63].strip(),
-                'uom': line[63:65].strip(),
-                'quantity': line[65:72].strip(),
-                'price': line[72:81].strip(),
-                'vat': line[67:69].strip(),
+        for row in range(start, ws.nrows):
+            record = {
+                # Header information:
+                'order': ws.cell(row, 0).value,
+                'serie': ws.cell(row, 1).value,
+                'date': ws.cell(row, 2).value,
+                # Ragione sociale 3
+
+                # Stock inforation:
+                'stock_code': ws.cell(row, 4).value,
+                'stock_name': ws.cell(row, 5).value,
+                'stock_address': ws.cell(row, 6).value,
+                'stock_cap': ws.cell(row, 7).value,
+                'stock_city': ws.cell(row, 8).value,
+                'stock_province': ws.cell(row, 9).value,
+
+                # Detail information:
+                'customer_code': ws.cell(row, 10).value,
+                'customer_name': ws.cell(row, 11).value,
+                'customer_extra': ws.cell(row, 12).value,
+
+                'company_code': ws.cell(row, 13).value,
+                'uom': ws.cell(row, 14).value,
+                'quantity': ws.cell(row, 15).value,
+                'price': ws.cell(row, 16).value,
+                'subtotal': ws.cell(row, 17).value,
+                'deadline': ws.cell(row, 18).value,
+                'line_note': ws.cell(row, 19).value,
+                'delivery_note': ws.cell(row, 20).value,
+                'cig': ws.cell(row, 21).value,
+                'cup': ws.cell(row, 22).value,
+                'calendar': ws.cell(row, 23).value,
             }
 
             # -----------------------------------------------------------------
             # Convert row input file:
             # -----------------------------------------------------------------
             row_out.append(
-                '%-3s|%-10s|%-10s|%-10s|%-8s|'
+                'MRK|%-10s|%-10s|%-10s|%-8s|'
                 '%-13s|%4s|%-16s|%-60s|%-2s|%15s|'
                 '%-16s|%-60s|%-2s|%15s|'
                 '%-8s|%-40s|%-40s|%-15s\r\n' % (
-                    # Header:
-                    clean_text(company, 3, error=error, truncate=True),  # args
-
                     # Destination code:
                     '',
                     clean_text(
-                        header['destination_code'], 10, error=error,
+                        record['stock_code'], 10, error=error,
                         truncate=True),
                     '',
 
-                    clean_date(header['deadline']),
+                    clean_date(record['deadline']),
                     clean_text(
-                        header['order'], 13, error=error, truncate=True),
+                        record['order'], 13, error=error, truncate=True),
 
                     # Line:
-                    counter - 1,  # remove header line
-                    clean_text(detail['code'], 16, error=error, truncate=True,
-                               uppercase=True),
-                    clean_text(detail['name'], 60, error=error, truncate=True),
-                    clean_text(detail['uom'], 2, error=error, truncate=True,
+                    row,  # remove header line
+                    clean_text(record['company_code'], 16, error=error,
+                               truncate=True, uppercase=True),
+                    clean_text(record['customer_name'], 60, error=error,
+                               truncate=True),
+                    clean_text(record['uom'], 2, error=error, truncate=True,
                                uppercase=True),
                     clean_float(
-                        detail['quantity'], 15, 2, 100.0, error=error),
+                        record['quantity'], 15, 2, error=error),
 
                     # Supplier reference (here is the same)
-                    clean_text(detail['code'], 16, error=error, truncate=True,
-                               uppercase=True),
-                    clean_text(detail['name'], 60, error=error, truncate=True),
-                    clean_text(detail['uom'], 2, error=error, truncate=True,
+                    clean_text(record['customer_code'], 16, error=error,
+                               truncate=True, uppercase=True),
+                    clean_text(record['customer_name'], 60, error=error,
+                               truncate=True),
+                    clean_text(record['uom'], 2, error=error, truncate=True,
                                uppercase=True),
                     clean_float(
-                        detail['quantity'], 15, 2, 100.0, error=error),
+                        record['quantity'], 15, 2, error=error),
 
                     # Footer:
-                    clean_date(header['date']),
+                    clean_date(record['date']),
                     '',  # header note
-                    '',  # line note
-                    '',  # CIG
+                    clean_text(record['line_note'], 40, error=error,
+                               truncate=True, uppercase=True),  # line note
+                    clean_text(record['cig'], 15, error=error,
+                               truncate=True, uppercase=True),  # line note
                     # todo price?
                     ))
-        f_in.close()
 
         if error:
             log_on_file(
