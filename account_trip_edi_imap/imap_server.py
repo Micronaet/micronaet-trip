@@ -133,6 +133,7 @@ class ImapServer(orm.Model):
 
         imap_open = []
         company_records = {}
+        pdb.set_trace()
         for address in self.browse(cr, uid, address_ids, context=context):
             company_ids = company_pool.search(cr, uid, [
                 ('import', '=', True),  # Only active company
