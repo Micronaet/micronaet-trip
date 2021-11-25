@@ -74,11 +74,19 @@ class ImapServer(orm.Model):
             attach_filename = '%s.%s' % (order_name, extension)
             attach_fullname = os.path.join(
                 folder['attachment'], attach_filename)
+            history_fullname = os.path.join(
+                folder['history'], attach_filename)
+
+            # Check if present:
+            if os.path.exists(history_fullname) or \
+                    os.path.exists(attach_fullname):
+                _logger.error('File yet present: ' % attach_filename)
+                continue
 
             # Loop on part:
             message = record['Message']
             for part in message.walk():
-                # Check if is the correct attachement:
+                # Check if is the correct attachment:
                 if utility.is_order_attachment(
                         part, content_type, attach_filename):
                     # ---------------------------------------------------------
@@ -222,20 +230,22 @@ class ImapServer(orm.Model):
                 tot,
                 ))
 
-            pdb.set_trace()
             _logger.info('Parse attachment mail read')
+            imap_open = []
             for company in company_records:
+                imap = company_records[company][0]
+                if imap not in imap_open:
+                    imap_open.append(imap)
                 self.save_attachment_from_eml_file(
                     company, company_records[company])
-
             # -----------------------------------------------------------------
             # Close operations:
             # -----------------------------------------------------------------
-            # todo close all
-            # _logger.info('End read IMAP server %s' % imap)
-            # imap.expunge()  # Clean trash bin
-            # imap.close()
-            # imap.logout()
+            for imap in imap_open:
+                _logger.info('End read IMAP server %s' % imap)
+                imap.expunge()  # Clean bin
+                imap.close()
+                imap.logout()
         return True
 
     # -------------------------------------------------------------------------
