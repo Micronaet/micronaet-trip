@@ -79,7 +79,7 @@ class ImapServer(orm.Model):
             # Check if present:
             if os.path.exists(history_fullname) or \
                     os.path.exists(attach_fullname):
-                _logger.error('File yet present: ' % attach_filename)
+                _logger.error('File yet present: %s' % attach_filename)
                 continue
 
             # Loop on part:
