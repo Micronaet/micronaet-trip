@@ -60,7 +60,7 @@ class edi_company_c10(orm.Model):
         'destination_description': (0, 0),  # Not present
         }
 
-    # todo allign in correct new format for 10:
+    # todo align in correct new format for 10:
     def get_timestamp_from_file(self, file_in, path_in=None):
         """ Get timestamp value from file name
             File is: 20151231_120000_NAME.ASC
@@ -94,7 +94,7 @@ class edi_company_c10(orm.Model):
                 return 'forced'
             else:
                 file_part = file_in.split('_')
-                command = file_part[6][:3].upper()
+                command = file_part[3][:3].upper()
                 if command == 'NEW':
                     return 'create'
                 # todo not used:
@@ -109,7 +109,7 @@ class edi_company_c10(orm.Model):
     def get_destination(self, facility, cost, site):
         """ Mask for code destination (only the last: site is used)
         """
-        return "[%s]" % cost
+        return "[H%s]" % cost
 
     # todo allign in correct new format for 10:
     def get_destination_id(self, cr, uid, facility, cost, site, context=None):
@@ -117,7 +117,7 @@ class edi_company_c10(orm.Model):
             generated during importation
         """
         return self.pool.get('res.partner').search_supplier_destination(
-            cr, uid, '', cost, context=context)
+            cr, uid, '', 'H' + cost, context=context)
 
     # todo allign in correct new format for 10:
     def get_priority(self, cr, uid, file_in):
