@@ -246,26 +246,26 @@ for root, dirs, files in os.walk(in_path):
             line = line.strip()
             if line.startswith('01'):  # Header block:
                 header = {
-                    'type': line[:2],
-                    'sequence': line[2:7],
-                    'order': line[7:23],
-                    'date': line[23:29],  # todo convert
-                    'deadline': line[29:35],  # todo convert
-                    'company_code': line[35:51],
-                    'destination_code': line[51:67],
-                    'document': line[67:69],
+                    'type': line[:2].strip(),
+                    'sequence': line[2:7].strip(),
+                    'order': line[7:23].strip(),
+                    'date': line[23:29].strip(),
+                    'deadline': line[29:35].strip(),
+                    'company_code': line[35:51].strip(),
+                    'destination_code': line[51:67].strip(),
+                    'document': line[67:69].strip(),
                 }
                 continue
             # Detail lines:
             detail = {
-                'type': line[:2],
-                'sequence': line[2:7],
-                'code': line[7:23],
-                'name': line[23:63],
-                'uom': line[63:65],
-                'quantity': float(line[65:72]) / 100.0,
-                'price': float(line[72:81]) / 10000.0,
-                'vat': line[67:69],
+                'type': line[:2].strip(),
+                'sequence': line[2:7].strip(),
+                'code': line[7:23].strip(),
+                'name': line[23:63].strip(),
+                'uom': line[63:65].strip(),
+                'quantity': line[65:72].strip(),
+                'price': line[72:81].strip(),
+                'vat': line[67:69].strip(),
             }
 
             # -----------------------------------------------------------------
