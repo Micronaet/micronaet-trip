@@ -131,6 +131,7 @@ class ImapServer(orm.Model):
             ('is_active', '=', True),
         ], context=context)
 
+        imap_open = []
         company_records = {}
         for address in self.browse(cr, uid, address_ids, context=context):
             company_ids = company_pool.search(cr, uid, [
@@ -158,6 +159,8 @@ class ImapServer(orm.Model):
                     imap = imaplib.IMAP4_SSL(server)  # SSL
                 else:
                     imap = imaplib.IMAP4(server)  # No more used!
+                if imap not in imap_open:
+                    imap_open.append(imap)
 
                 server_mail = address.user
                 if_error = _('Error login access user: %s' % server_mail)
@@ -230,16 +233,16 @@ class ImapServer(orm.Model):
                 tot,
                 ))
 
+            # -----------------------------------------------------------------
+            # Move operations:
+            # -----------------------------------------------------------------
             _logger.info('Parse attachment mail read')
-            imap_open = []
             for company in company_records:
-                imap = company_records[company][0]
-                if imap not in imap_open:
-                    imap_open.append(imap)
                 self.save_attachment_from_eml_file(
                     company, company_records[company])
+
             # -----------------------------------------------------------------
-            # Close operations:
+            # Close IMAP operations:
             # -----------------------------------------------------------------
             for imap in imap_open:
                 _logger.info('End read IMAP server %s' % imap)
