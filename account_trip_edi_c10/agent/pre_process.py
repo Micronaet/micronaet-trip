@@ -279,10 +279,10 @@ for root, dirs, files in os.walk(in_path):
                     clean_text(company, 3, error=error, truncate=True),  # args
 
                     # Destination code:
+                    '',
                     clean_text(
                         header['destination_code'], 10, error=error,
                         truncate=True),
-                    '',
                     '',
 
                     clean_date(header['deadline']),
