@@ -132,7 +132,6 @@ class ImapServer(orm.Model):
 
         imap_open = []
         company_records = {}
-        pdb.set_trace()
         for address in self.browse(cr, uid, address_ids, context=context):
             company_ids = company_pool.search(cr, uid, [
                 ('import', '=', True),  # Only active company
@@ -205,7 +204,6 @@ class ImapServer(orm.Model):
                         record[param] = value
 
                 # todo if not record['Message-Id']:
-                pdb.set_trace()
                 for company in company_records:
                     if not company_pool.email_belong_to(company, record):
                         # todo archive unused files
