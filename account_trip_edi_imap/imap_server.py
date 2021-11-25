@@ -311,7 +311,11 @@ class EdiCompany(orm.Model):
         imap_pool = self.pool.get('imap.server')
         email = imap_pool.get_email_address(record['From'])
 
-        if not email.endswith(company.mail_from):  # Check final part of addr.
+        correct = False
+        for authorized in company.mail_from.split('|'):
+            if not email.endswith(authorized):  # Check final part of addr.
+                correct = True
+        if not correct:
             return False
 
         if not record['Subject'] or not \
