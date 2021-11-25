@@ -177,7 +177,7 @@ mail_info = config.get('mail', 'info')
 f_in_schedule = open(in_schedule, 'a')
 f_in_log = open(in_log, 'a')
 
-start = 0
+start = 1
 
 f_out_schedule = open(out_schedule, 'a')
 f_out_log = open(out_log, 'a')
