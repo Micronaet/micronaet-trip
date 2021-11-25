@@ -178,6 +178,7 @@ f_in_schedule = open(in_schedule, 'a')
 f_in_log = open(in_log, 'a')
 
 start = 1
+extension = 'xlsx'
 
 f_out_schedule = open(out_schedule, 'a')
 f_out_log = open(out_log, 'a')
@@ -213,6 +214,12 @@ for root, dirs, files in os.walk(in_path):
         file_list=[f_in_log, f_out_log])
 
     for f in files:
+        if not f.lower().endswith(extension):
+            log_on_file(
+                'Jump file not managed: %s' % f, mode='WARNING',
+                file_list=[
+                    f_in_schedule, f_out_schedule])
+            continue
         command = 'NEW'  # Only this!
 
         # Fullname needed:

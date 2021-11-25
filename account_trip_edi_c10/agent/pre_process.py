@@ -179,6 +179,8 @@ f_in_log = open(in_log, 'a')
 f_out_schedule = open(out_schedule, 'a')
 f_out_log = open(out_log, 'a')
 
+extension = 'txt'
+
 # -----------------------------------------------------------------------------
 # Check mount folder:
 # -----------------------------------------------------------------------------
@@ -210,6 +212,12 @@ for root, dirs, files in os.walk(in_path):
         file_list=[f_in_log, f_out_log])
 
     for f in files:
+        if not f.lower().endswith(extension):
+            log_on_file(
+                'Jump file not managed: %s' % f, mode='WARNING',
+                file_list=[
+                    f_in_schedule, f_out_schedule])
+            continue
         # file_part = f.split('_')
         command = 'NEW'  # Only this!
 
