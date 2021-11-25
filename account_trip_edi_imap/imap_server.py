@@ -66,7 +66,6 @@ class ImapServer(orm.Model):
         content_type = company.mail_content_type
         extension = company.attachment_extension
         utility = self.pool.get(company.type_importation_id.object)  # xxx
-        pdb.set_trace()
         for imap, msg_uid, record in data:
             order_name = utility.get_order_number(record)
 
@@ -133,7 +132,6 @@ class ImapServer(orm.Model):
 
         imap_open = []
         company_records = {}
-        pdb.set_trace()
         for address in self.browse(cr, uid, address_ids, context=context):
             company_ids = company_pool.search(cr, uid, [
                 ('import', '=', True),  # Only active company
@@ -237,7 +235,6 @@ class ImapServer(orm.Model):
             # -----------------------------------------------------------------
             # Move operations:
             # -----------------------------------------------------------------
-            pdb.set_trace()
             _logger.info('Parse attachment mail read')
             for company in company_records:
                 if company_records[company]:
@@ -247,7 +244,6 @@ class ImapServer(orm.Model):
             # -----------------------------------------------------------------
             # Close IMAP operations:
             # -----------------------------------------------------------------
-            pdb.set_trace()
             for imap in imap_open:
                 _logger.info('End read IMAP server %s' % imap)
                 imap.expunge()  # Clean bin
