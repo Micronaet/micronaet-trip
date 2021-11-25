@@ -309,7 +309,7 @@ class EdiCompany(orm.Model):
 
         correct = False
         for authorized in company.mail_from.split('|'):
-            if not email.endswith(authorized):  # Check final part of addr.
+            if email.endswith(authorized):  # Check final part of addr.
                 correct = True
         if not correct:
             return False
