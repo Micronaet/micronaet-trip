@@ -24,6 +24,7 @@ import shutil
 import ConfigParser
 from datetime import datetime
 
+
 # -----------------------------------------------------------------------------
 # Utility:
 # -----------------------------------------------------------------------------
@@ -65,7 +66,7 @@ def sort_line(row):
             'Char not found %s - %s -%s\n' % (start_1, start_2, start_3))
         print('Char not found %s - %s - %s' % (start_1, start_2, start_3))
         f_error.close()
-        return (5, code)
+        return 5, code
 
 
 def clean_text(text, length, uppercase=False, error=None, truncate=False):
@@ -86,43 +87,10 @@ def clean_text(text, length, uppercase=False, error=None, truncate=False):
     return text
 
 
-def clean_date(italian_date, separator='', out_format='iso', error=None):
-    """ Return clean text with limit cut
-        Log in error if over length
+def clean_date(company_date):
+    """ Current format: YYMMDD
     """
-    if error is None:
-        error = []
-    italian_date = italian_date.split(' ')[0]  # remove hour block
-
-    if len(italian_date) != 10:
-        error.append('Error not italian date: %s' % italian_date)
-        # not stopped
-    if out_format == 'iso':
-        return '%s%s%s%s%s' % (
-            italian_date[-4:],
-            separator,
-            italian_date[3:5],
-            separator,
-            italian_date[:2],
-            )
-    elif out_format == 'italian':
-        return '%s%s%s%s%s' % (
-            italian_date[:2],
-            separator,
-            italian_date[3:5],
-            separator,
-            italian_date[-4:],
-            )
-    elif out_format == 'english':
-        return '%s%s%s%s%s' % (
-            italian_date[3:5],
-            separator,
-            italian_date[:2],
-            separator,
-            italian_date[-4:],
-            )
-    else:  # incorrect format:
-        return italian_date  # nothing todo
+    return '20%s' % company_date.strip()
 
 
 def clean_float(
@@ -175,11 +143,13 @@ try:
         sys.exit()
 except:
     print('Launch program as:\n\npython ./pre_process.py CMP')
+    sys.exit()
 
 try:
     cfg_file = os.path.expanduser('./%s.cfg' % company)
 except:
     print('Config file not found: %s.cfg' % company)
+    sys.exit()
 
 config = ConfigParser.ConfigParser()
 config.read([cfg_file])
@@ -191,7 +161,7 @@ in_history = os.path.expanduser(config.get('in', 'history'))
 in_log = os.path.expanduser(config.get('in', 'log'))
 in_schedule = os.path.expanduser(config.get('in', 'schedule'))
 
-# Outp arameters:
+# Out parameters:
 out_check = os.path.expanduser(config.get('out', 'check'))
 out_path = os.path.expanduser(config.get('out', 'path'))
 out_log = os.path.expanduser(config.get('out', 'log'))
@@ -202,13 +172,9 @@ out_original = os.path.expanduser(config.get('out', 'original'))
 mail_error = config.get('mail', 'error')
 mail_info = config.get('mail', 'info')
 
-# TODO put in config file:
-separator = config.get('file', 'separator')
-tot_col = eval(config.get('file', 'tot_col'))
-
 # Calculated parameters:
-f_in_schedule = False  # open(in_schedule, 'a')
-f_in_log = False  # open(in_log, 'a')
+f_in_schedule = open(in_schedule, 'a')
+f_in_log = open(in_log, 'a')
 
 f_out_schedule = open(out_schedule, 'a')
 f_out_log = open(out_log, 'a')
@@ -244,7 +210,7 @@ for root, dirs, files in os.walk(in_path):
         file_list=[f_in_log, f_out_log])
 
     for f in files:
-        file_part = f.split('_')
+        # file_part = f.split('_')
         command = 'NEW'  # Only this!
 
         # Fullname needed:
@@ -258,7 +224,7 @@ for root, dirs, files in os.walk(in_path):
 
         file_out = os.path.join(
             out_path, '%s' % (
-                '%s_%s_%s.txt' % (
+                '%s_%s_%s.txt' % (  # todo change date creation?
                     create_date, f[:-4], command),
                 ))  # TODO change name
 
@@ -272,60 +238,34 @@ for root, dirs, files in os.walk(in_path):
             'Parsing file: %s [%s]' % (file_in, company),
             mode='INFO',
             file_list=[f_in_log, f_out_log])
+
         counter = 0
         for line in f_in:
-            line = line.strip()
-            row = line.split(separator)
-            if row[0] == 'TM':
-                if counter:
-                    # Double order
-                    pdb.set_trace()
-                # Start header:
-                print('Found header in %s file' % f)
-                continue
-            if row[0] == 'FM':  # End order:
-                # todo check total lines?
-                print('Found end of line in %s file' % f)
-                continue
-
             counter += 1
-            if len(row) != tot_col:
-                log_on_file(
-                    'Different number columns: %s [%s]' % (file_in, company),
-                    mode='INFO', file_list=[f_in_log, f_out_log])
-                break
-
-            # -----------------------------------------------------------------
-            # Read fields:
-            # -----------------------------------------------------------------
-            date = create_date[:8]  # From create date
-
-            # Char:
-            cdc = clean_text(row[0], 10, error=error)
-            code = clean_text(row[1], 10, error=error)
-            cook_center = clean_text(row[2], 10, error=error)
-            deadline = row[3].strip()
-            order = clean_text(row[4], 13, error=error)
-            sequence = clean_text(row[5], 4, error=error)
-            default_code = clean_text(row[6], 16, uppercase=True, error=error)
-            name = clean_text(row[7], 60, error=error, truncate=True)
-            um = clean_text(row[8], 2, uppercase=True, error=error)
-            quantity = clean_float(row[9], 15, 2, 1000.0, error=error)
-
-            # Company fields:
-            default_code_supplier = clean_text(
-                row[10], 16, uppercase=True, error=error)
-            name_supplier = clean_text(row[11], 60, error=error, truncate=True)
-            um_supplier = clean_text(row[12], 2, uppercase=True, error=error)
-            quantity_supplier = \
-                clean_float(row[13], 15, 2, 1000.0, error=error)
-
-            order_note = clean_text(
-                row[14], 40, error=error, truncate=True)
-            line_note = clean_text(
-                row[15], 40, error=error, truncate=True)
-            cig = clean_text(
-                row[16], 15, error=error)
+            line = line.strip()
+            if line.startswith('01'):  # Header block:
+                header = {
+                    'type': line[:2].strip(),
+                    'sequence': line[2:7].strip(),
+                    'order': line[7:23].strip(),
+                    'date': line[23:29].strip(),
+                    'deadline': line[29:35].strip(),
+                    'company_code': line[35:51].strip(),
+                    'destination_code': line[51:67].strip(),
+                    'document': line[67:69].strip(),
+                }
+                continue
+            # Detail lines:
+            detail = {
+                'type': line[:2].strip(),
+                'sequence': line[2:7].strip(),
+                'code': line[7:23].strip(),
+                'name': line[23:63].strip(),
+                'uom': line[63:65].strip(),
+                'quantity': line[65:72].strip(),
+                'price': line[72:81].strip(),
+                'vat': line[67:69].strip(),
+            }
 
             # -----------------------------------------------------------------
             # Convert row input file:
@@ -336,28 +276,44 @@ for root, dirs, files in os.walk(in_path):
                 '%-16s|%-60s|%-2s|%15s|'
                 '%-8s|%-40s|%-40s|%-15s\r\n' % (
                     # Header:
-                    company,  # depend on parameter
-                    cdc,
-                    code,
-                    cook_center,
-                    deadline,
+                    clean_text(company, 3, error=error, truncate=True),  # args
 
-                    order,
-                    sequence,
-                    default_code,
-                    name,
-                    um,
-                    quantity,
+                    # Destination code:
+                    '',
+                    clean_text(
+                        header['destination_code'], 10, error=error,
+                        truncate=True),
+                    '',
 
-                    default_code_supplier,
-                    name_supplier,
-                    um_supplier,
-                    quantity_supplier,
+                    clean_date(header['deadline']),
+                    clean_text(
+                        header['order'], 13, error=error, truncate=True),
 
-                    date,
-                    order_note,
-                    line_note,
-                    cig,
+                    # Line:
+                    counter - 1,  # remove header line
+                    clean_text(detail['code'], 16, error=error, truncate=True,
+                               uppercase=True),
+                    clean_text(detail['name'], 60, error=error, truncate=True),
+                    clean_text(detail['uom'], 2, error=error, truncate=True,
+                               uppercase=True),
+                    clean_float(
+                        detail['quantity'], 15, 2, 100.0, error=error),
+
+                    # Supplier reference (here is the same)
+                    clean_text(detail['code'], 16, error=error, truncate=True,
+                               uppercase=True),
+                    clean_text(detail['name'], 60, error=error, truncate=True),
+                    clean_text(detail['uom'], 2, error=error, truncate=True,
+                               uppercase=True),
+                    clean_float(
+                        detail['quantity'], 15, 2, 100.0, error=error),
+
+                    # Footer:
+                    clean_date(header['date']),
+                    '',  # header note
+                    '',  # line note
+                    '',  # CIG
+                    # todo price?
                     ))
         f_in.close()
 
@@ -403,7 +359,7 @@ for root, dirs, files in os.walk(in_path):
                 'History company file: %s [%s]' % (file_original, company),
                 mode='INFO', file_list=[f_in_log, f_out_log])
         except:
-            error += 'Error copy orginal folder %s >> %s' % (
+            error += 'Error copy original folder %s >> %s' % (
                 file_in, file_original)
         try:
             os.remove(file_history)
