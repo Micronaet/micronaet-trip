@@ -27,27 +27,27 @@ from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FO
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 
-
 _logger = logging.getLogger(__name__)
-    
+
+
 class micronaet_accounting(osv.osv):
-    ''' Add extra query for manage trip
-    '''
+    """ Add extra query for manage trip
+    """
     _inherit = "micronaet.accounting"
 
-    # -------------------------------------------------------------------------   
+    # -------------------------------------------------------------------------
     #                             Table access method
-    # -------------------------------------------------------------------------   
+    # -------------------------------------------------------------------------
     # -------------------
     #  DESTINATION CODE -
     # -------------------
     def get_destination_code(self, cr, uid, prefix, year=False, context=None):
-        ''' Access to anagrafic extra table of destinations
+        """ Access to anagrafic extra table of destinations
             With table: PC_VAWD_DOCUMENTOP
-        '''
+        """
         if self.pool.get('res.company').table_capital_name(cr, uid, context=context):
-            table1 = "PA_RUBR_PDC_CLFR" 
-            table2 = "PC_VAWD_DOCUMENTOP" 
+            table1 = "PA_RUBR_PDC_CLFR"
+            table2 = "PC_VAWD_DOCUMENTOP"
         else:
             table1 = "pa_rubr_pdc_clfr"
             table2 = "pc_vawd_documentop"
@@ -65,17 +65,17 @@ class micronaet_accounting(osv.osv):
                     OR va.CDS_COD__IMPIANTO_ != '');
                 """ % (
                     table1, table2, prefix, "%"))
-            return cursor              
-        except: 
-            print sys.exc_info() #False  # Error return nothing  
+            return cursor
+        except:
+            print(sys.exc_info())  # False  # Error return nothing
             return False
 
     def get_destination_tour(self, cr, uid, year=False, context=None):
-        ''' Access to anagrafic extra table of destinations
+        """ Access to anagrafic extra table of destinations
             With table: PC_VI02_GIRI
-        '''
+        """
         if self.pool.get('res.company').table_capital_name(cr, uid, context=context):
-            table = "PC_VI02_GIRI" 
+            table = "PC_VI02_GIRI"
         else:
             table = "pc_vi02_giri"
 
@@ -92,16 +92,16 @@ class micronaet_accounting(osv.osv):
                     CDS_PRIMO_GIRO != '' OR CDS_SECONDO_GIRO != '' OR
                     CDS_NOTE_CONSEGNA != '';
                 """ % table)
-            return cursor              
-        except: 
+            return cursor
+        except:
             return False  # Error return nothing
 
     def get_trip_order(self, cr, uid, year=False, context=None):
-        ''' Trip order for importation
+        """ Trip order for importation
             With table: OC_TESTATE
-        '''
+        """
         if self.pool.get('res.company').table_capital_name(cr, uid, context=context):
-            table = "OC_TESTATE" 
+            table = "OC_TESTATE"
         else:
             table = "oc_testate"
 
@@ -116,8 +116,6 @@ class micronaet_accounting(osv.osv):
                 FROM 
                     %s;
                 """ % table)
-            return cursor              
-        except: 
+            return cursor
+        except:
             return False  # Error return nothing
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
