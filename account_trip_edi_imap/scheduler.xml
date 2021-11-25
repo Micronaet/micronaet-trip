@@ -12,7 +12,7 @@
 			<field eval="0" name="doall"/>
 			<field eval="0" name="active"/>
 			<field name="args">()</field>
-			<field eval="30" name="interval_number"/>
+			<field eval="15" name="interval_number"/>
 			<field eval="&quot;&quot;&quot;imap.server&quot;&quot;&quot;" name="model"/>
 		</record>
 	</data>
