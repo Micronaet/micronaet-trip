@@ -48,7 +48,7 @@ class edi_company_c10(orm.Model):
         filename = part.get_filename()
         if filename and filename.endswith('_v2.txt'):
             if verbose:
-                _logger.warning('Found order, attach: %s' % filename)
+                _logger.info('Found order, attach: %s' % filename)
             return True
 
         if verbose:
