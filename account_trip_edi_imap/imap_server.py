@@ -67,7 +67,7 @@ class ImapServer(orm.Model):
         extension = company.attachment_extension
         utility = self.pool.get(company.type_importation_id.object)  # xxx
         pdb.set_trace()
-        for imap, msg_uid, company, record in data:
+        for imap, msg_uid, record in data:
             order_name = utility.get_order_number(record)
 
             # Attachment file:
@@ -78,6 +78,7 @@ class ImapServer(orm.Model):
             # Loop on part:
             message = record['Message']
             for part in message.walk():
+                # Check if is the correct attachement:
                 if utility.is_order_attachment(
                         part, content_type, attach_filename):
                     # ---------------------------------------------------------
@@ -99,9 +100,9 @@ class ImapServer(orm.Model):
                         mov, data = imap.uid('STORE', msg_uid, '+FLAGS',
                                              r'(\Deleted)')
                         # imap.store(msg_uid, '+FLAGS', '(\Deleted)')
-                    break  # Check only first attach
+                    break  # Check only first attachment
 
-            else:  # Only if not break
+            else:  # Only if not break for attachment fount:
                 _logger.error('No attachment in %s format %s' % (
                     content_type,
                     attach_fullname,
@@ -122,10 +123,8 @@ class ImapServer(orm.Model):
             ('is_active', '=', True),
         ], context=context)
 
-        # archive_mail_manages = {}
+        company_records = {}
         for address in self.browse(cr, uid, address_ids, context=context):
-            company_touched = []
-            company_records = {}
             company_ids = company_pool.search(cr, uid, [
                 ('import', '=', True),  # Only active company
                 ('imap_id', '=', address.id),  # For this active IMAP
@@ -138,11 +137,11 @@ class ImapServer(orm.Model):
             # Collect list of company touched for utility part:
             for company in company_pool.browse(
                     cr, uid, company_ids, context=context):
-                company_touched.append(company)
-                company_records[company] = []
+                if company not in company_records:
+                    company_records[company] = []
 
             # -----------------------------------------------------------------
-            # Read all email:
+            #                   Connect IMAP server:
             # -----------------------------------------------------------------
             server = address.host  # '%s:%s' % (address.host, address.port)
             if_error = _('Error find imap server: %s' % server)
@@ -164,6 +163,9 @@ class ImapServer(orm.Model):
                     if_error,
                     )
 
+            # -----------------------------------------------------------------
+            # Read all email:
+            # -----------------------------------------------------------------
             esit, result = imap.search(None, 'ALL')
             tot = 0
             email_ids = result[0].split()
@@ -193,7 +195,7 @@ class ImapServer(orm.Model):
                         record[param] = value
 
                 # todo if not record['Message-Id']:
-                for company in company_touched:
+                for company in company_records:
                     if not company_pool.email_belong_to(company, record):
                         # todo archive unused files
                         continue  # Mail not belong to this company
@@ -207,8 +209,8 @@ class ImapServer(orm.Model):
                         # IMAP operation:
                         imap,  # Logged imap mail
                         msg_uid,
+
                         # File operation:
-                        company,
                         record,
                     ))
 
@@ -220,21 +222,20 @@ class ImapServer(orm.Model):
                 tot,
                 ))
 
+            pdb.set_trace()
             _logger.info('Parse attachment mail read')
             for company in company_records:
                 self.save_attachment_from_eml_file(
                     company, company_records[company])
 
-
-                # -------------------------------------------------------------
-                # Close operations:
-                # -------------------------------------------------------------
-                _logger.info('End read IMAP server %s' % imap)
-                imap.expunge()  # Clean trash bin
-                imap.close()
-                imap.logout()
-
-
+            # -----------------------------------------------------------------
+            # Close operations:
+            # -----------------------------------------------------------------
+            # todo close all
+            # _logger.info('End read IMAP server %s' % imap)
+            # imap.expunge()  # Clean trash bin
+            # imap.close()
+            # imap.logout()
         return True
 
     # -------------------------------------------------------------------------
