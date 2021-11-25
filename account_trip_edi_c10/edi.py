@@ -40,7 +40,7 @@ class edi_company_c10(orm.Model):
     # -------------------------------------------------------------------------
     #                     Abstract function and property:
     # -------------------------------------------------------------------------
-    # todo allign in correct new format for 10:
+    # todo align in correct new format for 10:
     trace = {
         'number': (46, 59),
         'date': (259, 267),  # Insert with parser function

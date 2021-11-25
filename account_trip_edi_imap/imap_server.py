@@ -240,8 +240,9 @@ class ImapServer(orm.Model):
             pdb.set_trace()
             _logger.info('Parse attachment mail read')
             for company in company_records:
-                self.save_attachment_from_eml_file(
-                    company, company_records[company])
+                if company_records[company]:
+                    self.save_attachment_from_eml_file(
+                        company, company_records[company])
 
             # -----------------------------------------------------------------
             # Close IMAP operations:
@@ -306,6 +307,7 @@ class EdiCompany(orm.Model):
     def email_belong_to(self, company, record):
         """ Check if email belong to this company
         """
+        pdb.set_trace()
         imap_pool = self.pool.get('imap.server')
         email = imap_pool.get_email_address(record['From'])
 
