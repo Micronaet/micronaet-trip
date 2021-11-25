@@ -19,6 +19,7 @@
 ###############################################################################
 import os
 import pdb
+import re
 import sys
 import logging
 import imaplib
@@ -44,11 +45,18 @@ class ImapServer(orm.Model):
     _description = 'IMAP Server'
     _order = 'name'
 
+    # Utility:
+    def parse_uid(self, data):
+        pattern_uid = re.compile(r'\d+ \(UID (?P<uid>\d+)\)')
+        match = pattern_uid.match(data)
+        return match.group('uid')
+
     # -------------------------------------------------------------------------
     # File procedure:
     # -------------------------------------------------------------------------
-    def save_attachment_from_eml_file(self, company, records):
+    def save_attachment_from_eml_file(self, company, data):
         """ Try to extract the attachments from all files in company folder
+            Extract single file and move same time the email
         """
         folder = {
             # 'eml': os.path.expanduser(company.mail_eml_folder),
@@ -59,7 +67,7 @@ class ImapServer(orm.Model):
         extension = company.attachment_extension
         utility = self.pool.get(company.type_importation_id.object)  # xxx
         pdb.set_trace()
-        for record in records:
+        for imap, msg_uid, company, record in data:
             order_name = utility.get_order_number(record)
 
             # Attachment file:
@@ -70,16 +78,29 @@ class ImapServer(orm.Model):
             # Loop on part:
             message = record['Message']
             for part in message.walk():
-                # part['Content-Disposition'] ['Content-ID']
-                # ['Content-Transfer-Encoding']
                 if utility.is_order_attachment(
                         part, content_type, attach_filename):
-                    # Save Attachment:
-                    # 'Content-Transfer-Encoding'  << todo base64 check
+                    # ---------------------------------------------------------
+                    # Save Attachment: todo 'Content-Transfer-Encoding' base64
+                    # ---------------------------------------------------------
                     attach_b64 = base64.b64decode(part.get_payload())
                     with open(attach_fullname, 'wb') as attach_f:
                         attach_f.write(attach_b64)
+
+                    # ---------------------------------------------------------
+                    # IMAP operations:
+                    # ---------------------------------------------------------
+                    # todo check if could be a problem keep this code after ^^
+                    # Move in archive parsed email:
+                    result_operation = imap.uid('COPY', msg_uid, 'Archive')
+
+                    # Delete from INBOX:
+                    if result_operation[0] == 'OK':  # always moved!
+                        mov, data = imap.uid('STORE', msg_uid, '+FLAGS',
+                                             r'(\Deleted)')
+                        # imap.store(msg_uid, '+FLAGS', '(\Deleted)')
                     break  # Check only first attach
+
             else:  # Only if not break
                 _logger.error('No attachment in %s format %s' % (
                     content_type,
@@ -100,6 +121,8 @@ class ImapServer(orm.Model):
         address_ids = self.search(cr, uid, [
             ('is_active', '=', True),
         ], context=context)
+
+        # archive_mail_manages = {}
         for address in self.browse(cr, uid, address_ids, context=context):
             company_touched = []
             company_records = {}
@@ -115,7 +138,6 @@ class ImapServer(orm.Model):
             # Collect list of company touched for utility part:
             for company in company_pool.browse(
                     cr, uid, company_ids, context=context):
-                # company_object = company.type_importation_id.object
                 company_touched.append(company)
                 company_records[company] = []
 
@@ -126,39 +148,33 @@ class ImapServer(orm.Model):
             if_error = _('Error find imap server: %s' % server)
             try:
                 if address.SSL:
-                    mail = imaplib.IMAP4_SSL(server)  # SSL
+                    imap = imaplib.IMAP4_SSL(server)  # SSL
                 else:
-                    mail = imaplib.IMAP4(server)  # No more used!
+                    imap = imaplib.IMAP4(server)  # No more used!
 
                 server_mail = address.user
                 if_error = _('Error login access user: %s' % server_mail)
-                mail.login(server_mail, address.password)
+                imap.login(server_mail, address.password)
 
                 if_error = _('Error access start folder: %s' % address.folder)
-                mail.select(address.folder)
+                imap.select(address.folder)
             except:
                 raise osv.except_osv(
                     _('IMAP server error:'),
                     if_error,
                     )
 
-            esit, result = mail.search(None, 'ALL')
+            esit, result = imap.search(None, 'ALL')
             tot = 0
-            for msg_id in result[0].split():
+            email_ids = result[0].split()
+            _logger.info('Found %s mail in %s folder' % (
+                len(email_ids), address.folder))
+            for msg_id in email_ids:
                 tot += 1
 
                 # Parse message in record dict for common field used:
-                esit, result_mail = mail.fetch(msg_id, '(RFC822)')
+                esit, result_mail = imap.fetch(msg_id, '(RFC822)')
                 eml_string = result_mail[0][1]
-
-                # -------------------------------------------------------------
-                # Write on file:
-                # -------------------------------------------------------------
-                # Loop on company:
-                # _logger.info('...Saving %s' % fullname)
-                # f_eml = open(fullname, 'w')
-                # f_eml.write(eml_string)
-                # f_eml.close()
 
                 message = email.message_from_string(eml_string)
                 record = {
@@ -179,43 +195,46 @@ class ImapServer(orm.Model):
                 # todo if not record['Message-Id']:
                 for company in company_touched:
                     if not company_pool.email_belong_to(company, record):
+                        # todo archive unused files
                         continue  # Mail not belong to this company
 
-                    # Save attachment as file (after all):
-                    company_records[company].append(record)
-
-                # todo manage commit roll back also in email
-                # todo move in different folder!
-                result_operation = mail.uid('COPY', msg_id, '\\EDI')
-
-                if result_operation[0] == 'OK':
-                    if address.remove:
-                        mail.store(msg_id, '+FLAGS', '\\Deleted')
-                _logger.info('Read mail: To: %s - From: %s - Subject: %s' % (
-                    record['To'],
-                    record['From'],
-                    record['Subject'],
+                    # ---------------------------------------------------------
+                    # Save for archive and delete after:
+                    # ---------------------------------------------------------
+                    resp, uid_data = imap.fetch(msg_id, '(UID)')
+                    msg_uid = self.parse_uid(uid_data[0])
+                    company_records[company].append((
+                        # IMAP operation:
+                        imap,  # Logged imap mail
+                        msg_uid,
+                        # File operation:
+                        company,
+                        record,
                     ))
+
+                _logger.info('Read mail: To: %s - From: %s - Subject: %s' % (
+                    record['To'], record['From'], record['Subject']))
 
             _logger.info('End read IMAP %s [tot msg: %s]' % (
                 address.name,
                 tot,
                 ))
 
-            # -----------------------------------------------------------------
-            # Close operations:
-            # -----------------------------------------------------------------
-            # mail.expunge() # TODO clean trash bin
-            mail.close()
-            mail.logout()
-            _logger.info('End read IMAP server')
-
             _logger.info('Parse attachment mail read')
             for company in company_records:
-                records = company_records[company]
-                if records:
-                    self.save_attachment_from_eml_file(
-                        company, records)
+                self.save_attachment_from_eml_file(
+                    company, company_records[company])
+
+
+                # -------------------------------------------------------------
+                # Close operations:
+                # -------------------------------------------------------------
+                _logger.info('End read IMAP server %s' % imap)
+                imap.expunge()  # Clean trash bin
+                imap.close()
+                imap.logout()
+
+
         return True
 
     # -------------------------------------------------------------------------
