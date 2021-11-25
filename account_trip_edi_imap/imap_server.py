@@ -236,6 +236,7 @@ class ImapServer(orm.Model):
             # -----------------------------------------------------------------
             # Move operations:
             # -----------------------------------------------------------------
+            pdb.set_trace()
             _logger.info('Parse attachment mail read')
             for company in company_records:
                 self.save_attachment_from_eml_file(
@@ -244,6 +245,7 @@ class ImapServer(orm.Model):
             # -----------------------------------------------------------------
             # Close IMAP operations:
             # -----------------------------------------------------------------
+            pdb.set_trace()
             for imap in imap_open:
                 _logger.info('End read IMAP server %s' % imap)
                 imap.expunge()  # Clean bin
