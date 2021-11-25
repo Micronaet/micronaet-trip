@@ -203,7 +203,6 @@ log_on_file(
     'Start import order mode: %s' % company, mode='INFO', file_list=[
         f_in_schedule, f_out_schedule])
 
-pdb.set_trace()
 for root, dirs, files in os.walk(in_path):
     log_on_file(
         'Read root folder: %s [%s]' % (root, company),
@@ -332,6 +331,7 @@ for root, dirs, files in os.walk(in_path):
         f_out = open(file_out, 'w')
 
         # for line in sorted(row_out, key=lambda x: sort_line(x)):  todo sort?
+        pdb.set_trace()
         for line in row_out:
             f_out.write(line)
         f_out.close()
