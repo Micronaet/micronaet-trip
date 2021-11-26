@@ -88,10 +88,14 @@ def clean_text(text, length, uppercase=False, error=None, truncate=False):
     return text
 
 
-def clean_date(company_date):  # todo!!!
-    """ Current format: YYMMDD
+def clean_date(company_date):
+    """ Current format: DD/MM/YY
     """
-    return company_date.strip()
+    return '20%s%s%s' % (
+        company_date[-2:],
+        company_date[3:5],
+        company_date[:2],
+    )
 
 
 def clean_float(
