@@ -236,10 +236,10 @@ for root, dirs, files in os.walk(in_path):
             ).strftime('%Y%m%d_%H%M%S')
 
         file_out = os.path.join(
-            out_path, '%s' % (
-                '%s_%s_%s.txt' % (
-                    create_date, f[:-4], command),
-                ))
+            out_path,
+            '%s_%s_%s.txt' % (
+                create_date, f[:-5], command),
+            )
 
         # ---------------------------------------------------------------------
         #                    Read Excel files:
