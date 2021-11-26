@@ -77,7 +77,7 @@ def clean_text(text, length, uppercase=False, error=None, truncate=False):
     if error is None:
         error = []
 
-    text = text.strip()
+    text = (text or '').strip()
     if len(text) > length:
         if truncate:
             text = text[:length]
