@@ -322,7 +322,7 @@ for root, dirs, files in os.walk(in_path):
 
                     # Line:
                     row,  # remove header line
-                    clean_text(record['company_code'], 16, error=error,
+                    clean_text(record['customer_code'], 16, error=error,
                                truncate=True, uppercase=True),
                     clean_text(record['customer_name'], 60, error=error,
                                truncate=True),
@@ -332,7 +332,7 @@ for root, dirs, files in os.walk(in_path):
                         record['quantity'], 15, 2, error=error),
 
                     # Supplier reference (here is the same)
-                    clean_text(record['customer_code'], 16, error=error,
+                    clean_text(record['company_code'], 16, error=error,
                                truncate=True, uppercase=True),
                     clean_text(record['customer_name'], 60, error=error,
                                truncate=True),
