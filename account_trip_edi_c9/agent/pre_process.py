@@ -350,8 +350,6 @@ for root, dirs, files in os.walk(in_path):
                                truncate=True, uppercase=True),  # line note
                     # todo price?
                     ))
-            print(row_out)
-            pdb.set_trace()
 
         if error:
             log_on_file(
