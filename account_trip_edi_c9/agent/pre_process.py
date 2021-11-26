@@ -177,7 +177,8 @@ mail_info = config.get('mail', 'info')
 f_in_schedule = open(in_schedule, 'a')
 f_in_log = open(in_log, 'a')
 
-start = 2
+start = 1
+header_1 = 'NUMERO ORDINE'
 extension = 'xlsx'
 
 f_out_schedule = open(out_schedule, 'a')
@@ -257,9 +258,13 @@ for root, dirs, files in os.walk(in_path):
 
         pdb.set_trace()
         for row in range(start, ws.max_row):
+            order_name = ws.cell(row, 1).value
+            if order_name == header_1:
+                print('Jump header line')
+                continue
             record = {
                 # Header information:
-                'order': ws.cell(row, 1).value,
+                'order': order_name,
                 'serie': ws.cell(row, 2).value,
                 'date': ws.cell(row, 3).value,
                 # Ragione sociale 4
