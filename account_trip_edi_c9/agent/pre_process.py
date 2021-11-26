@@ -262,6 +262,9 @@ for root, dirs, files in os.walk(in_path):
             if order_name == header_1:
                 print('Jump header line')
                 continue
+            if not order_name:
+                print('End of file')
+                break
             record = {
                 # Header information:
                 'order': order_name,
