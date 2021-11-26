@@ -239,7 +239,6 @@ for root, dirs, files in os.walk(in_path):
         # ---------------------------------------------------------------------
         #                    Read Excel files:
         # ---------------------------------------------------------------------
-        pdb.set_trace()
         error = []
         try:
            wb = openpyxl.load_workbook(file_in)
@@ -256,7 +255,8 @@ for root, dirs, files in os.walk(in_path):
             'Parsing file: %s [%s]' % (file_in, company),
             mode='INFO', file_list=[f_in_log, f_out_log])
 
-        for row in range(start, ws.nrows):
+        pdb.set_trace()
+        for row in range(start, ws.max_row):
             record = {
                 # Header information:
                 'order': ws.cell(row, 0).value,
