@@ -67,7 +67,7 @@ class edi_company_c9(orm.Model):
                      Date Time Filename
         """
         # TODO better is manage data in file instead change name!!
-        date_block = file_in[30:]
+        date_block = file_in[:15]
         return "%s/%s/%s %s:%s:%s" % (
             date_block[:4],
             date_block[4:6],
@@ -94,7 +94,7 @@ class edi_company_c9(orm.Model):
                 return 'forced'
             else:
                 file_part = file_in.split('_')
-                command = file_part[6][:3].upper()
+                command = file_part[3][:3].upper()
                 if command == 'NEW':
                     return 'create'
                 # todo not used:
