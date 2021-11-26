@@ -106,7 +106,7 @@ def log_on_file(message, mode='INFO', file_list=None, verbose=True):
 
     message_log = '%s. [%s] %s\n' % (datetime.now(), mode, message)
     if verbose:
-        print message_log.strip()
+        print(message_log.strip())
 
     for f_log in file_list:
         if not f_log:
@@ -194,9 +194,9 @@ for root, dirs, files in os.walk(in_path):
 
     for f in files:
         file_part = f.split('_')
-        if f[:2] = 'OF':
+        if f[:2] == 'OF':
             command = 'NEW'
-        elif f[:2] = 'CF':
+        elif f[:2] == 'CF':
             command = 'UPD'
         else:
             log_on_file(
@@ -383,4 +383,4 @@ try:
     if f_out_schedule:
         f_out_schedule.close()
 except:
-    print 'Error closing log file'
+    print('Error closing log file')
