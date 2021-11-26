@@ -242,7 +242,7 @@ for root, dirs, files in os.walk(in_path):
         pdb.set_trace()
         error = []
         try:
-           wb = openpyxl.open_workbook(file_in)
+           wb = openpyxl.load_workbook(file_in)
         except:
             print('Errore: %s' % (sys.exc_info(), ))
             log_on_file(
