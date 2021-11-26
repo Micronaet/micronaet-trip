@@ -177,7 +177,7 @@ mail_info = config.get('mail', 'info')
 f_in_schedule = open(in_schedule, 'a')
 f_in_log = open(in_log, 'a')
 
-start = 1
+start = 2
 extension = 'xlsx'
 
 f_out_schedule = open(out_schedule, 'a')
@@ -259,35 +259,35 @@ for root, dirs, files in os.walk(in_path):
         for row in range(start, ws.max_row):
             record = {
                 # Header information:
-                'order': ws.cell(row, 0).value,
-                'serie': ws.cell(row, 1).value,
-                'date': ws.cell(row, 2).value,
-                # Ragione sociale 3
+                'order': ws.cell(row, 1).value,
+                'serie': ws.cell(row, 2).value,
+                'date': ws.cell(row, 3).value,
+                # Ragione sociale 4
 
                 # Stock inforation:
-                'stock_code': ws.cell(row, 4).value,
-                'stock_name': ws.cell(row, 5).value,
-                'stock_address': ws.cell(row, 6).value,
-                'stock_cap': ws.cell(row, 7).value,
-                'stock_city': ws.cell(row, 8).value,
-                'stock_province': ws.cell(row, 9).value,
+                'stock_code': ws.cell(row, 5).value,
+                'stock_name': ws.cell(row, 6).value,
+                'stock_address': ws.cell(row, 7).value,
+                'stock_cap': ws.cell(row, 8).value,
+                'stock_city': ws.cell(row, 9).value,
+                'stock_province': ws.cell(row, 10).value,
 
                 # Detail information:
-                'customer_code': ws.cell(row, 10).value,
-                'customer_name': ws.cell(row, 11).value,
-                'customer_extra': ws.cell(row, 12).value,
+                'customer_code': ws.cell(row, 11).value,
+                'customer_name': ws.cell(row, 12).value,
+                'customer_extra': ws.cell(row, 13).value,
 
-                'company_code': ws.cell(row, 13).value,
-                'uom': ws.cell(row, 14).value,
-                'quantity': ws.cell(row, 15).value,
-                'price': ws.cell(row, 16).value,
-                'subtotal': ws.cell(row, 17).value,
-                'deadline': ws.cell(row, 18).value,
-                'line_note': ws.cell(row, 19).value,
-                'delivery_note': ws.cell(row, 20).value,
-                'cig': ws.cell(row, 21).value,
-                'cup': ws.cell(row, 22).value,
-                'calendar': ws.cell(row, 23).value,
+                'company_code': ws.cell(row, 14).value,
+                'uom': ws.cell(row, 15).value,
+                'quantity': ws.cell(row, 16).value,
+                'price': ws.cell(row, 17).value,
+                'subtotal': ws.cell(row, 18).value,
+                'deadline': ws.cell(row, 19).value,
+                'line_note': ws.cell(row, 20).value,
+                'delivery_note': ws.cell(row, 21).value,
+                'cig': ws.cell(row, 22).value,
+                'cup': ws.cell(row, 23).value,
+                'calendar': ws.cell(row, 24).value,
             }
 
             # -----------------------------------------------------------------
