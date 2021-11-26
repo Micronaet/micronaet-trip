@@ -21,7 +21,7 @@ import pdb
 import sys
 import os
 import shutil
-import xlrd
+import openpyxl
 import ConfigParser
 from datetime import datetime
 
@@ -206,7 +206,6 @@ if out_check:
 log_on_file(
     'Start import order mode: %s' % company, mode='INFO', file_list=[
         f_in_schedule, f_out_schedule])
-pdb.set_trace()
 for root, dirs, files in os.walk(in_path):
     log_on_file(
         'Read root folder: %s [%s]' % (root, company),
@@ -240,9 +239,10 @@ for root, dirs, files in os.walk(in_path):
         # ---------------------------------------------------------------------
         #                    Read Excel files:
         # ---------------------------------------------------------------------
+        pdb.set_trace()
         error = []
         try:
-           wb = xlrd.open_workbook(file_in)
+           wb = openpyxl.open_workbook(file_in)
         except:
             print('Errore: %s' % (sys.exc_info(), ))
             log_on_file(
@@ -250,7 +250,7 @@ for root, dirs, files in os.walk(in_path):
                 mode='ERROR', file_list=[f_in_log, f_out_log])
             sys.exit()
 
-        ws = wb.sheet_by_index(0)
+        ws = wb.active
         row_out = []
         log_on_file(
             'Parsing file: %s [%s]' % (file_in, company),
