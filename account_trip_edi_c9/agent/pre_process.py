@@ -102,7 +102,7 @@ def clean_float(
         value, length, decimal=3, multiple=1.0, separator='.', error=None):
     """ Clean float and return float format
     """
-    value = value.strip()
+    value = str(value)
     if not value:
         return 0.0
 
