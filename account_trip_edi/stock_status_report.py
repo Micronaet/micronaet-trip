@@ -120,7 +120,9 @@ class edi_company_report(orm.Model):
                             trace['detail_quantity'][0]:
                                 trace['detail_quantity'][1]])
                     except:
-                        pdb.set_trace()
+                        # Micronaet: remove error 18 gen 2022:
+                        _logger.error('Row quantity error: %s' % row)
+                        quantity = 0
                     # ---------------------------------------------------------
                     # Report data:
                     # ---------------------------------------------------------
