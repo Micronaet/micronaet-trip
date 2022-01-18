@@ -123,6 +123,7 @@ class edi_company_report(orm.Model):
                         # Micronaet: remove error 18 gen 2022:
                         _logger.error('Row quantity error: %s' % row)
                         quantity = 0
+
                     # ---------------------------------------------------------
                     # Report data:
                     # ---------------------------------------------------------
