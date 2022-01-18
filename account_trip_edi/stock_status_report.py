@@ -79,12 +79,12 @@ class edi_company_report(orm.Model):
         for root, folders, files in os.walk(path):
             for filename in files:
                 # create or delete mode TODO
-                mode = this_pool.get_state_of_file(filename, []) # No forced
+                mode = this_pool.get_state_of_file(filename, [])  # No forced
                 if mode == 'create':
                     sign = -1  # Note: create order is negative for stock!
                 else:
                     _logger.warning('Not used: %s' % filename)
-                    continue   # TODO complete!!
+                    continue   # todo complete!!
                     sign = +1
 
                 fullname = os.path.join(root, filename)
@@ -115,10 +115,12 @@ class edi_company_report(orm.Model):
                     default_code = row[
                         trace['detail_code'][0]:
                             trace['detail_code'][1]].strip()
-                    quantity = float(row[
-                        trace['detail_quantity'][0]:
-                            trace['detail_quantity'][1]])
-
+                    try:
+                        quantity = float(row[
+                            trace['detail_quantity'][0]:
+                                trace['detail_quantity'][1]])
+                    except:
+                        pdb.set_trace()
                     # ---------------------------------------------------------
                     # Report data:
                     # ---------------------------------------------------------
