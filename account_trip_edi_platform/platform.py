@@ -468,8 +468,8 @@ class EdiCompany(orm.Model):
 
                 if duplicated:
                     # Go in unused folder with datetime before filename:
-                    dt = str(datetime.now()).replace(
-                        ':', '-').replace('.', '-')
+                    dt = \
+                        str(datetime.now()).replace(':', '-').replace('.', '-')
                     move_file_list.append((
                         ddt_filename,
                         os.path.join(
