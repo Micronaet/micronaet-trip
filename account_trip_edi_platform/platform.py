@@ -332,6 +332,7 @@ class EdiCompany(orm.Model):
         _logger.info('Start check DDT files: %s' % ddt_path)
         send_order_ids = []  # Order to be sent afters
         move_file_list = []  # File operation
+
         for root, folders, files in os.walk(ddt_path):
             for filename in files:
                 ddt_filename = os.path.join(root, filename)
@@ -374,6 +375,8 @@ class EdiCompany(orm.Model):
 
                 row = 0
                 order_id = False
+                order_ddt_yet_loaded = []
+                duplicated = False
                 for line in ddt_lines:
                     row += 1
                     if row in fixed:
@@ -395,7 +398,22 @@ class EdiCompany(orm.Model):
                                     'File %s jumped' % (line, filename),
                                     )
                                 break
+
+                            order = order_pool.browse(
+                                cr, uid, order_ids, context=context)[0]
+                            for l in order.ddt_line_ids:
+                                ddt = l.name  # todo date?
+                                if ddt not in order_ddt_yet_loaded:
+                                    order_ddt_yet_loaded.append(ddt)
                         continue
+
+                    # Check if DDT is yet present:
+                    ddt_number = fixed[5]
+                    if ddt_number in order_ddt_yet_loaded:
+                        _logger.error(
+                            'DDT yet present for this order (jumped)')
+                        duplicated = True
+                        break
 
                     # Detail lines:
                     line = line.split(separator)
@@ -433,7 +451,7 @@ class EdiCompany(orm.Model):
 
                     ddt_data = {
                         'sequence': sequence,
-                        'name': fixed[5],  # DDT number
+                        'name': ddt_number,
                         'date': self.iso_date_format(fixed[3]),
                         'date_received': self.iso_date_format(fixed[4]),
                         'code': code,
@@ -448,11 +466,23 @@ class EdiCompany(orm.Model):
                     }
                     ddt_line_pool.create(cr, uid, ddt_data, context=context)
 
-                # And only if all line loop works fine:
-                move_file_list.append((
-                    ddt_filename,
-                    os.path.join(new_path, filename),
-                ))
+                if duplicated:
+                    # Go in unused folder with datetime before filename:
+                    dt = str(datetime.now()).replace(
+                        ':', '-').replace('.', '-')
+                    move_file_list.append((
+                        ddt_filename,
+                        os.path.join(
+                            unused_path,
+                            '%s_%s' % (dt, filename),
+                        ),
+                    ))
+                else:
+                    # Goes in history if works, in unused if problem:
+                    move_file_list.append((
+                        ddt_filename,
+                        os.path.join(new_path, filename),
+                    ))
             break  # Only first folder!
 
         # Send operation:
