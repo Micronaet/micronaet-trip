@@ -7,8 +7,8 @@
         <field name="arch" type="xml">
             <tree string="Trip operation" editable="bottom">
                         <field name="name" readonly="1"/>
-                        <button name="clean_all_order" type="object" string="Cancella ordini e viaggi" confirm="Operazione di pulizia ordini da fare la mattina prima di creare i viaggi, confermi?"/>
-                        <button name="import_all_order" type="object" string="Importa ordini nuovi" confirm="Confermi caricamento ordini nuovi (o integrazione qualora fossero ancora caricati i vecchi?"/>
+                        <button name="clean_all_order" type="object" icon="gtk-delete" string="Cancella ordini e viaggi" confirm="Operazione di pulizia ordini da fare la mattina prima di creare i viaggi, confermi?"/>
+                        <button name="import_all_order" type="object" icon="gtk-refresh" string="Importa ordini nuovi" confirm="Confermi caricamento ordini nuovi (o integrazione qualora fossero ancora caricati i vecchi?"/>
             </tree>
         </field>
     </record>
