@@ -505,7 +505,6 @@
                 <field name="date" />
                 <field name="description" />
                 <field name="tour_id" />
-                <field name="order_mode" />
                 <field name="tour_code" invisible="1" />
                 <field name="camion_id" />
 
@@ -531,7 +530,6 @@
                     <field name="camion_id" on_change="onchange_camion_id(camion_id)" required="1"/>
 
                     <!--<field name="current_load" />-->
-                    <field name="order_mode" />
                     <field name="prevision_load" />
 
                     <field name="max_load" />

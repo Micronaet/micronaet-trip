@@ -415,13 +415,12 @@ class trip_order(orm.Model):
         'error': fields.text(
             'Import error',
             help="If present there's an error during importation!"),
-        'order_mode': fields.Selection(
-            string='Modlalità',
+        'order_mode': fields.selection(
             selection=[
-                ('default', 'Standard'),
+                ('default', 'Std'),
                 ('all', 'Freschi'),
-                ('partial', 'Con freschi'),
-            ], required=True),
+                ('partial', '+Freschi'),
+            ], string='Modalità', required=True),
         'tour_code': fields.function(
             _get_tour_code,
             fnct_search=_search_tour_code,
@@ -435,6 +434,7 @@ class trip_order(orm.Model):
     _defaults = {
         'order_mode': lambda *x: 'default',
     }
+
 
 class res_partner(orm.Model):
     """ Add extra information to address (partner)
