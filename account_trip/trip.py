@@ -352,7 +352,7 @@ class trip_order(orm.Model):
                         partner_code,
                         context=context)
 
-                    if not partner_id:
+                    if not partner_id and partner_code[:2] == '06':
                         partner_data = {
                             'name': 'Nuovo cliente codice %s' % partner_code,
                             'sql_customer_code': partner_code,
@@ -377,11 +377,16 @@ class trip_order(orm.Model):
                         partner_id = partner_pool.create(
                             cr, uid, partner_data, context=context)
 
-                        # todo create master partner?
                         error += _('Partner not found created: %s!\n') % \
                                  partner_code
                         _logger.error(
                             'Partner not found created: %s!' % partner_code)
+
+                    if not partner_id:
+                        error += _('Partner not found: %s!\n') % \
+                                 partner_code
+                        _logger.error(
+                            'Partner not found: %s!' % partner_code)
 
                     destination_code = record['CKY_CNT_SPED_ALT']
                     if destination_code:
