@@ -115,6 +115,7 @@ class trip_vector_camion(orm.Model):
         'note': fields.text('Note'),
         }
 
+
 class trip_trip(orm.Model):
     """ Class for manage Trip informations
     """
@@ -183,7 +184,8 @@ class trip_trip(orm.Model):
                 res[item.id][
                     'prevision_load'] += order.prevision_load
                 res[item.id][
-                    'current_load'] += order.prevision_load  # order.current_load or
+                    'current_load'] += order.prevision_load
+                # order.current_load or
                 res[item.id][
                     'total_delivery'] += 1
         return res
@@ -519,6 +521,9 @@ class trip_order(orm.Model):
             'trip.tour', 'Tour',
             ondelete='cascade',
             help="Tour setted up for order (instead use destination)"),
+        'tour_code_start': fields.char(
+            'Codice viaggio',
+            help='Lettera legata al viaggio per filtrare la lista'),
 
         # Details for trip:
         'sequence': fields.integer('Position'),

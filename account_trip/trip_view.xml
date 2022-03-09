@@ -88,9 +88,8 @@
                <field name="name" />
                <field name="partner_id" />
                <field name="destination_id" />
-               <field name="tour_code"/>
                <field name="tour_id" />
-               <field name="tour_code" />
+               <field name="tour_code_start" />
                <field name="trip_id" />
                <field name="order_mode" />
                <separator/>
@@ -98,11 +97,11 @@
                <separator/>
                 <group expand="1" string="Group By...">
                     <filter name="group_mode" string="Modalità" domain="[]" context="{'group_by':'order_mode'}"/>
-                    <filter name="group_partner" string="Partner" domain="[]" context="{'group_by':'partner_id'}"/>
-                    <filter name="group_destination" string="Destination" domain="[]" context="{'group_by':'destination_id'}"/>
-                    <filter name="group_trip" string="Trip" domain="[]" context="{'group_by':'trip_id'}"/>
-                    <filter name="group_tour_code" string="Trip" domain="[]" context="{'group_by':'trip_code'}"/>
-                    <filter name="group_tour" string="Tour" domain="[]" context="{'group_by':'tour_id'}"/>
+                    <filter name="group_partner" string="Cliente" domain="[]" context="{'group_by':'partner_id'}"/>
+                    <filter name="group_destination" string="Destinazione" domain="[]" context="{'group_by':'destination_id'}"/>
+                    <filter name="group_trip" string="Viaggio" domain="[]" context="{'group_by':'trip_id'}"/>
+                    <filter name="group_tour_code" string="Codice viaggio" domain="[]" context="{'group_by':'tour_code_start'}"/>
+                    <filter name="group_tour" string="Giro" domain="[]" context="{'group_by':'tour_id'}"/>
                 </group>
             </search>
         </field>
@@ -123,10 +122,9 @@
                <field name="time" />
                <field name="prevision_load" sum="Total prevision"/>
                <!--<field name="current_load" sum="Total current"/>-->
-               <field name="tour_code" invisible="1"/>
                <field name="tour_id" readonly="1"/>
+               <field name="tour_code_start" invisible="1"/>
                <field name="error" />
-               <field name="tour_code" invisible="1"/>
                <field name="trip_id" invisible="context.get('embedded',False)"/>
                <button name="unlink_order" icon="gtk-remove" type="object" help="Unlink order to trip" invisible="not context.get('embedded',False)"/>
                <button name="%(action_trip_trip_change_wizard)d" type="action" string="Change trip" icon="terp-stock_effects-object-colorize" />
@@ -493,7 +491,6 @@
             <search string="Search trip">
                <field name="date" />
                <field name="description" />
-               <field name="tour_code"/>
                <field name="tour_id" />
                <field name="camion_id" />
                <separator/>
@@ -514,7 +511,6 @@
                 <field name="date" />
                 <field name="description" />
                 <field name="tour_id" />
-                <field name="tour_code" invisible="1" />
                 <field name="camion_id" />
 
                 <field name="max_load" />

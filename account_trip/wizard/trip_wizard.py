@@ -242,9 +242,6 @@ class trip_trip_create_wizard(osv.osv_memory):
         ], 'Option', required=True),
         'tour_id': fields.many2one(
             'trip.tour', 'Giro'),
-        'tour_code': fields.char(
-            'Codice viaggio',
-            help='Lettera legata al viaggio per filtrare la lista'),
         'trip_id': fields.many2one(
             'trip.trip', 'Viaggio',
             ondelete='set null'),
