@@ -813,7 +813,7 @@ class edi_company(orm.Model):
         'name': fields.char('Code', size=15, required=True),
         'partner_id': fields.many2one(
             'res.partner', 'Partner', required=False),
-        'import':fields.boolean('Import'),
+        'import': fields.boolean('Import'),
         'type_importation_id': fields.many2one(
             'edi.company.importation', 'Importation type', required=True),
 
