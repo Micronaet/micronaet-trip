@@ -318,6 +318,7 @@ class trip_order(orm.Model):
 
                     error = ""
                     name = sql_pool.KEY_OC_FORMAT % record
+                    number = record['NGL_DOC'].strip()
                     tour_name = record['CDS_NOTE'].strip()
                     tour_id = tour_pool.search_tour(
                         cr, uid, tour_name,
@@ -370,7 +371,7 @@ class trip_order(orm.Model):
                     else:
                         order_id = self.create(cr, uid, data, context=context)
 
-                    order_reference[name] = order_id
+                    order_reference[number] = order_id
                 except:
                     _logger.error(
                         'Error importing order record: [%s] \n LOG: [%s]\n' % (
