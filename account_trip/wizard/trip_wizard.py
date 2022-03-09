@@ -244,6 +244,9 @@ class trip_trip_create_wizard(osv.osv_memory):
             'trip.tour', 'Giro',
             required=True,
             ondelete='set null'),
+        'tour_code': fields.chat(
+            'Codice viaggio',
+            help='Lettera legata al viaggio per filtrare la lista'),
         'trip_id': fields.many2one(
             'trip.trip', 'Viaggio',
             ondelete='set null'),

@@ -90,6 +90,7 @@
                <field name="destination_id" />
                <field name="tour_code"/>
                <field name="tour_id" />
+               <field name="tour_code" />
                <field name="trip_id" />
                <field name="order_mode" />
                <separator/>
@@ -100,6 +101,7 @@
                     <filter name="group_partner" string="Partner" domain="[]" context="{'group_by':'partner_id'}"/>
                     <filter name="group_destination" string="Destination" domain="[]" context="{'group_by':'destination_id'}"/>
                     <filter name="group_trip" string="Trip" domain="[]" context="{'group_by':'trip_id'}"/>
+                    <filter name="group_tour_code" string="Trip" domain="[]" context="{'group_by':'trip_code'}"/>
                     <filter name="group_tour" string="Tour" domain="[]" context="{'group_by':'tour_id'}"/>
                 </group>
             </search>
@@ -121,6 +123,7 @@
                <field name="time" />
                <field name="prevision_load" sum="Total prevision"/>
                <!--<field name="current_load" sum="Total current"/>-->
+               <field name="tour_code" invisible="1"/>
                <field name="tour_id" readonly="1"/>
                <field name="error" />
                <field name="tour_code" invisible="1"/>
