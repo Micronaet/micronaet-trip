@@ -278,7 +278,9 @@ class trip_order(orm.Model):
         """
         # Clean all trip:
         trip_pool = self.pool.get('trip.trip')
-        trip_ids = trip_pool.search(cr, uid, [], context=context)
+        trip_ids = trip_pool.search(cr, uid, [
+            (),
+        ], context=context)
         trip_pool.unlink(cr, uid, trip_ids, context=context)
         _logger.warning('Removed %s trip' % len(trip_ids))
 
@@ -691,7 +693,7 @@ class trip_tour(orm.Model):
             'Destination 1'),
         'destination2_ids': fields.one2many('res.partner', 'tour2_id',
             'Destination 2'),
-        'keep': fields.date(
+        'keep': fields.boolean(
             'Tenere',
             help='Sigla di viaggio che viene sempre conservata alle pulizie '
                  'giornaliere'),
