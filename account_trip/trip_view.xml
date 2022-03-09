@@ -403,8 +403,9 @@
         <field name="name">trip.tour.tree</field>
         <field name="model">trip.tour</field>
         <field name="arch" type="xml">
-            <tree string="Tour" colors="red:obsolete==True">
+            <tree string="Tour" colors="red:obsolete==True; blue: keep==True">
                 <field name="obsolete" />
+                <field name="keep" />
                 <field name="name" />
                 <field name="description" />
                 <field name="note" />
