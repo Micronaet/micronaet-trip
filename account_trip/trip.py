@@ -201,7 +201,7 @@ class trip_trip(orm.Model):
     _columns = {
         'date': fields.date('Date'),
 
-        #'name': fields.char('Code', size=10, required=True),
+        # 'name': fields.char('Code', size=10, required=True),
         'description': fields.char('Description', size=100),
         'note': fields.text('Note'),
         'good_collection': fields.text('Good collection'),
@@ -209,12 +209,15 @@ class trip_trip(orm.Model):
         'max_load': fields.float('Max load', digits=(16, 2)),
 
         # Related for totals:
-        'prevision_load': fields.function(_get_totals, method=True,
+        'prevision_load': fields.function(
+            _get_totals, method=True,
             type='float', digits=(16, 2), string='Prevision load',
             store=False, multi='total'),
-        'current_load': fields.function(_get_totals, method=True, type='float',
+        'current_load': fields.function(
+            _get_totals, method=True, type='float',
             digits=(16, 2), string='Current load', store=False, multi='total'),
-        'total_delivery': fields.function(_get_totals, method=True,
+        'total_delivery': fields.function(
+            _get_totals, method=True,
             type='integer', string='Total delivery', store=False,
             multi='total'),
 
@@ -652,21 +655,21 @@ class res_partner(orm.Model):
         'trip_obsolete': lambda *x: False,
         }
 
+
 class trip_trip(orm.Model):
     """ Add relation fields
     """
-    _name = 'trip.trip'
     _inherit = 'trip.trip'
 
     _columns = {
-        'order_ids': fields.one2many('trip.order', 'trip_id',
-            'Order', ),
+        'order_ids': fields.one2many(
+            'trip.order', 'trip_id', 'Order', ),
         }
+
 
 class trip_tour(orm.Model):
     """ Add relation fields
     """
-    _name = 'trip.tour'
     _inherit = 'trip.tour'
 
     _columns = {
@@ -676,5 +679,10 @@ class trip_tour(orm.Model):
             'Destination 1'),
         'destination2_ids': fields.one2many('res.partner', 'tour2_id',
             'Destination 2'),
-        }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+        'keep': fields.date(
+            'Tenere',
+            help='Sigla di viaggio che viene sempre conservata alle pulizie '
+                 'giornaliere'),
+    }
+
+
