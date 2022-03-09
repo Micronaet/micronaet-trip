@@ -346,7 +346,7 @@ class trip_order(orm.Model):
                     tour_id = tour_pool.search_tour(
                         cr, uid, tour_name,
                         with_creation=True, context=context)
-                    tour_code = tour_name[:1]
+                    tour_code_start = tour_name[:1]
 
                     partner_code = record['CKY_CNT_CLFR']
                     partner_id = partner_pool.get_partner_from_sql_code(
@@ -417,7 +417,7 @@ class trip_order(orm.Model):
                         'description': '',  # todo
                         'note': record['CDS_NOTE'],
                         'tour_id': tour_id,
-                        'tour_code': tour_code,
+                        'tour_code_start': tour_code_start,
                         'prevision_load': record['NPS_TOT'],
                         'error': error,
                         'order_mode': 'D',  # Updated after
