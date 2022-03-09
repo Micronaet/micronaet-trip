@@ -276,7 +276,7 @@ class trip_order(orm.Model):
     def clean_all_order(self, cr, uid, ids, context=None):
         """ Clean all order: daily operation before start work
         """
-        user = self.pool.get('res.users')
+        user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
         from_days = user.company_id.trip_keep_trip
 
         # Clean all trip:
