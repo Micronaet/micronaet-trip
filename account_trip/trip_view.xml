@@ -181,7 +181,7 @@
                                 <div name="tags" />
                                 </ul>-->
                                 <ul>
-                                    <!--<li>Customer: <field name="partner_id"></field></li>-->
+                                    <li>Customer: <field name="partner_id"></field></li>
                                     <li>Destinazione: <field name="destination_id" /></li>
                                     <li>Paese: <field name="city" /></li>
                                     <li>Carico previsto: <field name="prevision_load" /><!--<field name="current_load" /> previsto.:--></li>
