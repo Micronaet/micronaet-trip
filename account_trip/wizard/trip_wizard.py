@@ -238,13 +238,14 @@ class trip_trip_create_wizard(osv.osv_memory):
         'date': fields.date('Date', required=True),
         'option': fields.selection([
             ('override', 'Crea / Sovrascrivi'),
-            ('append', 'Accoda'), ], 'Option', required=True),
+            ('append', 'Accoda'),
+        ], 'Option', required=True),
         'tour_id': fields.many2one(
-            'trip.tour', 'Tour',
+            'trip.tour', 'Giro',
             required=True,
             ondelete='set null'),
         'trip_id': fields.many2one(
-            'trip.trip', 'Trip',
+            'trip.trip', 'Viaggio',
             ondelete='set null'),
         'status': fields.text(
             'Status',
