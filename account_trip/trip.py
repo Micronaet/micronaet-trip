@@ -276,23 +276,27 @@ class trip_order(orm.Model):
     def clean_all_order(self, cr, uid, ids, context=None):
         """ Clean all order: daily operation before start work
         """
+        user = self.pool.get('res.users')
+        from_days = user.company_id.trip_keep_trip
+
         # Clean all trip:
         trip_pool = self.pool.get('trip.trip')
+        from_date = (datetime.now() - timedelta(days=from_days)).strftime(
+            DEFAULT_SERVER_DATE_FORMAT)
         trip_ids = trip_pool.search(cr, uid, [
-            (),
+            ('tour_id.keep', '=', False),  # Delete tour not "keep"
+            ('date', '<', from_date),
         ], context=context)
         trip_pool.unlink(cr, uid, trip_ids, context=context)
-        _logger.warning('Removed %s trip' % len(trip_ids))
+        _logger.warning('Removed %s trip [<%s, not keep]' % (
+            len(trip_ids), from_days))
 
         # Clean all order: (for start new day trip)
-        delete_ids = self.search(cr, uid, [
-            # ('trip_id', '!=', False),  # Trip associated
-            # ('date', '<=', (  # Trip older: date -7
-            #        datetime.now() - timedelta(days=7)).strftime(
-            #    DEFAULT_SERVER_DATE_FORMAT)),
+        order_ids = self.search(cr, uid, [
+            ('trip_id', '!=', False),  # Order not linked with trip
         ], context=context)
-        _logger.warning('Removed %s order' % len(delete_ids))
-        return self.unlink(cr, uid, delete_ids, context=context)
+        _logger.warning('Removed %s order' % len(order_ids))
+        return self.unlink(cr, uid, order_ids, context=context)
 
     # -------------------------------------------------------------------------
     # Schedule event:
