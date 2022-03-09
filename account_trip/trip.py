@@ -501,13 +501,13 @@ class trip_order(orm.Model):
             'res.partner', 'Customer',
             # required=True,
             ondelete='cascade',
-            domain = [('customer', '=', True)]
+            domain=[('customer', '=', True)]
             ),
         'destination_id': fields.many2one(
             'res.partner', 'Destinazione',
             # required=True,
             ondelete='cascade',
-            domain = [('is_address', '=', True)]
+            domain=[('is_address', '=', True)]
             ),
         'city': fields.related(
             'destination_id', 'city', type='char',
