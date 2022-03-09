@@ -353,12 +353,35 @@ class trip_order(orm.Model):
                         context=context)
 
                     if not partner_id:
+                        partner_data = {
+                            'name': 'Nuovo cliente codice %s' % partner_code,
+                            'sql_customer_code': partner_code,
+                            'sql_import': True,
+                            'is_company': True,
+                            # 'street': record['CDS_INDIR'] or False,
+                            # 'city': record['CDS_LOC'] or False,
+                            # 'zip': record['CDS_CAP'] or False,
+                            # 'phone': record['CDS_TEL_TELEX'] or False,
+                            # 'email': record['CDS_INET'] or False,
+                            # 'fax': record['CDS_FAX'] or False,
+                            # 'mobile': record['CDS_INDIR'] or False,
+                            # 'website': record['CDS_URL_INET'] or False,
+                            # 'vat': record['CSG_PIVA'] or False,
+                            # key_field: record['CKY_CNT'],  # key code
+                            # 'country_id': countries.get(
+                            #    record['CKY_PAESE'], False),
+                            'type': 'default',
+                            'customer': True,
+                            'ref': partner_code,
+                            }
+                        partner_id = partner_pool.create(
+                            cr, uid, partner_data, context=context)
+
                         # todo create master partner?
-                        error += _('Partner not found: %s!\n') % \
+                        error += _('Partner not found created: %s!\n') % \
                                  partner_code
                         _logger.error(
-                            'Partner not found: %s!' % partner_code)
-                        continue
+                            'Partner not found created: %s!' % partner_code)
 
                     destination_code = record['CKY_CNT_SPED_ALT']
                     if destination_code:
@@ -375,7 +398,7 @@ class trip_order(orm.Model):
                             _logger.error(
                                 'Destination not found: "%s"!' %
                                 destination_code)
-                            continue
+                            # continue
                     else:
                         destination_id = False  # Not passed, not searched
 
