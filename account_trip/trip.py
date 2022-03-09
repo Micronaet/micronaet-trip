@@ -23,7 +23,8 @@ import netsvc
 import logging
 from openerp.osv import osv, orm, fields
 from datetime import datetime, timedelta
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, \
+    DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 
@@ -293,7 +294,7 @@ class trip_order(orm.Model):
 
         # Clean all order: (for start new day trip)
         order_ids = self.search(cr, uid, [
-            ('trip_id', '!=', False),  # Order not linked with trip
+            ('trip_id', '=', False),  # Order not linked with trip
         ], context=context)
         _logger.warning('Removed %s order' % len(order_ids))
         return self.unlink(cr, uid, order_ids, context=context)
