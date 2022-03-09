@@ -343,10 +343,10 @@ class trip_order(orm.Model):
 
                     if not destination_id:
                         error += _(
-                            'Destination not found: %s!\n') % record[
+                            'Destination not found: "%s"!\n') % record[
                                 'CKY_CNT_SPED_ALT']
                         _logger.error(
-                            'Destination not found: %s!' % record[
+                            'Destination not found: "%s"!' % record[
                                 'CKY_CNT_SPED_ALT'])
                         continue
 
@@ -451,9 +451,11 @@ class trip_order(orm.Model):
             ondelete='cascade',
             domain = [('is_address', '=', True)]
             ),
-        'city': fields.related('destination_id','city', type='char',
+        'city': fields.related(
+            'destination_id', 'city', type='char',
             string='City'),
-        'delivery_note': fields.related('destination_id','delivery_note',
+        'delivery_note': fields.related(
+            'destination_id', 'delivery_note',
             type='char', string='Dest. note'),
         'tour_id': fields.many2one(
             'trip.tour', 'Tour',
