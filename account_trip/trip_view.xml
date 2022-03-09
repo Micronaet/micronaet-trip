@@ -10,7 +10,6 @@
                <field name="name" />
                <field name="vector_id" />
                <separator/>
-
                <!--<filter name="no_tour" string="No tour" domain="[('tour1_id','=',False),('tour2_id','=',False)]"/>-->
                <separator/>
 
@@ -32,7 +31,6 @@
             </tree>
         </field>
     </record>
-
     <record model="ir.ui.view" id="view_trip_vector_camion_form">
         <field name="name">trip.vector.camion.form</field>
         <field name="model">trip.vector.camion</field>
@@ -50,7 +48,6 @@
             </form>
         </field>
     </record>
-
     <record model="ir.actions.act_window" id="action_trip_vector_camion">
         <field name="name">Camion</field>
         <field name="res_model">trip.vector.camion</field>
@@ -61,7 +58,7 @@
         <field name="domain">[]</field>
     </record>
 
-        <!--trip.order-->
+    <!--trip.order-->
     <record model="ir.ui.view" id="view_trip_order_search">
         <field name="name">trip.order.search</field>
         <field name="model">trip.order</field>
@@ -73,12 +70,9 @@
                <field name="tour_code"/>
                <field name="tour_id" />
                <field name="trip_id" />
-
                <separator/>
-
                <!--<filter name="no_tour" string="No tour" domain="[('tour1_id','=',False),('tour2_id','=',False)]"/>-->
                <separator/>
-
                 <group expand="1" string="Group By...">
                     <filter name="group_partner" string="Partner" domain="[]" context="{'group_by':'partner_id'}"/>
                     <filter name="group_destination" string="Destination" domain="[]" context="{'group_by':'destination_id'}"/>
@@ -88,7 +82,6 @@
             </search>
         </field>
     </record>
-
     <record model="ir.ui.view" id="view_trip_order_tree">
         <field name="name">trip.order.tree</field>
         <field name="model">trip.order</field>
@@ -103,7 +96,7 @@
                <field name="delivery_note" invisible="not context.get('embedded',False)"/>
                <field name="time" />
                <field name="prevision_load" sum="Total prevision"/>
-               <field name="current_load" sum="Total current"/>
+               <!--<field name="current_load" sum="Total current"/>-->
                <field name="tour_id" readonly="1"/>
                <field name="error" />
                <field name="tour_code" invisible="1"/>
@@ -113,7 +106,6 @@
             </tree>
         </field>
     </record>
-
     <record model="ir.ui.view" id="view_trip_order_form">
         <field name="name">trip.order.form</field>
         <field name="model">trip.order</field>
@@ -144,7 +136,7 @@
             <kanban default_group_by="trip_id">
                 <field name="name"/>
                 <field name="date"/>
-                <field name="current_load"/>
+                <!--<field name="current_load"/>-->
                 <field name="prevision_load"/>
                 <field name="description"/>
                 <field name="trip_id"/>
@@ -167,9 +159,9 @@
                                 </ul>-->
                                 <ul>
                                     <!--<li>Customer: <field name="partner_id"></field></li>-->
-                                    <li>Destination: <field name="destination_id" /></li>
-                                    <li>City: <field name="city" /></li>
-                                    <li>Load >> curr.:<field name="current_load" /> prev.:<field name="prevision_load" /></li>
+                                    <li>Destinazione: <field name="destination_id" /></li>
+                                    <li>Paese: <field name="city" /></li>
+                                    <li>Carico previsto: <field name="prevision_load" /><!--<field name="current_load" /> previsto.:--></li>
                                     <li>Description: <field name="description" /></li>
                                     <li>Delivery note: <field name="delivery_note" /> <field name="time"/></li>
                                     <!--<li>Date: <field name="date"></field></li>-->
@@ -497,7 +489,7 @@
 
                 <field name="max_load" />
                 <field name="prevision_load" />
-                <field name="current_load" />
+                <!--<field name="current_load" />-->
                 <field name="total_delivery" />
             </tree>
         </field>
@@ -516,7 +508,7 @@
                     <field name="description" />
                     <field name="camion_id" on_change="onchange_camion_id(camion_id)" required="1"/>
 
-                    <field name="current_load" />
+                    <!--<field name="current_load" />-->
                     <field name="prevision_load" />
 
                     <field name="max_load" />
