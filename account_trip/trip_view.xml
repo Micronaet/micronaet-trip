@@ -123,7 +123,7 @@
                <field name="prevision_load" sum="Total prevision"/>
                <!--<field name="current_load" sum="Total current"/>-->
                <field name="tour_id" readonly="1"/>
-               <field name="tour_code_start" invisible="1"/>
+               <field name="tour_code_start" string="Codice inizio Giro"/>
                <field name="error" />
                <field name="trip_id" invisible="context.get('embedded',False)"/>
                <button name="unlink_order" icon="gtk-remove" type="object" help="Unlink order to trip" invisible="not context.get('embedded',False)"/>
