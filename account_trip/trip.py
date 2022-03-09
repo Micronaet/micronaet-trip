@@ -352,6 +352,8 @@ class trip_order(orm.Model):
                                 'Destination not found: "%s"!' %
                                 destination_code)
                             continue
+                    else:
+                        destination_id = False  # Not passed not seacrhed
 
                     data = {
                         'name': name,
