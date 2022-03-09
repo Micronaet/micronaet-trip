@@ -382,13 +382,18 @@ class trip_order(orm.Model):
             _logger.info('Updating extra info, file: %s' % filename)
             for line in open(filename, 'r'):
                 row = line.strip()
-                number = row[1]
-                order_mode = row[2] or 'D'
-                order_id = order_reference.get(number)
-                if order_id:
-                    self.write(cr, uid, [order_id], {
-                        'order_mode': order_mode,
-                    }, context=context)
+                number = 'Line not found!'  # for error
+                try:
+                    number = row[1]
+                    order_mode = row[2] or 'D'
+                    order_id = order_reference.get(number)
+                    if order_id:
+                        self.write(cr, uid, [order_id], {
+                            'order_mode': order_mode,
+                        }, context=context)
+                except:
+                    _logger.error(
+                        'Cannot load extra info for order: %s' % number)
             _logger.info('All trip order is updated!')
         except:
             _logger.error('Generic error importing trip order [%s]' % (
