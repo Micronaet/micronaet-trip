@@ -380,18 +380,20 @@ class trip_order(orm.Model):
         return res
 
     _columns = {
-        # Order information from accouning:
-        'name': fields.char('Ref.', size=35, ),
+        # Order information from accounting:
+        'name': fields.char('Ref.', size=35),
         'date': fields.date('Date'),
         'description': fields.char('Description', size=100),
         'note': fields.text('Note'),
-        'partner_id': fields.many2one('res.partner', 'Customer',
-            #required=True,
+        'partner_id': fields.many2one(
+            'res.partner', 'Customer',
+            # required=True,
             ondelete='cascade',
             domain = [('customer', '=', True)]
             ),
-        'destination_id': fields.many2one('res.partner', 'Destinazione',
-            #required=True,
+        'destination_id': fields.many2one(
+            'res.partner', 'Destinazione',
+            # required=True,
             ondelete='cascade',
             domain = [('is_address', '=', True)]
             ),
@@ -410,8 +412,16 @@ class trip_order(orm.Model):
         'time': fields.char('Request time', size=40),
         'prevision_load': fields.float('Prevision load', digits=(16, 2)),
         'current_load': fields.float('Current load', digits=(16, 2)),
-        'error': fields.text('Import error',
+        'error': fields.text(
+            'Import error',
             help="If present there's an error during importation!"),
+        'order_mode': fields.Selection(
+            string='Modlalità',
+            selection=[
+                ('default', 'Standard'),
+                ('all', 'Freschi'),
+                ('partial', 'Con freschi'),
+            ], required=True),
         'tour_code': fields.function(
             _get_tour_code,
             fnct_search=_search_tour_code,
@@ -421,6 +431,10 @@ class trip_order(orm.Model):
             store=False,
             ),
         }
+
+    _defaults = {
+        'order_mode': lambda *x: 'default',
+    }
 
 class res_partner(orm.Model):
     """ Add extra information to address (partner)
