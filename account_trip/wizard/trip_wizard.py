@@ -235,16 +235,15 @@ class trip_trip_create_wizard(osv.osv_memory):
         return self.get_first_tour_id(cr, uid, context=context)
 
     _columns = {
-        'date': fields.date('Date', required=True),
+        'date': fields.date('Date'),
         'option': fields.selection([
             ('override', 'Crea / Sovrascrivi'),
             ('append', 'Accoda'),
         ], 'Option', required=True),
         'tour_id': fields.many2one(
             'trip.tour', 'Giro',
-            required=True,
             ondelete='set null'),
-        'tour_code': fields.chat(
+        'tour_code': fields.char(
             'Codice viaggio',
             help='Lettera legata al viaggio per filtrare la lista'),
         'trip_id': fields.many2one(
