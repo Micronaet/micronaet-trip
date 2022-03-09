@@ -225,6 +225,7 @@ class trip_trip(orm.Model):
         'state': lambda *x: 'draft',
         }
 
+
 class trip_order(orm.Model):
     """ Trip order (loaded from accounting)
         The list is the current order opened
@@ -236,11 +237,23 @@ class trip_order(orm.Model):
     def unlink_order(self, cr, uid, ids, context=None):
         """ Unlink order to trip (order not deleted)
         """
-        return self.write(cr, uid, ids, {'trip_id': False,}, context=context)
+        return self.write(cr, uid, ids, {'trip_id': False}, context=context)
 
-    # ---------------
+    def clean_all_order(self, cr, uid, ids, context=None):
+        """ Clean all order: daily operation before start work
+        """
+        # Delete all order for start new day trip:
+        delete_ids = self.search(cr, uid, [
+            # ('trip_id', '!=', False),  # Trip associated
+            # ('date', '<=', (  # Trip older: date -7
+            #        datetime.now() - timedelta(days=7)).strftime(
+            #    DEFAULT_SERVER_DATE_FORMAT)),
+        ], context=context)
+        return self.unlink(cr, uid, delete_ids, context=context)
+
+    # -------------------------------------------------------------------------
     # Schedule event:
-    # ---------------
+    # -------------------------------------------------------------------------
     def schedule_import_trip_order(self, cr, uid, context=None):
         """ Import order for manage trip
         """
@@ -255,7 +268,7 @@ class trip_order(orm.Model):
             company_proxy = company_pool.get_from_to_dict(
                 cr, uid, context=context)
             if not company_proxy:
-                _logger.error('Company parameters not setted up!')
+                _logger.error('Company parameters was not set up!')
                 return False
 
             _logger.info('Start import SQL: Trip order')
@@ -271,7 +284,7 @@ class trip_order(orm.Model):
             for record in cursor:
                 try:
                     i += 1
-                    if i % 100 == 0:
+                    if not i % 100:
                         _logger.info(
                             'Import destination code: %s record updated!' % i)
 
@@ -288,7 +301,8 @@ class trip_order(orm.Model):
                         context=context)
 
                     if not partner_id:
-                        error += _('Partner not found: %s!\n') % record['CKY_CNT_CLFR']
+                        error += _('Partner not found: %s!\n') % \
+                                 record['CKY_CNT_CLFR']
                         _logger.error(
                             'Partner not found: %s!' % record['CKY_CNT_CLFR'])
                         continue
@@ -311,8 +325,8 @@ class trip_order(orm.Model):
                         'name': name,
                         'partner_id': partner_id,
                         'destination_id': destination_id,
-                        'date': False, # TODO record['DTT_DOC']
-                        'description': '', # TODO
+                        'date': False,  # todo record['DTT_DOC']
+                        'description': '',  # todo
                         'note': record['CDS_NOTE'],
                         'tour_id': tour_id,
                         'prevision_load': record['NPS_TOT'],
@@ -323,29 +337,18 @@ class trip_order(orm.Model):
                         ('name', '=', name)], context=context)
                     if order_ids:
                         self.write(cr, uid, order_ids, data, context=context)
-                    else: # TODO only one update!!!
+                    else:  # TODO only one update!!!
                         self.create(cr, uid, data, context=context)
                 except:
-                    _logger.error('Error importing order record: [%s] \n LOG: [%s]\n' % (
-                        record,
-                        sys.exc_info(), ))
-
-            # TODO Delete order not found (old period):
-            delete_ids = self.search(cr, uid, [
-                ('trip_id', '!=', False), # Trip associated
-                ('date', '<=', (          # Trip older: date -7
-                    datetime.now() - timedelta(days=7)).strftime(
-                        DEFAULT_SERVER_DATE_FORMAT)),
-                ], context=context)
-            self.unlink(cr, uid, delete_ids, context=context)
-            # TODO remain older not linked?
-
+                    _logger.error(
+                        'Error importing order record: [%s] \n LOG: [%s]\n' % (
+                            record,
+                            sys.exc_info(), ))
             _logger.info('All trip order is updated!')
 
         except:
             _logger.error('Generic error importing trip order [%s]' % (
                 sys.exc_info(), ))
-
         return True
 
     # ----------------
