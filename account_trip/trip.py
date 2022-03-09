@@ -381,10 +381,13 @@ class trip_order(orm.Model):
             filename = os.path.expanduser('~/mexal/viaggi/freschi.txt')
             _logger.info('Updating extra info, file: %s' % filename)
             for line in open(filename, 'r'):
-                row = line.strip()
-                number = 'Line not found!'  # for error
+                row = line.strip().split(';')
+                if len(row) != 3:
+                    _logger.error('Line empty, jumped')
+                    continue
+
+                number = row[1]
                 try:
-                    number = row[1]
                     order_mode = row[2] or 'D'
                     order_id = order_reference.get(number)
                     if order_id:
