@@ -30,6 +30,25 @@ from openerp.tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
+
+class ResCompnay(orm.Model):
+    """ Class Company for operation
+    """
+    _inherit = 'res.company'
+
+    def clean_all_order(self, cr, uid, ids, context=None):
+        """ Clean all order: daily operation before start work
+        """
+        return self.pool.get('trip.order').clean_all_order(
+            cr, uid, ids, context=context)
+
+    def import_all_order(self, cr, uid, ids, context=None):
+        """ Re import order: daily operation before start work
+        """
+        return self.pool.get('trip.order').schedule_import_trip_order(
+            cr, uid, context=context)
+
+
 class trip_tour(orm.Model):
     """ Class for manage Tours
     """
@@ -360,7 +379,7 @@ class trip_order(orm.Model):
             # Import line detail for order:
             # todo parameter the filename:
             filename = os.path.expanduser('~/mexal/viaggi/freschi.txt')
-            _logger.info('UIpdating extra info, file: %s' % filename)
+            _logger.info('Updating extra info, file: %s' % filename)
             for line in open(filename, 'r'):
                 row = line.strip()
                 number = row[1]
