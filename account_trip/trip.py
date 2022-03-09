@@ -66,6 +66,7 @@ class trip_tour(orm.Model):
         'obsolete': fields.boolean('Obsolete'),
         }
 
+
 class trip_vector_camion(orm.Model):
     """ Trip vector camion
     """
@@ -242,13 +243,20 @@ class trip_order(orm.Model):
     def clean_all_order(self, cr, uid, ids, context=None):
         """ Clean all order: daily operation before start work
         """
-        # Delete all order for start new day trip:
+        # Clean all trip:
+        trip_pool = self.pool.get('trip.trip')
+        trip_ids = trip_pool.search(cr, uid, [], context=context)
+        trip_pool.unlink(cr, uid, trip_ids, context=context)
+        _logger.warning('Removed %s trip' % len(trip_ids))
+
+        # Clean all order: (for start new day trip)
         delete_ids = self.search(cr, uid, [
             # ('trip_id', '!=', False),  # Trip associated
             # ('date', '<=', (  # Trip older: date -7
             #        datetime.now() - timedelta(days=7)).strftime(
             #    DEFAULT_SERVER_DATE_FORMAT)),
         ], context=context)
+        _logger.warning('Removed %s order' % len(delete_ids))
         return self.unlink(cr, uid, delete_ids, context=context)
 
     # -------------------------------------------------------------------------
@@ -280,6 +288,7 @@ class trip_order(orm.Model):
                 return False
 
             # Start importation order:
+            order_reference = {}
             i = 0
             for record in cursor:
                 try:
@@ -337,15 +346,31 @@ class trip_order(orm.Model):
                         ('name', '=', name)], context=context)
                     if order_ids:
                         self.write(cr, uid, order_ids, data, context=context)
-                    else:  # TODO only one update!!!
-                        self.create(cr, uid, data, context=context)
+                        order_id = order_ids[0]  # only one updated!
+                    else:
+                        order_id = self.create(cr, uid, data, context=context)
+
+                    order_reference[name] = order_id
                 except:
                     _logger.error(
                         'Error importing order record: [%s] \n LOG: [%s]\n' % (
                             record,
                             sys.exc_info(), ))
-            _logger.info('All trip order is updated!')
 
+            # Import line detail for order:
+            # todo parameter the filename:
+            filename = os.path.expanduser('~/mexal/viaggi/freschi.txt')
+            _logger.info('UIpdating extra info, file: %s' % filename)
+            for line in open(filename, 'r'):
+                row = line.strip()
+                number = row[1]
+                order_mode = row[2] or 'D'
+                order_id = order_reference.get(number)
+                if order_id:
+                    self.write(cr, uid, [order_id], {
+                        'order_mode': order_mode,
+                    }, context=context)
+            _logger.info('All trip order is updated!')
         except:
             _logger.error('Generic error importing trip order [%s]' % (
                 sys.exc_info(), ))
@@ -401,7 +426,8 @@ class trip_order(orm.Model):
             string='City'),
         'delivery_note': fields.related('destination_id','delivery_note',
             type='char', string='Dest. note'),
-        'tour_id': fields.many2one('trip.tour', 'Tour',
+        'tour_id': fields.many2one(
+            'trip.tour', 'Tour',
             ondelete='cascade',
             help="Tour setted up for order (instead use destination)"),
 
@@ -417,9 +443,9 @@ class trip_order(orm.Model):
             help="If present there's an error during importation!"),
         'order_mode': fields.selection(
             selection=[
-                ('default', 'Std'),
-                ('all', 'Freschi'),
-                ('partial', '+Freschi'),
+                ('D', 'Std'),
+                ('A', 'Freschi'),
+                ('F', '+Freschi'),
             ], string='Modalità', required=True),
         'tour_code': fields.function(
             _get_tour_code,

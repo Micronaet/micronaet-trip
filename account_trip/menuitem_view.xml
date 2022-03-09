@@ -4,8 +4,8 @@
         <!--MENUITEM-->
         <menuitem id="menu_trip_root" name="Trip" sequence="2" groups="group_trip_manager,group_trip_operator"/>
             <menuitem parent="menu_trip_root" id="menu_trip_tour" name="Trip" sequence="10"/>
+                <menuitem parent="menu_trip_tour" id="menu_trip_trip_operations" name="Operazioni" sequence="5" action="action_res_company_trip_operation"/>
                 <menuitem parent="menu_trip_tour" id="menu_trip_configuration_trip" name="Trip" action="action_trip_trip" sequence="10" groups="group_trip_manager"/>
-                  <menuitem parent="menu_trip_configuration_trip" id="menu_trip_trip_operations" name="Operazioni" sequence="5" action="action_res_company_trip_operation"/>
                     <menuitem parent="menu_trip_configuration_trip" id="menu_trip_configuration_trip_vector" name="Calendario viaggi" action="action_trip_trip_vector" sequence="10" groups="group_trip_manager"/>
 
                 <menuitem parent="menu_trip_tour" id="menu_trip_destination" name="Destination" action="action_res_partner_destination" sequence="20"  groups="group_trip_manager"/>
