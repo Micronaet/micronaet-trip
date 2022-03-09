@@ -324,31 +324,34 @@ class trip_order(orm.Model):
                         cr, uid, tour_name,
                         with_creation=True, context=context)
 
+                    partner_code = record['CKY_CNT_CLFR']
                     partner_id = partner_pool.get_partner_from_sql_code(
                         cr, uid,
-                        record['CKY_CNT_CLFR'],
+                        partner_code,
                         context=context)
 
                     if not partner_id:
                         error += _('Partner not found: %s!\n') % \
-                                 record['CKY_CNT_CLFR']
+                                 partner_code
                         _logger.error(
-                            'Partner not found: %s!' % record['CKY_CNT_CLFR'])
+                            'Partner not found: %s!' % partner_code)
                         continue
 
-                    destination_id = partner_pool.get_partner_from_sql_code(
-                        cr, uid,
-                        record['CKY_CNT_SPED_ALT'],
-                        context=context)
+                    destination_code = record['CKY_CNT_SPED_ALT']
+                    if destination_code:
+                        destination_id = partner_pool.get_partner_from_sql_code(
+                            cr, uid,
+                            destination_code,
+                            context=context)
 
-                    if not destination_id:
-                        error += _(
-                            'Destination not found: "%s"!\n') % record[
-                                'CKY_CNT_SPED_ALT']
-                        _logger.error(
-                            'Destination not found: "%s"!' % record[
-                                'CKY_CNT_SPED_ALT'])
-                        continue
+                        if not destination_id:
+                            error += _(
+                                'Destination not found: "%s"!\n') % \
+                                     destination_code
+                            _logger.error(
+                                'Destination not found: "%s"!' %
+                                destination_code)
+                            continue
 
                     data = {
                         'name': name,
