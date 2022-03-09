@@ -31,25 +31,26 @@ from openerp.tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
+
 # -----------------------------------------------------------------------------
 #                          Generic function
 # -----------------------------------------------------------------------------
 def return_view(self, cr, uid, res_id, view_name, object_name):
-    ''' Function that return dict action for next step of the wizard
-    '''
+    """ Function that return dict action for next step of the wizard
+    """
     if not view_name:
-        return {'type':'ir.actions.act_window_close'}
+        return {'type': 'ir.actions.act_window_close'}
 
     view_element = view_name.split(".")
     views = []
 
     if len(view_element) != 2:
-        return  {'type':'ir.actions.act_window_close'}
+        return {'type': 'ir.actions.act_window_close'}
 
     model_id = self.pool.get('ir.model.data').search(
         cr, uid, [
-            ('model','=','ir.ui.view'),
-            ('module','=',view_element[0]),
+            ('model', '=', 'ir.ui.view'),
+            ('module', '=', view_element[0]),
             ('name', '=', view_element[1])
             ])
     if model_id:
@@ -60,35 +61,37 @@ def return_view(self, cr, uid, res_id, view_name, object_name):
     return {
         'view_type': 'form',
         'view_mode': 'form,tree',
-        'res_model': object_name, # object linked to the view
+        'res_model': object_name,  # object linked to the view
         'views': views,
         'domain': [('id', 'in', res_id)],  # TODO problem return in tree
         'type': 'ir.actions.act_window',
-        #'target': 'new',
+        # 'target': 'new',
         'res_id': res_id,
         }
+
 
 # -----------------------------------------------------------------------------
 #                                   Wizard
 # -----------------------------------------------------------------------------
 class trip_trip_create_wizard(osv.osv_memory):
-    ''' Wizard for create trip.trip from selected orders
-    '''
+    """ Wizard for create trip.trip from selected orders
+    """
     _name = "trip.trip.create.wizard"
 
     # -------------
     # Button event:
     # -------------
     def action_create_trip(self, cr, uid, ids, context=None):
-        ''' Create a trip and assign all orders
-        '''
+        """ Create a trip and assign all orders
+        """
         if context is None:
            context = {}
 
         trip_pool = self.pool.get('trip.trip')
         order_pool = self.pool.get('trip.order')
 
-        wizard_proxy = self.browse(cr, uid, ids, context=context)[0] # wizard fields proxy
+        wizard_proxy = self.browse(cr, uid, ids, context=context)[0]
+        # wizard fields proxy
 
         # Create a production order and open it:
         if wizard_proxy.trip_id:
@@ -124,9 +127,9 @@ class trip_trip_create_wizard(osv.osv_memory):
     # Utility function:
     # -----------------
     def get_status_trip(self, cr, uid, tour_id, context=None):
-        ''' Search the trip element for the tour_id passed and return a sort
+        """ Search the trip element for the tour_id passed and return a sort
             of HTML status
-        '''
+        """
         res = ""
         trip_pool = self.pool.get('trip.trip')
         trip_ids = trip_pool.search(
@@ -172,8 +175,8 @@ class trip_trip_create_wizard(osv.osv_memory):
     # On change function:
     # -------------------
     def onchange_trip_tour(self, cr, uid, ids, tour_id, context=None):
-        ''' Search if there's one previuos trip to update / override
-        '''
+        """ Search if there's one previuos trip to update / override
+        """
         res = {'value': {}}
         res['value']['status'] = self.get_status_trip(
             cr, uid, tour_id, context=context)
@@ -184,9 +187,9 @@ class trip_trip_create_wizard(osv.osv_memory):
     # -----------------
     # Utility:
     def get_first_tour_id(self, cr, uid, context=None):
-        ''' Utility function for search context active_ids and read firs
+        """ Utility function for search context active_ids and read firs
             order tour element
-        '''
+        """
         if context is None:
             context = {}
 
@@ -201,10 +204,10 @@ class trip_trip_create_wizard(osv.osv_memory):
                 pass # False
         return False
 
-    def function_get_status(self, cr, uid, fields=None, args=None,
-        context=None):
-        ''' Search if is present a previous tour and return a short preview
-        '''
+    def function_get_status(
+            self, cr, uid, fields=None, args=None, context=None):
+        """ Search if is present a previous tour and return a short preview
+        """
         tour_id = self.get_first_tour_id(cr, uid, context=context)
         if tour_id:
             return self.get_status_trip(
@@ -212,10 +215,10 @@ class trip_trip_create_wizard(osv.osv_memory):
         else:
             return ''
 
-    def function_get_default_trip(self, cr, uid, fields=None, args=None,
-        context=None):
-        ''' Search first trip of the list with tour setted up
-        '''
+    def function_get_default_trip(
+            self, cr, uid, fields=None, args=None, context=None):
+        """ Search first trip of the list with tour setted up
+        """
         tour_id = self.get_first_tour_id(cr, uid, context=context)
         if tour_id:
             trip_pool = self.pool.get('trip.trip')
@@ -225,23 +228,26 @@ class trip_trip_create_wizard(osv.osv_memory):
                 return trip_ids[0]
         return False
 
-    def function_get_default_tour(self, cr, uid, fields=None, args=None,
-        context=None):
-        ''' Search first trip of the list with tour setted up
-        '''
+    def function_get_default_tour(
+            self, cr, uid, fields=None, args=None, context=None):
+        """ Search first trip of the list with tour setted up
+        """
         return self.get_first_tour_id(cr, uid, context=context)
 
     _columns = {
         'date': fields.date('Date', required=True),
         'option': fields.selection([
-            ('override', 'Create / Override'),
-            ('uppend', 'Uppend'), ], 'Option', required=True),
-        'tour_id': fields.many2one('trip.tour', 'Tour',
+            ('override', 'Crea / Sovrascrivi'),
+            ('append', 'Accoda'), ], 'Option', required=True),
+        'tour_id': fields.many2one(
+            'trip.tour', 'Tour',
             required=True,
             ondelete='set null'),
-        'trip_id': fields.many2one('trip.trip', 'Trip',
+        'trip_id': fields.many2one(
+            'trip.trip', 'Trip',
             ondelete='set null'),
-        'status': fields.text('Status',
+        'status': fields.text(
+            'Status',
             help='See the status of previous trip day'),
         }
 
@@ -254,4 +260,3 @@ class trip_trip_create_wizard(osv.osv_memory):
         'status': lambda s, cr, uid, ctx: s.function_get_status(
             cr, uid, context=ctx),
         }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

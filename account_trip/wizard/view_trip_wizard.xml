@@ -10,17 +10,17 @@
                    <header>
                        <button string="Cancel" special="cancel" />
                        <button name="action_create_trip" string="Create" type="object" icon="gtk-jump-to" class="oe_highlight" />
-                   </header>                   
+                   </header>
                    <sheet>
                        <group colspan="4" col="4">
-                            <field name="date" />
-                            <field name="tour_id" on_change="onchange_trip_tour(tour_id)" />
                             <field name="option" />
-                            <field name="trip_id" attrs="{'required': [('option', '=', 'uppend')]}"/>
+                            <field name="trip_id" attrs="{'required': [('option', '=', 'append')]}"/>
+                            <field name="date" attrs="{'invisible': [('option', '=', 'append')], 'required': [('option', '=', 'override')]}"/>
+                            <field name="tour_id" on_change="onchange_trip_tour(tour_id)" attrs="{'invisible': [('option', '=', 'append')], 'required': [('option', '=', 'override')]}"/>
                             <newline/>
-                            
+
                             <separator string="Trip status" colspan="4"/>
-                            <field name="status" colspan="4" nolabel="1" readonly="1" widget="html"/>                            
+                            <field name="status" colspan="4" nolabel="1" readonly="1" widget="html"/>
                        </group>
                    </sheet>
                 </form>
