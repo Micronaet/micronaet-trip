@@ -331,6 +331,7 @@ class trip_order(orm.Model):
                         context=context)
 
                     if not partner_id:
+                        # todo create master partner?
                         error += _('Partner not found: %s!\n') % \
                                  partner_code
                         _logger.error(
@@ -339,10 +340,11 @@ class trip_order(orm.Model):
 
                     destination_code = record['CKY_CNT_SPED_ALT']
                     if destination_code:
-                        destination_id = partner_pool.get_partner_from_sql_code(
-                            cr, uid,
-                            destination_code,
-                            context=context)
+                        destination_id = \
+                            partner_pool.get_partner_from_sql_code(
+                                cr, uid,
+                                destination_code,
+                                context=context)
 
                         if not destination_id:
                             error += _(
@@ -353,7 +355,7 @@ class trip_order(orm.Model):
                                 destination_code)
                             continue
                     else:
-                        destination_id = False  # Not passed not seacrhed
+                        destination_id = False  # Not passed, not searched
 
                     data = {
                         'name': name,
