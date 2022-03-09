@@ -359,6 +359,7 @@ class trip_order(orm.Model):
                         'tour_id': tour_id,
                         'prevision_load': record['NPS_TOT'],
                         'error': error,
+                        'order_mode': 'D',  # Updated after
                         }
 
                     order_ids = self.search(cr, uid, [
