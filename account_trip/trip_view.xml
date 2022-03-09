@@ -491,6 +491,7 @@
         <field name="model">trip.trip</field>
         <field name="arch" type="xml">
             <search string="Search trip">
+               <field name="date" />
                <field name="description" />
                <field name="tour_code"/>
                <field name="tour_id" />

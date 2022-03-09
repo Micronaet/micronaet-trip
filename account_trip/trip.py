@@ -337,7 +337,7 @@ class trip_order(orm.Model):
                         _logger.info(
                             'Import destination code: %s record updated!' % i)
 
-                    error = ""
+                    error = ''
                     name = sql_pool.KEY_OC_FORMAT % record
                     number = str(record['NGL_DOC'])
                     tour_name = record['CDS_NOTE'].strip()
