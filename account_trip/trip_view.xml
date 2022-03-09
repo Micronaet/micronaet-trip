@@ -8,18 +8,18 @@
         <field name="arch" type="xml">
             <search string="Order">
                <field name="name" />
-               <field name="vector_id" />                                      
+               <field name="vector_id" />
                <separator/>
-               
+
                <!--<filter name="no_tour" string="No tour" domain="[('tour1_id','=',False),('tour2_id','=',False)]"/>-->
                <separator/>
-    
+
                 <group expand="1" string="Group By...">
                     <filter name="group_vector" string="Vector" domain="[]" context="{'group_by':'vector_id'}"/>
-                </group>                   
+                </group>
             </search>
         </field>
-    </record>       
+    </record>
 
     <record model="ir.ui.view" id="view_trip_vector_camion_tree">
         <field name="name">trip.vector.camion.tree</field>
@@ -27,12 +27,12 @@
         <field name="arch" type="xml">
             <tree string="Camion">
                <field name="name" />
-               <field name="vector_id" />   
-               <field name="max_load" /> 
+               <field name="vector_id" />
+               <field name="max_load" />
             </tree>
         </field>
-    </record>    
-    
+    </record>
+
     <record model="ir.ui.view" id="view_trip_vector_camion_form">
         <field name="name">trip.vector.camion.form</field>
         <field name="model">trip.vector.camion</field>
@@ -41,15 +41,15 @@
                 <sheet>
                    <group colspan="4" col="4">
                        <field name="name" />
-                       <field name="vector_id" />   
-                       <field name="max_load" /> 
+                       <field name="vector_id" />
+                       <field name="max_load" />
                        <separator string="Note" colspan="4"/>
-                       <field name="note" colspan="4" nolabel="1"/>                       
-                   </group>    
+                       <field name="note" colspan="4" nolabel="1"/>
+                   </group>
                 </sheet>
             </form>
         </field>
-    </record>    
+    </record>
 
     <record model="ir.actions.act_window" id="action_trip_vector_camion">
         <field name="name">Camion</field>
@@ -59,8 +59,8 @@
         <field name="view_id" ref="view_trip_vector_camion_tree"/>
         <field name="context">{}</field>
         <field name="domain">[]</field>
-    </record>    
-    
+    </record>
+
         <!--trip.order-->
     <record model="ir.ui.view" id="view_trip_order_search">
         <field name="name">trip.order.search</field>
@@ -68,26 +68,26 @@
         <field name="arch" type="xml">
             <search string="Order">
                <field name="name" />
-               <field name="partner_id" />                                      
-               <field name="destination_id" />                                      
+               <field name="partner_id" />
+               <field name="destination_id" />
                <field name="tour_code"/>
-               <field name="tour_id" />                                      
-               <field name="trip_id" />      
-                                               
+               <field name="tour_id" />
+               <field name="trip_id" />
+
                <separator/>
-               
+
                <!--<filter name="no_tour" string="No tour" domain="[('tour1_id','=',False),('tour2_id','=',False)]"/>-->
                <separator/>
-    
+
                 <group expand="1" string="Group By...">
                     <filter name="group_partner" string="Partner" domain="[]" context="{'group_by':'partner_id'}"/>
                     <filter name="group_destination" string="Destination" domain="[]" context="{'group_by':'destination_id'}"/>
                     <filter name="group_trip" string="Trip" domain="[]" context="{'group_by':'trip_id'}"/>
                     <filter name="group_tour" string="Tour" domain="[]" context="{'group_by':'tour_id'}"/>
-                </group>                   
+                </group>
             </search>
         </field>
-    </record>       
+    </record>
 
     <record model="ir.ui.view" id="view_trip_order_tree">
         <field name="name">trip.order.tree</field>
@@ -97,23 +97,23 @@
                <field name="sequence" invisible="not context.get('embedded',False)" />
                <field name="name" readonly="1"/>
                <!--<field name="description" />-->
-               <field name="partner_id" readonly="1" />   
+               <field name="partner_id" readonly="1" />
                <field name="destination_id" readonly="1" />
-               <field name="city" invisible="not context.get('embedded',False)"/> 
-               <field name="delivery_note" invisible="not context.get('embedded',False)"/> 
+               <field name="city" invisible="not context.get('embedded',False)"/>
+               <field name="delivery_note" invisible="not context.get('embedded',False)"/>
                <field name="time" />
                <field name="prevision_load" sum="Total prevision"/>
                <field name="current_load" sum="Total current"/>
-               <field name="tour_id" readonly="1"/>                                      
-               <field name="error" /> 
+               <field name="tour_id" readonly="1"/>
+               <field name="error" />
                <field name="tour_code" invisible="1"/>
-               <field name="trip_id" invisible="context.get('embedded',False)"/> 
+               <field name="trip_id" invisible="context.get('embedded',False)"/>
                <button name="unlink_order" icon="gtk-remove" type="object" help="Unlink order to trip" invisible="not context.get('embedded',False)"/>
-               <button name="%(action_trip_trip_change_wizard)d" type="action" string="Change trip" icon="terp-stock_effects-object-colorize" /> 
+               <button name="%(action_trip_trip_change_wizard)d" type="action" string="Change trip" icon="terp-stock_effects-object-colorize" />
             </tree>
         </field>
-    </record>    
-    
+    </record>
+
     <record model="ir.ui.view" id="view_trip_order_form">
         <field name="name">trip.order.form</field>
         <field name="model">trip.order</field>
@@ -124,19 +124,19 @@
                        <field name="sequence" />
                        <field name="name" readonly="1"/>
                        <!--<field name="description" />-->
-                       <field name="partner_id" readonly="1"/>   
-                       <field name="destination_id" readonly="1"/>                  
-                       <field name="tour_id" readonly="1"/>                                      
-                       <field name="trip_id" />                                      
+                       <field name="partner_id" readonly="1"/>
+                       <field name="destination_id" readonly="1"/>
+                       <field name="tour_id" readonly="1"/>
+                       <field name="trip_id" />
                        <separator string="Note" colspan="4"/>
-                       <field name="note" colspan="4" nolabel="1"/>                       
+                       <field name="note" colspan="4" nolabel="1"/>
                        <separator string="Error" colspan="4" attrs="{'invisible':[('error','=',False)]}"/>
                        <field name="error" colspan="4" nolabel="1" attrs="{'invisible':[('error','=',False)]}"/>
-                   </group>    
+                   </group>
                 </sheet>
             </form>
         </field>
-    </record>    
+    </record>
     <record id="view_trip_order_kanban" model="ir.ui.view">
         <field name="name">trip.order.form</field>
         <field name="model">trip.order</field>
@@ -180,7 +180,7 @@
                 </templates>
             </kanban>
         </field>
-    </record>    
+    </record>
 
     <record model="ir.actions.act_window" id="action_trip_order">
         <field name="name">Order</field>
@@ -209,34 +209,34 @@
         <field name="context">{'name_extra_info': True}</field>
         <field name="domain">['|',('trip_id','=',False),('trip_id.date', '>=', current_date)]</field>
     </record>
-    
+
     <!--res.partner-->
         <!--Inherit-->
     <record model="ir.ui.view" id="view_res_partner_vector_form">
         <field name="name">res.partner.vector.form</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form" />
-        <field name="arch" type="xml">            
+        <field name="arch" type="xml">
 	        <xpath expr="/form/sheet/notebook/page/group/group/field[@name='supplier']" position="after">
                 <field name="is_vector" />
 	            <group colspan="2" col="2" attrs="{'invisible': [('is_vector','=',False)]}">
 	                <separator string="Vector" colspan="2"/>
-	                <field name="vector_note" />	                
-	            </group>    
+	                <field name="vector_note" />
+	            </group>
 	        </xpath>
         </field>
-    </record> 
+    </record>
     <record model="ir.ui.view" id="view_res_partner_vector_search">
         <field name="name">res.partner.vector.search</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_res_partner_filter" />
-        <field name="arch" type="xml">            
+        <field name="arch" type="xml">
            <filter name="supplier" position="after">
                <filter name="is_vector" string="Vector" domain="[('is_vector','=',True)]"/>
            </filter>
         </field>
-    </record> 
-      
+    </record>
+
         <!--Destinations:-->
     <record id="view_res_partner_destination_search" model="ir.ui.view">
         <field name="name">res_partner_destination</field>
@@ -245,7 +245,7 @@
         <field name="arch" type="xml">
             <search string="Destination">
                <field name="name" />
-               <field name="parent_id" />                                      
+               <field name="parent_id" />
                <field name="delivery_note" />
                <field name="tour1_id" />
                <field name="tour2_id" />
@@ -257,27 +257,27 @@
                <filter name="obsolete" string="Obsolete" domain="[('trip_obsolete','=',True)]"/>
                <filter name="not_obsolete" string="Not obsolete" domain="[('trip_obsolete','=',False)]"/>
                <separator/>
-               
+
                <filter name="no_tour" string="No tour" domain="[('tour1_id','=',False),('tour2_id','=',False)]"/>
                <filter name="has_tour" string="Has tour" domain="['|',('tour1_id','!=',False),('tour2_id','!=',False)]"/>
                <separator/>
- 
+
                <!--<filter name="has_delivery_note" string="Has delivery note" domain="[('delivery_note','!=',False)]"/>
                <filter name="has_delivery_note" string="Has no delivery note" domain="[('delivery_note','=',False)]"/>
                <separator/>-->
 
                <filter name="no_parent" string="No parent" domain="[('parent_id','=',False)]"/>
                <separator/>
-               
+
                 <group expand="1" string="Group By...">
                     <filter name="group_city" string="City" domain="[]" context="{'group_by':'city'}"/>
                     <filter name="group_partner" string="Partner" domain="[]" context="{'group_by':'parent_id'}"/>
                     <filter name="group_tour1" string="Tour 1" domain="[]" context="{'group_by':'tour1_id'}"/>
                     <filter name="group_tour2" string="Tour 2" domain="[]" context="{'group_by':'tour2_id'}"/>
-                </group>                   
+                </group>
             </search>
         </field>
-    </record>       
+    </record>
     <record model="ir.ui.view" id="view_res_partner_destination_tree">
         <field name="name">res.partner.tree</field>
         <field name="model">res.partner</field>
@@ -291,7 +291,7 @@
                 <field name="street" />
                 <field name="city" />
                 <field name="tour1_id" />
-                <field name="tour2_id" />                
+                <field name="tour2_id" />
                 <field name="phone" />
                 <field name="delivery_note" />
                 <field name="active_order" sum="Total"/>
@@ -310,7 +310,7 @@
             <form string="Destination" version="7.0">
                 <head>
                     <button name="set_obsolete" string="Set obsolete" type="object" attrs="{'invisible':[('trip_obsolete','=',True)]}" icon="star-off"/>
-                    <button name="unset_obsolete" string="Set as not obsolete" type="object" attrs="{'invisible':[('trip_obsolete','=',False)]}" icon="star-on"/>                
+                    <button name="unset_obsolete" string="Set as not obsolete" type="object" attrs="{'invisible':[('trip_obsolete','=',False)]}" icon="star-on"/>
                 </head>
                 <sheet>
                     <group col="4" colspan="4">
@@ -360,7 +360,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="action_res_partner_vector">
-        <field name="name">Vector</field>
+        <field name="name">Vettori</field>
         <field name="res_model">res.partner</field>
         <field name="view_type">form</field>
         <field name="view_mode">form,tree</field>
@@ -368,22 +368,22 @@
         <field name="context">{'search_default_is_vector':True}</field>
         <field name="domain">[]</field>
     </record>
-    
+
     <!--trip.tour-->
     <record id="view_trip_tour_search" model="ir.ui.view">
         <field name="name">trip.tour.search</field>
         <field name="model">trip.tour</field>
         <field name="arch" type="xml">
             <search string="Search tour">
-               <field name="name" />   
-               <field name="description" />   
-               <separator/>               
+               <field name="name" />
+               <field name="description" />
+               <separator/>
 
                <filter name="is_obsolete" string="Obsolete" domain="[('obsolete','=',True)]"/>
                <filter name="is_not_obsolete" string="Not obsolete" domain="[('obsolete','=',False)]"/>
             </search>
         </field>
-    </record>   
+    </record>
     <record model="ir.ui.view" id="view_trip_tour_tree">
         <field name="name">trip.tour.tree</field>
         <field name="model">trip.tour</field>
@@ -409,7 +409,7 @@
                     <field name="obsolete" />
                     <notebook colspan="4">
                         <page string="Trip">
-                            <field name="trip_ids" string="Current trip" nolabel="1"> 
+                            <field name="trip_ids" string="Current trip" nolabel="1">
                                 <!--<tree string="Destination" editable="bottom">
                                     <field name="name" readonly="1" />
                                     <field name="sql_destination_code" readonly="1" />
@@ -421,7 +421,7 @@
                             </field>
                         </page>
                         <page string="Destination 1">
-                            <field name="destination1_ids" nolabel="1"> 
+                            <field name="destination1_ids" nolabel="1">
                                 <tree string="Destination" editable="bottom">
                                     <field name="name" readonly="1" />
                                     <field name="sql_destination_code" readonly="1" />
@@ -429,11 +429,11 @@
                                 <form string="Destination" >
                                     <field name="name" readonly="1" />
                                     <field name="sql_destination_code" readonly="1" />
-                                </form>                                            
+                                </form>
                             </field>
                         </page>
                         <page string="Destination 2">
-                            <field name="destination2_ids" nolabel="1"> 
+                            <field name="destination2_ids" nolabel="1">
                                 <tree string="Destination" editable="bottom">
                                     <field name="name" readonly="1" />
                                     <field name="sql_destination_code" readonly="1" />
@@ -441,21 +441,21 @@
                                 <form string="Destination" >
                                     <field name="name" readonly="1" />
                                     <field name="sql_destination_code" readonly="1" />
-                                </form>                                            
+                                </form>
                             </field>
                         </page>
                         <page string="Note">
                             <field name="note" nolabel="1" />
                         </page>
                     </notebook>
-                  </group>  
+                  </group>
                 </sheet>
             </form>
         </field>
     </record>
-    
+
     <record model="ir.actions.act_window" id="action_trip_tour">
-        <field name="name">Tour</field>
+        <field name="name">Giri</field>
         <field name="res_model">trip.tour</field>
         <field name="view_type">form</field>
         <field name="view_mode">form,tree</field>
@@ -470,20 +470,20 @@
         <field name="model">trip.trip</field>
         <field name="arch" type="xml">
             <search string="Search trip">
-               <field name="description" />   
+               <field name="description" />
                <field name="tour_code"/>
-               <field name="tour_id" />   
-               <field name="camion_id" />   
-               <separator/>               
+               <field name="tour_id" />
+               <field name="camion_id" />
+               <separator/>
                 <group expand="1" string="Group By...">
                     <filter name="group_vector" string="Camion" domain="[]" context="{'group_by':'camion_id'}"/>
                     <filter name="group_tour" string="Tour" domain="[]" context="{'group_by':'tour_id'}"/>
                     <filter name="group_date" string="Date" domain="[]" context="{'group_by':'date'}"/>
-                </group>                   
+                </group>
             </search>
         </field>
-    </record>   
-    
+    </record>
+
     <record model="ir.ui.view" id="view_trip_trip_tree">
         <field name="name">trip.trip.tree</field>
         <field name="model">trip.trip</field>
@@ -518,7 +518,7 @@
 
                     <field name="current_load" />
                     <field name="prevision_load" />
-                    
+
                     <field name="max_load" />
                     <field name="total_delivery" />
 
@@ -535,7 +535,7 @@
                             </group>
                         </page>
                     </notebook>
-                  </group>  
+                  </group>
                 </sheet>
             </form>
         </field>
@@ -552,7 +552,7 @@
                 <field name="description"/>
             </calendar>
         </field>
-    </record>    
+    </record>
     <record model="ir.ui.view" id="view_trip_trip_vector_calendar">
         <field name="name">trip.trip.calendar</field>
         <field name="model">trip.trip</field>
@@ -564,7 +564,7 @@
                 <field name="description"/>
             </calendar>
         </field>
-    </record>    
+    </record>
     <record model="ir.actions.act_window" id="action_trip_trip">
         <field name="name">Trip</field>
         <field name="res_model">trip.trip</field>
@@ -575,7 +575,7 @@
         <field name="domain">[]</field>
     </record>
     <record model="ir.actions.act_window" id="action_trip_trip_vector">
-        <field name="name">Trip</field>
+        <field name="name">Calendario viaggi</field>
         <field name="res_model">trip.trip</field>
         <field name="view_type">form</field>
         <field name="view_mode">form,tree,calendar</field>
@@ -595,7 +595,7 @@
         context="{}"/>-->
         <!--domain="['|',('tour1_id','=',tour_id),('tour1_id','=',tour_id)]"-->
 
-    <act_window 
+    <act_window
         id="act_windows_view_trip_organize_trip"
         name='Organize trip'
         view_type='form'
@@ -608,4 +608,4 @@
         context="{'name_extra_info': True}"
         />
     </data>
-</openerp>   
+</openerp>
