@@ -31,7 +31,7 @@ from openerp.tools.translate import _
 _logger = logging.getLogger(__name__)
 
 
-class ResCompnay(orm.Model):
+class ResCompany(orm.Model):
     """ Class Company for operation
     """
     _inherit = 'res.company'
@@ -48,6 +48,17 @@ class ResCompnay(orm.Model):
         return self.pool.get('trip.order').schedule_import_trip_order(
             cr, uid, context=context)
 
+    _columns = {
+        'trip_keep_trip': fields.integer(
+            'Conserva viaggi per', required=True,
+            help='La cancellazione giornaliera dei viaggi parte da X giorni '
+                 'precedenti',
+        ),
+    }
+
+    _defaults = {
+        'trip_keep_trip': lambda *x: 2,
+    }
 
 class trip_tour(orm.Model):
     """ Class for manage Tours
@@ -629,9 +640,10 @@ class res_partner(orm.Model):
         'tour2_id': fields.many2one('trip.tour', 'Tour 2',
             required=False,
             ondelete='set null'),
-        #'sequence': fields.integer('Sequence',
+        # 'sequence': fields.integer('Sequence',
         #    help="Sequence order for trip destinations"),
-        #'sequence': fields.integer('Sequence',  # TODO doppia sequence per doppia destinazione...
+        # 'sequence': fields.integer('Sequence',
+        # TODO doppia sequence per doppia destinazione...
         #    help="Sequence order for trip destinations"),
         'delivery_note': fields.char('Delivery note', size=100),
         'active_order': fields.function(_function_get_order, method=True,
