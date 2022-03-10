@@ -424,7 +424,7 @@ class trip_order(orm.Model):
                     partner_start_code = partner_code[:2]
                     if not partner_id and partner_start_code != '06':
                         log_message(
-                            _('Jump order %s for partner not 06: %s!') % (
+                            'Saltato ordine %s cliente non ha codice 06!' % (
                             name, partner_code),
                             error_block,
                         )
@@ -455,7 +455,8 @@ class trip_order(orm.Model):
                         partner_id = partner_pool.create(
                             cr, uid, partner_data, context=context)
                         log_message(
-                            _('Order %s. Partner not found created: %s!') % (
+                            'Ordine %s. Cliente non trovato, creato '
+                            'segnaposto: %s!' % (
                                 name, partner_code),
                             error_block,
                         )
@@ -470,7 +471,7 @@ class trip_order(orm.Model):
 
                         if not destination_id:
                             log_message(
-                                _('Order %s. Destination not found: %s!') % (
+                                'Ordine %s. Destinazione non trovata!' % (
                                     name, destination_code),
                                 error_block,
                             )
@@ -504,7 +505,8 @@ class trip_order(orm.Model):
                     order_reference[number] = order_id
                 except:
                     log_message(
-                        'Error importing order record: [%s]\nLOG: [%s]' % (
+                        'Errore generico importazione ordine: [%s]\n'
+                        'LOG: [%s]' % (
                             record,
                             sys.exc_info(),
                         ),
@@ -515,11 +517,7 @@ class trip_order(orm.Model):
             # todo parameter the filename:
             filename = os.path.expanduser('~/mexal/viaggi/freschi.txt')
             _logger.info('Updating extra info, file: %s' % filename)
-            counter = 1
             for line in open(filename, 'r'):
-                counter += 1
-                if not counter % 10:
-                    _logger.info('%s line read' % counter)
                 row = line.strip().split(';')
                 if len(row) != 3:
                     _logger.error('Line empty, jumped')
