@@ -359,7 +359,8 @@ class trip_order(orm.Model):
                     error = ''
                     name = sql_pool.KEY_OC_FORMAT % record
                     number = str(record['NGL_DOC'])
-                    date = str(record['DTT_COD'])[:10]
+                    date = record['DTT_COD'].strptime(
+                        DEFAULT_SERVER_DATE_FORMAT)
                     tour_name = record['CDS_NOTE'].strip()
                     tour_id = tour_pool.search_tour(
                         cr, uid, tour_name,
