@@ -373,7 +373,10 @@ class trip_order(orm.Model):
 
                     partner_start_code = partner_code[:2]
                     if not partner_id and partner_start_code != '06':
-                        _logger.error('Jump order with partner != 06')
+                        error += _('Jump order for partner not 06: %s!\n') % \
+                                 partner_code
+                        _logger.error(
+                            'Jump order for partner not 06: %s' % partner_code)
                         continue
 
                     if not partner_id and partner_start_code == '06':
@@ -405,12 +408,6 @@ class trip_order(orm.Model):
                                  partner_code
                         _logger.error(
                             'Partner not found created: %s!' % partner_code)
-
-                    if not partner_id:
-                        error += _('Partner not found: %s!\n') % \
-                                 partner_code
-                        _logger.error(
-                            'Partner not found: %s!' % partner_code)
 
                     destination_code = record['CKY_CNT_SPED_ALT']
                     if destination_code:
