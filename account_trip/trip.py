@@ -359,6 +359,7 @@ class trip_order(orm.Model):
                     error = ''
                     name = sql_pool.KEY_OC_FORMAT % record
                     number = str(record['NGL_DOC'])
+                    date = str(record['DTT_COD'])[:10]
                     tour_name = record['CDS_NOTE'].strip()
                     tour_id = tour_pool.search_tour(
                         cr, uid, tour_name,
@@ -432,7 +433,7 @@ class trip_order(orm.Model):
                         'name': name,
                         'partner_id': partner_id,
                         'destination_id': destination_id,
-                        'date': False,  # todo record['DTT_DOC']
+                        'date': date,
                         'description': '',  # todo
                         'note': record['CDS_NOTE'],
                         'tour_id': tour_id,

@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <openerp>
-	<data>
+	<data noupdate="1">
 		<record id="ir_cron_schedule_import_email_document_0" model="ir.cron">
 			<field eval="&quot;&quot;&quot;schedule_import_email_document&quot;&quot;&quot;" name="function"/>
 			<field eval="&quot;&quot;&quot;minutes&quot;&quot;&quot;" name="interval_type"/>
