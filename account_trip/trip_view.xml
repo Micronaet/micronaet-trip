@@ -5,13 +5,13 @@
         <field name="name">Trip operation</field>
         <field name="model">res.company</field>
         <field name="arch" type="xml">
-            <tree string="Trip operation" editable="bottom">
+            <tree string="Trip operation" editable="bottom" colors="red: open_log_detail != False">
                         <field name="name" readonly="1"/>
                         <field name="trip_keep_trip" />
                         <field name="trip_master_error" invisible="1"/>
                         <button name="clean_all_order" type="object" icon="gtk-delete" string="Cancella ordini e viaggi" confirm="Operazione di pulizia ordini da fare la mattina prima di creare i viaggi, confermi?"/>
                         <button name="import_all_order" type="object" icon="gtk-refresh" string="Importa ordini nuovi" confirm="Confermi caricamento ordini nuovi (o integrazione qualora fossero ancora caricati i vecchi?"/>
-                        <button name="open_log_detail" type="object" icon="gtk-gtk-stop" string="Log errore importazione" attrs="{'invisible': [('trip_master_error', '=', False)]}"/>
+                        <button name="open_log_detail" type="object" icon="gtk-cancel" string="Log errore importazione" attrs="{'invisible': [('trip_master_error', '=', False)]}"/>
             </tree>
         </field>
     </record>
