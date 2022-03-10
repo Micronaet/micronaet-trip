@@ -361,7 +361,11 @@ class trip_order(orm.Model):
             if verbose:
                 _logger.error(message)
             return True
+
         try:
+            # Parameer:
+            idem = '07.00002'
+
             # Pool object:
             company_pool = self.pool.get('res.company')
             partner_pool = self.pool.get('res.partner')
@@ -463,7 +467,9 @@ class trip_order(orm.Model):
                         )
 
                     destination_code = record['CKY_CNT_SPED_ALT']
-                    if destination_code:
+                    if destination_code == idem:
+                        destination_id = partner_id
+                    elif destination_code:
                         destination_id = \
                             partner_pool.get_partner_from_sql_code(
                                 cr, uid,
@@ -708,7 +714,7 @@ class res_partner(orm.Model):
         ids = []
 
         if name:
-            #Search also in accounting code:
+            # Search also in accounting code:
             ids = self.search(cr, uid,
                 args + [
                     '|',
@@ -771,7 +777,7 @@ class res_partner(orm.Model):
         # 'sequence': fields.integer('Sequence',
         #    help="Sequence order for trip destinations"),
         # 'sequence': fields.integer('Sequence',
-        # TODO doppia sequence per doppia destinazione...
+        # todo doppia sequence per doppia destinazione...
         #    help="Sequence order for trip destinations"),
         'delivery_note': fields.char('Delivery note', size=100),
         'active_order': fields.function(_function_get_order, method=True,
@@ -782,7 +788,7 @@ class res_partner(orm.Model):
         # Vector partner:
         'is_vector': fields.boolean('Is vector'),
         'vector_note': fields.text('Delivery note'),
-        #'max_load': fields.float('Max load', digits=(16, 2)),
+        # 'max_load': fields.float('Max load', digits=(16, 2)),
 
         # 2many relations:
         'order_ids': fields.one2many(
