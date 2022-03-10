@@ -537,7 +537,6 @@ class trip_order(orm.Model):
                         'Cannot load extra info for order: %s' % number)
             _logger.info('All trip order is updated!')
 
-            pdb.set_trace()
             if error_block['master']:
                 company_pool.write(cr, uid, [company_id], {
                     'trip_master_error': error_block['master']
