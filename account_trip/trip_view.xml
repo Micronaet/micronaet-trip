@@ -379,7 +379,7 @@
         <field name="name">Clienti</field>
         <field name="res_model">res.partner</field>
         <field name="view_type">form</field>
-        <field name="view_mode">form,tree</field>
+        <field name="view_mode">tree,form</field>
         <!--<field name="view_id" ref="view_res_partner_destination_tree"/>-->
         <field name="context">{}</field>
         <field name="domain">[]</field>
