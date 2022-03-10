@@ -124,7 +124,8 @@ class trip_trip(orm.Model):
     _rec_name = 'tour_id'
 
     def print_trip_one(self, cr, uid, ids, context=None):
-        """ Print trip order"""
+        """ Print trip order
+        """
         datas = {'multi': 1}
         return {
             'model': 'trip.trip',
@@ -153,7 +154,7 @@ class trip_trip(orm.Model):
     # ------------------
     def name_get(self, cr, user, ids, context=None):
         """
-        Return a list of tupples contains id, name.
+        Return a list of tuples contains id, name.
         result format : {[(id, name), (id, name), ...]}
 
         @param cr: cursor to database
@@ -165,18 +166,19 @@ class trip_trip(orm.Model):
         """
         res = []
         for item in self.browse(cr, user, ids, context=context):
-            if context.get('name_extra_info', False):
-                name = _("%s (%s) [Prev. %s] ") % (  # [Curr. %s]
-                    item.tour_id.name,
-                    item.date,
-                    item.prevision_load,
-                    # item.current_load,
-                    )
-            else:
-                name = "%s (%s)" % (
-                    item.tour_id.name,
-                    item.date,
-                    )
+            # if context.get('name_extra_info', False):
+            name = _("%s (%s) >> %s [Tot. %s] ") % (
+                item.tour_id.name,
+                item.date,
+                item.camion_id.name,
+                item.prevision_load,
+            )
+            #else:
+            #    name = "%s (%s) >> %s" % (
+            #        item.tour_id.name,
+            #        item.date,
+            #        item.camion_id.name,
+            #        )
             res.append((item.id, name))
         return res
 
@@ -579,7 +581,7 @@ class res_partner(orm.Model):
     # ------------------
     def name_get(self, cr, uid, ids, context=None):
         """
-        Return a list of tupples contains id, name.
+        Return a list of tuples contains id, name.
         result format : {[(id, name), (id, name), ...]}
 
         @param cr: cursor to database

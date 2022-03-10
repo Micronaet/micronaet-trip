@@ -23,7 +23,7 @@ import netsvc
 import logging
 from openerp.osv import osv, orm, fields
 from datetime import datetime, timedelta
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare)
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
@@ -31,33 +31,30 @@ from openerp.tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
+
 # -----------------------------------------------------------------------------
 #                                   Wizard
 # -----------------------------------------------------------------------------
 class trip_trip_change_wizard(osv.osv_memory):
-    ''' Change trip for selected order in existent trip
-    '''
+    """ Change trip for selected order in existent trip
+    """
     _name = "trip.trip.change.wizard"
-                  
-    # -------------                           
+
+    # -------------
     # Button event:
-    # -------------                           
+    # -------------
     def action_print(self, cr, uid, ids, context=None):
-        ''' Change new trip
-        '''
+        """ Change new trip
+        """
         if context is None:
            context = {}
 
         wizard_proxy = self.browse(cr, uid, ids, context=context)[0]
-        
+
         order_id = context.get('active_id', 0)
         return self.pool.get('trip.order').write(cr, uid, order_id, {
-            'trip_id': wizard_proxy.trip_id.id, }, context=context)        
-        
+            'trip_id': wizard_proxy.trip_id.id, }, context=context)
+
     _columns = {
         'trip_id': fields.many2one('trip.trip', 'Trip', required=True),
         }
-        
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-
-
