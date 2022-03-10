@@ -471,7 +471,7 @@ class trip_order(orm.Model):
 
                         if not destination_id:
                             log_message(
-                                'Ordine %s. Destinazione non trovata!' % (
+                                'Ordine %s. Destinazione non trovata: %s!' % (
                                     name, destination_code),
                                 error_block,
                             )
