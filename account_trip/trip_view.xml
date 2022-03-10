@@ -110,7 +110,7 @@
         <field name="name">trip.order.tree</field>
         <field name="model">trip.order</field>
         <field name="arch" type="xml">
-            <tree string="Order (green=assigned, red=error, orange=no order tour)" colors="grey: removed==True;green:trip_id!=False;orange:tour_id==False;red:error!=False" editable="bottom">
+            <tree string="Order (grey=deleted but linked, green=assigned, red=error, orange=no order tour)" colors="grey: removed==True;green:trip_id!=False;brown:tour_id==False;red:error != False" editable="bottom">
                <field name="sequence" invisible="not context.get('embedded',False)" />
                <field name="name" readonly="1"/>
                <!--<field name="description" />-->
