@@ -371,11 +371,12 @@ class trip_order(orm.Model):
                         partner_code,
                         context=context)
 
-                    if not partner_id and partner_code[:2] != '06':
+                    partner_start_code = partner_code[:2]
+                    if not partner_id and partner_start_code != '06':
                         _logger.error('Jump order with partner != 06')
                         continue
 
-                    if not partner_id and partner_code[:2] == '06':
+                    if not partner_id and partner_start_code == '06':
                         partner_data = {
                             'name': 'Nuovo cliente codice %s' % partner_code,
                             'sql_customer_code': partner_code,
