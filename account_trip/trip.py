@@ -512,7 +512,6 @@ class trip_order(orm.Model):
 
             # Import line detail for order:
             # todo parameter the filename:
-            pdb.set_trace()
             filename = os.path.expanduser('~/mexal/viaggi/freschi.txt')
             _logger.info('Updating extra info, file: %s' % filename)
             counter = 1
@@ -537,7 +536,6 @@ class trip_order(orm.Model):
                     _logger.error(
                         'Cannot load extra info for order: %s' % number)
             _logger.info('All trip order is updated!')
-            pdb.set_trace()
 
             if error_block['master']:
                 company_pool.write(cr, uid, [company_id], {
