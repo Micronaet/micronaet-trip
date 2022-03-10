@@ -405,7 +405,7 @@ class trip_order(orm.Model):
                             cr, uid, partner_data, context=context)
 
                         error += _('Partner not found created: %s!\n') % \
-                                 partner_code
+                            partner_code
                         _logger.error(
                             'Partner not found created: %s!' % partner_code)
 
