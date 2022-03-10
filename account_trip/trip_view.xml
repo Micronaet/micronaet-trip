@@ -517,6 +517,7 @@
                 <field name="prevision_load" />
                 <!--<field name="current_load" />-->
                 <field name="total_delivery" />
+                <button name="print_trip_one" type="object" string="Stampa" icon="gtk-print"/>
             </tree>
         </field>
     </record>
@@ -526,6 +527,9 @@
         <field name="model">trip.trip</field>
         <field name="arch" type="xml">
             <form string="Trip" version="7.0">
+                <header>
+                    <button name="print_trip_one" type="object" string="Stampa" icon="gtk-print"/>
+                </header>
                 <sheet>
                   <group colspan="4" col="4">
                     <field name="date" />

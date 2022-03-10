@@ -123,6 +123,18 @@ class trip_trip(orm.Model):
     _description = 'Trip'
     _rec_name = 'tour_id'
 
+    def print_trip_one(self, cr, uid, ids, context=None):
+        """ Print trip order"""
+        datas = {'multi': 1}
+        return {
+            'model': 'trip.trip',
+            'type': 'ir.actions.report.xml',
+            'report_name': 'trip_trip_report',
+            'datas': datas,
+            # 'res_id': context.get('active_id', False),
+            'context': context,
+        }
+
     # -------------------
     # On change function:
     # -------------------

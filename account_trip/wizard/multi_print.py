@@ -23,7 +23,7 @@ import netsvc
 import logging
 from openerp.osv import osv, orm, fields
 from datetime import datetime, timedelta
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare)
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
@@ -35,41 +35,39 @@ _logger = logging.getLogger(__name__)
 #                                   Wizard
 # -----------------------------------------------------------------------------
 class trip_trip_multi_print_wizard(osv.osv_memory):
-    ''' Print more than one report
-    '''
+    """ Print more than one report
+    """
     _name = "trip.trip.multi.print.wizard"
-                  
-    # -------------                           
+
+    # -------------
     # Button event:
-    # -------------                           
+    # -------------
     def action_print(self, cr, uid, ids, context=None):
-        ''' Print more than one report
-        '''
+        """ Print more than one report
+        """
         if context is None:
            context = {}
 
-        wizard_proxy = self.browse(cr, uid, ids, context=context)[0] # wizard fields proxy
-        
+        wizard_proxy = self.browse(cr, uid, ids, context=context)[0]
+
         # Create a production order and open it:
         multi = wizard_proxy.multi or 1
-               
-        datas = {'multi': multi}            
+
+        datas = {'multi': multi}
         return {
             'model': 'trip.trip',
             'type': 'ir.actions.report.xml',
             'report_name': 'trip_trip_report',
             'datas': datas,
-            #'res_id': context.get('active_id', False),
+            # 'res_id': context.get('active_id', False),
             'context': context,
         }
-        
+
     _columns = {
         'multi': fields.integer('Number of copy', required=True)
         }
-        
+
     _defaults = {
         'multi': lambda *x: 1,
         }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-
 
