@@ -5,7 +5,7 @@
         <field name="name">Trip operation</field>
         <field name="model">res.company</field>
         <field name="arch" type="xml">
-            <tree string="Trip operation" editable="bottom" colors="red: open_log_detail != False">
+            <tree string="Trip operation" editable="bottom" colors="red: trip_master_error != False">
                         <field name="name" readonly="1"/>
                         <field name="trip_keep_trip" />
                         <field name="trip_master_error" invisible="1"/>
