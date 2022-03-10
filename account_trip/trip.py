@@ -343,6 +343,9 @@ class trip_order(orm.Model):
                 _logger.error("Unable to connect, no order importation!")
                 return False
 
+            # Consider all removed:
+            cr.execute('update trip_order set removed="t";')
+
             # Start importation order:
             order_reference = {}
             i = 0
@@ -434,6 +437,7 @@ class trip_order(orm.Model):
                         'tour_code_start': tour_code_start,
                         'prevision_load': record['NPS_TOT'],
                         'error': error,
+                        'removed': False,
                         'order_mode': 'D',  # Updated after
                         }
 
@@ -541,8 +545,9 @@ class trip_order(orm.Model):
 
         # Details for trip:
         'sequence': fields.integer('Position'),
-        'trip_id': fields.many2one('trip.trip', 'Trip',
-            ondelete='set null'), # Order remain unlinked
+        'trip_id': fields.many2one(
+            'trip.trip', 'Trip',
+            ondelete='set null'),  # Order remain unlinked
         'time': fields.char('Request time', size=40),
         'prevision_load': fields.float('Prevision load', digits=(16, 2)),
         'current_load': fields.float('Current load', digits=(16, 2)),
@@ -563,6 +568,9 @@ class trip_order(orm.Model):
             string="Tour code",
             store=False,
             ),
+        'removed': fields.boolean(
+            'Rimosso',
+            help='Non più presente ma ancora agganciato a degli ordini'),
         }
 
     _defaults = {

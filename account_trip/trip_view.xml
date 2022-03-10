@@ -110,7 +110,7 @@
         <field name="name">trip.order.tree</field>
         <field name="model">trip.order</field>
         <field name="arch" type="xml">
-            <tree string="Order (green=assigned, red=error, orange=no order tour)" colors="green:trip_id!=False;orange:tour_id==False;red:error!=False" editable="bottom">
+            <tree string="Order (green=assigned, red=error, orange=no order tour)" colors="grey: removed==True;green:trip_id!=False;orange:tour_id==False;red:error!=False" editable="bottom">
                <field name="sequence" invisible="not context.get('embedded',False)" />
                <field name="name" readonly="1"/>
                <!--<field name="description" />-->
@@ -125,6 +125,7 @@
                <field name="tour_id" readonly="1"/>
                <field name="tour_code_start" string="Codice Giro" invisible="1"/>
                <field name="error" />
+               <field name="removed" invisible="1" />
                <field name="trip_id" invisible="context.get('embedded',False)"/>
                <button name="unlink_order" icon="gtk-remove" type="object" help="Unlink order to trip" invisible="not context.get('embedded',False)"/>
                <button name="%(action_trip_trip_change_wizard)d" type="action" string="Change trip" icon="terp-stock_effects-object-colorize" />
@@ -215,7 +216,7 @@
         <field name="view_mode">form,tree,kanban</field>
         <field name="view_id" ref="view_trip_order_tree"/>
         <field name="context">{'search_default_group_tour':True,'show_trip':True}</field>
-        <field name="domain">[('trip_id', '=', False)]</field>
+        <field name="domain">[('trip_id', '=', False),('removed', '=', False)]</field>
     </record>
     <record model="ir.actions.act_window" id="action_trip_order_organize">
         <field name="name">Order organize</field>
