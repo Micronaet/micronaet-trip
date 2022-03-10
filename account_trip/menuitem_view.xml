@@ -12,7 +12,7 @@
                     <menuitem parent="menu_all_configuration" id="menu_trip_configuration_camion" name="Camion" action="action_trip_vector_camion" sequence="20" groups="group_trip_manager"/>
                     <menuitem parent="menu_all_configuration" id="menu_trip_configuration_tour" name="Giri" action="action_trip_tour" sequence="30" groups="group_trip_manager"/>
 
-                    <menuitem parent="menu_all_configuration" id="menu_trip_destination" name="Clienti" action="action_res_partner" sequence="40"  groups="group_trip_manager"/>
+                    <menuitem parent="menu_all_configuration" id="menu_trip_partner_all" name="Clienti" action="action_res_partner" sequence="40"  groups="group_trip_manager"/>
                     <menuitem parent="menu_all_configuration" id="menu_trip_destination" name="Destinazioni" action="action_res_partner_destination" sequence="50"  groups="group_trip_manager"/>
                         <menuitem parent="menu_trip_destination" id="menu_trip_destination_all" name="Obsolete" action="action_res_partner_destination_all" sequence="10"  groups="group_trip_manager"/>
 
