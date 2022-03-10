@@ -424,8 +424,9 @@ class trip_order(orm.Model):
                     partner_start_code = partner_code[:2]
                     if not partner_id and partner_start_code != '06':
                         log_message(
-                            'Saltato ordine %s cliente non ha codice 06!' % (
-                            name, partner_code),
+                            'Saltato ordine %s cliente non ha codice 06:'
+                            ' %s!' % (
+                                name, partner_code),
                             error_block,
                         )
                         continue
