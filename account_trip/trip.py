@@ -518,7 +518,7 @@ class trip_order(orm.Model):
             for line in open(filename, 'r'):
                 counter += 1
                 if not counter % 10:
-                    _logger('%s line read' % counter)
+                    _logger.info('%s line read' % counter)
                 row = line.strip().split(';')
                 if len(row) != 3:
                     _logger.error('Line empty, jumped')
