@@ -474,7 +474,7 @@ class trip_order(orm.Model):
                             error_block,
                         )
 
-                    destination_code = record['CKY_CNT_SPED_ALT']
+                    destination_code = record['CKY_CNT_SPED_ALT'].strip()
                     if destination_code == idem:
                         destination_id = partner_id
                         _logger.warning('Idem order replaced: %s' % name)
