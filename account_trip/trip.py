@@ -38,9 +38,37 @@ class ResCompany(orm.Model):
     """
     _inherit = 'res.company'
 
+    def open_log_detail(self, cr, uid, ids, context=None):
+        """ Open log import error
+        """
+        model_pool = self.pool.get('ir.model.data')
+        view_id = model_pool.get_object_reference(
+            cr, uid,
+            'account_trip',
+            'res_company_trip_log_error_view_form')[1]
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Errore importazione'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': ids[0],
+            'res_model': 'res.company',
+            'view_id': view_id,
+            'views': [(view_id, 'form')],
+            'domain': [],
+            'context': context,
+            'target': 'new',
+            'nodestroy': False,
+            }
+
     def clean_all_order(self, cr, uid, ids, context=None):
         """ Clean all order: daily operation before start work
         """
+        # Clean previous error:
+        self.write(cr, uid, ids, {
+            'trip_master_error': False,
+        }, context=context)
         return self.pool.get('trip.order').clean_all_order(
             cr, uid, ids, context=context)
 
@@ -56,11 +84,13 @@ class ResCompany(orm.Model):
             help='La cancellazione giornaliera dei viaggi parte da X giorni '
                  'precedenti',
         ),
+        'trip_master_error': fields.text('Log import viaggi'),
     }
 
     _defaults = {
         'trip_keep_trip': lambda *x: 2,
     }
+
 
 class trip_tour(orm.Model):
     """ Class for manage Tours
@@ -322,12 +352,25 @@ class trip_order(orm.Model):
     def schedule_import_trip_order(self, cr, uid, context=None):
         """ Import order for manage trip
         """
+        def log_message(message, error_block, verbose=True):
+            """ Log error
+            """
+            message_newline = '%s\n' % message
+            error_block['master'] += message_newline
+            error_block['record'] += message_newline
+            if verbose:
+                _logger.error(message)
+            return True
         try:
             # Pool object:
             company_pool = self.pool.get('res.company')
             partner_pool = self.pool.get('res.partner')
             sql_pool = self.pool.get('micronaet.accounting')
             tour_pool = self.pool.get('trip.tour')
+
+            user = self.pool.get('res.users').browse(
+                cr, uid, uid, context=context)
+            company_id = user.company_id.id
 
             # Connect to SQL:
             company_proxy = company_pool.get_from_to_dict(
@@ -350,6 +393,10 @@ class trip_order(orm.Model):
             # Start importation order:
             order_reference = {}
             i = 0
+            error_block = {
+                'master': '',
+                'record': '',
+            }
             for record in cursor:
                 try:
                     i += 1
@@ -357,7 +404,7 @@ class trip_order(orm.Model):
                         _logger.info(
                             'Import destination code: %s record updated!' % i)
 
-                    error = ''
+                    error_block['record'] = ''
                     name = sql_pool.KEY_OC_FORMAT % record
                     number = str(record['NGL_DOC'])
                     date = record['DTT_DOC'].strftime(
@@ -376,10 +423,11 @@ class trip_order(orm.Model):
 
                     partner_start_code = partner_code[:2]
                     if not partner_id and partner_start_code != '06':
-                        error += _('Jump order for partner not 06: %s!\n') % \
-                                 partner_code
-                        _logger.error(
-                            'Jump order for partner not 06: %s' % partner_code)
+                        log_message(
+                            _('Jump order for partner not 06: %s!') %
+                            partner_code,
+                            error_block,
+                        )
                         continue
 
                     if not partner_id and partner_start_code == '06':
@@ -406,11 +454,10 @@ class trip_order(orm.Model):
                             }
                         partner_id = partner_pool.create(
                             cr, uid, partner_data, context=context)
-
-                        error += _('Partner not found created: %s!\n') % \
-                            partner_code
-                        _logger.error(
-                            'Partner not found created: %s!' % partner_code)
+                        log_message(
+                            _('Partner not found created: %s!') % partner_code,
+                            error_block,
+                        )
 
                     destination_code = record['CKY_CNT_SPED_ALT']
                     if destination_code:
@@ -421,12 +468,11 @@ class trip_order(orm.Model):
                                 context=context)
 
                         if not destination_id:
-                            error += _(
-                                'Destination not found: "%s"!\n') % \
-                                     destination_code
-                            _logger.error(
-                                'Destination not found: "%s"!' %
-                                destination_code)
+                            log_message(
+                                _('Destination not found: "%s"!') %
+                                destination_code,
+                                error_block,
+                            )
                             # continue
                     else:
                         destination_id = False  # Not passed, not searched
@@ -441,7 +487,7 @@ class trip_order(orm.Model):
                         'tour_id': tour_id,
                         'tour_code_start': tour_code_start,
                         'prevision_load': record['NPS_TOT'],
-                        'error': error,
+                        'error': error_block['record'],
                         'removed': False,
                         'order_mode': 'D',  # Updated after
                         }
@@ -456,10 +502,13 @@ class trip_order(orm.Model):
 
                     order_reference[number] = order_id
                 except:
-                    _logger.error(
-                        'Error importing order record: [%s] \n LOG: [%s]\n' % (
+                    log_message(
+                        'Error importing order record: [%s]\nLOG: [%s]' % (
                             record,
-                            sys.exc_info(), ))
+                            sys.exc_info(),
+                        ),
+                        error_block,
+                    )
 
             # Import line detail for order:
             # todo parameter the filename:
@@ -483,6 +532,12 @@ class trip_order(orm.Model):
                     _logger.error(
                         'Cannot load extra info for order: %s' % number)
             _logger.info('All trip order is updated!')
+
+            if error_block['master']:
+                company_pool.write(cr, uid, [company_id], {
+                    'trip_master_error': error_block['master']
+                }, context=context)
+
         except:
             _logger.error('Generic error importing trip order [%s]' % (
                 sys.exc_info(), ))
