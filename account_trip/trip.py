@@ -469,6 +469,7 @@ class trip_order(orm.Model):
                     destination_code = record['CKY_CNT_SPED_ALT']
                     if destination_code == idem:
                         destination_id = partner_id
+                        _logger.warning('Idem order replated: %s' % name)
                     elif destination_code:
                         destination_id = \
                             partner_pool.get_partner_from_sql_code(
