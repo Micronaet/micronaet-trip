@@ -344,7 +344,7 @@ class trip_order(orm.Model):
                 return False
 
             # Consider all removed:
-            cr.execute('update trip_order set removed="t";')
+            cr.execute('update trip_order set removed=\'t\';')
 
             # Start importation order:
             order_reference = {}
