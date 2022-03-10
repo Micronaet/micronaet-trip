@@ -11,7 +11,7 @@
                         <field name="trip_master_error" invisible="1"/>
                         <button name="clean_all_order" type="object" icon="gtk-delete" string="Cancella ordini e viaggi" confirm="Operazione di pulizia ordini da fare la mattina prima di creare i viaggi, confermi?"/>
                         <button name="import_all_order" type="object" icon="gtk-refresh" string="Importa ordini nuovi" confirm="Confermi caricamento ordini nuovi (o integrazione qualora fossero ancora caricati i vecchi?"/>
-                        <button name="open_log_detail" type="object" icon="gtk-cancel" string="Log errore importazione" attrs="{'invisible': [('trip_master_error', '=', False)]}"/>
+                        <button name="open_log_detail" type="object" icon="gtk-cancel" string="Log errore importazione" attrs="{'invisible': [('trip_master_warning', '=', False),('trip_master_error', '=', False)]}"/>
             </tree>
         </field>
     </record>
@@ -26,8 +26,20 @@
                 <sheet>
                     <group col="4">
                         <field name="name" readonly="1"/>
-                        <separator string="Errore di importazione" colspan="4"/>
-                        <field name="trip_master_error" colspan="4" nolabel="1" readonly="1"/>
+                        <notebook>
+                            <page name="page_error" string="Errore" attrs="{'invisible': [('trip_master_error', '=', False)]}">
+                                <group col="4">
+                                    <separator string="Errore di importazione" colspan="4"/>
+                                    <field name="trip_master_error" colspan="4" nolabel="1" readonly="1"/>
+                                </group>
+                            </page>
+                            <page name="page_warning" string="Warning" attrs="{'invisible': [('trip_master_warning', '=', False)]}">
+                                <group col="4">
+                                    <separator string="Warning di importazione" colspan="4"/>
+                                    <field name="trip_master_warning" colspan="4" nolabel="1" readonly="1"/>
+                                </group>
+                            </page>
+                        </notebook>
                     </group>
                 </sheet>
                 <footer/>

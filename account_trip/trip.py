@@ -68,6 +68,7 @@ class ResCompany(orm.Model):
         # Clean previous error:
         self.write(cr, uid, ids, {
             'trip_master_error': False,
+            'trip_master_warning': False,
         }, context=context)
         return self.pool.get('trip.order').clean_all_order(
             cr, uid, ids, context=context)
@@ -84,7 +85,8 @@ class ResCompany(orm.Model):
             help='La cancellazione giornaliera dei viaggi parte da X giorni '
                  'precedenti',
         ),
-        'trip_master_error': fields.text('Log import viaggi'),
+        'trip_master_error': fields.text('Log errore viaggi'),
+        'trip_master_warning': fields.text('Log warning viaggi'),
     }
 
     _defaults = {
@@ -352,11 +354,14 @@ class trip_order(orm.Model):
     def schedule_import_trip_order(self, cr, uid, context=None):
         """ Import order for manage trip
         """
-        def log_message(message, error_block, verbose=True):
+        def log_message(message, error_block, error=True, verbose=True):
             """ Log error
             """
             message_newline = '%s\n' % message
-            error_block['master'] += message_newline
+            if error:
+                error_block['master'] += message_newline
+            else:
+                error_block['warning'] += message_newline
             error_block['record'] += message_newline
             if verbose:
                 _logger.error(message)
@@ -399,6 +404,7 @@ class trip_order(orm.Model):
             i = 0
             error_block = {
                 'master': '',
+                'warning': '',
                 'record': '',
             }
             for record in cursor:
@@ -432,6 +438,7 @@ class trip_order(orm.Model):
                             ' %s!' % (
                                 name, partner_code),
                             error_block,
+                            error=False,  # warning
                         )
                         continue
 
@@ -469,7 +476,7 @@ class trip_order(orm.Model):
                     destination_code = record['CKY_CNT_SPED_ALT']
                     if destination_code == idem:
                         destination_id = partner_id
-                        _logger.warning('Idem order replated: %s' % name)
+                        _logger.warning('Idem order replaced: %s' % name)
                     elif destination_code:
                         destination_id = \
                             partner_pool.get_partner_from_sql_code(
@@ -544,9 +551,10 @@ class trip_order(orm.Model):
                         'Cannot load extra info for order: %s' % number)
             _logger.info('All trip order is updated!')
 
-            if error_block['master']:
+            if error_block['master'] or error_block['warning']:
                 company_pool.write(cr, uid, [company_id], {
-                    'trip_master_error': error_block['master']
+                    'trip_master_error': error_block['master'],
+                    'trip_master_warning': error_block['warning'],
                 }, context=context)
 
         except:
