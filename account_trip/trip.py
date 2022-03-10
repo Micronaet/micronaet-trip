@@ -364,11 +364,12 @@ class trip_order(orm.Model):
                 error_block['warning'] += message_newline
             error_block['record'] += message_newline
             if verbose:
-                _logger.error(message)
+                _logger.error('[%s] %s' % (
+                    'ERROR' if error else 'WARNING', message))
             return True
 
         try:
-            # Parameer:
+            # Parameter:
             idem = '07.00002'
 
             # Pool object:
