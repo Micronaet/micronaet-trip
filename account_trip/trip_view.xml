@@ -27,7 +27,7 @@
                 <sheet>
                     <group col="4">
                         <field name="name" readonly="1"/>
-                        <notebook>
+                        <notebook colspan="4">
                             <page name="page_error" string="Errore" attrs="{'invisible': [('trip_master_error', '=', False)]}">
                                 <group col="4">
                                     <separator string="Errore di importazione" colspan="4"/>
