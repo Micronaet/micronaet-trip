@@ -553,6 +553,7 @@
                <field name="camion_id" />
                <separator/>
                 <group expand="1" string="Group By...">
+                    <filter name="group_report_line" string="Modalità stampa" domain="[]" context="{'group_by':'report_line'}"/>
                     <filter name="group_vector" string="Camion" domain="[]" context="{'group_by':'camion_id'}"/>
                     <filter name="group_tour" string="Tour" domain="[]" context="{'group_by':'tour_id'}"/>
                     <filter name="group_date" string="Date" domain="[]" context="{'group_by':'date'}"/>
@@ -560,7 +561,6 @@
             </search>
         </field>
     </record>
-
     <record model="ir.ui.view" id="view_trip_trip_tree">
         <field name="name">trip.trip.tree</field>
         <field name="model">trip.trip</field>
@@ -573,8 +573,8 @@
 
                 <field name="max_load" />
                 <field name="prevision_load" />
-                <!--<field name="current_load" />-->
                 <field name="total_delivery" />
+                <field name="report_line" />
                 <button name="print_trip_one" type="object" string="Stampa" icon="gtk-print"/>
             </tree>
         </field>
