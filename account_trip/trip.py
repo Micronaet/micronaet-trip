@@ -400,7 +400,8 @@ class trip_order(orm.Model):
                 return False
 
             # Consider all removed:
-            cr.execute('update trip_order set removed=\'t\';')
+            cr.execute("update trip_order set removed='t';")
+            cr.execute("update trip_order set import_status='old';")
 
             # Start importation order:
             order_reference = {}
@@ -511,6 +512,7 @@ class trip_order(orm.Model):
                         'removed': False,
                         'order_mode': 'D',  # Updated after
                         'order_state': 'N',  # Updated after
+                        'import_status': 'new',
                         }
 
                     order_ids = self.search(cr, uid, [
@@ -640,6 +642,13 @@ class trip_order(orm.Model):
         'error': fields.text(
             'Import error',
             help="If present there's an error during importation!"),
+        'import_status': fields.selection(
+            selection=[
+                ('new', 'Nuovi'),
+                # ('delete', 'Eliminati'),
+                ('old', 'Vecchi'),
+            ], string='Stato import', required=True,
+            help='Stato importazione ordine'),
         'order_mode': fields.selection(
             selection=[
                 ('D', 'Std'),
@@ -668,6 +677,7 @@ class trip_order(orm.Model):
     _defaults = {
         'order_mode': lambda *x: 'default',
         'order_state': lambda *x: 'N',
+        'import_status': lambda *x: 'new',
     }
 
 
