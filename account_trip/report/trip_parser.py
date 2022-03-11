@@ -68,7 +68,7 @@ class Parser(rml_parse):
                 order_line.append(
                     (0, record, {})
                 )
-        return order.order_ids
+        return order_line
 
     def get_counter(self, name):
         """ Get counter with name passed (else create an empty)
