@@ -54,19 +54,48 @@ class Parser(rml_parse):
         """
         order_line = []
         if trip.report_line == 'packed':
+            # Preload phase:
+            preload = {}
             for order in trip.order_ids:
-                total = 1
+                key = (
+                    order.partner_id,
+                    order.destination_id,
+                    order.order_mode,
+                )
+                if key in preload:
+                    preload[key][1].append(order)
+                else:
+                    preload[key] = [order.sequence, order]
+
+            # Prepare data phase:
+            for key in sorted(preload):  # sequence is the sort key
+                sequence, orders = preload[key]
+                counter = len(orders)
+
+                extra = {
+                    'time': set(),
+                    'deadline': set(),
+                    'number': set(),
+                }
+                for order in orders:
+                    extra['time'].add((order.time or '').strip())
+                    extra['deadline'].add((order.deadline or '').strip())
+                    extra['number'].add(order.name.split('-')[-1].strip())
+
+                extra['time'] = ' '.join(extra['time'])
+                extra['deadline'] = ' '.join(extra['deadline'])
+                extra['number'] = ' '.join(extra['number'])
+
+                # Add only first for collect data:
                 order_line.append(
-                    (total, order, {
-                        'note': '',
-                        'deadline': '',   # record.date,
-                        'number': order.name.split('-')[-1],
-                    })
+                    (counter, orders[0], extra)
                 )
         else:  # detailed
+            counter = 1
+            extra = {}
             for order in trip.order_ids:
                 order_line.append(
-                    (0, order, {})
+                    (counter, order, extra)
                 )
         return order_line
 
