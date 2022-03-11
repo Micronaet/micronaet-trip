@@ -556,7 +556,7 @@ class trip_order(orm.Model):
                     log_message(
                         'Dettaglio ordine (Sospeso o Freschi non trovato, '
                         'ordine: [%s]' % number, error_block)
-                _logger.info('All trip order is updated!')
+            _logger.info('All trip order is updated!')
 
             if error_block['master'] or error_block['warning']:
                 company_pool.write(cr, uid, [company_id], {
