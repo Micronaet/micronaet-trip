@@ -18,6 +18,7 @@
 #
 ###############################################################################
 import os
+import pdb
 import sys
 import netsvc
 import logging
@@ -51,6 +52,7 @@ class Parser(rml_parse):
     def get_order_list(self, trip):
         """ Pack same line
         """
+        pdb.set_trace()
         order_line = []
         if trip.report_line == 'packed':
             for order in trip.order_ids:
