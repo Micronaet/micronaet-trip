@@ -76,11 +76,13 @@ class Parser(rml_parse):
                     'time': set(),
                     'deadline': set(),
                     'number': set(),
+                    'quantity': 0.0,
                 }
                 for order in orders:
                     extra['time'].add((order.time or '').strip())
                     extra['deadline'].add((order.date or '').strip())
                     extra['number'].add(order.name.split('-')[-1].strip())
+                    extra['quantity'] += order.prevision_load
 
                 extra['time'] = ' '.join(extra['time'])
                 extra['deadline'] = ' '.join(extra['deadline'])
