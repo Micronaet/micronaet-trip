@@ -23,7 +23,7 @@ import netsvc
 import logging
 from openerp.osv import osv, orm, fields
 from datetime import datetime, timedelta
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare)
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
@@ -32,31 +32,42 @@ from openerp.report.report_sxw import rml_parse
 
 _logger = logging.getLogger(__name__)
 
+
 class Parser(rml_parse):
-    ''' Parser for report
-    '''
+    """ Parser for report
+    """
     # Private data:
-    counters = {}  
-      
+    counters = {}
+
     def __init__(self, cr, uid, name, context):
         self.context = context
         super(Parser, self).__init__(cr, uid, name, context)
         self.localcontext.update({
+            'get_order_list': self.get_order_list,
             'get_counter': self.get_counter,
             'set_counter': self.set_counter,
         })
 
+    def get_order_list(self, order):
+        """ Pack same line
+        """
+        if order.report_line == 'packed':
+            order_line = []
+            for record in order.order_ids:
+                order_line.append(record)  # todo
+            return order_line
+        else:
+            return order.order_ids
+
     def get_counter(self, name):
-        ''' Get counter with name passed (else create an empty)
-        '''
+        """ Get counter with name passed (else create an empty)
+        """
         if name not in self.counters:
             self.counters[name] = False
         return self.counters[name]
 
     def set_counter(self, name, value):
-        ''' Set counter with name with value passed
-        '''
+        """ Set counter with name with value passed
+        """
         self.counters[name] = value
-        return "" # empty so no write in module
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+        return ""  # empty so no write in module

@@ -651,7 +651,7 @@ class trip_order(orm.Model):
             help='Stato importazione ordine'),
         'order_mode': fields.selection(
             selection=[
-                ('D', 'Std'),
+                ('D', 'Gelo'),
                 ('A', 'Freschi'),
                 ('F', '+Freschi'),
             ], string='Modalità', required=True),
@@ -841,9 +841,20 @@ class trip_trip(orm.Model):
     _inherit = 'trip.trip'
 
     _columns = {
+        'report_line': fields.selection(
+            selection=[
+                ('none', 'Dettagliato'),
+                ('packed', 'Raggruppato'),
+            ], string='Raggruppamento stampa', required=True,
+            help='Indica se le righe devono essere raggruppate per cliente'
+                 'destinazione tipo di ordine (fresco, gelo ecc.)'),
         'order_ids': fields.one2many(
             'trip.order', 'trip_id', 'Order', ),
         }
+
+    _defaults = {
+        'report_line': lambda *x: 'packed',
+    }
 
 
 class trip_tour(orm.Model):

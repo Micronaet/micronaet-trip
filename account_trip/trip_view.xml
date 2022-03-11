@@ -598,9 +598,10 @@
 
                     <!--<field name="current_load" />-->
                     <field name="prevision_load" />
-
                     <field name="max_load" />
+
                     <field name="total_delivery" />
+                    <field name="report_line" />
 
                     <notebook colspan="4">
                         <page string="Order">
