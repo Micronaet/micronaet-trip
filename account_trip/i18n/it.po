@@ -144,7 +144,7 @@ msgstr "Tutti i viaggi"
 #. module: account_trip
 #: model:ir.actions.act_window,name:account_trip.act_window_create_trip_wizard_form
 msgid "Create trip"
-msgstr "Crea viaggio"
+msgstr "Crea viaggio/Allega"
 
 #. module: account_trip
 #: view:res.partner:0
@@ -368,7 +368,7 @@ msgstr "Carico attuale:"
 #: view:trip.trip.create.wizard:0
 #: view:trip.trip.multi.print.wizard:0
 msgid "Create MRP"
-msgstr "Crea viaggio"
+msgstr "Crea viaggio/Allega"
 
 #. module: account_trip
 #: model:ir.model,name:account_trip.model_trip_tour
