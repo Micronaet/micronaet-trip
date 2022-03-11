@@ -63,7 +63,7 @@ class Parser(rml_parse):
                         'number': record.name.split('-')[-1],
                     })
                 )
-        else:
+        else:  # detailed
             for record in order.order_ids:
                 order_line.append(
                     (0, record, {})
