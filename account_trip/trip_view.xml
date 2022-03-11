@@ -133,6 +133,9 @@
                <field name="import_status" />
                <separator/>
                <!--<filter name="no_tour" string="No tour" domain="[('tour1_id','=',False),('tour2_id','=',False)]"/>-->
+               <filter name="import_status_new" string="Nuovi" domain="[('import_status','=','new')]"/>
+               <filter name="import_status_old" string="Vecchi" domain="[('import_status','=','old')]"/>
+
                <separator/>
                 <group expand="1" string="Group By...">
                     <filter name="group_date" string="Data" domain="[]" context="{'group_by':'date'}"/>
