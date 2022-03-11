@@ -544,8 +544,8 @@ class trip_order(orm.Model):
 
                 number = row[1]
                 try:
-                    order_mode = row[2] or 'D'
-                    order_state = row[3] or 'N'
+                    order_mode = row[2].strip() or 'D'
+                    order_state = row[3].strip() or 'N'
                     order_id = order_reference.get(number)
                     if order_id:
                         self.write(cr, uid, [order_id], {
