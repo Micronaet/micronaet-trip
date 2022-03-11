@@ -152,7 +152,7 @@ class trip_vector_camion(orm.Model):
 
 
 class trip_trip(orm.Model):
-    """ Class for manage Trip informations
+    """ Class for manage Trip information
     """
     _name = 'trip.trip'
     _description = 'Trip'
@@ -163,12 +163,12 @@ class trip_trip(orm.Model):
         """
         datas = {'multi': 1}
         return {
-            'model': 'trip.trip',
+            # 'model': 'trip.trip',
             'type': 'ir.actions.report.xml',
             'report_name': 'trip_trip_report',
-            'datas': datas,
-            'res_id': context.get('active_id', ids[0]),
-            'context': context,
+            # 'datas': datas,
+            # 'res_id': context.get('active_id', ids[0]),
+            # 'context': context,
         }
 
     # -------------------
