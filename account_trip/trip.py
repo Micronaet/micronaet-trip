@@ -512,12 +512,12 @@ class trip_order(orm.Model):
                         'removed': False,
                         'order_mode': 'D',  # Updated after
                         'order_state': 'N',  # Updated after
-                        'import_status': 'new',
                         }
 
                     order_ids = self.search(cr, uid, [
                         ('name', '=', name)], context=context)
                     if order_ids:
+                        data['import_status'] = 'old'
                         self.write(cr, uid, order_ids, data, context=context)
                         order_id = order_ids[0]  # only one updated!
                     else:
