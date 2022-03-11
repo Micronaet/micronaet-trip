@@ -51,15 +51,24 @@ class Parser(rml_parse):
     def get_order_list(self, order):
         """ Pack same line
         """
+        order_line = []
         if order.report_line == 'packed':
             order_line = []
             for record in order.order_ids:
+                total = 1
                 order_line.append(
-                    (1, {})  # todo
+                    (total, record, {
+                        'note': '',
+                        'deadline': record.date,
+                        'number': record.name.split('-')[-1],
+                    })
                 )
-            return order_line
         else:
-            return order.order_ids
+            for record in order.order_ids:
+                order_line.append(
+                    (0, record, {})
+                )
+        return order.order_ids
 
     def get_counter(self, name):
         """ Get counter with name passed (else create an empty)
