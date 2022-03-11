@@ -59,7 +59,7 @@ class Parser(rml_parse):
                 order_line.append(
                     (total, record, {
                         'note': '',
-                        'deadline': record.date,
+                        'deadline': '',   # record.date,
                         'number': record.name.split('-')[-1],
                     })
                 )
