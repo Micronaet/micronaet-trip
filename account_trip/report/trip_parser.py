@@ -48,25 +48,24 @@ class Parser(rml_parse):
             'set_counter': self.set_counter,
         })
 
-    def get_order_list(self, order):
+    def get_order_list(self, trip):
         """ Pack same line
         """
         order_line = []
-        if order.report_line == 'packed':
-            order_line = []
-            for record in order.order_ids:
+        if trip.report_line == 'packed':
+            for order in trip.order_ids:
                 total = 1
                 order_line.append(
-                    (total, record, {
+                    (total, order, {
                         'note': '',
                         'deadline': '',   # record.date,
-                        'number': record.name.split('-')[-1],
+                        'number': order.name.split('-')[-1],
                     })
                 )
         else:  # detailed
-            for record in order.order_ids:
+            for order in trip.order_ids:
                 order_line.append(
-                    (0, record, {})
+                    (0, order, {})
                 )
         return order_line
 
