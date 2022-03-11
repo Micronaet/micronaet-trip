@@ -54,7 +54,9 @@ class Parser(rml_parse):
         if order.report_line == 'packed':
             order_line = []
             for record in order.order_ids:
-                order_line.append(record)  # todo
+                order_line.append(
+                    (1, {})  # todo
+                )
             return order_line
         else:
             return order.order_ids
