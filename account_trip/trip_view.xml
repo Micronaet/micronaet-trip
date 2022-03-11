@@ -671,7 +671,7 @@
 
     <act_window
         id="act_windows_view_trip_organize_trip"
-        name='Organize trip'
+        name='Sposta ordini tra viaggi'
         view_type='form'
         view_mode='kanban,tree'
         view_id='view_trip_order_kanban'
