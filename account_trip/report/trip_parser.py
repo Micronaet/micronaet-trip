@@ -65,7 +65,7 @@ class Parser(rml_parse):
                 if key in preload:
                     preload[key][1].append(order)
                 else:
-                    preload[key] = [order.sequence, order]
+                    preload[key] = [order.sequence, [order]]
 
             # Prepare data phase:
             for key in sorted(preload):  # sequence is the sort key
