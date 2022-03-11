@@ -88,7 +88,6 @@ class Parser(rml_parse):
                     number = order.name.split('-')[-1].strip()
                     extra['number'].add(number)
                     extra['quantity'] += order.prevision_load
-                pdb.set_trace()
                 extra['time'] = ' '.join(extra['time'])
                 extra['deadline'] = ' '.join(extra['deadline'])
                 extra['number'] = ' '.join(extra['number'])
