@@ -136,12 +136,14 @@ class trip_vector_camion(orm.Model):
     """
     _name = 'trip.vector.camion'
     _description = 'Trip vector camion'
+    _order = 'name'
 
     _columns = {
         'name': fields.char('Description', size=64, required=True),
-        'vector_id': fields.many2one('res.partner', 'Vector',
+        'vector_id': fields.many2one(
+            'res.partner', 'Vector',
             required=True,
-            domain = [('is_vector', '=', True)],
+            domain =[('is_vector', '=', True)],
             ondelete='cascade'),
         'max_load': fields.float(
             'Max load', digits=(16, 2), required=True),
