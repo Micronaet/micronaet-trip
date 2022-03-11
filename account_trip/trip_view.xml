@@ -122,9 +122,9 @@
                <field name="name" />
                <field name="date" />
                <field name="partner_id" />
-               <field name="partner_id" string="Codice cliente" filter_domain="[('sql_customer_code', 'ilike', self)]"/>
+               <!--<field name="partner_id" string="Codice cliente" filter_domain="[('sql_customer_code', 'ilike', self)]"/>-->
                <field name="destination_id" />
-               <field name="destination_id" string="Codice destinazione" filter_domain="[('sql_destination_code', 'ilike', self)]"/>
+               <!--<field name="destination_id" string="Codice destinazione" filter_domain="[('sql_destination_code', 'ilike', self)]"/>-->
                <field name="tour_id" />
                <field name="tour_code_start" />
                <field name="trip_id" />
