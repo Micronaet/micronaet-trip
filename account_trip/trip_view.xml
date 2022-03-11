@@ -138,7 +138,7 @@
                     <filter name="group_date" string="Data" domain="[]" context="{'group_by':'date'}"/>
                     <filter name="group_mode" string="Modalità" domain="[]" context="{'group_by':'order_mode'}"/>
                     <filter name="group_state" string="Stato" domain="[]" context="{'group_by':'order_state'}"/>
-                    <filter name="group_state" string="Stato improtazione" domain="[]" context="{'group_by':'import_status'}"/>
+                    <filter name="group_state" string="Stato importazione" domain="[]" context="{'group_by':'import_status'}"/>
                     <filter name="group_partner" string="Cliente" domain="[]" context="{'group_by':'partner_id'}"/>
                     <filter name="group_destination" string="Destinazione" domain="[]" context="{'group_by':'destination_id'}"/>
                     <filter name="group_trip" string="Viaggio" domain="[]" context="{'group_by':'trip_id'}"/>
