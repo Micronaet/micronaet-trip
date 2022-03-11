@@ -127,12 +127,14 @@
                <field name="tour_code_start" />
                <field name="trip_id" />
                <field name="order_mode" />
+               <field name="order_state" />
                <separator/>
                <!--<filter name="no_tour" string="No tour" domain="[('tour1_id','=',False),('tour2_id','=',False)]"/>-->
                <separator/>
                 <group expand="1" string="Group By...">
                     <filter name="group_date" string="Data" domain="[]" context="{'group_by':'date'}"/>
                     <filter name="group_mode" string="Modalità" domain="[]" context="{'group_by':'order_mode'}"/>
+                    <filter name="group_state" string="Stato" domain="[]" context="{'group_by':'order_state'}"/>
                     <filter name="group_partner" string="Cliente" domain="[]" context="{'group_by':'partner_id'}"/>
                     <filter name="group_destination" string="Destinazione" domain="[]" context="{'group_by':'destination_id'}"/>
                     <filter name="group_trip" string="Viaggio" domain="[]" context="{'group_by':'trip_id'}"/>
@@ -154,6 +156,7 @@
                <field name="partner_id" readonly="1" />
                <field name="destination_id" readonly="1" />
                <field name="order_mode" readonly="1" />
+               <field name="order_state" readonly="1" />
                <field name="city" invisible="not context.get('embedded',False)"/>
                <field name="delivery_note" invisible="not context.get('embedded',False)"/>
                <field name="time" />

@@ -161,12 +161,12 @@ class trip_trip(orm.Model):
     def print_trip_one(self, cr, uid, ids, context=None):
         """ Print trip order
         """
-        # datas = {'multi': 1}
+        datas = {'multi': 1}
         return {
             'model': 'trip.trip',
             'type': 'ir.actions.report.xml',
             'report_name': 'trip_trip_report',
-            # 'datas': datas,
+            'datas': datas,
             'res_id': context.get('active_id', ids[0]),
             'context': context,
         }
@@ -510,6 +510,7 @@ class trip_order(orm.Model):
                         'error': error_block['record'],
                         'removed': False,
                         'order_mode': 'D',  # Updated after
+                        'order_state': 'N',  # Updated after
                         }
 
                     order_ids = self.search(cr, uid, [
@@ -537,22 +538,25 @@ class trip_order(orm.Model):
             _logger.info('Updating extra info, file: %s' % filename)
             for line in open(filename, 'r'):
                 row = line.strip().split(';')
-                if len(row) != 3:
+                if len(row) != 4:
                     _logger.error('Line empty, jumped')
                     continue
 
                 number = row[1]
                 try:
                     order_mode = row[2] or 'D'
+                    order_state = row[3] or 'N'
                     order_id = order_reference.get(number)
                     if order_id:
                         self.write(cr, uid, [order_id], {
                             'order_mode': order_mode,
+                            'order_state': order_state,
                         }, context=context)
                 except:
-                    _logger.error(
-                        'Cannot load extra info for order: %s' % number)
-            _logger.info('All trip order is updated!')
+                    log_message(
+                        'Dettaglio ordine (Sospeso o Freschi non trovato, '
+                        'ordine: [%s]' % number, error_block)
+                _logger.info('All trip order is updated!')
 
             if error_block['master'] or error_block['warning']:
                 company_pool.write(cr, uid, [company_id], {
@@ -642,6 +646,12 @@ class trip_order(orm.Model):
                 ('A', 'Freschi'),
                 ('F', '+Freschi'),
             ], string='Modalità', required=True),
+        'order_state': fields.selection(
+            selection=[
+                ('N', 'Evadibile'),
+                ('S', 'Sospeso'),
+                ('A', 'Alcuni sospesi'),
+            ], string='Stato', required=True),
         'tour_code': fields.function(
             _get_tour_code,
             fnct_search=_search_tour_code,
@@ -657,6 +667,7 @@ class trip_order(orm.Model):
 
     _defaults = {
         'order_mode': lambda *x: 'default',
+        'order_state': lambda *x: 'N',
     }
 
 
