@@ -79,7 +79,7 @@ class Parser(rml_parse):
                 }
                 for order in orders:
                     extra['time'].add((order.time or '').strip())
-                    extra['deadline'].add((order.deadline or '').strip())
+                    extra['deadline'].add((order.date or '').strip())
                     extra['number'].add(order.name.split('-')[-1].strip())
 
                 extra['time'] = ' '.join(extra['time'])
