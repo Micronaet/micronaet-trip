@@ -354,6 +354,7 @@
                 <field name="trip_obsolete" invisible="1"/>
                 <field name="parent_id" />
                 <field name="name" />
+                <field name="sql_customer_code" />
                 <field name="sql_destination_code" />
                 <field name="street" />
                 <field name="city" />
