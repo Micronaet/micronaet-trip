@@ -62,7 +62,6 @@ company_ids = company_pool.search([
 # Update date period:
 from_date = str(datetime.now() - timedelta(days=3))[:10].replace('-', '')
 to_date = str(datetime.now() + timedelta(days=20))[:10].replace('-', '')
-# to_date = str(datetime.now())[:10].replace('-', '')
 print('Check from %s to %s' % (from_date, to_date))
 
 company_pool.write(company_ids, {
