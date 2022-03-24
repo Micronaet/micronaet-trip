@@ -261,6 +261,15 @@
         <field name="context">{'show_trip':True}</field>
         <field name="domain">[]</field>
     </record>
+    <record model="ir.actions.act_window" id="action_trip_order_manual">
+        <field name="name">Ordini Manuali</field>
+        <field name="res_model">trip.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree,kanban</field>
+        <field name="view_id" ref="view_trip_order_tree"/>
+        <field name="context">{'show_trip':True}</field>
+        <field name="domain">[('imported', '=', False)]</field>
+    </record>
     <record model="ir.actions.act_window" id="action_trip_order_prepare">
         <field name="name">Order</field>
         <field name="res_model">trip.order</field>
