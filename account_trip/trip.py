@@ -331,14 +331,13 @@ class trip_order(orm.Model):
             partner = partner_pool.browse(cr, uid, partner_id, context=context)
             parent = partner.parent_id
             if parent:
-                destination_id = partner.id
                 res['value'] = {
                     'partner_id': parent.id,
-                    'destination_id': destination_id,
+                    'destination_id': partner_id,
                 }
         else:
             _logger.warning('Partner non destinazione!')
-        return True
+        return res
 
     def unlink_order(self, cr, uid, ids, context=None):
         """ Unlink order to trip (order not deleted)
