@@ -48,7 +48,28 @@ class Parser(rml_parse):
             'get_counter': self.get_counter,
             'set_counter': self.set_counter,
             'is_new_page': self.is_new_page,
+            'get_province': self.get_province,
         })
+
+    def get_province(self, partner):
+        """ Provice form partner
+        """
+        cr = self.cr
+        uid = self.uid
+        context = {'lang': 'it_IT'}
+        city_pool = self.pool.get('res.partner.city')
+
+        city = partner.city
+        if not city:
+            return ''
+        city_ids = city_pool.search([
+            ('name', '=', city),
+        ])
+        if city_ids:
+            city = city_pool.browse(cr, uid, city_ids, context=context)[0]
+            return city.province or ''
+        else:
+            return ''
 
     def is_new_page(self, o, objects, counter, data):
         """ Jump page?
