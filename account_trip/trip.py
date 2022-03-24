@@ -603,8 +603,8 @@ class trip_order(orm.Model):
     _columns = {
         # Order information from accounting:
         'imported': fields.boolean('Importato'),
-        'name': fields.char('Ref.', size=35),
-        'date': fields.date('Date'),
+        'name': fields.char('Ref.', size=35, required=True),
+        'date': fields.date('Date', required=True),
         'description': fields.char('Description', size=100),
         'note': fields.text('Note'),
         'partner_id': fields.many2one(
