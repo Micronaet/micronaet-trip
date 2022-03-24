@@ -338,7 +338,6 @@ class trip_order(orm.Model):
         """
         partner_pool = self.pool.get('res.partner')
         res = {}
-        pdb.set_trace()
         if partner_id:
             partner = partner_pool.browse(cr, uid, partner_id, context=context)
             parent = partner.parent_id
