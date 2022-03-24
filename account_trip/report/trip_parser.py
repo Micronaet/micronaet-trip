@@ -61,6 +61,7 @@ class Parser(rml_parse):
 
         city = partner.city
         if not city:
+            _logger.error('City not present in partner: %s' % city)
             return ''
         city_ids = city_pool.search(cr, uid, [
             ('name', '=ilike', city),
@@ -70,8 +71,9 @@ class Parser(rml_parse):
             if city.province:
                 return '(%s)' % city.province or ''
             else:
-                _logger.error('Province not found: %s' % city)
+                _logger.error('Province is empty in city database: %s' % city)
         else:
+            _logger.error('City not found in database: %s' % city)
             return ''
 
     def is_new_page(self, o, objects, counter, data):
