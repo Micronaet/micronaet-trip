@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <openerp>
-    <data>
+    <data noupdate="1">
         <record id="aeroo_trip_trip_report" model="ir.actions.report.xml">
             <field name="name">Trip report</field>
             <field name="type">ir.actions.report.xml</field>
