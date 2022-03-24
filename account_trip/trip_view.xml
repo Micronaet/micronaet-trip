@@ -228,6 +228,7 @@
                                 <h4>
                                     <a type="open">
                                         <field name="name"/>
+                                        <field name="date"/>
                                     </a>
                                 </h4>
                                 <!--<ul class="oe_dropdown_menu">
