@@ -70,7 +70,7 @@ class Parser(rml_parse):
             if city.province:
                 return '(%s)' % city.province or ''
             else:
-                return ''
+                _logger.error('Province not found: %s' % city)
         else:
             return ''
 
