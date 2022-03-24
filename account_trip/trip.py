@@ -448,6 +448,7 @@ class trip_order(orm.Model):
 
                     if not partner_id and partner_start_code == '06':
                         partner_data = {
+                            'imported': True,
                             'name': 'Nuovo cliente codice %s' % partner_code,
                             'sql_customer_code': partner_code,
                             'sql_import': True,
@@ -601,6 +602,7 @@ class trip_order(orm.Model):
 
     _columns = {
         # Order information from accounting:
+        'imported': fields.boolean('Importato'),
         'name': fields.char('Ref.', size=35),
         'date': fields.date('Date'),
         'description': fields.char('Description', size=100),

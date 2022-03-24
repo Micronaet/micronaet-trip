@@ -11,8 +11,8 @@
                     <field name="mode" />
                     <field name="order_id" invisible="context.get('order_embedded', False)" />
                     <field name="folder_id" />
-                    <field name="name" />                    
-                    <field name="datetime" />                    
+                    <field name="name" />
+                    <field name="datetime" />
                 </tree>
             </field>
         </record>
@@ -30,12 +30,12 @@
                             <field name="name" />
 
                             <field name="order_id" invisible="context.get('order_embedded', False)" />
-                            <field name="datetime" />                    
-                            
+                            <field name="datetime" />
+
                             <separator string="Content" colspan="4"/>
                             <field name="content" colspan="4" nolabel="1" widget="html"/>
                         </group>
-                    </sheet>    
+                    </sheet>
                 </form>
             </field>
         </record>
@@ -43,7 +43,7 @@
             <field name="name">edi.order.file.search</field>
             <field name="model">edi.order.file</field>
             <field name="arch" type="xml">
-                <search string="Order file" version="7.0">        
+                <search string="Order file" version="7.0">
                     <field name="name" />
                     <field name="mode" />
                     <field name="folder_id" />
@@ -54,7 +54,7 @@
                         <filter name="group_folder" string="Folder" context="{'group_by': 'folder_id'}"/>
                         <filter name="order_id" string="Order" context="{'group_by': 'order_id'}"/>
                         <filter name="group_date" string="Date" context="{'group_by': 'datetime'}"/>
-                    </group>                
+                    </group>
                 </search>
             </field>
         </record>
@@ -68,7 +68,7 @@
             <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>
-        
+
 
         <!-- edi.order.folder-->
         <record model="ir.ui.view" id="view_edi_order_folder_tree">
@@ -96,13 +96,13 @@
                         <group colspan="4" col="4">
                             <field name="autoload" />
                             <field name="name" />
-                            
+
                             <field name="path" colspan="4" />
-                            
+
                             <separator string="Note" colspan="4"/>
                             <field name="note" colspan="4" nolabel="1"/>
                         </group>
-                    </sheet>    
+                    </sheet>
                 </form>
             </field>
         </record>
@@ -115,7 +115,7 @@
             <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>
-            
+
         <!-- edi.order -->
         <record model="ir.ui.view" id="view_edi_order_tree">
             <field name="name">edi.order.tree</field>
@@ -136,6 +136,7 @@
             <field name="arch" type="xml">
                 <form string="EDI order" version="7.0">
                     <header>
+                        <!--<field name="automatic" invisible="1"/>-->
                     </header>
                     <sheet>
                         <group colspan="4" col="4">
@@ -182,7 +183,7 @@
                                 </page>
                             </notebook>
                         </group>
-                    </sheet>    
+                    </sheet>
                 </form>
             </field>
         </record>
@@ -190,7 +191,7 @@
             <field name="name">edi.order.search</field>
             <field name="model">edi.order</field>
             <field name="arch" type="xml">
-                <search string="Order" version="7.0">        
+                <search string="Order" version="7.0">
                     <field name="name" />
                     <field name="date" />
 
@@ -218,7 +219,7 @@
             <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>
-        
+
         <!-- edi.order.line -->
         <record model="ir.ui.view" id="view_edi_order_line_tree">
             <field name="name">edi.order.line.tree</field>
@@ -233,7 +234,7 @@
                     <field name="qty" />
                     <field name="price" />
                     <!--<field name="description" />-->
-                    <field name="total" />                    
+                    <field name="total" />
                 </tree>
             </field>
         </record>
@@ -252,17 +253,17 @@
 
                             <field name="uom" />
                             <field name="qty" />
-                            
+
                             <field name="price" />
-                            <field name="total" />              
-                                  
+                            <field name="total" />
+
                             <field name="description" colspan="4"/>
                         </group>
-                    </sheet>    
+                    </sheet>
                 </form>
             </field>
         </record>
-        
+
         <!-- edi.order.line.check -->
         <record model="ir.ui.view" id="view_edi_order_line_check_tree">
             <field name="name">edi.order.line.check.tree</field>
@@ -282,9 +283,9 @@
 
                     <field name="order_total" />
                     <field name="invoice_total" />
-    
+
                     <field name="difference" />
-                    <field name="state" />                    
+                    <field name="state" />
                 </tree>
             </field>
         </record>
@@ -294,7 +295,7 @@
             <field name="arch" type="xml">
                 <form string="Order line check" version="7.0">
                     <header>
-                        <field name="state" widget="statusbar" />                    
+                        <field name="state" widget="statusbar" />
                     </header>
                     <sheet>
                         <group colspan="4" col="4">
@@ -303,7 +304,7 @@
 
                             <field name="ddt_order_id" invisible="context.get('order_embedded', False)" />
                             <field name="invoice_order_id" invisible="context.get('order_embedded', False)" />
-                            <field name="invoice_info" />                    
+                            <field name="invoice_info" />
 
                             <field name="order_qty" />
                             <field name="invoice_qty" />
@@ -312,11 +313,11 @@
                             <field name="invoice_price" />
 
                             <field name="order_total" />
-                            <field name="invoice_total" />                            
+                            <field name="invoice_total" />
 
-                            <field name="difference" />                            
+                            <field name="difference" />
                         </group>
-                    </sheet>    
+                    </sheet>
                 </form>
             </field>
         </record>
@@ -350,10 +351,10 @@
                     <sheet>
                         <group colspan="4" col="4">
                             <field name="order_id" />
-                            
+
                             <field name="order_number" />
                             <field name="order_date" />
-                            
+
                             <field name="invoice_id" invisible="context.get('invoice_embedded', False)" />
                             <field name="order_sequence" />
 
@@ -370,11 +371,11 @@
 
                             <field name="description" colspan="4"/>
                         </group>
-                    </sheet>    
+                    </sheet>
                 </form>
             </field>
         </record>
-        
+
         <!-- edi.invoice -->
         <record model="ir.ui.view" id="view_edi_invoice_tree">
             <field name="name">edi.invoice.tree</field>
@@ -399,7 +400,7 @@
                             <field name="line_ids" colspan="4" nolabel="1" context="{'invoice_embedded': True}">
                             </field>
                         </group>
-                    </sheet>    
+                    </sheet>
                 </form>
             </field>
         </record>
@@ -407,12 +408,12 @@
             <field name="name">edi.invoice.search</field>
             <field name="model">edi.invoice</field>
             <field name="arch" type="xml">
-                <search string="Invoice" version="7.0">        
+                <search string="Invoice" version="7.0">
                     <field name="name" />
                     <field name="date" />
                     <group expand="0" string="Group By...">
                         <filter name="group_date" string="Date" context="{'group_by': 'date'}"/>
-                    </group>                
+                    </group>
                 </search>
             </field>
         </record>
@@ -455,10 +456,10 @@
                         <group colspan="4" col="4">
                             <field name="order_id" />
                             <newline/>
-                            
+
                             <field name="order_number" />
                             <field name="order_date" />
-                            
+
                             <field name="ddt_id" invisible="context.get('ddt_embedded', False)" />
                             <field name="order_sequence" />
 
@@ -472,11 +473,11 @@
 
                             <field name="description" colspan="4"/>
                         </group>
-                    </sheet>    
+                    </sheet>
                 </form>
             </field>
         </record>
-        
+
         <!-- edi.ddt -->
         <record model="ir.ui.view" id="view_edi_ddt_tree">
             <field name="name">edi.ddt.tree</field>
@@ -501,7 +502,7 @@
                             <field name="line_ids" colspan="4" nolabel="1" context="{'ddt_embedded': True}">
                             </field>
                         </group>
-                    </sheet>    
+                    </sheet>
                 </form>
             </field>
         </record>
@@ -509,12 +510,12 @@
             <field name="name">edi.ddt.search</field>
             <field name="model">edi.ddt</field>
             <field name="arch" type="xml">
-                <search string="DDT" version="7.0">        
+                <search string="DDT" version="7.0">
                     <field name="name" />
                     <field name="date" />
                     <group expand="0" string="Group By...">
                         <filter name="group_date" string="Date" context="{'group_by': 'date'}"/>
-                    </group>                
+                    </group>
                 </search>
             </field>
         </record>
@@ -530,39 +531,39 @@
         </record>
 
         <!--INVOICE-->
-        <menuitem 
-            parent="account_trip_edi.menu_trip_trip" 
-            id="menu_edi_invoice_check_root" 
+        <menuitem
+            parent="account_trip_edi.menu_trip_trip"
+            id="menu_edi_invoice_check_root"
             sequence="40"
             name="Invoice order check"
             />
-            <menuitem 
-                parent="menu_edi_invoice_check_root" 
-                id="menu_edi_invoice_check_order" 
+            <menuitem
+                parent="menu_edi_invoice_check_root"
+                id="menu_edi_invoice_check_order"
                 action="action_edi_order_form"
                 sequence="10"
                 />
-            <menuitem 
-                parent="menu_edi_invoice_check_root" 
-                id="menu_edi_ddt_check_ddt" 
+            <menuitem
+                parent="menu_edi_invoice_check_root"
+                id="menu_edi_ddt_check_ddt"
                 action="action_edi_ddt_form"
                 sequence="15"
                 />
-            <menuitem 
-                parent="menu_edi_invoice_check_root" 
-                id="menu_edi_invoice_check_invoice" 
+            <menuitem
+                parent="menu_edi_invoice_check_root"
+                id="menu_edi_invoice_check_invoice"
                 action="action_edi_invoice_form"
                 sequence="20"
                 />
-            <menuitem 
-                parent="menu_edi_invoice_check_root" 
-                id="menu_edi_invoice_check_order_folder" 
+            <menuitem
+                parent="menu_edi_invoice_check_root"
+                id="menu_edi_invoice_check_order_folder"
                 action="action_edi_order_folder_form"
                 sequence="90"
                 />
-                <menuitem 
-                    parent="menu_edi_invoice_check_order_folder" 
-                    id="menu_edi_order_file" 
+                <menuitem
+                    parent="menu_edi_invoice_check_order_folder"
+                    id="menu_edi_order_file"
                     action="action_edi_order_file_form"
                     sequence="10"
                     />
