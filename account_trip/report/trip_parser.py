@@ -53,7 +53,7 @@ class Parser(rml_parse):
     def is_new_page(self, o, objects, time, data):
         """ Jump page?
         """
-        if o.id == objects(-1).id and time >= data.get('multi', 1):
+        if o.id == objects[-1].id and time >= data.get('multi', 1):
             return False
         else:
             return True
