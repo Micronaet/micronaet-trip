@@ -47,7 +47,16 @@ class Parser(rml_parse):
             'get_order_list': self.get_order_list,
             'get_counter': self.get_counter,
             'set_counter': self.set_counter,
+            'is_new_page': self.is_new_page,
         })
+
+    def is_new_page(self, o, objects, time, data):
+        """
+        """
+        if o.id == objects(-1).id and time >= data.get('multi', 1):
+            return False
+        else:
+            return True
 
     def get_order_list(self, trip):
         """ Pack same line
