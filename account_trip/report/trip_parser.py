@@ -50,15 +50,15 @@ class Parser(rml_parse):
             'is_new_page': self.is_new_page,
         })
 
-    def is_new_page(self, o, objects, time, data):
+    def is_new_page(self, o, objects, counter, data):
         """ Jump page?
         """
         multi = data.get('multi', 1) - 1
-        jump = (o.id == objects[-1].id and time >= multi)
+        jump = (o.id == objects[-1].id and counter >= multi)
         _logger.warning('%s [di %s] Ripetizione %s di %s Salto: %s' % (
             o.tour_id.name,
             len(objects),
-            time,
+            counter,
             multi,
             'SI' if jump else 'NO',
         ))
