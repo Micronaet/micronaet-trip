@@ -496,7 +496,10 @@ class trip_order(orm.Model):
                             )
                             # continue
                     else:
-                        destination_id = False  # Not passed, not searched
+                        destination_id = partner_id
+                        _logger.warning(
+                            'Destinazione non presente usato il cliente, '
+                            'ordine: %s' % name)
 
                     data = {
                         'imported': True,
