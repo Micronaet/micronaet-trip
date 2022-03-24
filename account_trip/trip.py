@@ -320,6 +320,11 @@ class trip_order(orm.Model):
     _description = 'Trip order'
     _order = 'trip_id, sequence'
 
+    def partner_update_destination(self, cr, uid, ids, context=None):
+        """ Create destination from partner
+        """
+        return True
+
     def unlink_order(self, cr, uid, ids, context=None):
         """ Unlink order to trip (order not deleted)
         """

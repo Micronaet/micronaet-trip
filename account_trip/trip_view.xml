@@ -195,7 +195,7 @@
                        <field name="date" attrs="{'readonly': [('imported', '=', True)]}"/>
                        <!--<field name="description" />-->
                        <field name="partner_id" attrs="{'readonly': [('imported', '=', True)]}"/>
-                       <button name="partner_update_destination" type="object" string="Aggiorna destinazione" attrs="{'invisible':[('imported','=',True)]}"/>
+                       <button name="partner_update_destination" type="object" icon="gtk-goto-last" string="Aggiorna destinazione" attrs="{'invisible':[('imported','=',True)]}"/>
                        <field name="destination_id" attrs="{'readonly': [('imported', '=', True)]}"/>
                        <field name="tour_id" attrs="{'readonly': [('imported', '=', True)]}"/>
                        <field name="trip_id" />
