@@ -53,10 +53,16 @@ class Parser(rml_parse):
     def is_new_page(self, o, objects, time, data):
         """ Jump page?
         """
-        if o.id == objects[-1].id and time >= data.get('multi', 1):
-            return False
-        else:
-            return True
+        multi = data.get('multi', 1)
+        jump = (o.id == objects[-1].id and time >= multi)
+        _logger.warning('%s [di %s] Ripetizione %s di %s Salto: %s' % (
+            o.name,
+            len(objects),
+            time,
+            multi,
+            'SI' if jump else 'NO',
+        ))
+        return jump
 
     def get_order_list(self, trip):
         """ Pack same line
