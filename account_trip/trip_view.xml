@@ -163,8 +163,9 @@
                <field name="date" attrs="{'readonly': [('imported', '=', True)]}"/>
                <!--<field name="description" />-->
                <field name="partner_id" attrs="{'readonly': [('imported', '=', True)]}" />
-               <field name="destination_id" attrs="{'readonly': [('imported', '=', True)]}" />
                <field name="order_mode" attrs="{'readonly': [('imported', '=', True)]}" />
+               <button name="partner_update_destination" type="object" icon="gtk-goto-last" string="Aggiorna destinazione" attrs="{'invisible':[('imported','=',True)]}"/>
+               <field name="destination_id" attrs="{'readonly': [('imported', '=', True)]}" />
                <field name="order_state" attrs="{'readonly': [('imported', '=', True)]}" />
                <field name="import_status" invisible="1" />
                <field name="city" invisible="not context.get('embedded',False)"/>
@@ -195,7 +196,6 @@
                        <field name="date" attrs="{'readonly': [('imported', '=', True)]}"/>
                        <!--<field name="description" />-->
                        <field name="partner_id" attrs="{'readonly': [('imported', '=', True)]}"/>
-                       <button name="partner_update_destination" type="object" icon="gtk-goto-last" string="Aggiorna destinazione" attrs="{'invisible':[('imported','=',True)]}"/>
                        <field name="destination_id" attrs="{'readonly': [('imported', '=', True)]}"/>
                        <field name="tour_id" attrs="{'readonly': [('imported', '=', True)]}"/>
                        <field name="trip_id" />
