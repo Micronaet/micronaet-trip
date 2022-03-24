@@ -159,20 +159,20 @@
                <field name="sequence" invisible="not context.get('embedded',False)" />
                <field name="imported" invisible="1"/>
 
-               <field name="name" attrs="{'readonly': [('imported', '=', True)]'}"/>
-               <field name="date" attrs="{'readonly': [('imported', '=', True)]'}"/>
+               <field name="name" attrs="{'readonly': [('imported', '=', True)]}"/>
+               <field name="date" attrs="{'readonly': [('imported', '=', True)]}"/>
                <!--<field name="description" />-->
-               <field name="partner_id" attrs="{'readonly': [('imported', '=', True)]'}" />
-               <field name="destination_id" attrs="{'readonly': [('imported', '=', True)]'}" />
-               <field name="order_mode" attrs="{'readonly': [('imported', '=', True)]'}" />
-               <field name="order_state" attrs="{'readonly': [('imported', '=', True)]'}" />
+               <field name="partner_id" attrs="{'readonly': [('imported', '=', True)]}" />
+               <field name="destination_id" attrs="{'readonly': [('imported', '=', True)]}" />
+               <field name="order_mode" attrs="{'readonly': [('imported', '=', True)]}" />
+               <field name="order_state" attrs="{'readonly': [('imported', '=', True)]}" />
                <field name="import_status" invisible="1" />
                <field name="city" invisible="not context.get('embedded',False)"/>
                <field name="delivery_note" invisible="not context.get('embedded',False)"/>
                <field name="time" />
                <field name="prevision_load" sum="Total prevision"/>
                <!--<field name="current_load" sum="Total current"/>-->
-               <field name="tour_id" attrs="{'readonly': [('imported', '=', True)]'}"/>
+               <field name="tour_id" attrs="{'readonly': [('imported', '=', True)]}"/>
                <field name="tour_code_start" string="Codice Giro" invisible="1"/>
                <field name="error" />
                <field name="removed" invisible="1" />
@@ -191,12 +191,12 @@
                    <group colspan="4" col="4">
                        <field name="imported" invisible="1"/>
                        <field name="sequence" />
-                       <field name="name" attrs="{'readonly': [('imported', '=', True)]'}"/>
-                       <field name="date" attrs="{'readonly': [('imported', '=', True)]'}"/>
+                       <field name="name" attrs="{'readonly': [('imported', '=', True)]}"/>
+                       <field name="date" attrs="{'readonly': [('imported', '=', True)]}"/>
                        <!--<field name="description" />-->
-                       <field name="partner_id" attrs="{'readonly': [('imported', '=', True)]'}"/>
-                       <field name="destination_id" attrs="{'readonly': [('imported', '=', True)]'}"/>
-                       <field name="tour_id" attrs="{'readonly': [('imported', '=', True)]'}"/>
+                       <field name="partner_id" attrs="{'readonly': [('imported', '=', True)]}"/>
+                       <field name="destination_id" attrs="{'readonly': [('imported', '=', True)]}"/>
+                       <field name="tour_id" attrs="{'readonly': [('imported', '=', True)]}"/>
                        <field name="trip_id" />
                        <separator string="Note" colspan="4"/>
                        <field name="note" colspan="4" nolabel="1"/>
