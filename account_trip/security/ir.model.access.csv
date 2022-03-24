@@ -3,4 +3,5 @@
 "access_trip_tour_user","trip.tour","model_trip_tour","base.group_user",1,1,1,1
 "access_trip_order_user","trip.order","model_trip_order","base.group_user",1,1,1,1
 "access_trip_vector_camion_user","trip.vector.camion","model_trip_vector_camion","base.group_user",1,1,1,1
+"access_res_partner_city_user","res.partner.city","model_res_partner_city","base.group_user",1,1,1,1
 

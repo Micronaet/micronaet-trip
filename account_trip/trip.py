@@ -94,6 +94,18 @@ class ResCompany(orm.Model):
     }
 
 
+class res_partner_city(orm.Model):
+    """ Class city
+    """
+    _name = 'res.partner.city'
+    _description = 'city'
+
+    _columns = {
+        'name': fields.name('Paese', size=80),
+        'province': fields.name('Province', size=10),
+    }
+
+
 class trip_tour(orm.Model):
     """ Class for manage Tours
     """
