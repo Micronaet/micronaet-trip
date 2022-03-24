@@ -63,7 +63,7 @@ class Parser(rml_parse):
         if not city:
             return ''
         city_ids = city_pool.search(cr, uid, [
-            ('name', '=', city),
+            ('name', '=ilike', city),
         ], context=context)
         if city_ids:
             city = city_pool.browse(cr, uid, city_ids, context=context)[0]
