@@ -85,7 +85,7 @@ class Parser(rml_parse):
                     deadline = (order.date or '').strip()
                     if deadline:
                         extra['deadline'].add(deadline)
-                    number = '/' if not order else \
+                    number = '/' if not order.name else \
                         order.name.split('-')[-1].strip()
                     extra['number'].add(number)
                     extra['quantity'] += order.prevision_load
