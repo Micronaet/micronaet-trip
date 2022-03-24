@@ -53,7 +53,7 @@ class Parser(rml_parse):
     def is_new_page(self, o, objects, time, data):
         """ Jump page?
         """
-        multi = data.get('multi', 1)
+        multi = data.get('multi', 1) - 1
         jump = (o.id == objects[-1].id and time >= multi)
         _logger.warning('%s [di %s] Ripetizione %s di %s Salto: %s' % (
             o.name,
