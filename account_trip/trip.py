@@ -320,18 +320,22 @@ class trip_order(orm.Model):
     _description = 'Trip order'
     _order = 'trip_id, sequence'
 
-    def partner_update_destination(self, cr, uid, ids, context=None):
+    def onchange_partner_update_destination(
+            self, cr, uid, ids, partner_id, context=None):
         """ Create destination from partner
         """
-        order = self.browse(cr, uid, ids, context=context)[0]
-        partner = order.partner_id
-        partner_id = partner.parent_id.id
+        partner_pool = self.pool.get('res.partner')
+        res = {}
+
         if partner_id:
-            destination_id = partner.id
-            self.write(cr, uid, ids, {
-                'partner_id': partner_id,
-                'destination_id': destination_id,
-            }, context=context)
+            partner = partner_pool.browse(cr, uid, partner_id, context=context)
+            parent = partner.parent_id
+            if parent:
+                destination_id = partner.id
+                res['value'] = {
+                    'partner_id': parent.id,
+                    'destination_id': destination_id,
+                }
         else:
             _logger.warning('Partner non destinazione!')
         return True
