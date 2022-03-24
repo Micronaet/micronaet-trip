@@ -323,6 +323,17 @@ class trip_order(orm.Model):
     def partner_update_destination(self, cr, uid, ids, context=None):
         """ Create destination from partner
         """
+        order = self.browse(cr, uid, ids, context=context)[0]
+        partner = order.partner_id
+        partner_id = partner.parent_id.id
+        if partner_id:
+            destination_id = partner.id
+            self.write(cr, uid, ids, {
+                'partner_id': partner_id,
+                'destination_id': destination_id,
+            }, context=context)
+        else:
+            _logger.warning('Partner non destinazione!')
         return True
 
     def unlink_order(self, cr, uid, ids, context=None):
