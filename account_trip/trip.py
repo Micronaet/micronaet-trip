@@ -448,7 +448,6 @@ class trip_order(orm.Model):
 
                     if not partner_id and partner_start_code == '06':
                         partner_data = {
-                            'imported': True,
                             'name': 'Nuovo cliente codice %s' % partner_code,
                             'sql_customer_code': partner_code,
                             'sql_import': True,
@@ -500,6 +499,7 @@ class trip_order(orm.Model):
                         destination_id = False  # Not passed, not searched
 
                     data = {
+                        'imported': True,
                         'name': name,
                         'partner_id': partner_id,
                         'destination_id': destination_id,
