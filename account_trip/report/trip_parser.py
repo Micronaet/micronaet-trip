@@ -54,7 +54,7 @@ class Parser(rml_parse):
         """ Jump page?
         """
         multi = data.get('multi', 1) - 1
-        jump = (o.id == objects[-1].id and counter >= multi)
+        jump = not (o.id == objects[-1].id and counter >= multi)
         _logger.warning('%s [di %s] Ripetizione %s di %s Salto: %s' % (
             o.tour_id.name,
             len(objects),
