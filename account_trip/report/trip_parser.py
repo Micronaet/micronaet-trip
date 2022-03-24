@@ -67,7 +67,7 @@ class Parser(rml_parse):
         ])
         if city_ids:
             city = city_pool.browse(cr, uid, city_ids, context=context)[0]
-            if province:
+            if city.province:
                 return '(%s)' % city.province or ''
             else:
                 return ''
