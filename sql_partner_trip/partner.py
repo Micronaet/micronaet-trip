@@ -32,16 +32,16 @@ from openerp.tools.translate import _
 _logger = logging.getLogger(__name__)
 
 class res_partner(osv.osv):
-    ''' Add extra info for trip (partner address)
-    '''
+    """ Add extra info for trip (partner address)
+    """
     _inherit = 'res.partner'
 
     # Utility for search
     def search_supplier_destination(self, cr, uid, facility, code,
             context=None):
-        ''' Search code in alternative code if more than one is present
+        """ Search code in alternative code if more than one is present
             search also facility
-        '''
+        """
         destination_ids = self.search(cr, uid, [
             ('trip_supplier_destination_code', '=', code)], context=context)
 
@@ -71,8 +71,8 @@ class res_partner(osv.osv):
     # Scheduled action:
     # -----------------
     def schedule_import_destination_code(self, cr, uid, context=None):
-        ''' Launch update of destination reading M*SQL tables
-        '''
+        """ Launch update of destination reading M*SQL tables
+        """
         try:
             company_pool = self.pool.get('res.company')
             tour_pool = self.pool.get('trip.tour')
@@ -81,7 +81,7 @@ class res_partner(osv.osv):
             company_proxy = company_pool.get_from_to_dict(
                 cr, uid, context=context)
             if not company_proxy:
-                _logger.error('Company parameters not setted up!')
+                _logger.error('Company parameters not set up!')
                 return False
 
             # -----------------------------
@@ -97,10 +97,11 @@ class res_partner(osv.osv):
                 return False
 
             i = 0
+            destination_lost = []
             for record in cursor:
                 i += 1
                 code = record['CKY_CNT'].strip()
-                if i % 100 == 0:
+                if not i % 200:
                     _logger.info(
                         'Import destination code: %s record updated!' % i)
                 destination_id = self.get_partner_from_sql_code(
@@ -108,7 +109,8 @@ class res_partner(osv.osv):
                 if not destination_id:
                     _logger.error(
                         'Destination not found: %s!' % code)
-                    # TODO Create a lite destination?
+                    destination_lost.append(code)
+                    # todo Create a lite destination?
                     continue
 
                 self.write(cr, uid, destination_id, {
@@ -117,7 +119,8 @@ class res_partner(osv.osv):
                     'trip_supplier_facility_code':
                         record['CDS_COD__IMPIANTO_'] or '',
                     }, context=context)
-            _logger.info('All supplier destination code is updated!')
+            _logger.info('All supplier destination code is updated!\n'
+                         'Destination lost: %s' % (destination_lost, ))
 
             # ----------------------
             # Tour code importation:
@@ -142,11 +145,9 @@ class res_partner(osv.osv):
                 if not destination_id:
                     _logger.error(
                         'Destination not found: %s!' % code)
-                    # TODO Create a lite destination?
+                    # todo Create a lite destination?
                     continue
 
-                if code == '06.03111':
-                    pdb.set_trace()
                 self.write(cr, uid, destination_id, {
                     'tour1_id': tour_pool.search_tour(
                         cr, uid, record["CDS_PRIMO_GIRO"],
