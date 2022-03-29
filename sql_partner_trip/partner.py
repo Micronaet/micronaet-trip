@@ -134,6 +134,7 @@ class res_partner(osv.osv):
                 return False
 
             i = 0
+            pdb.set_trace()
             for record in cursor:
                 i += 1
                 code = record['CKY_CNT'].strip()
