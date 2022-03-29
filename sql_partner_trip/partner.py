@@ -138,6 +138,9 @@ class res_partner(osv.osv):
             for record in cursor:
                 i += 1
                 code = record['CKY_CNT'].strip()
+                if code == '06.03111':
+                    pdb.set_trace()
+                print(code)
                 if i % 100 == 0:
                     _logger.info(
                         'Import destination tour code: %s record updated!' % i)
