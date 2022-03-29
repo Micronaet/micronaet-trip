@@ -98,6 +98,7 @@ class res_partner(osv.osv):
 
             i = 0
             destination_lost = []
+            _logger.info('UPDATING SITE INFORMATION IN PARTNER:')
             for record in cursor:
                 i += 1
                 code = record['CKY_CNT'].strip()
@@ -134,6 +135,7 @@ class res_partner(osv.osv):
                 return False
 
             i = 0
+            _logger.info('UPDATING TOUR DELIVERY NOTE IN PARTNER:')
             for record in cursor:
                 try:
                     i += 1

@@ -74,6 +74,7 @@ class micronaet_accounting(osv.osv):
         """ Access to anagraphic extra table of destinations
             With table: PC_VI02_GIRI
         """
+        select_all = False  # todo keep as parameter?
         if self.pool.get('res.company').table_capital_name(
                 cr, uid, context=context):
             table = "PC_VI02_GIRI"
@@ -82,25 +83,25 @@ class micronaet_accounting(osv.osv):
 
         cursor = self.connect(cr, uid, year=year, context=context)
         try:
-            # All destination with extra code or va code
-            # cursor.execute("""
-            #    SELECT
-            #        CKY_CNT, CDS_PRIMO_GIRO, CDS_SECONDO_GIRO,
-            #        CDS_NOTE_CONSEGNA, CDS_CONTROLLO_PAGA
-            #    FROM
-            #        %s
-            #    WHERE
-            #        CDS_PRIMO_GIRO != '' OR CDS_SECONDO_GIRO != '' OR
-            #        CDS_NOTE_CONSEGNA != '';
-            #    """ % table)
-            # Use all for clean previous setup
-            cursor.execute("""
-                SELECT 
-                    CKY_CNT, CDS_PRIMO_GIRO, CDS_SECONDO_GIRO, 
-                    CDS_NOTE_CONSEGNA, CDS_CONTROLLO_PAGA                
-                FROM 
-                    %s;
-                """ % table)
+            if select_all:  # All records:
+                cursor.execute("""
+                    SELECT 
+                        CKY_CNT, CDS_PRIMO_GIRO, CDS_SECONDO_GIRO, 
+                        CDS_NOTE_CONSEGNA, CDS_CONTROLLO_PAGA                
+                    FROM 
+                        %s;
+                    """ % table)
+            else:  # All destination with data present
+                cursor.execute("""
+                    SELECT
+                        CKY_CNT, CDS_PRIMO_GIRO, CDS_SECONDO_GIRO,
+                        CDS_NOTE_CONSEGNA, CDS_CONTROLLO_PAGA
+                    FROM
+                        %s
+                    WHERE
+                        CDS_PRIMO_GIRO != '' OR CDS_SECONDO_GIRO != '' OR
+                        CDS_NOTE_CONSEGNA != '';
+                    """ % table)
             return cursor
         except:
             return False  # Error return nothing
