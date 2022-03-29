@@ -135,30 +135,36 @@ class res_partner(osv.osv):
 
             i = 0
             for record in cursor:
-                i += 1
-                code = record['CKY_CNT'].strip()
-                if not i % 200:
-                    _logger.info(
-                        'Import destination tour code: %s record updated!' % i)
-                destination_id = self.get_partner_from_sql_code(
-                    cr, uid, code, context=context)
-                if not destination_id:
-                    _logger.error(
-                        'Destination not found: %s!' % code)
-                    # todo Create a lite destination?
-                    continue
+                try:
+                    i += 1
+                    code = record['CKY_CNT'].strip()
+                    if not i % 200:
+                        _logger.info(
+                            'Import destination tour code: %s record updated!' % i)
+                    destination_id = self.get_partner_from_sql_code(
+                        cr, uid, code, context=context)
+                    if not destination_id:
+                        _logger.error(
+                            'Destination not found: %s!' % code)
+                        # todo Create a lite destination?
+                        continue
 
-                self.write(cr, uid, destination_id, {
-                    'tour1_id': tour_pool.search_tour(
-                        cr, uid, record["CDS_PRIMO_GIRO"],
-                        with_creation=True,
-                        context=context),
-                    'tour2_id': tour_pool.search_tour(
-                        cr, uid, record["CDS_SECONDO_GIRO"],
-                        with_creation=True,
-                        context=context),
-                    'delivery_note': record['CDS_NOTE_CONSEGNA'].strip(),
-                    }, context=context)
+                    self.write(cr, uid, destination_id, {
+                        'tour1_id': tour_pool.search_tour(
+                            cr, uid, record["CDS_PRIMO_GIRO"],
+                            with_creation=True,
+                            context=context),
+                        'tour2_id': tour_pool.search_tour(
+                            cr, uid, record["CDS_SECONDO_GIRO"],
+                            with_creation=True,
+                            context=context),
+                        'delivery_note': record['CDS_NOTE_CONSEGNA'].strip(),
+                        }, context=context)
+                except:
+                    _logger.error(
+                        'Error updating partner tout / delivery info [%s]!' %
+                        code)
+
             _logger.info('All supplier destination tour code is updated!')
 
         except:

@@ -71,10 +71,11 @@ class micronaet_accounting(osv.osv):
             return False
 
     def get_destination_tour(self, cr, uid, year=False, context=None):
-        """ Access to anagrafic extra table of destinations
+        """ Access to anagraphic extra table of destinations
             With table: PC_VI02_GIRI
         """
-        if self.pool.get('res.company').table_capital_name(cr, uid, context=context):
+        if self.pool.get('res.company').table_capital_name(
+                cr, uid, context=context):
             table = "PC_VI02_GIRI"
         else:
             table = "pc_vi02_giri"
