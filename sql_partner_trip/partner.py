@@ -141,7 +141,7 @@ class res_partner(osv.osv):
                 if code == '06.03111':
                     pdb.set_trace()
                 print(code)
-                if i % 100 == 0:
+                if not i % 200:
                     _logger.info(
                         'Import destination tour code: %s record updated!' % i)
                 destination_id = self.get_partner_from_sql_code(
