@@ -82,15 +82,23 @@ class micronaet_accounting(osv.osv):
         cursor = self.connect(cr, uid, year=year, context=context)
         try:
             # All destination with extra code or va code
+            # cursor.execute("""
+            #    SELECT
+            #        CKY_CNT, CDS_PRIMO_GIRO, CDS_SECONDO_GIRO,
+            #        CDS_NOTE_CONSEGNA, CDS_CONTROLLO_PAGA
+            #    FROM
+            #        %s
+            #    WHERE
+            #        CDS_PRIMO_GIRO != '' OR CDS_SECONDO_GIRO != '' OR
+            #        CDS_NOTE_CONSEGNA != '';
+            #    """ % table)
+            # Use all for clean previous setup
             cursor.execute("""
                 SELECT 
                     CKY_CNT, CDS_PRIMO_GIRO, CDS_SECONDO_GIRO, 
                     CDS_NOTE_CONSEGNA, CDS_CONTROLLO_PAGA                
                 FROM 
-                    %s
-                WHERE 
-                    CDS_PRIMO_GIRO != '' OR CDS_SECONDO_GIRO != '' OR
-                    CDS_NOTE_CONSEGNA != '';
+                    %s;
                 """ % table)
             return cursor
         except:
