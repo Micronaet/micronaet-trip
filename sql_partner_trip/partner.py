@@ -18,6 +18,7 @@
 #
 ###############################################################################
 import os
+import pdb
 import sys
 import netsvc
 import logging
@@ -34,38 +35,38 @@ class res_partner(osv.osv):
     ''' Add extra info for trip (partner address)
     '''
     _inherit = 'res.partner'
-    
+
     # Utility for search
-    def search_supplier_destination(self, cr, uid, facility, code, 
+    def search_supplier_destination(self, cr, uid, facility, code,
             context=None):
-        ''' Search code in alternative code if more than one is present 
+        ''' Search code in alternative code if more than one is present
             search also facility
         '''
         destination_ids = self.search(cr, uid, [
             ('trip_supplier_destination_code', '=', code)], context=context)
-        
+
         if destination_ids:
             if len(destination_ids) == 1:
                 return destination_ids[0]
-            else:    
+            else:
                 destination_ids = self.search(cr, uid, [
                     ('trip_supplier_destination_code', '=', code),
-                    ('trip_supplier_facility_code', '=', facility),                    
+                    ('trip_supplier_facility_code', '=', facility),
                     ], context=context)
                 if len(destination_ids) == 1:
                     return destination_ids[0]
                 elif len(destination_ids) == 0:
                     _logger.error(
-                        "Find no facility with more code [%s | %s]" % (    
+                        "Find no facility with more code [%s | %s]" % (
                             code,
                             facility))
                 else:
-                    _logger.error("Find more than one (%s) [%s | %s]" % (    
+                    _logger.error("Find more than one (%s) [%s | %s]" % (
                         len(destination_ids),
                         code,
                         facility))
-        return False    
-        
+        return False
+
     # -----------------
     # Scheduled action:
     # -----------------
@@ -82,13 +83,13 @@ class res_partner(osv.osv):
             if not company_proxy:
                 _logger.error('Company parameters not setted up!')
                 return False
-            
+
             # -----------------------------
             # Destination code importation:
             # -----------------------------
             _logger.info('Start import SQL: destination code')
             cursor = sql_pool.get_destination_code(
-                cr, uid, prefix=company_proxy.sql_destination_from_code, 
+                cr, uid, prefix=company_proxy.sql_destination_from_code,
                 context=context)
 
             if not cursor:
@@ -101,21 +102,21 @@ class res_partner(osv.osv):
                 code = record['CKY_CNT'].strip()
                 if i % 100 == 0:
                     _logger.info(
-                        'Import destination code: %s record updated!' % i)   
+                        'Import destination code: %s record updated!' % i)
                 destination_id = self.get_partner_from_sql_code(
                     cr, uid, code, context=context)
-                if not destination_id: 
+                if not destination_id:
                     _logger.error(
                         'Destination not found: %s!' % code)
                     # TODO Create a lite destination?
-                    continue    
-                    
+                    continue
+
                 self.write(cr, uid, destination_id, {
-                    'trip_supplier_destination_code': 
+                    'trip_supplier_destination_code':
                         record['CSG_CODALT'] or '',
-                    'trip_supplier_facility_code': 
-                        record['CDS_COD__IMPIANTO_'] or '', 
-                    }, context=context)                       
+                    'trip_supplier_facility_code':
+                        record['CDS_COD__IMPIANTO_'] or '',
+                    }, context=context)
             _logger.info('All supplier destination code is updated!')
 
             # ----------------------
@@ -135,26 +136,28 @@ class res_partner(osv.osv):
                 code = record['CKY_CNT'].strip()
                 if i % 100 == 0:
                     _logger.info(
-                        'Import destination tour code: %s record updated!' % i)   
+                        'Import destination tour code: %s record updated!' % i)
                 destination_id = self.get_partner_from_sql_code(
                     cr, uid, code, context=context)
-                if not destination_id: 
+                if not destination_id:
                     _logger.error(
                         'Destination not found: %s!' % code)
                     # TODO Create a lite destination?
-                    continue 
-                       
+                    continue
+
+                if code == '06.03111':
+                    pdb.set_trace()
                 self.write(cr, uid, destination_id, {
                     'tour1_id': tour_pool.search_tour(
-                        cr, uid, record["CDS_PRIMO_GIRO"], 
-                        with_creation=True, 
-                        context=context), 
+                        cr, uid, record["CDS_PRIMO_GIRO"],
+                        with_creation=True,
+                        context=context),
                     'tour2_id': tour_pool.search_tour(
-                        cr, uid, record["CDS_SECONDO_GIRO"], 
-                        with_creation=True, 
-                        context=context), 
+                        cr, uid, record["CDS_SECONDO_GIRO"],
+                        with_creation=True,
+                        context=context),
                     'delivery_note': record['CDS_NOTE_CONSEGNA'].strip(),
-                    }, context=context)                       
+                    }, context=context)
             _logger.info('All supplier destination tour code is updated!')
 
         except:
@@ -167,7 +170,7 @@ class res_partner(osv.osv):
         'trip_supplier_destination_code': fields.char(
             'Supplier destination code', size=80), # cost + site
         'trip_supplier_facility_code': fields.char(
-            'Supplier facility code', size=40, 
+            'Supplier facility code', size=40,
             help="Patricular for EDI importation",   # facility
             ),
         }
