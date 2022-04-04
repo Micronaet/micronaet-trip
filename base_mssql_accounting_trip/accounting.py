@@ -110,7 +110,8 @@ class micronaet_accounting(osv.osv):
         """ Trip order for importation
             With table: OC_TESTATE
         """
-        if self.pool.get('res.company').table_capital_name(cr, uid, context=context):
+        if self.pool.get('res.company').table_capital_name(
+                cr, uid, context=context):
             table = "OC_TESTATE"
         else:
             table = "oc_testate"

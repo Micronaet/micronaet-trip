@@ -107,7 +107,7 @@ class edi_company_report(orm.Model):
                         if deadline < report['min']:
                             col = 0
                         elif deadline > report['max']:
-                            col = report['days'] - 1 # Go in last cell
+                            col = report['days'] - 1  # Go in last cell
                         else:
                             col = report['header'][deadline]
 
@@ -165,7 +165,7 @@ class edi_company_report(orm.Model):
         # 3 char test start:
         # ---------------------------------------------------------------------
         if start_3 == 'SPA':
-            return _('Pasta') # 4
+            return _('Pasta')  # 4
 
         # ---------------------------------------------------------------------
         # 2 char test start:
@@ -434,6 +434,10 @@ class edi_company_report(orm.Model):
             oc_s_qty = clean_float(column[7])
             of_qty = clean_float(column[8])
 
+            moved = any((
+                inventory_qty, load_qty, unload_qty, oc_e_qty, oc_s_qty,
+                of_qty))
+
             # Calculated:
             net_qty = inventory_qty + load_qty - unload_qty
             oc_qty = oc_e_qty + oc_s_qty  # XXX OF added in real columns
@@ -442,12 +446,13 @@ class edi_company_report(orm.Model):
             # -----------------------------------------------------------------
             # Startup data for Account OC present:
             # -----------------------------------------------------------------
-            if oc_qty and default_code not in report['data']:
+            # if oc_qty and default_code not in report['data']:
+            if moved and default_code not in report['data']:
                 report['data'][default_code] = report['empty'][:]
                 report['comment'][default_code] = \
                     report['empty_comment'][:]
 
-            # TODO make better:
+            # todo make better:
             # try:  # Clean no ascii char
             #    name = u'{}'.format(name)
             # except:

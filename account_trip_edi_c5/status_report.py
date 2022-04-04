@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-# ODOO (ex OpenERP) 
+# ODOO (ex OpenERP)
 # Open Source Management Solution
 # Copyright (C) 2001-2015 Micronaet S.r.l. (<https://micronaet.com>)
 # Developer: Nicola Riolini @thebrush (<https://it.linkedin.com/in/thebrush>)
@@ -13,7 +13,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
@@ -34,9 +34,9 @@ from openerp import SUPERUSER_ID
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
 
 
@@ -44,14 +44,14 @@ _logger = logging.getLogger(__name__)
 
 class edi_company_report_this(orm.Model):
     ''' Manage more than one importation depend on company
-    '''    
+    '''
     _inherit = 'edi.company'
 
     # -------------------------------------------------------------------------
     # OVERRIDE: Collect data for report
     # -------------------------------------------------------------------------
     def collect_future_order_data_report(self, cr, uid, context=None):
-        """ Overridable procedure for manage the report data collected in all 
+        """ Overridable procedure for manage the report data collected in all
             company with active EDI company
             Report:
                 'header'
@@ -64,5 +64,3 @@ class edi_company_report_this(orm.Model):
                 cr, uid, context=context)
         return self.update_report_with_company_data(
             cr, uid, this_id, report, context=context)
-             
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
