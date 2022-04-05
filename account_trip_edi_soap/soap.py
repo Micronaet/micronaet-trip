@@ -702,7 +702,15 @@ class EdiSoapConnection(orm.Model):
                         'duty': '',
                         'mrn': '',
                         }
-                    line_pool.create(cr, uid, line_data, context=context)
+                    try:
+                        line_pool.create(cr, uid, line_data, context=context)
+                    except:
+                        try:
+                            _logger.error('Error creating order: %s' %
+                                          line_data)
+                        except:
+                            pass
+
             break  # only path folder
 
         # ---------------------------------------------------------------------
