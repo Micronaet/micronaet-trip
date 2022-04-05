@@ -650,14 +650,17 @@ class EdiSoapConnection(orm.Model):
                         customer_code = ''
 
                     # Deadline:
+                    deadline = False
                     if line_part[12]:
                         deadline = '20%s-%s-%s' % (
                             line_part[12][-2:],
                             line_part[12][:2],
                             get_last_day(line_part[12][:2]),
                             )
-                    else:
-                        deadline = False
+                        try:
+                            datetime.strptime(deadline, '%Y-%m-%d')  # test
+                        except:
+                            _logger.error('Not a date: %s' % deadline)
 
                     default_code = line_part[4]
                     product_ids = product_pool.search(cr, uid, [
@@ -705,7 +708,6 @@ class EdiSoapConnection(orm.Model):
                     try:
                         line_pool.create(cr, uid, line_data, context=context)
                     except:
-                        pdb.set_trace()
                         try:
                             _logger.error('Error creating order: %s' %
                                           line_data)
