@@ -710,7 +710,10 @@ class EdiSoapConnection(orm.Model):
                 except:
                     raise osv.except_osv(
                         _('Errore'),
-                        _('Errore importando il file: %s') % filename,
+                        _('Errore importando il file: %s\n%s') % (
+                            filename,
+                            sys.exc_info(),
+                        )
                     )
             break  # only path folder
 
