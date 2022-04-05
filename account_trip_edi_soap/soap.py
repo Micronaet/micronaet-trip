@@ -705,6 +705,7 @@ class EdiSoapConnection(orm.Model):
                     try:
                         line_pool.create(cr, uid, line_data, context=context)
                     except:
+                        pdb.set_trace()
                         try:
                             _logger.error('Error creating order: %s' %
                                           line_data)
