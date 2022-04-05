@@ -394,326 +394,324 @@ class EdiSoapConnection(orm.Model):
 
         for root, folders, files in os.walk(path):
             for filename in files:
-                if not filename.lower().endswith('csv'):
-                    _logger.error('File not used: %s' % filename)
-                    continue
-
-                fullname = os.path.join(root, filename)
-                if filename[:partner_len] not in partner_start:
-                    continue  # jump unused files
-
-                history_list.append(
-                    (fullname, os.path.join(history_path, filename)))
-
-                log_data(log_f, 'File checked: %s' % filename)
-
-                # Read file (last part)
-                data = {  # Collect order data
-                    'i': 0,
-                    'text': '',
-                    'detail_status': 'off',
-                    'product_insert': False,  # for double weight
-                    'detail_text': '',
-                    'error': False,
-                    'error_comment': '',
-
-                    'pallet': 1,
-                    'delivery_date': False,
-
-                    # 'header': '',
-                    # 'detail': [],
-                    # 'footer': {},
-                    }
-
-                # -------------------------------------------------------------
-                # Read all file and save always from header
-                # -------------------------------------------------------------
-                file_rows = []
-                for line in open(fullname):
-                    if line.startswith(start['header']):
-                        file_rows = []  # reset when find header!
-                    file_rows.append(clean_line(line))
-
-                for line in file_rows:
-                    data['i'] += 1
-                    line = line.strip()
-
-                    # ---------------------------------------------------------
-                    # Check part of document:
-                    # ---------------------------------------------------------
-                    line_mode = 'normal'
-                    if line.startswith(start['header']):
-                        data.update({
-                            'header': line,
-                            'i': 1,  # Restart from 1
-                            'text': '',  # line + newline, # Restart from here
-
-                            'detail': [],
-                            'footer': {},
-                            })
-                    elif line.startswith(start['detail']):
-                        data['detail_status'] = 'on'
-
-                    # ---------------------------------------------------------
-                    #                         Header data:
-                    # ---------------------------------------------------------
-                    elif data['i'] == start['customer_order']:  # Custom. order
-                        data['customer_order'] = line
-                    elif data['i'] == start['invoice']:  # Invoice number
-                        data['invoice'] = line
-                    elif data['i'] == start['invoice_date']:  # Invoice date
-                        data['invoice_date'] = line
-
-                    # ---------------------------------------------------------
-                    #                         Detail data:
-                    # ---------------------------------------------------------
-                    elif data['detail_status'] == 'on':  # Start details
-                        if line.startswith(separator):  # Detail line
-                            # 1. Article line:
-                            data['detail_text'] = line
-                            data['product_insert'] = False
-                        elif not data['product_insert'] and \
-                                start['weight'] in line:  # weigh line (second)
-                            # 2A. Error: Weight double
-                            data['detail'].append((
-                                data['detail_text'],
-                                get_float(line),
-                                line.split()[0],  # customer code
-                                ))
-                            data['product_insert'] = True
-
-                        elif data['product_insert'] and \
-                                start['weight'] in line:  # weigh line (second)
-                            # 2B. Check error (ex. 2 PESO LORDO line)
-                            _logger.warning('Extra line: %s' % line)
-                            line_mode = 'error'
-
-                        else:
-                            # 3. Comment line:
-                            data['detail_status'] = 'end'
-                        # else:
-                        #    data['error'] = True
-                        #    data['error_comment'] += \
-                        #        '%s Detail without correct schema' % data['i']
-
-                    # ---------------------------------------------------------
-                    #         End of document part (always done):
-                    # ---------------------------------------------------------
-                    if data['detail_status'] == 'end':  # Start details
-                        # CONSEGNA DEL:
-
-                        # DESTINAZIONE:
-
-                        # -----------------------------------------------------
-                        # Extract remain line:
-                        # -----------------------------------------------------
-                        # order_line = check_startswith(line, start, 'order')
-                        delivery_line = check_startwith(
-                            line, start, 'delivery_date')
-                        # lord_line = check_startswith(line, start, 'lord')
-                        # total_line = check_startswith(line, start, 'total')
-
-                        pallet_line = check_startwith(
-                            line, start, 'pallet')
-
-                        # -----------------------------------------------------
-                        # Extract needed data:
-                        # -----------------------------------------------------
-                        # if order_line:
-                        #    pass # XXX get in first line of file no needed
-
-                        if delivery_line:
-                            data['delivery_date'] = get_date(
-                                delivery_line.split()[-1])
-
-                        # elif lord_line:
-                        #    pass # XXX needed?
-
-                        # elif total_line:
-                        #    pass # XXX needed?
-
-                        elif pallet_line:
-                            try:
-                                data['pallet'] = int(pallet_line)
-                            except:
-                                data['pallet'] = 0
-                                _logger.error(
-                                    'Cannot decode pallet: %s' % line)
-
-                    # ---------------------------------------------------------
-                    # Keep only last part of the file:
-                    # ---------------------------------------------------------
-                    if line_mode == 'error':
-                        data['text'] += '<font color="red">%s</font><br/>' % (
-                            line, )
-                    else:
-                        data['text'] += '%s<br />' % line
-
-                # -------------------------------------------------------------
-                # Create ODOO Record:
-                # -------------------------------------------------------------
-                name = '%s del %s' % (data['invoice'], data['invoice_date'])
-                logistic_ids = logistic_pool.search(cr, uid, [
-                    ('name', '=', name),
-                    ], context=context)
-                if logistic_ids:
-                    # No unlink admitted!
-                    logistic = logistic_pool.browse(
-                        cr, uid, logistic_ids, context=context)[0]
-
-                    if logistic.state != 'draft':
-                        # Yet load cannot override:
-                        # TODO move in after folder (unused)
-                        _logger.error(
-                            'Order yet present, cannot be deleted: %s' % name)
+                try:
+                    if not filename.lower().endswith('csv'):
+                        _logger.error('File not used: %s' % filename)
                         continue
-                    else:
-                        _logger.error('Order yet present, deleted: %s' % name)
 
-                    # Delete and override:
-                    logistic_pool.unlink(
-                        cr, uid, logistic_ids, context=context)
+                    fullname = os.path.join(root, filename)
+                    if filename[:partner_len] not in partner_start:
+                        continue  # jump unused files
 
-                # Bug management:
-                text = data['text'].replace('\xb0', ' ')
+                    history_list.append(
+                        (fullname, os.path.join(history_path, filename)))
 
-                # -------------------------------------------------------------
-                # Link to order
-                # -------------------------------------------------------------
-                customer_order = data['customer_order']
+                    log_data(log_f, 'File checked: %s' % filename)
 
-                # Update order if is full name or partial:
-                if customer_order.split('-')[-1] != pon_code:
-                    customer_order = '%s-%s' % (
-                        customer_order,
-                        pon_code,
-                        )
+                    # Read file (last part)
+                    data = {  # Collect order data
+                        'i': 0,
+                        'text': '',
+                        'detail_status': 'off',
+                        'product_insert': False,  # for double weight
+                        'detail_text': '',
+                        'error': False,
+                        'error_comment': '',
 
-                order_ids = order_pool.search(cr, uid, [
-                    ('name', '=', customer_order),
-                    ], context=context)
-                if order_ids:
-                    order_id = order_ids[0]
-                else:
-                    _logger.error('Cannot link logistic to generator order!')
-                    order_id = False
+                        'pallet': 1,
+                        'delivery_date': False,
 
-                # A. Import order:
-                logistic_id = logistic_pool.create(cr, uid, {
-                    'name': name,
-                    'order_id': order_id,
-                    'connection_id': ids[0],
-                    'text': text,
-                    'pallet': data['pallet'],
-                    'delivery_date': data['delivery_date'],
-                    'customer_order': customer_order,
-                    # 'filename':
-                    }, context=context)
-
-                # B. Link pallet:
-                default_pallet_id = False
-                default_pallet = False
-                if order_id:
-                    pallet_ids = pallet_pool.search(cr, uid, [
-                        ('order_id', '=', order_id),
-                        ], context=context)
-                    pallet_pool.write(cr, uid, pallet_ids, {
-                        'logistic_id': logistic_id,
-                        }, context=context)
-                    if len(pallet_ids):
-                        default_pallet_id = pallet_ids[0]  # TODO Check if 1st
-                        default_pallet = pallet_pool.browse(
-                            cr, uid, default_pallet_id, context=context).name
-                    else:
-                        default_pallet_id = False
-                        default_pallet = False
-
-                # C. Import order line:
-                sequence = 0
-                invoice_date = get_date(data['invoice_date'])
-
-                for row, lord_qty, customer_code in data['detail']:
-                    sequence += 1
-                    line_part = row.split(separator)
-
-                    mapping_id = False
-                    if customer_code.startswith('F'):
-                        # Link mapping data:
-                        mapping_ids = mapping_pool.search(cr, uid, [
-                            ('name', '=', customer_code),
-                            ], context=context)
-
-                        if mapping_ids:
-                            mapping_id = mapping_ids[0]
-                    else:  # Wrong code:
-                        _logger.error('Wrong code %s' % customer_code)
-                        customer_code = ''
-
-                    # Deadline:
-                    deadline = False
-                    if line_part[12]:
-                        deadline = '20%s-%s-%s' % (
-                            line_part[12][-2:],
-                            line_part[12][:2],
-                            get_last_day(line_part[12][:2]),
-                            )
-                        try:
-                            datetime.strptime(deadline, '%Y-%m-%d')  # test
-                        except:
-                            _logger.error('Not a date: %s' % deadline)
-
-                    default_code = line_part[4]
-                    product_ids = product_pool.search(cr, uid, [
-                        ('default_code', '=', default_code[:11]),
-                        ], context=context)
-                    if product_ids:
-                        product_id = product_ids[0]
-                    else:
-                        _logger.error('Not found: %s' % default_code)
-                        product_id = False
-                    line_data = {
-                        'logistic_id': logistic_id,
-                        'pallet_id': default_pallet_id,  # one2many
-                        'pallet': default_pallet,  # code
-                        'product_id': product_id,
-                        'mapping_id': mapping_id,  # Mapping reference
-
-                        'sequence': sequence,
-                        'name': default_code,
-                        'customer_code': customer_code,
-
-                        'variable_weight': line_part[5],
-                        'lot': line_part[6],
-                        'confirmed_qty': get_float(line_part[7]),
-                        'net_qty': get_float(line_part[8]),
-                        'lord_qty': lord_qty,
-                        'parcel': get_int(line_part[10]),
-                        'piece': get_int(line_part[11]),  # XXX not used!
-                        'deadline': deadline,
-                        'origin_country': line_part[13],
-                        'provenance_country': line_part[14],
-
-                        # Header data:
-                        'invoice': data['invoice'],
-                        'invoice_date': invoice_date,
-
-                        # Not mandatory:
-                        'dvce': '',
-                        'dvce_date': False,
-                        'animo': '',
-                        'sif': '',
-                        'duty': '',
-                        'mrn': '',
+                        # 'header': '',
+                        # 'detail': [],
+                        # 'footer': {},
                         }
-                    try:
-                        line_pool.create(cr, uid, line_data, context=context)
-                    except:
-                        try:
-                            _logger.error('Error creating order: %s' %
-                                          line_data)
-                        except:
-                            pass
 
+                    # -------------------------------------------------------------
+                    # Read all file and save always from header
+                    # -------------------------------------------------------------
+                    file_rows = []
+                    for line in open(fullname):
+                        if line.startswith(start['header']):
+                            file_rows = []  # reset when find header!
+                        file_rows.append(clean_line(line))
+
+                    for line in file_rows:
+                        data['i'] += 1
+                        line = line.strip()
+
+                        # ---------------------------------------------------------
+                        # Check part of document:
+                        # ---------------------------------------------------------
+                        line_mode = 'normal'
+                        if line.startswith(start['header']):
+                            data.update({
+                                'header': line,
+                                'i': 1,  # Restart from 1
+                                'text': '',  # line + newline, # Restart from here
+
+                                'detail': [],
+                                'footer': {},
+                                })
+                        elif line.startswith(start['detail']):
+                            data['detail_status'] = 'on'
+
+                        # ---------------------------------------------------------
+                        #                         Header data:
+                        # ---------------------------------------------------------
+                        elif data['i'] == start['customer_order']:  # Custom. order
+                            data['customer_order'] = line
+                        elif data['i'] == start['invoice']:  # Invoice number
+                            data['invoice'] = line
+                        elif data['i'] == start['invoice_date']:  # Invoice date
+                            data['invoice_date'] = line
+
+                        # ---------------------------------------------------------
+                        #                         Detail data:
+                        # ---------------------------------------------------------
+                        elif data['detail_status'] == 'on':  # Start details
+                            if line.startswith(separator):  # Detail line
+                                # 1. Article line:
+                                data['detail_text'] = line
+                                data['product_insert'] = False
+                            elif not data['product_insert'] and \
+                                    start['weight'] in line:  # weigh line (second)
+                                # 2A. Error: Weight double
+                                data['detail'].append((
+                                    data['detail_text'],
+                                    get_float(line),
+                                    line.split()[0],  # customer code
+                                    ))
+                                data['product_insert'] = True
+
+                            elif data['product_insert'] and \
+                                    start['weight'] in line:  # weigh line (second)
+                                # 2B. Check error (ex. 2 PESO LORDO line)
+                                _logger.warning('Extra line: %s' % line)
+                                line_mode = 'error'
+
+                            else:
+                                # 3. Comment line:
+                                data['detail_status'] = 'end'
+                            # else:
+                            #    data['error'] = True
+                            #    data['error_comment'] += \
+                            #        '%s Detail without correct schema' % data['i']
+
+                        # ---------------------------------------------------------
+                        #         End of document part (always done):
+                        # ---------------------------------------------------------
+                        if data['detail_status'] == 'end':  # Start details
+                            # CONSEGNA DEL:
+
+                            # DESTINAZIONE:
+
+                            # -----------------------------------------------------
+                            # Extract remain line:
+                            # -----------------------------------------------------
+                            # order_line = check_startswith(line, start, 'order')
+                            delivery_line = check_startwith(
+                                line, start, 'delivery_date')
+                            # lord_line = check_startswith(line, start, 'lord')
+                            # total_line = check_startswith(line, start, 'total')
+
+                            pallet_line = check_startwith(
+                                line, start, 'pallet')
+
+                            # -----------------------------------------------------
+                            # Extract needed data:
+                            # -----------------------------------------------------
+                            # if order_line:
+                            #    pass # XXX get in first line of file no needed
+
+                            if delivery_line:
+                                data['delivery_date'] = get_date(
+                                    delivery_line.split()[-1])
+
+                            # elif lord_line:
+                            #    pass # XXX needed?
+
+                            # elif total_line:
+                            #    pass # XXX needed?
+
+                            elif pallet_line:
+                                try:
+                                    data['pallet'] = int(pallet_line)
+                                except:
+                                    data['pallet'] = 0
+                                    _logger.error(
+                                        'Cannot decode pallet: %s' % line)
+
+                        # ---------------------------------------------------------
+                        # Keep only last part of the file:
+                        # ---------------------------------------------------------
+                        if line_mode == 'error':
+                            data['text'] += '<font color="red">%s</font><br/>' % (
+                                line, )
+                        else:
+                            data['text'] += '%s<br />' % line
+
+                    # -------------------------------------------------------------
+                    # Create ODOO Record:
+                    # -------------------------------------------------------------
+                    name = '%s del %s' % (data['invoice'], data['invoice_date'])
+                    logistic_ids = logistic_pool.search(cr, uid, [
+                        ('name', '=', name),
+                        ], context=context)
+                    if logistic_ids:
+                        # No unlink admitted!
+                        logistic = logistic_pool.browse(
+                            cr, uid, logistic_ids, context=context)[0]
+
+                        if logistic.state != 'draft':
+                            # Yet load cannot override:
+                            # TODO move in after folder (unused)
+                            _logger.error(
+                                'Order yet present, cannot be deleted: %s' % name)
+                            continue
+                        else:
+                            _logger.error('Order yet present, deleted: %s' % name)
+
+                        # Delete and override:
+                        logistic_pool.unlink(
+                            cr, uid, logistic_ids, context=context)
+
+                    # Bug management:
+                    text = data['text'].replace('\xb0', ' ')
+
+                    # -------------------------------------------------------------
+                    # Link to order
+                    # -------------------------------------------------------------
+                    customer_order = data['customer_order']
+
+                    # Update order if is full name or partial:
+                    if customer_order.split('-')[-1] != pon_code:
+                        customer_order = '%s-%s' % (
+                            customer_order,
+                            pon_code,
+                            )
+
+                    order_ids = order_pool.search(cr, uid, [
+                        ('name', '=', customer_order),
+                        ], context=context)
+                    if order_ids:
+                        order_id = order_ids[0]
+                    else:
+                        _logger.error('Cannot link logistic to generator order!')
+                        order_id = False
+
+                    # A. Import order:
+                    logistic_id = logistic_pool.create(cr, uid, {
+                        'name': name,
+                        'order_id': order_id,
+                        'connection_id': ids[0],
+                        'text': text,
+                        'pallet': data['pallet'],
+                        'delivery_date': data['delivery_date'],
+                        'customer_order': customer_order,
+                        # 'filename':
+                        }, context=context)
+
+                    # B. Link pallet:
+                    default_pallet_id = False
+                    default_pallet = False
+                    if order_id:
+                        pallet_ids = pallet_pool.search(cr, uid, [
+                            ('order_id', '=', order_id),
+                            ], context=context)
+                        pallet_pool.write(cr, uid, pallet_ids, {
+                            'logistic_id': logistic_id,
+                            }, context=context)
+                        if len(pallet_ids):
+                            default_pallet_id = pallet_ids[0]  # TODO Check if 1st
+                            default_pallet = pallet_pool.browse(
+                                cr, uid, default_pallet_id, context=context).name
+                        else:
+                            default_pallet_id = False
+                            default_pallet = False
+
+                    # C. Import order line:
+                    sequence = 0
+                    invoice_date = get_date(data['invoice_date'])
+
+                    for row, lord_qty, customer_code in data['detail']:
+                        sequence += 1
+                        line_part = row.split(separator)
+
+                        mapping_id = False
+                        if customer_code.startswith('F'):
+                            # Link mapping data:
+                            mapping_ids = mapping_pool.search(cr, uid, [
+                                ('name', '=', customer_code),
+                                ], context=context)
+
+                            if mapping_ids:
+                                mapping_id = mapping_ids[0]
+                        else:  # Wrong code:
+                            _logger.error('Wrong code %s' % customer_code)
+                            customer_code = ''
+
+                        # Deadline:
+                        deadline = False
+                        if line_part[12]:
+                            deadline = '20%s-%s-%s' % (
+                                line_part[12][-2:],
+                                line_part[12][:2],
+                                get_last_day(line_part[12][:2]),
+                                )
+                            try:
+                                datetime.strptime(deadline, '%Y-%m-%d')  # test
+                            except:
+                                _logger.error('Not a date: %s' % deadline)
+
+                        default_code = line_part[4]
+                        product_ids = product_pool.search(cr, uid, [
+                            ('default_code', '=', default_code[:11]),
+                            ], context=context)
+                        if product_ids:
+                            product_id = product_ids[0]
+                        else:
+                            _logger.error('Not found: %s' % default_code)
+                            product_id = False
+                        line_data = {
+                            'logistic_id': logistic_id,
+                            'pallet_id': default_pallet_id,  # one2many
+                            'pallet': default_pallet,  # code
+                            'product_id': product_id,
+                            'mapping_id': mapping_id,  # Mapping reference
+
+                            'sequence': sequence,
+                            'name': default_code,
+                            'customer_code': customer_code,
+
+                            'variable_weight': line_part[5],
+                            'lot': line_part[6],
+                            'confirmed_qty': get_float(line_part[7]),
+                            'net_qty': get_float(line_part[8]),
+                            'lord_qty': lord_qty,
+                            'parcel': get_int(line_part[10]),
+                            'piece': get_int(line_part[11]),  # XXX not used!
+                            'deadline': deadline,
+                            'origin_country': line_part[13],
+                            'provenance_country': line_part[14],
+
+                            # Header data:
+                            'invoice': data['invoice'],
+                            'invoice_date': invoice_date,
+
+                            # Not mandatory:
+                            'dvce': '',
+                            'dvce_date': False,
+                            'animo': '',
+                            'sif': '',
+                            'duty': '',
+                            'mrn': '',
+                            }
+                        line_pool.create(cr, uid, line_data, context=context)
+                except:
+                    raise osv.except_osv(
+                        _('Errore'),
+                        _('Errore importando il file: %s') % filename,
+                    )
             break  # only path folder
 
         # ---------------------------------------------------------------------
