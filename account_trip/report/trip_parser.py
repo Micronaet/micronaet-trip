@@ -147,7 +147,8 @@ class Parser(rml_parse):
                 )
 
         # Sort for sequence:
-        return sorted(order_line, key=lambda record: record[1].sequence)
+        return sorted(order_line,
+                      key=lambda record: (record[1].sequence, record.id))
         # return order_line
 
     def get_counter(self, name):
