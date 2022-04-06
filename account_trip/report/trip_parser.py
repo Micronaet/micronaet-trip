@@ -146,10 +146,9 @@ class Parser(rml_parse):
                     (counter, order, extra)
                 )
 
-        # Sort for sequence:
+        # Sort for sequence (lost original order):
         return sorted(order_line,
                       key=lambda record: record[1].sequence)
-        # return order_line
 
     def get_counter(self, name):
         """ Get counter with name passed (else create an empty)
