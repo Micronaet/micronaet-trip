@@ -169,6 +169,7 @@ class trip_trip(orm.Model):
     _name = 'trip.trip'
     _description = 'Trip'
     _rec_name = 'tour_id'
+    _order = 'date desc, create_date desc'
 
     def print_trip_one(self, cr, uid, ids, context=None):
         """ Print trip order
@@ -275,6 +276,7 @@ class trip_trip(orm.Model):
 
     _columns = {
         'date': fields.date('Date'),
+        'create_date': fields.datetime('Data creazione'),
 
         # 'name': fields.char('Code', size=10, required=True),
         'description': fields.char('Description', size=100),
