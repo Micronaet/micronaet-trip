@@ -484,7 +484,7 @@ class trip_trip(orm.Model):
             ws_name, row, [
                 u'[ MSQ 30 Versione 2.1 del 09/03/2022 ]',
                 '', '', '', '', '',
-                u'Stampato il: %s' % str(datetime.now())[:10], '', '',
+                u'Stampato il: %s' % str(datetime.now())[:19], '', '',
                 ], default_format=excel_format['header'])
         excel_pool.merge_cell(ws_name, [row, 0, row, 5])
         excel_pool.merge_cell(ws_name, [row, 6, row, 8])
