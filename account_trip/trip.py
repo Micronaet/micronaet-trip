@@ -252,25 +252,29 @@ class trip_trip(orm.Model):
             ws_name, row, [
                 ('', excel_format['white']['text']),
                 ('', excel_format['white']['text']),
-                'DATA', 'AUTISTA', 'GIRO',
+                'DATA', 'AUTISTA', '', '', 'GIRO', '', '',
             ], default_format=excel_format['header'])
         excel_pool.row_height(ws_name, [row], height=25)
+        excel_pool.merge_cell(ws_name, [row, 3, row, 5])
+        excel_pool.merge_cell(ws_name, [row, 6, row, 8])
 
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
                 '', '',
                 trip.date or '',
-                trip.camion_id.name or '',
-                trip.tour_id.name,
+                trip.camion_id.name or '', '', '',
+                trip.tour_id.name, '', '',
             ], default_format=excel_format['white']['text'])
         excel_pool.merge_cell(ws_name, [row-1, 0, row, 1])
+        excel_pool.merge_cell(ws_name, [row, 3, row, 5])
+        excel_pool.merge_cell(ws_name, [row, 6, row, 8])
 
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
-                'N', '', 'CLIENTE', 'DESTINAZIONE', 'INDIRIZO', 'KG CARICO',
-                'RIF. ORDINE', 'TELEFONO', 'ORARIO CONS. NOTE'
+                'N', 'CLIENTE', '', 'DESTINAZIONE', 'INDIRIZZO', 'KG\nCARICO',
+                'RIF.\nORDINE', 'TELEFONO', 'ORARIO CONS.\nNOTE'
                 ], default_format=excel_format['header'])
         excel_pool.row_height(ws_name, [row], height=25)
         excel_pool.merge_cell(ws_name, [row, 1, row, 2])
@@ -303,13 +307,17 @@ class trip_trip(orm.Model):
                 ws_name, row, [
                     order.sequence or '',
                     order.partner_id.name if order.partner_id else '?',
+                    '',
                     order.destination_id.name if order.destination_id else '?',
                     destination,
                     order.prevision_load or 0,
                     '%s %s' % (order_name, order_mode),
                     phone,
-                    '%s %s Sc. %s' % (order.time, note, order.date or ''),
+                    '%s %s \nSc. %s' % (
+                        order.time or '', note or '', order.date or ''),
                     ], default_format=excel_format['white']['text'])
+            excel_pool.row_height(ws_name, [row], height=25)
+            excel_pool.merge_cell(ws_name, [row, 1, row, 2])
 
             row += 1
             excel_pool.write_xls_line(
@@ -317,12 +325,14 @@ class trip_trip(orm.Model):
                     '',
                     '',
                     '',
+                    '',
+                    'TOTALI',
                     trip.current_load or 0.0,
                     '',
                     '',
                     '',
-                    '',
                     ], default_format=excel_format['white']['text'])
+            excel_pool.merge_cell(ws_name, [row, 0, row, 3])
 
             row += 1
             excel_pool.write_xls_line(
