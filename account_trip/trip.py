@@ -171,6 +171,28 @@ class trip_trip(orm.Model):
     _rec_name = 'tour_id'
     _order = 'date desc, create_date desc'
 
+    def get_province(self, cr, uid, partner, context=None):
+        """ Provice form partner
+        """
+        city_pool = self.pool.get('res.partner.city')
+
+        city = partner.city
+        if not city:
+            _logger.error('City not present in partner: %s' % city)
+            return ''
+        city_ids = city_pool.search(cr, uid, [
+            ('name', '=ilike', city),
+        ], context=context)
+        if city_ids:
+            city = city_pool.browse(cr, uid, city_ids, context=context)[0]
+            if city.province:
+                return '(%s)' % city.province or ''
+            else:
+                _logger.error('Province is empty in city database: %s' % city)
+        else:
+            _logger.error('City not found in database: %s' % city)
+            return ''
+
     def print_trip_one(self, cr, uid, ids, context=None):
         """ Print trip order
         """
@@ -184,7 +206,7 @@ class trip_trip(orm.Model):
             # 'context': context,
         }
 
-    def print_excel_on(self, cr, uid, ids, context=None):
+    def print_excel_one(self, cr, uid, ids, context=None):
         """ Print trip order in Excel
         """
         if context is None:
@@ -192,7 +214,6 @@ class trip_trip(orm.Model):
 
         # Pool used:
         excel_pool = self.pool.get('excel.writer')
-        order_pool = self.pool.get('trip.trip')
 
         # ---------------------------------------------------------------------
         # Parameters and domain filter:
@@ -230,24 +251,58 @@ class trip_trip(orm.Model):
         excel_pool.write_xls_line(
             ws_name, row, [
             'DATA', 'AUTISTA', 'GIRO',
-            ], default_format=excel_format['white']['header'])
+            ], default_format=excel_format['header'])
+        row += 1
+        excel_pool.write_xls_line(
+            ws_name, row, [
+            trip.date or '',
+            trip.camion_id.name or '',
+            trip.tour_id.name,
+            ], default_format=excel_format['header'])
 
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
                 'N', 'CLIENTE', 'DESTINAZIONE', 'KG CARICO', 'RIF. ORDINE',
                 'TELEFONO', 'ORARIO CONS. NOTE'
-                ], default_format=excel_format['white']['header'])
+                ], default_format=excel_format['white']['text'])
 
         # Print order line:
         for order in sorted(trip.order_ids, key=lambda o: (o.sequence, o.id)):
+            if order.destination_id:
+                destination = '%s%s (%s) %s' % (
+                    ('[%s] ' % order.tour_id.name) if order.tour_id else '',
+                    order.destination_id.street or '',
+                    order.destination_id.city or '',
+                    self.get_province(order.destination_id),
+                    )
+                phone = order.destination_id.phone
+                note = order.destination_id.delivery_note
+            else:
+                destination = '?'
+                phone = '?'
+                note = ''
+
+            if order.name:
+                order_name = order.name.split("-")[-1]
+            else:
+                order_name = '/'
+
+            order_mode = {'D': '', 'A': 'Freschi', 'F': '+F'}.get(
+                order.order_mode, '')
             row += 1
             excel_pool.write_xls_line(
                 ws_name, row, [
                     order.sequence or '',
-                    'N', 'CLIENTE', 'DESTINAZIONE', 'INDIRIZZO', 'KG CARICO',
-                    'RIF. ORDINE', 'TELEFONO', 'ORARIO CONS. NOTE'
-                    ], default_format=excel_format['white']['header'])
+                    order.partner_id.name if order.partner_id else '?',
+                    order.destination_id.name if order.destination_id else '?',
+                    destination,
+                    order.prevision_load or 0,
+                    '%s %s' % (order_name, order_mode),
+                    phone,
+                    '%s %s Sc. %s' % (order.time, note, order.date or ''),
+                    ], default_format=excel_format['white']['text'])
+
 
         return excel_pool.return_attachment(
             cr, uid, ws_name, version='7.0', php=True, context=context)

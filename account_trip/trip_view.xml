@@ -591,6 +591,7 @@
                 <field name="total_delivery" />
                 <field name="report_line" />
                 <button name="print_trip_one" type="object" string="Stampa" icon="gtk-print"/>
+                <button name="print_excel_one" type="object" string="Excel" icon="terp-go-month"/>
             </tree>
         </field>
     </record>
@@ -602,6 +603,7 @@
             <form string="Trip" version="7.0">
                 <header>
                     <button name="print_trip_one" type="object" string="Stampa" icon="gtk-print"/>
+                    <button name="print_excel_one" type="object" string="Excel" icon="terp-go-month"/>
                 </header>
                 <sheet>
                   <group colspan="4" col="4">

@@ -54,27 +54,11 @@ class Parser(rml_parse):
     def get_province(self, partner):
         """ Provice form partner
         """
+        trip_pool = self.pool.get('trip.trip')
         cr = self.cr
         uid = self.uid
         context = {'lang': 'it_IT'}
-        city_pool = self.pool.get('res.partner.city')
-
-        city = partner.city
-        if not city:
-            _logger.error('City not present in partner: %s' % city)
-            return ''
-        city_ids = city_pool.search(cr, uid, [
-            ('name', '=ilike', city),
-        ], context=context)
-        if city_ids:
-            city = city_pool.browse(cr, uid, city_ids, context=context)[0]
-            if city.province:
-                return '(%s)' % city.province or ''
-            else:
-                _logger.error('Province is empty in city database: %s' % city)
-        else:
-            _logger.error('City not found in database: %s' % city)
-            return ''
+        return trip_pool(cr, uid, partner, context=context)
 
     def is_new_page(self, o, objects, counter, data):
         """ Jump page?
