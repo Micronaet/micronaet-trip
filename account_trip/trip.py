@@ -265,7 +265,7 @@ class trip_trip(orm.Model):
             ws_name, row, [
                 'N', 'CLIENTE', 'DESTINAZIONE', 'KG CARICO', 'RIF. ORDINE',
                 'TELEFONO', 'ORARIO CONS. NOTE'
-                ], default_format=excel_format['white']['text'])
+                ], default_format=excel_format['header'])
 
         # Print order line:
         for order in sorted(trip.order_ids, key=lambda o: (o.sequence, o.id)):
@@ -319,7 +319,7 @@ class trip_trip(orm.Model):
             row += 1
             excel_pool.write_xls_line(
                 ws_name, row, [
-                    'RITIRO MERCE',
+                    u'RITIRO MERCE',
                     trip.good_collection,
                     ], default_format=excel_format['white']['text'])
 
