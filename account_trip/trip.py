@@ -242,7 +242,7 @@ class trip_trip(orm.Model):
         }
 
         # ---------------------------------------------------------------------
-        # Write title and header:
+        # Header:
         # ---------------------------------------------------------------------
         col_width = [3, 7, 20, 30, 20, 10, 10, 10, 15]
         excel_pool.column_width(ws_name, col_width)
@@ -279,8 +279,11 @@ class trip_trip(orm.Model):
         excel_pool.row_height(ws_name, [row], height=25)
         excel_pool.merge_cell(ws_name, [row, 1, row, 2])
 
+        # ---------------------------------------------------------------------
         # Print order line:
+        # ---------------------------------------------------------------------
         for order in sorted(trip.order_ids, key=lambda o: (o.sequence, o.id)):
+            # Prepare data:
             if order.destination_id:
                 destination = '%s%s (%s) %s' % (
                     ('[%s] ' % order.tour_id.name) if order.tour_id else '',
@@ -303,6 +306,8 @@ class trip_trip(orm.Model):
 
             order_mode = {'D': '', 'A': 'Freschi', 'F': '+F'}.get(
                 order.order_mode, '')
+
+            # Write data:
             row += 1
             excel_pool.write_xls_line(
                 ws_name, row, [
@@ -320,6 +325,9 @@ class trip_trip(orm.Model):
             excel_pool.row_height(ws_name, [row], height=25)
             excel_pool.merge_cell(ws_name, [row, 1, row, 2])
 
+        # ---------------------------------------------------------------------
+        # Pie pagina:
+        # ---------------------------------------------------------------------
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
