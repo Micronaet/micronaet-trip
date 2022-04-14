@@ -250,8 +250,10 @@ class trip_trip(orm.Model):
         row = 0
         excel_pool.write_xls_line(
             ws_name, row, [
-            'DATA', 'AUTISTA', 'GIRO',
+                '', 'DATA', 'AUTISTA', 'GIRO',
             ], default_format=excel_format['header'])
+        excel_pool.row_height(ws_name, [row], height=25)
+
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
@@ -310,8 +312,8 @@ class trip_trip(orm.Model):
                     '',
                     '',
                     '',
-                    '',
                     trip.current_load or 0.0,
+                    '',
                     '',
                     '',
                     '',
