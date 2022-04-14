@@ -251,27 +251,29 @@ class trip_trip(orm.Model):
         excel_pool.write_xls_line(
             ws_name, row, [
                 ('', excel_format['white']['text']),
+                ('', excel_format['white']['text']),
                 'DATA', 'AUTISTA', 'GIRO',
             ], default_format=excel_format['header'])
         excel_pool.row_height(ws_name, [row], height=25)
-        row += 1
-        excel_pool.write_xls_line(
-            ws_name, row, [
-                '',
-                '',
-                trip.date or '',
-                trip.camion_id.name or '',
-                trip.tour_id.name,
-            ], default_format=excel_format['white']['text'])
-        excel_pool.merge_cell(ws_name, [row, 0, row+1, 1])
 
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
-                'N', '', 'CLIENTE', 'DESTINAZIONE', 'KG CARICO', 'RIF. ORDINE',
-                'TELEFONO', 'ORARIO CONS. NOTE'
+                '', '',
+                trip.date or '',
+                trip.camion_id.name or '',
+                trip.tour_id.name,
+            ], default_format=excel_format['white']['text'])
+        excel_pool.merge_cell(ws_name, [row-1, 0, row, 1])
+
+        row += 1
+        excel_pool.write_xls_line(
+            ws_name, row, [
+                'N', '', 'CLIENTE', 'DESTINAZIONE', 'INDIRIZO', 'KG CARICO',
+                'RIF. ORDINE', 'TELEFONO', 'ORARIO CONS. NOTE'
                 ], default_format=excel_format['header'])
         excel_pool.row_height(ws_name, [row], height=25)
+        excel_pool.merge_cell(ws_name, [row, 1, row, 2])
 
         # Print order line:
         for order in sorted(trip.order_ids, key=lambda o: (o.sequence, o.id)):
