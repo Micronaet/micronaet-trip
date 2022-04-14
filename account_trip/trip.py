@@ -184,6 +184,74 @@ class trip_trip(orm.Model):
             # 'context': context,
         }
 
+    def print_excel_on(self, cr, uid, ids, context=None):
+        """ Print trip order in Excel
+        """
+        if context is None:
+            context = {}
+
+        # Pool used:
+        excel_pool = self.pool.get('excel.writer')
+        order_pool = self.pool.get('trip.trip')
+
+        # ---------------------------------------------------------------------
+        # Parameters and domain filter:
+        # ---------------------------------------------------------------------
+        trip = self.browse(cr, uid, ids, context=context)[0]
+
+        # ---------------------------------------------------------------------
+        # Create XSXL file:
+        # ---------------------------------------------------------------------
+        ws_name = _('Viaggio')
+        excel_pool.create_worksheet(ws_name)
+
+        excel_pool.set_format()
+        excel_format = {
+            'title': excel_pool.get_format('title'),
+            'header': excel_pool.get_format('header'),
+
+            'white':  {
+                'text': excel_pool.get_format('text'),
+                'number': excel_pool.get_format('number'),
+            },
+            # 'white':  {
+            #    'text': excel_pool.get_format('text'),
+            #    'number': excel_pool.get_format('number'),
+            # },
+        }
+
+        # ---------------------------------------------------------------------
+        # Write title and header:
+        # ---------------------------------------------------------------------
+        col_width = [20, 30, 20]
+        excel_pool.column_width(ws_name, col_width)
+
+        row = 0
+        excel_pool.write_xls_line(
+            ws_name, row, [
+            'DATA', 'AUTISTA', 'GIRO',
+            ], default_format=excel_format['white']['header'])
+
+        row += 1
+        excel_pool.write_xls_line(
+            ws_name, row, [
+                'N', 'CLIENTE', 'DESTINAZIONE', 'KG CARICO', 'RIF. ORDINE',
+                'TELEFONO', 'ORARIO CONS. NOTE'
+                ], default_format=excel_format['white']['header'])
+
+        # Print order line:
+        for order in sorted(trip.order_ids, key=lambda o: (o.sequence, o.id)):
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    order.sequence or '',
+                    'N', 'CLIENTE', 'DESTINAZIONE', 'INDIRIZZO', 'KG CARICO',
+                    'RIF. ORDINE', 'TELEFONO', 'ORARIO CONS. NOTE'
+                    ], default_format=excel_format['white']['header'])
+
+        return excel_pool.return_attachment(
+            cr, uid, ws_name, version='7.0', php=True, context=context)
+
     # -------------------
     # On change function:
     # -------------------
