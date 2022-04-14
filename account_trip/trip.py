@@ -266,6 +266,7 @@ class trip_trip(orm.Model):
                 'N', 'CLIENTE', 'DESTINAZIONE', 'KG CARICO', 'RIF. ORDINE',
                 'TELEFONO', 'ORARIO CONS. NOTE'
                 ], default_format=excel_format['header'])
+        excel_pool.row_height(ws_name, [row], height=25)
 
         # Print order line:
         for order in sorted(trip.order_ids, key=lambda o: (o.sequence, o.id)):
@@ -322,6 +323,7 @@ class trip_trip(orm.Model):
                     u'RITIRO MERCE',
                     trip.good_collection,
                     ], default_format=excel_format['white']['text'])
+            excel_pool.row_height(ws_name, [row], height=30)
 
             row += 1
             excel_pool.write_xls_line(
@@ -331,15 +333,23 @@ class trip_trip(orm.Model):
                     u'Ordini sopraelencati dei quali deve verificarne la '
                     u'quantità prima del carico',
                     ], default_format=excel_format['white']['text'])
+            excel_pool.row_height(ws_name, [row], height=30)
 
             row += 1
             excel_pool.write_xls_line(
                 ws_name, row, [
                     u'KM PARTENZA: ______________________',
                     u'NOTE: ______________________',
+                    ], default_format=excel_format['white']['text'])
+            excel_pool.row_height(ws_name, [row], height=25)
+
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
                     u'KM ARRIVO: ______________________',
                     u'FIRMA SMA: ______________________',
                     ], default_format=excel_format['white']['text'])
+            excel_pool.row_height(ws_name, [row], height=25)
 
             row += 1
             excel_pool.write_xls_line(
@@ -347,6 +357,7 @@ class trip_trip(orm.Model):
                     u'TOT. KM.: ______________________',
                     u'FIRMA AUTISTA: ______________________',
                     ], default_format=excel_format['white']['text'])
+            excel_pool.row_height(ws_name, [row], height=25)
 
             row += 1
             excel_pool.write_xls_line(
@@ -354,6 +365,7 @@ class trip_trip(orm.Model):
                     u'CONSEGNATI N. DOC.: ______________________',
                     u'BANCALI CARICATI: ______________________',
                     ], default_format=excel_format['white']['text'])
+            excel_pool.row_height(ws_name, [row], height=25)
 
             row += 1
             excel_pool.write_xls_line(
@@ -361,18 +373,21 @@ class trip_trip(orm.Model):
                     '',
                     u'BANCALI RESI: ______________________',
                     ], default_format=excel_format['white']['text'])
+            excel_pool.row_height(ws_name, [row], height=25)
 
             row += 1
             excel_pool.write_xls_line(
                 ws_name, row, [
                     u'NOTE:', trip.note or '',
                     ], default_format=excel_format['white']['text'])
+            excel_pool.row_height(ws_name, [row], height=25)
 
             row += 1
             excel_pool.write_xls_line(
                 ws_name, row, [
                     u'',
                     ], default_format=excel_format['white']['text'])
+            excel_pool.row_height(ws_name, [row], height=55)
 
             row += 1
             excel_pool.write_xls_line(
@@ -387,12 +402,14 @@ class trip_trip(orm.Model):
                 ws_name, row, [
                     u'Vano del camion pulito', u'SI', u'NO'
                     ], default_format=excel_format['white']['text'])
+            excel_pool.row_height(ws_name, [row], height=25)
 
             row += 1
             excel_pool.write_xls_line(
                 ws_name, row, [
                     u'Temperatura del camion conforme*', u'SI', u'NO'
                     ], default_format=excel_format['white']['text'])
+            excel_pool.row_height(ws_name, [row], height=25)
 
             row += 1
             excel_pool.write_xls_line(
