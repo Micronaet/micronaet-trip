@@ -58,7 +58,7 @@ class Parser(rml_parse):
         cr = self.cr
         uid = self.uid
         context = {'lang': 'it_IT'}
-        return trip_pool(cr, uid, partner, context=context)
+        return trip_pool.get_province(cr, uid, partner, context=context)
 
     def is_new_page(self, o, objects, counter, data):
         """ Jump page?
