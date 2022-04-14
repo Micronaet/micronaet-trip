@@ -244,28 +244,31 @@ class trip_trip(orm.Model):
         # ---------------------------------------------------------------------
         # Write title and header:
         # ---------------------------------------------------------------------
-        col_width = [20, 30, 20]
+        col_width = [2, 5, 20, 30, 20]
         excel_pool.column_width(ws_name, col_width)
 
         row = 0
         excel_pool.write_xls_line(
             ws_name, row, [
-                '', 'DATA', 'AUTISTA', 'GIRO',
+                ('', excel_format['white']['text']),
+                'DATA', 'AUTISTA', 'GIRO',
             ], default_format=excel_format['header'])
         excel_pool.row_height(ws_name, [row], height=25)
-
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
-            trip.date or '',
-            trip.camion_id.name or '',
-            trip.tour_id.name,
+                '',
+                '',
+                trip.date or '',
+                trip.camion_id.name or '',
+                trip.tour_id.name,
             ], default_format=excel_format['white']['text'])
+        excel_pool.merge_cell(ws_name, [row, 0, row+1, 1])
 
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
-                'N', 'CLIENTE', 'DESTINAZIONE', 'KG CARICO', 'RIF. ORDINE',
+                'N', '', 'CLIENTE', 'DESTINAZIONE', 'KG CARICO', 'RIF. ORDINE',
                 'TELEFONO', 'ORARIO CONS. NOTE'
                 ], default_format=excel_format['header'])
         excel_pool.row_height(ws_name, [row], height=25)
