@@ -286,7 +286,8 @@ class trip_trip(orm.Model):
                     ('[%s] ' % order.tour_id.name) if order.tour_id else '',
                     order.destination_id.street or '',
                     order.destination_id.city or '',
-                    self.get_province(order.destination_id),
+                    self.get_province(
+                        cr, uid, order.destination_id, context=context),
                     )
                 phone = order.destination_id.phone
                 note = order.destination_id.delivery_note
