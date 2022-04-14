@@ -258,7 +258,7 @@ class trip_trip(orm.Model):
             trip.date or '',
             trip.camion_id.name or '',
             trip.tour_id.name,
-            ], default_format=excel_format['header'])
+            ], default_format=excel_format['white']['text'])
 
         row += 1
         excel_pool.write_xls_line(
@@ -302,6 +302,113 @@ class trip_trip(orm.Model):
                     phone,
                     '%s %s Sc. %s' % (order.time, note, order.date or ''),
                     ], default_format=excel_format['white']['text'])
+
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    '',
+                    '',
+                    '',
+                    '',
+                    trip.current_load or 0.0,
+                    '',
+                    '',
+                    '',
+                    ], default_format=excel_format['white']['text'])
+
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    'RITIRO MERCE',
+                    trip.good_collection,
+                    ], default_format=excel_format['white']['text'])
+
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    u'Il sottoscritto dichiara di ricevere la merce '
+                    u'dettagliata nei ns.\n' 
+                    u'Ordini sopraelencati dei quali deve verificarne la '
+                    u'quantità prima del carico',
+                    ], default_format=excel_format['white']['text'])
+
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    u'KM PARTENZA: ______________________',
+                    u'NOTE: ______________________',
+                    u'KM ARRIVO: ______________________',
+                    u'FIRMA SMA: ______________________',
+                    ], default_format=excel_format['white']['text'])
+
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    u'TOT. KM.: ______________________',
+                    u'FIRMA AUTISTA: ______________________',
+                    ], default_format=excel_format['white']['text'])
+
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    u'CONSEGNATI N. DOC.: ______________________',
+                    u'BANCALI CARICATI: ______________________',
+                    ], default_format=excel_format['white']['text'])
+
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    '',
+                    u'BANCALI RESI: ______________________',
+                    ], default_format=excel_format['white']['text'])
+
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    u'NOTE:', trip.note or '',
+                    ], default_format=excel_format['white']['text'])
+
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    u'',
+                    ], default_format=excel_format['white']['text'])
+
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    u'CONTROLLI PRE CARICO – '
+                    u'COMPILAZIONE A CARICO DI GENERAL FOOD',
+                    u'FIRMA DEL MAGAZZINIERE',
+                    ], default_format=excel_format['white']['text'])
+
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    u'Vano del camion pulito', u'SI', u'NO'
+                    ], default_format=excel_format['white']['text'])
+
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    u'Temperatura del camion conforme*', u'SI', u'NO'
+                    ], default_format=excel_format['white']['text'])
+
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    u'*prodotti surgelati: T≤- 18° C; '
+                    u'prodotti freschi T> 0°C e ≤ 4°C, '
+                    u'prodotti secchi non deperibili T> 4°C, < 20°C',
+                    ], default_format=excel_format['white']['text'])
+
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    u'[ MSQ 30 Versione 2.1 del 09/03/2022 ]'
+                    u'Stampato il: 14. Apr. 2022 ore 08.29.26 PM',
+                    ], default_format=excel_format['white']['text'])
+
 
 
         return excel_pool.return_attachment(
