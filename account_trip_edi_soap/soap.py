@@ -115,8 +115,8 @@ class EdiSoapConnection(orm.Model):
             wsdl_root = parameter.wsdl_root
 
         client = Client(wsdl_root)
-        pdb.set_trace()
-        client.settings(force_https=False)
+        # pdb.set_trace()
+        # client.settings(force_https=False)
 
         return client.create_service(
             namespace,
