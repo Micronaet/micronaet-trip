@@ -169,9 +169,9 @@ def ODOOCall():
                 hash=hash_text)
 
             payload['reply']['res'] = res
-            return Response(
-                json.dumps(payload), mimetype='application/json')
-            # return payload  # json.dumps(payload)
+            # return Response(
+            #    json.dumps(payload), mimetype='application/json')
+            return res  # payload  # json.dumps(payload)
         except:
             print('Errore: %s' % (sys.exc_info(), ))
             payload['reply'].update({
