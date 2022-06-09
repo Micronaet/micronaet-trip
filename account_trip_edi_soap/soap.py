@@ -115,8 +115,6 @@ class EdiSoapConnection(orm.Model):
             wsdl_root = parameter.wsdl_root
 
         client = Client(wsdl_root)
-        # pdb.set_trace()
-        # client.settings(force_https=False)
 
         return client.create_service(
             namespace,
@@ -126,6 +124,8 @@ class EdiSoapConnection(orm.Model):
     def check_return_status(self, res, comment):
         """ Check returned status error
         """
+        # client.settings(force_https=False)
+
         # Parameters
         header = _('SOAP Error')
         error_mask = _('Cannot connect with SOAP [%s]: %s')
@@ -150,6 +150,8 @@ class EdiSoapConnection(orm.Model):
     def _soap_login(self, cr, uid, ids, context=None):
         """ Login and get token from WSDL
         """
+        pdb.set_trace()
+
         if context is None:
             context = {}
         force_reload = context.get('force_reload', True)
