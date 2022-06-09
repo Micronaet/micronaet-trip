@@ -131,14 +131,13 @@ def ODOOCall():
             # -----------------------------------------------------------------
             # Read parameters:
             # -----------------------------------------------------------------
-            soap_params = parameter.get('envelope')
-
-            wsdl_root = soap_params.get('wsdl_root')
-            namespace = soap_params.get('namespace')
-            username = soap_params.get('username')
-            timestamp = soap_params.get('timestamp')
-            number = soap_params.get('number')
-            hash_text = soap_params.get('hash_text')
+            pdb.set_trace()
+            wsdl_root = parameter.get('wsdl_root')
+            namespace = parameter.get('namespace')
+            username = parameter.get('username')
+            timestamp = parameter.get('timestamp')
+            number = parameter.get('number')
+            hash_text = parameter.get('hash_text')
 
             # -----------------------------------------------------------------
             # Call for token

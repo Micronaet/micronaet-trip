@@ -199,6 +199,7 @@ class EdiSoapConnection(orm.Model):
         # ---------------------------------------------------------------------
         # Flask Agent:
         # ---------------------------------------------------------------------
+        pdb.set_trace()
         if flask_host:
             # Authenticate to get Session ID:
             url = 'http://%s:%s/API/v1.0/micronaet/launcher' % (
