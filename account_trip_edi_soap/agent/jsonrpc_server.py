@@ -194,8 +194,7 @@ def ODOOCall():
         token = get_token()
         token = token['accessToken']  # Extract order from reply
         service = get_soap_service()
-        # res = service.getOngoingPOrders(accessToken=token)
-        res = {}
+        res = service.getOngoingPOrders(accessToken=token)
 
         payload['reply']['res'] = eval(str(res))
         payload['success'] = True
