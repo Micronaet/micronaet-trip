@@ -140,7 +140,7 @@ def soap2dict(reply):
                 else:
                     new_line[line_field] = line[line_field]
 
-            order['orderLines'].append(new_line)
+            new_order['orderLines'].append(new_line)
     return res
 
 def get_soap_service():
