@@ -140,27 +140,27 @@ def ODOOCall():
             # -----------------------------------------------------------------
             # Read parameters:
             # -----------------------------------------------------------------
-            wsdl_root = bytes(parameter.get('wsdl_root'))
-            namespace = bytes(parameter.get('namespace'))
-            username = bytes(parameter.get('username'))
-            timestamp = parameter.get('timestamp')
-            number = parameter.get('number')
-            hash_text = parameter.get('hash_text')
+            # wsdl_root = bytes(parameter.get('wsdl_root'))
+            # namespace = bytes(parameter.get('namespace'))
+            # username = bytes(parameter.get('username'))
+            # timestamp = parameter.get('timestamp')
+            # number = parameter.get('number')
+            # hash_text = parameter.get('hash_text')
 
-            #message_mask = 'GET+/users/%s/account+%s+%s'
-            #username = bytes('GENERALFOOD')  # bytes('GENERALFOOD')
-            #secret = bytes('5BC478479AB65798A4420F3FB19EF68E96ECFEA8')
-            #namespace = bytes('{it.niuma.mscsoapws.ws}MscWsPortSoap11')
-            #wsdl_root = bytes('https://layer7prod.msccruises.com/pep/wsdl')
-            #timestamp = get_datetime_tz().strftime('%d%m%Y%H%M%S')
+            message_mask = 'GET+/users/%s/account+%s+%s'
+            username = bytes('GENERALFOOD')
+            secret = bytes('5BC478479AB65798A4420F3FB19EF68E96ECFEA8')
+            namespace = bytes('{it.niuma.mscsoapws.ws}MscWsPortSoap11')
+            wsdl_root = bytes('https://layer7prod.msccruises.com/pep/wsdl')
+            timestamp = get_datetime_tz().strftime('%d%m%Y%H%M%S')
 
-            #number = str(uuid.uuid4())[-6:]
-            #message = message_mask % (username, timestamp, number)
+            number = str(uuid.uuid4())[-6:]
+            message = message_mask % (username, timestamp, number)
 
-            #signature = hmac.new(secret, msg=message,
-            #                     digestmod=hashlib.sha256).digest()
+            signature = hmac.new(secret, msg=message,
+                                 digestmod=hashlib.sha256).digest()
 
-            #hash_text = base64.b64encode(signature)
+            hash_text = base64.b64encode(signature)
 
             # Call SOAP portal:
             service = get_soap_service(wsdl_root, namespace)
