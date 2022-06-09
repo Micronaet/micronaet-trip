@@ -267,6 +267,7 @@ class EdiSoapConnection(orm.Model):
     def load_new_invoice(self, cr, uid, ids, context=None):
         """ Load invoice from file
         """
+        return True  # todo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         # ---------------------------------------------------------------------
         # Function
         # ---------------------------------------------------------------------
@@ -820,7 +821,6 @@ class EdiSoapConnection(orm.Model):
             }
             response = requests.post(
                 url, headers=headers, data=json.dumps(payload))
-            pdb.set_trace()
             response_json = response.json()
             if response_json['success']:
                 res = response_json.get('reply', {}).get('res')
