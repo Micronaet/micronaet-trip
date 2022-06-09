@@ -107,7 +107,11 @@ def soap2dict(reply):
 
             # C. Decimal field:
             elif field in decimal_field:
-                new_order[field] = float(order[field])
+                try:
+                    new_order[field] = float(order[field])
+                except:
+                    pdb.set_trace()
+                    new_order[field] = 0.0
 
             # D. Normal fields (string, integer, boolean)
             else:
@@ -123,7 +127,11 @@ def soap2dict(reply):
             for line_field in dir(line):
                 # a. Float
                 if line_field in decimal_field:
-                    new_line[line_field] = float(line[line_field])
+                    try:
+                        new_line[line_field] = float(line[line_field])
+                    except:
+                        pdb.set_trace()
+                        new_line[line_field] = 0.0
                 # b. Normal fields (string, integer, boolean)
                 else:
                     new_line[line_field] = line[line_field]
