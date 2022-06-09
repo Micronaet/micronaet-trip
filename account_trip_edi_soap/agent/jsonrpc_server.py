@@ -7,11 +7,7 @@
 ###############################################################################
 
 import os
-import hmac
-import hashlib
-import base64
 import sys
-import uuid
 import pytz
 import pdb
 from flask import Flask, request
@@ -46,23 +42,25 @@ def write_log(log_f, message, mode='INFO', verbose=True):
     log_f.write('{}\n'.format(complete_message))
     log_f.flush()
 
+
 # -----------------------------------------------------------------------------
 # SOAP:
 # -----------------------------------------------------------------------------
-def get_soap_service(wsdl_root=False, namespace=False):
+def get_soap_service(wsdl_root=None, namespace=None):
     """ Get WSDL Service link
         if passed namespace and wsdl root use that, instead of read from
         parameters
     """
+    pdb.set_trace()
     client = Client(wsdl_root)
     return client.create_service(namespace, wsdl_root)
 
 
 def get_datetime_tz():
-        """ Change datetime removing gap from now and GMT 0
-        """
-        return pytz.utc.localize(datetime.now()).astimezone(
-            pytz.timezone('Europe/Rome'))
+    """ Change datetime removing gap from now and GMT 0
+    """
+    return pytz.utc.localize(datetime.now()).astimezone(
+        pytz.timezone('Europe/Rome'))
 
 
 # -----------------------------------------------------------------------------
@@ -131,9 +129,9 @@ def ODOOCall():
             # -----------------------------------------------------------------
             # Read parameters:
             # -----------------------------------------------------------------
-            wsdl_root = parameter.get('wsdl_root')
-            namespace = parameter.get('namespace')
-            username = parameter.get('username')
+            wsdl_root = bytes(parameter.get('wsdl_root'))
+            namespace = bytes(parameter.get('namespace'))
+            username = bytes(parameter.get('username'))
             timestamp = parameter.get('timestamp')
             number = parameter.get('number')
             hash_text = parameter.get('hash_text')
