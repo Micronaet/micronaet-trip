@@ -99,7 +99,7 @@ else:
 app = Flask(__name__)
 
 
-@app.route('/API/v1.0/micronaet/laucher', methods=['POST'])
+@app.route('/API/v1.0/micronaet/launcher', methods=['POST'])
 def ODOOCall():
     """ Master function for Micronaet Call
 
@@ -131,7 +131,6 @@ def ODOOCall():
             # -----------------------------------------------------------------
             # Read parameters:
             # -----------------------------------------------------------------
-            pdb.set_trace()
             wsdl_root = parameter.get('wsdl_root')
             namespace = parameter.get('namespace')
             username = parameter.get('username')
@@ -144,6 +143,7 @@ def ODOOCall():
             # -----------------------------------------------------------------
             try:
                 # Call SOAP portal:
+                pdb.set_trace()
                 service = get_soap_service(wsdl_root, namespace)
                 res = service.login(
                     username=username, time=timestamp, number=number,
@@ -155,239 +155,18 @@ def ODOOCall():
                              '{}'.format(account_command),
                 })
                 return payload
-
-            # -----------------------------------------------------------------
-            # Parse log file:
-            # -----------------------------------------------------------------
-            if os.path.isfile(invoice_log):
-                log_f = open(invoice_log, 'r')
-                log_error = log_f.readlines()
-                log_f.close()
-                payload['reply'].update({
-                    'error': 'Errore gestionale [da log file batch]: '
-                             '{}'.format(log_error),
-                })
-                return payload
-
-                payload['reply'].update({
-                    'error': error,
-                })
-                if len_reply >= 3 and reply_part[2]:
-                    payload['reply'].update({
-                        'sql_customer_code': reply_part[2],
-                    })
-                if len_reply >= 4 and reply_part[3]:
-                    payload['reply'].update({
-                        'sql_destination_code': reply_part[3],
-                    })
-
-            elif result_text.startswith('OK') and len(reply_part) == 5:
-                # -------------------------------------------------------------
-                # Print PDF command:
-                # -------------------------------------------------------------
-                invoice_number = reply_part[1]
-
-                # Call PDF command (FT01_00001 (file) >> FT01/00001 (account)
-                account_command_pdf = account_command_pdf.format(
-                    invoice=invoice_number.replace('_', '/'))
-                try:
-                    os.system(account_command_pdf)
-                    invoice_printed = True
-                except:
-                    invoice_printed = False
-
-                # -------------------------------------------------------------
-                # Result:
-                # -------------------------------------------------------------
-                payload['success'] = True  # Invoice generated (not sure print)
-                payload['reply'].update({
-                    'invoice_number': reply_part[1],
-                    'invoice_date': reply_part[2],
-                    'sql_customer_code': reply_part[3],
-                    'sql_destination_code': reply_part[4],
-
-                    # Print management:
-                    'invoice_printed': invoice_printed,
-                })
             else:
                 payload['reply'].update({
                     'error': 'Errore non gestito o non correttamente '
                              'passato dal gestionale',
                 })
         finally:
-            # Write log for operation:
-            '''
-            if payload['success']:
-                write_log(log_f, 'Call account: {} SUCCESS'.format(
-                    account_command))
-            else:
-                write_log(log_f, 'Call account: {} NOT SUCCESS'.format(
-                    account_command), mode='ERROR')
-            '''
+            pass
 
-            # Clean sem file:
-            os.remove(trafficlight)
     elif command == 'order':
-        # ---------------------------------------------------------------------
-        # Traffic-light management:
-        # ---------------------------------------------------------------------
-        trafficlight = parameter.get('trafficlight')
-
-        # B. Create PID file:
-        if os.path.isfile(trafficlight):
-            payload['reply'].update({
-                    'error': 'Esiste una importazione in esecuzione, '
-                             'riprovare tra un '
-                             'po\': {}'.format(trafficlight),
-            })
-            return payload
-
-        # Traffic light file:
-        pid_f = open(trafficlight, 'w')
-        pid_f.write(str(datetime.now()))  # Write current date
-        pid_f.close()
-
-        account_command = parameter.get('command')  # account command
-        account_command_pdf = parameter.get('command_pdf')  # PDF mask command
-        # amount_total = parameter.get('amount_total')
-
-        try:
-            # -----------------------------------------------------------------
-            # Read parameters:
-            # -----------------------------------------------------------------
-            invoice_file = parameter.get('invoice')
-            invoice_result = parameter.get('result')
-            invoice_log = parameter.get('log')
-            content = parameter.get('content')
-            # write_log(log_f, '[INFO] Call account: {}'.format(
-            # account_command))
-
-            # -----------------------------------------------------------------
-            # Write invoice file
-            # -----------------------------------------------------------------
-            if invoice_file and content:
-                invoice_f = open(invoice_file, 'w')
-                invoice_f.write(content)
-            else:
-                payload['reply'].update({
-                    'error': 'Impossibile salvare il file di interscambio: '
-                             '{}'.format(invoice_file),
-                })
-                return payload
-            invoice_f.close()
-
-            # -----------------------------------------------------------------
-            # Call Account for import:
-            # -----------------------------------------------------------------
-            try:
-                # Kill result:
-                if os.path.isfile(invoice_result):
-                    os.remove(invoice_result)
-
-                # Kill log file:
-                if os.path.isfile(invoice_log):
-                    os.remove(invoice_log)
-
-                os.system(account_command)
-            except:
-                payload['reply'].update({
-                    'error': 'Errore nella chiamata al gestionale: '
-                             '{}'.format(account_command),
-                })
-                return payload
-
-            # -----------------------------------------------------------------
-            # Parse log file:
-            # -----------------------------------------------------------------
-            if os.path.isfile(invoice_log):
-                log_f = open(invoice_log, 'r')
-                log_error = log_f.readlines()
-                log_f.close()
-                payload['reply'].update({
-                    'error': 'Errore gestionale [da log file batch]: '
-                             '{}'.format(log_error),
-                })
-                os.remove(invoice_log)
-                return payload
-
-            # -----------------------------------------------------------------
-            # Parse result file:
-            # -----------------------------------------------------------------
-            if not os.path.isfile(invoice_result):
-                payload['reply'].update({
-                    'error': 'Risposta non ricevuta dalla chiamata '
-                        'al gestionale',
-                })
-                return payload
-
-            result_f = open(invoice_result, 'r')
-            result_text = result_f.read()
-            reply_part = result_text.split(';')
-            len_reply = len(reply_part)
-            # Syntax: "KO; error; customer code; destination code"
-            if result_text.startswith('KO'):
-                if len_reply == 1:
-                    error = 'Formato risposta gestionale non corretta'
-                else:  # case >= 2
-                    error = reply_part[1]  # Use 2nd item
-                payload['reply'].update({
-                    'error': error,
-                })
-                if len_reply >= 3 and reply_part[2]:
-                    payload['reply'].update({
-                        'sql_customer_code': reply_part[2],
-                    })
-                if len_reply >= 4 and reply_part[3]:
-                    payload['reply'].update({
-                        'sql_destination_code': reply_part[3],
-                    })
-
-            elif result_text.startswith('OK') and len(reply_part) == 5:
-                # -------------------------------------------------------------
-                # Print PDF command:
-                # -------------------------------------------------------------
-                invoice_number = reply_part[1]
-
-                # Call PDF command (FT01_00001 (file) >> FT01/00001 (account)
-                account_command_pdf = account_command_pdf.format(
-                    invoice=invoice_number.replace('_', '/'))
-                try:
-                    os.system(account_command_pdf)
-                    invoice_printed = True
-                except:
-                    invoice_printed = False
-
-                # -------------------------------------------------------------
-                # Result:
-                # -------------------------------------------------------------
-                payload['success'] = True  # Invoice generated (not sure print)
-                payload['reply'].update({
-                    'invoice_number': reply_part[1],
-                    'invoice_date': reply_part[2],
-                    'sql_customer_code': reply_part[3],
-                    'sql_destination_code': reply_part[4],
-
-                    # Print management:
-                    'invoice_printed': invoice_printed,
-                })
-            else:
-                payload['reply'].update({
-                    'error': 'Errore non gestito o non correttamente '
-                             'passato dal gestionale',
-                })
-        finally:
-            # Write log for operation:
-            '''
-            if payload['success']:
-                write_log(log_f, 'Call account: {} SUCCESS'.format(
-                    account_command))
-            else:
-                write_log(log_f, 'Call account: {} NOT SUCCESS'.format(
-                    account_command), mode='ERROR')
-            '''
-
-            # Clean sem file:
-            os.remove(trafficlight)
+         pass
+    elif command == 'invoice':
+         pass
     else:
         # ---------------------------------------------------------------------
         # Bad call:
@@ -402,7 +181,6 @@ def ODOOCall():
     # Prepare response
     # -------------------------------------------------------------------------
     return payload
-
 
 app.run(debug=True, host=host, port=port)
 write_log(log_f, 'End ODOO-Mexal Flask agent')

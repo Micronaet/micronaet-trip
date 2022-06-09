@@ -14,7 +14,7 @@ import json
 # -----------------------------------------------------------------------------
 # Authenticate to get Session ID:
 # -----------------------------------------------------------------------------
-url = 'http://localhost:5000/API/v1.0/micronaet/laucher'
+url = 'http://0.0.0.0:5000/API/v1.0/micronaet/launcher'
 headers = {
     'content-type': 'application/json',
 }
@@ -22,12 +22,16 @@ payload = {
     'jsonrpc': '2.0',
     'params': {
         'command': 'invoice',
-        'parameters': ['filename.csv'],
+        'parameters': {
+            'wsdl': '',
+            },
         }
     }
 
+import pdb; pdb.set_trace()
 response = requests.post(url, headers=headers, data=json.dumps(payload))
 response_json = response.json()
 if response_json['success']:
     print(response_json)
 
+print 

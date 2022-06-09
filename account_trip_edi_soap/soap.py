@@ -199,7 +199,6 @@ class EdiSoapConnection(orm.Model):
         # ---------------------------------------------------------------------
         # Flask Agent:
         # ---------------------------------------------------------------------
-        pdb.set_trace()
         if flask_host:
             # Authenticate to get Session ID:
             url = 'http://%s:%s/API/v1.0/micronaet/launcher' % (
@@ -221,9 +220,8 @@ class EdiSoapConnection(orm.Model):
                     },
                 }
             }
-
-            response = requests.post(
-                url, headers=headers, data=json.dumps(payload))
+            pdb.set_trace()
+            response = requests.post(url, headers=headers, data=json.dumps(payload))
             response_json = response.json()
             if response_json['success']:
                 # print(response_json)
