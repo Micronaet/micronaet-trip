@@ -150,8 +150,6 @@ class EdiSoapConnection(orm.Model):
     def _soap_login(self, cr, uid, ids, context=None):
         """ Login and get token from WSDL
         """
-        pdb.set_trace()
-
         if context is None:
             context = {}
         force_reload = context.get('force_reload', True)
