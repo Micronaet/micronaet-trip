@@ -11,6 +11,7 @@ import sys
 import hmac
 import hashlib
 import base64
+import json
 import uuid
 import pytz
 import pdb
@@ -167,7 +168,7 @@ def ODOOCall():
                 hash=hash_text)
 
             payload['reply']['res'] = res
-            return payload
+            return json.loads(payload)
         except:
             print('Errore: %s' % (sys.exc_info(), ))
             payload['reply'].update({
