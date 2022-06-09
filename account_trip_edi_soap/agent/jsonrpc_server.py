@@ -150,6 +150,7 @@ def ODOOCall():
                     hash=hash_text)
                 payload['reply']['res'] = res
             except:
+                print('Errore: %s' % (sys.exc_info(), ))
                 payload['reply'].update({
                     'error': 'Errore nella chiamata ad MSC portale: '
                              '{}'.format(account_command),
