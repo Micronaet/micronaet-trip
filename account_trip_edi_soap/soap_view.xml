@@ -6,7 +6,7 @@
             <field name="name">edi.soap.connection.tree</field>
             <field name="model">edi.soap.connection</field>
             <field name="arch" type="xml">
-                <tree string="SOAP Connection" colors="blue:token!=False">        
+                <tree string="SOAP Connection" colors="blue:token!=False">
                     <field name="name" />
                     <field name="username" />
                     <field name="wsdl_root" />
@@ -28,7 +28,7 @@
                     <shell>
                         <group colspan="4" col="4">
                             <field name="name" />
-                            
+
                             <notebook colspan="4">
                                 <page string="SOAP">
                                     <group colspan="4" col="4">
@@ -37,7 +37,7 @@
                                         <button name="load_new_order" string="Load new order" type="object" icon="gtk-new" class="oe_highlight" colspan="1" />
                                         <field name="username" />
                                         <field name="secret" />
-                                        
+
                                         <field name="wsdl_root" />
                                         <field name="namespace" />
 
@@ -50,26 +50,33 @@
                                         <separator string="Order parameter:" colspan="4"/>
                                         <field name="order_root" />
                                         <field name="order_separator" />
-                                        
+
                                         <field name="pallet_capability" />
                                         <field name="pallet_extra" />
-                                        
-                                        <field name="uom_code" />                                        
+
+                                        <field name="uom_code" />
                                         <field name="csv_code" />
 
                                         <separator string="Logistic parameter:" colspan="3"/>
                                         <button name="load_new_invoice" string="Load invoice" type="object" icon="STOCK_SAVE" class="oe_highlight" colspan="1" />
-                                        
+
                                         <field name="server_root" />
                                         <field name="detail_separator" />
 
-                                        <separator string="Account data:" colspan="4"/>                                        
+                                        <separator string="Account data:" colspan="4"/>
                                         <field name="server_account_code"  />
                                         <field name="server_pon_code" />
                                     </group>
                                 </page>
+                                <page string="Flask">
+                                    <group colspan="4" col="4">
+                                        <separator string="Parametri Flask Agent:" colspan="2"/>
+                                        <field name="flask_host" />
+                                        <field name="flask_port" />
+                                    </group>
+                                </page>
                             </notebook>
-                            
+
                         </group>
                     </shell>
                 </form>
@@ -90,28 +97,28 @@
             <field name="name">edi.soap.order.search</field>
             <field name="model">edi.soap.order</field>
             <field name="arch" type="xml">
-                <search string="String" version="7.0">        
+                <search string="String" version="7.0">
                     <field name="name" />
                     <field name="mode" />
                     <field name="connection_id" filter_domain="[('connection_id','=',self)]"/>
                     <field name="destination_id" filter_domain="[('destination_id','=',self)]"/>
-                    <field name="entity_name" />                    
+                    <field name="entity_name" />
                     <field name="delivery_port_nam" />
                     <field name="invoice_holder" />
                     <field name="invoice_address" />
-                    <field name="delivery_address" />   
-                    <field name="fullname" />  
-                    
+                    <field name="delivery_address" />
+                    <field name="fullname" />
+
                     <filter name="sent_account" string="Sent account" domain="[('filename','!=',False)]"/>
                     <filter name="unsent_account" string="Not sent account" domain="[('filename','=',False)]"/>
-                    
+
                     <group expand="0" string="Group By...">
                         <filter name="group_destination_id" string="Destination" context="{'group_by': 'destination_id'}"/>
                         <filter name="group_buyer" string="Buyer" context="{'group_by': 'buyer_group'}" />
                         <filter name="group_address" string="Address" context="{'group_by': 'invoice_address'}" />
                         <filter name="group_mode" string="Mode" context="{'group_by': 'mode'}" />
                         <filter name="group_status" string="Status" context="{'group_by': 'status'}" />
-                    </group>                
+                    </group>
                 </search>
             </field>
         </record>
@@ -127,7 +134,7 @@
                     <field name="delivery_date" />
                     <field name="connection_id" invisible="1"/>
                     <field name="destination_id" />
-                    <field name="entity_name" />                    
+                    <field name="entity_name" />
                     <field name="document_comment" />
                     <field name="delivery_port_nam" />
                     <field name="currency" invisible="1"/>
@@ -137,7 +144,7 @@
                     <field name="invoice_address" invisible="1"/>
                     <field name="invoice_vatcode" invisible="1"/>
                     <field name="delivery_at" />
-                    <field name="delivery_address" invisible="1"/>     
+                    <field name="delivery_address" invisible="1"/>
                     <field name="filename" invisible="1"/>
                     <field name="status" />
                     <button name="extract_order_csv_file" string="Export CSV" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('check_pre_export', '=', False), ('filename','!=',False)]}" icon="gtk-execute"/>
@@ -149,7 +156,7 @@
             <field name="model">edi.soap.order</field>
             <field name="arch" type="xml">
                 <form string="SOAP order" version="7.0">
-                    <header>                        
+                    <header>
                         <button name="reload_this_order" string="Reload order" type="object" icon="gtk-refresh" class="oe_highlight" groups="account_trip_edi_soap.group_edi_soap_reload"/>
                         <button name="extract_order_csv_file" string="Export CSV" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('check_pre_export', '=', False), ('filename','!=',False)]}" icon="gtk-execute"/>
                     </header>
@@ -158,30 +165,30 @@
 
                             <field name="name" readonly="1"/>
                             <field name="connection_id" readonly="1" />
-                            
+
                             <field name="entity_name" readonly="1" />
                             <field name="delivery_port_nam" readonly="1" />
-                            
+
                             <field name="po_create_date" readonly="1" />
                             <field name="delivery_date" readonly="1" />
-                            
+
                             <field name="company_order" />
                             <field name="mode" /><!--readonly="1"-->
-                            
+
                             <field name="fullname" readonly="1" />
                             <field name="buyer_group" readonly="1" />
 
-                            <field name="delivery_at" readonly="1" />                                        
-                            <field name="delivery_address" readonly="1" />                    
+                            <field name="delivery_at" readonly="1" />
+                            <field name="delivery_address" readonly="1" />
 
                             <field name="destination_id" required="1" domain="[('connection_id', '=', connection_id')]"/>
                             <field name="document_value" readonly="1" />
 
-                            <field name="filename" readonly="1"/>               
+                            <field name="filename" readonly="1"/>
                             <field name="status" readonly="1"/>
 
                             <field name="check_pre_export" invisible="1"/>
-                            
+
                             <notebook colspan="4">
                                 <page string="Detail">
                                     <group colspan="4" col="4">
@@ -189,10 +196,10 @@
                                         <field name="line_ids" colspan="4" nolabel="1">
                                             <tree string="Detail:" editable="bottom" colors="red:product_id==False or duty_code==False or chunk==False;blue:ordered_qty!=confirmed_qty">
                                                 <button name="order_line_detail" string="Line detail" type="object" icon="gtk-index" />
-                                                
+
                                                 <field name="order_id" invisible="1" />
                                                 <field name="name" readonly="1"/>
-                                                <field name="product_id" on_change="onchange_company_product_id(order_id, name, product_id)"/>                                                
+                                                <field name="product_id" on_change="onchange_company_product_id(order_id, name, product_id)"/>
                                                 <field name="duty_code" />
                                                 <field name="chunk" />
                                                 <field name="description" readonly="1" />
@@ -209,17 +216,17 @@
                                         <separator string="Invoice:" colspan="4"/>
                                         <field name="invoice_holder" readonly="1" />
                                         <field name="invoice_address" readonly="1" />
-                                        
+
                                         <field name="info_container" readonly="1" />
                                         <field name="document_comment" readonly="1" />
 
                                         <field name="invoice_vatcode" readonly="1" />
                                         <field name="currency" readonly="1" />
-                                        
+
                                         <separator string="Delivery:" colspan="4"/>
-                                        <field name="delivery_terms" readonly="1" />   
-                                        <field name="delivery_ship" readonly="1"/>                                     
-                                        
+                                        <field name="delivery_terms" readonly="1" />
+                                        <field name="delivery_ship" readonly="1"/>
+
                                         <separator string="Logistic:" colspan="4"/>
                                         <field name="logistic" readonly="1" />
                                         <field name="requires_logistic" readonly="1" />
@@ -234,7 +241,7 @@
 
                                          <separator string="Pallet:" colspan="4"/>
                                          <button name="print_all_label" string="Print all label" type="object" icon="gtk-print" class="oe_highlight" colspan="1"/>
-                                         
+
                                          <field name="pallet_ids" colspan="5" nolabel="1" readonly="1">
                                               <tree string="Pallet" editable="bottom">
                                                    <field name="name" readonly="1"/>
@@ -242,7 +249,7 @@
                                                    <field name="logistic_id" readonly="1" />
                                                    <button name="print_label" string="Print label" type="object" icon="gtk-print" class="oe_highlight" />
                                               </tree>
-                                         </field>                                        
+                                         </field>
                                     </group>
                                 </page>
                             </notebook>
@@ -263,8 +270,8 @@
             <field name="context">{'search_default_unsent_account': True}</field>
             <field name="domain">[]</field>
         </record>
-        
-        <!--edi.soap.order.line-->        
+
+        <!--edi.soap.order.line-->
         <record model="ir.ui.view" id="view_edi_soap_order_line_form">
             <field name="name">edi.soap.order.line.form</field>
             <field name="model">edi.soap.order.line</field>
@@ -274,41 +281,41 @@
                          <group colspan="4" col="4">
                              <field name="order_id" readonly="1" />
                              <field name="name" readonly="1" />
-                             
+
                              <field name="product_id" readonly="1" />
                              <field name="duty_code" readonly="1" />
-                             
+
                              <field name="chunk" readonly="1" />
                              <field name="description" readonly="1" />
-                             
+
                              <field name="uom" readonly="1" />
                              <field name="ordered_qty" readonly="1" />
-                             
+
                              <field name="confirmed_qty" readonly="1" />
                              <field name="logistic_qty" readonly="1" />
-                             
+
                              <field name="item_price" readonly="1" />
                              <field name="cd_gtin" readonly="1" />
-                             
+
                              <field name="cd_voce_doganale" readonly="1" />
                              <field name="nr_pz_conf" readonly="1" />
-                             
+
                              <field name="cd_paese_origine" readonly="1" />
-                             <field name="cd_paese_provenienza" readonly="1" />                     
-                             
+                             <field name="cd_paese_provenienza" readonly="1" />
+
                              <field name="fl_dogana" readonly="1" />
-                         </group>    
+                         </group>
                      </sheet>
                 </form>
             </field>
         </record>
 
-        <!--edi.soap.logistic.line-->    
+        <!--edi.soap.logistic.line-->
         <record model="ir.ui.view" id="view_edi_soap_logistic_line_search">
             <field name="name">edi.soap.logistic.line.search</field>
             <field name="model">edi.soap.logistic.line</field>
             <field name="arch" type="xml">
-                <search string="Line" version="7.0">        
+                <search string="Line" version="7.0">
                     <field name="name" />
                     <field name="customer_code" />
                     <field name="product_id" filter_domain="[('product_id','=',self)]"/>
@@ -321,10 +328,10 @@
                     <group expand="0" string="Group By...">
                         <filter name="group_product" string="Product" context="{'group_by': 'product_id'}"/>
                         <filter name="group_pallet_id" string="Pallet" context="{'group_by': 'pallet_id'}"/>
-                    </group>                
+                    </group>
                 </search>
             </field>
-        </record>    
+        </record>
         <record model="ir.ui.view" id="view_edi_soap_logistic_line_tree">
             <field name="name">edi.soap.logistic.line.tree</field>
             <field name="model">edi.soap.logistic.line</field>
@@ -358,9 +365,9 @@
         <record model="ir.ui.view" id="view_edi_soap_logistic_line_form">
             <field name="name">edi.soap.logistic.line.form</field>
             <field name="model">edi.soap.logistic.line</field>
-            <field name="arch" type="xml">                
-                <form string="Line detail" version="7.0">        
-                    <header> 
+            <field name="arch" type="xml">
+                <form string="Line detail" version="7.0">
+                    <header>
                           <button name="open_edi_logistic_line_split_wizard" string="Split line" type="object" icon="gtk-copy" context="{'return_logistic': False}"/>
                     </header>
                     <sheet>
@@ -377,45 +384,45 @@
 
                             <field name="lot" readonly="1" />
                             <field name="sequence" readonly="1"/>
-                            
+
                             <field name="variable_weight" readonly="1"/>
                             <field name="lot" readonly="1"/>
-                            
+
                             <field name="confirmed_qty" readonly="1"/>
                             <field name="net_qty" readonly="1"/>
-                            
+
                             <field name="lord_qty" readonly="1"/>
                             <field name="parcel" readonly="1"/>
-                            
+
                             <field name="deadline" readonly="1"/>
-                            
+
                             <field name="origin_country" readonly="1"/>
                             <field name="provenance_country" readonly="1"/>
-                            
+
                             <field name="dvce" readonly="1"/>
                             <field name="dvce_date" readonly="1"/>
-                            
+
                             <field name="animo" readonly="1"/>
                             <field name="sif" readonly="1"/>
-                            
+
                             <field name="duty" readonly="1"/>
                             <field name="mrn" readonly="1"/>
-                            
+
                             <field name="invoice" readonly="1"/>
                             <field name="invoice_date" readonly="1"/>
 
                             <field name="splitted_from_id" readonly="1" />
                         </group>
-                    </sheet>        
+                    </sheet>
                 </form>
             </field>
         </record>
-        <!--edi.soap.logistic-->   
+        <!--edi.soap.logistic-->
         <record model="ir.ui.view" id="view_edi_soap_logistic_search">
             <field name="name">edi.soap.logistic.search</field>
             <field name="model">edi.soap.logistic</field>
             <field name="arch" type="xml">
-                <search string="Logistic order" version="7.0">        
+                <search string="Logistic order" version="7.0">
                     <field name="name" />
                     <field name="order_id" filter_domain="[('order_id','=',self)]"/>
 
@@ -427,15 +434,15 @@
 
                     <group expand="0" string="Group By...">
                         <filter name="group_order" string="Order" context="{'group_by': 'order_id'}"/>
-                    </group>                
+                    </group>
                 </search>
             </field>
-        </record>     
+        </record>
         <record model="ir.ui.view" id="view_edi_soap_logistic_tree">
             <field name="name">edi.soap.logistic.tree</field>
             <field name="model">edi.soap.logistic</field>
             <field name="arch" type="xml">
-                <tree string="SOAP Logistic order" colors="red:order_id==False; green:soap_sent==True; grey:soap_not_sent==True"> 
+                <tree string="SOAP Logistic order" colors="red:order_id==False; green:soap_sent==True; grey:soap_not_sent==True">
                     <field name="connection_id" />
                     <field name="name" />
                     <field name="order_id" />
@@ -452,15 +459,15 @@
             <field name="name">edi.soap.logistic.form</field>
             <field name="model">edi.soap.logistic</field>
             <field name="arch" type="xml">
-                <form string="SOAP Logistic order" version="7.0"> 
+                <form string="SOAP Logistic order" version="7.0">
                      <header>
                          <button name="send_logistic_2_soap" string="Send" type="object" class="oe_highlight" icon="gtk-save-as" attrs="{'invisible': ['|', ('soap_not_sent','=',True), ('soap_sent','=',True)]}"/>
                          <button name="send_logistic_not_send" string="Not Send" type="object" icon="gtk-cancel" attrs="{'invisible': ['|', ('soap_not_sent','=',True), ('soap_sent','=',True)]}" confirm="This will mark order as not send an removed from here, confirm?"/>
                      </header>
-                     <sheet>                     
+                     <sheet>
                          <group colspan="4" col="4">
                               <field name="connection_id" readonly="1"/>
-                              
+
                               <field name="customer_order" readonly="1"/>
                               <field name="order_id" readonly="1"/>
 
@@ -476,7 +483,7 @@
                                           <button name="open_logistic_lines" string="Open lines" type="object" class="oe_highlight" icon="gtk-justify-fill" colspan="1"/>
                                           <!--<field name="select_pallet_id" widget="selection" domain="[('logistic_id', '=', active_id)]"/>
                                           <button name="setup_pallet_id" string="Set pallet all" type="object" icon="gtk-refresh" help="Setup all line with this pallet" />-->
-                                          
+
                                           <field name="line_ids" nolabel="1" colspan="6" context="{'default_logistic_id': active_id}">
                                               <tree editable="bottom" string="Line" colors="red:lord_qty>650;blue:splitted_from_id!=False">
                                                   <field name="splitted_from_id" invisible="1" />
@@ -498,7 +505,7 @@
                                                   <button name="open_edi_logistic_line_split_wizard" string="Split line" type="object" icon="gtk-copy" context="{'return_logistic': True}"/>
                                                </tree>
                                           </field>
-                                     </group>                                      
+                                     </group>
                                   </page>
                                   <page string="Pallet">
                                      <group colspan="4" col="4">
@@ -531,7 +538,7 @@
                                      </group>
                                   </page>
                               </notebook>
-                         </group>     
+                         </group>
                      </sheet>
                 </form>
             </field>
@@ -582,7 +589,7 @@
             <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>
-        
+
         <!--res.partner-->
         <record model="ir.ui.view" id="view_res_partner_destination_tree">
             <field name="name">res.partner.destination.connection.tree</field>
@@ -590,7 +597,7 @@
             <field name="priority" eval="40" />
             <field name="arch" type="xml">
                 <tree string="Partner filter" editable="bottom" colors="green:connection_id != False">
-                    <button name="res_partner_destination_detail" string="Detail" type="object" icon="gtk-index" />                    
+                    <button name="res_partner_destination_detail" string="Detail" type="object" icon="gtk-index" />
                     <field name="name" readonly="1"/>
                     <field name="parent_id" readonly="1"/>
                     <field name="street" readonly="1" />
@@ -598,7 +605,7 @@
                     <field name="zip" readonly="1" />
                     <field name="country_id" readonly="1" />
                     <field name="sql_destination_code" readonly="1" />
-                    <field name="connection_id" />                    
+                    <field name="connection_id" />
                 </tree>
             </field>
         </record>
@@ -611,53 +618,53 @@
             <field name="context">{}</field>
             <field name="domain">[('sql_destination_code', '!=', False)]</field>
         </record>
-        <menuitem 
-            parent="account_trip.menu_trip_root" 
-            id="menu_trip_soap_configuration" 
+        <menuitem
+            parent="account_trip.menu_trip_root"
+            id="menu_trip_soap_configuration"
             name="SOAP order"
             sequence="60"
             groups="account_trip_edi_soap.group_edi_soap_user,account_trip_edi_soap.group_edi_soap_manager"
             />
-            <menuitem 
-                parent="menu_trip_soap_configuration" 
-                id="menu_trip_soap_order_unsent" 
+            <menuitem
+                parent="menu_trip_soap_configuration"
+                id="menu_trip_soap_order_unsent"
                 name="EDI order"
                 action="action_edi_soap_order_unsent"
                 sequence="10"
                 />
-            <menuitem 
-                parent="menu_trip_soap_configuration" 
-                id="menu_trip_soap_logistic" 
+            <menuitem
+                parent="menu_trip_soap_configuration"
+                id="menu_trip_soap_logistic"
                 name="Logistic order"
                 action="action_edi_soap_logistic"
                 sequence="20"
                 />
-                <menuitem 
-                    parent="menu_trip_soap_logistic" 
-                    id="menu_trip_soap_logistic_all" 
+                <menuitem
+                    parent="menu_trip_soap_logistic"
+                    id="menu_trip_soap_logistic_all"
                     name="Logistic order (all)"
                     action="action_edi_soap_logistic_all"
                     sequence="10"
                     />
-            <menuitem 
-                parent="menu_trip_soap_configuration" 
-                id="menu_trip_soap_mapping" 
+            <menuitem
+                parent="menu_trip_soap_configuration"
+                id="menu_trip_soap_mapping"
                 name="Product mapping"
                 action="action_edi_soap_mapping"
                 sequence="30"
                 />
-            
-            <menuitem 
-                parent="menu_trip_soap_configuration" 
-                id="menu_trip_soap_destination" 
+
+            <menuitem
+                parent="menu_trip_soap_configuration"
+                id="menu_trip_soap_destination"
                 name="SOAP Destination"
                 action="action_res_partner_destination"
                 sequence="80"
                 groups="account_trip_edi_soap.group_edi_soap_manager"
                 />
-            <menuitem 
-                parent="menu_trip_soap_configuration" 
-                id="menu_trip_soap_connection" 
+            <menuitem
+                parent="menu_trip_soap_configuration"
+                id="menu_trip_soap_connection"
                 name="SOAP Connection"
                 action="action_edi_soap_connection"
                 sequence="90"

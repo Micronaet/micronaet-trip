@@ -821,6 +821,14 @@ class EdiSoapConnection(orm.Model):
             'PON partner code', size=15,
             required=True,
             help='Right part of the order: ORDER-PONCODE >> PONCODE'),
+
+        # Account:
+        'flask_host': fields.char('Host agente', size=80,
+            help='Indirizzo server dove è installato l\'agente del gestionale'
+            ),
+        'flask_port': fields.integer(
+            'Porta agente', default=5000,
+            help='Porta di connessione agente di passaggio dati'),
         }
 
     _defaults = {
