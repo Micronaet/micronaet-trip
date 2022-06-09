@@ -50,7 +50,7 @@ def write_log(log_f, message, mode='INFO', verbose=True):
 # -----------------------------------------------------------------------------
 # SOAP:
 # -----------------------------------------------------------------------------
-def _get_soap_service(wsdl_root=False, namespace=False):
+def get_soap_service(wsdl_root=False, namespace=False):
     """ Get WSDL Service link
         if passed namespace and wsdl root use that, instead of
         read from
@@ -60,7 +60,7 @@ def _get_soap_service(wsdl_root=False, namespace=False):
     return client.create_service(namespace, wsdl_root)
 
 
-def _get_datetime_tz():
+def get_datetime_tz():
     """ Change datetime removing gap from now and GMT 0
     """
     return pytz.utc.localize(datetime.now()).astimezone(
@@ -149,7 +149,7 @@ def ODOOCall():
                 secret = bytes('5BC478479AB65798A4420F3FB19EF68E96ECFEA8')
                 namespace = bytes('{it.niuma.mscsoapws.ws}MscWsPortSoap11')
                 wsdl_root = bytes('https://layer7prod.msccruises.com/pep/wsdl')
-                timestamp = _get_datetime_tz().strftime('%d%m%Y%H%M%S')
+                timestamp = get_datetime_tz().strftime('%d%m%Y%H%M%S')
 
                 number = str(uuid.uuid4())[-6:]
                 message = message_mask % (username, timestamp, number)
@@ -159,18 +159,13 @@ def ODOOCall():
 
                 hash_text = base64.b64encode(signature)
 
-                service = _get_soap_service(wsdl_root, namespace)
-                res = service.login(
-                    username=username, time=timestamp, number=number,
-                    hash=hash_text)
-                print(res)
-
-                # Call SOAP portal:
                 pdb.set_trace()
+                # Call SOAP portal:
                 service = get_soap_service(wsdl_root, namespace)
                 res = service.login(
                     username=username, time=timestamp, number=number,
                     hash=hash_text)
+
                 payload['reply']['res'] = res
             except:
                 print('Errore: %s' % (sys.exc_info(), ))
