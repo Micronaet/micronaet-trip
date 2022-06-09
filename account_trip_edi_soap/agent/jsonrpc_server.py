@@ -96,6 +96,7 @@ def soap2dict(reply):
         # All order fields
         # ---------------------------------------------------------------------
         for field in dir(order):
+            print('Header field %s' % field)
             # A. Order line updated after:
             if field == 'orderLines':
                 new_order['orderLines'] = []
@@ -125,6 +126,8 @@ def soap2dict(reply):
 
             # Loop on every field:
             for line_field in dir(line):
+                print('Line field %s' % field)
+
                 # a. Float
                 if line_field in decimal_field:
                     try:
