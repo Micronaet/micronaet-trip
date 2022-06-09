@@ -168,6 +168,7 @@ def ODOOCall():
                 hash=hash_text)
 
             payload['reply']['res'] = eval(str(res))
+            payload['success'] = True
             return payload
         except:
             print('Errore: %s' % (sys.exc_info(), ))
