@@ -115,7 +115,6 @@ class EdiSoapConnection(orm.Model):
             wsdl_root = parameter.wsdl_root
 
         client = Client(wsdl_root)
-
         return client.create_service(
             namespace,
             wsdl_root,
@@ -192,6 +191,7 @@ class EdiSoapConnection(orm.Model):
 
         service = self._get_soap_service(
             cr, uid, ids, wsdl_root, namespace, context=context)
+        pdb.set_trace()
         res = service.login(
             username=username, time=timestamp, number=number, hash=hash_text)
         self.check_return_status(res, 'Login')
