@@ -129,58 +129,54 @@ def ODOOCall():
     # -------------------------------------------------------------------------
     if command == 'token':
         account_command = parameter.get('command')  # account command
+        #try:
+        # -----------------------------------------------------------------
+        # Read parameters:
+        # -----------------------------------------------------------------
+        wsdl_root = bytes(parameter.get('wsdl_root'))
+        namespace = bytes(parameter.get('namespace'))
+        username = bytes(parameter.get('username'))
+        timestamp = parameter.get('timestamp')
+        number = parameter.get('number')
+        hash_text = parameter.get('hash_text')
+
+        # -----------------------------------------------------------------
+        # Call for token
+        # -----------------------------------------------------------------
         try:
-            # -----------------------------------------------------------------
-            # Read parameters:
-            # -----------------------------------------------------------------
-            wsdl_root = bytes(parameter.get('wsdl_root'))
-            namespace = bytes(parameter.get('namespace'))
-            username = bytes(parameter.get('username'))
-            timestamp = parameter.get('timestamp')
-            number = parameter.get('number')
-            hash_text = parameter.get('hash_text')
+            message_mask = 'GET+/users/%s/account+%s+%s'
+            username = bytes('GENERALFOOD')  # bytes('GENERALFOOD')
+            secret = bytes('5BC478479AB65798A4420F3FB19EF68E96ECFEA8')
+            namespace = bytes('{it.niuma.mscsoapws.ws}MscWsPortSoap11')
+            wsdl_root = bytes('https://layer7prod.msccruises.com/pep/wsdl')
+            timestamp = get_datetime_tz().strftime('%d%m%Y%H%M%S')
 
-            # -----------------------------------------------------------------
-            # Call for token
-            # -----------------------------------------------------------------
-            try:
-                message_mask = 'GET+/users/%s/account+%s+%s'
-                username = bytes('GENERALFOOD')  # bytes('GENERALFOOD')
-                secret = bytes('5BC478479AB65798A4420F3FB19EF68E96ECFEA8')
-                namespace = bytes('{it.niuma.mscsoapws.ws}MscWsPortSoap11')
-                wsdl_root = bytes('https://layer7prod.msccruises.com/pep/wsdl')
-                timestamp = get_datetime_tz().strftime('%d%m%Y%H%M%S')
+            number = str(uuid.uuid4())[-6:]
+            message = message_mask % (username, timestamp, number)
 
-                number = str(uuid.uuid4())[-6:]
-                message = message_mask % (username, timestamp, number)
+            signature = hmac.new(secret, msg=message,
+                                 digestmod=hashlib.sha256).digest()
 
-                signature = hmac.new(secret, msg=message,
-                                     digestmod=hashlib.sha256).digest()
+            hash_text = base64.b64encode(signature)
 
-                hash_text = base64.b64encode(signature)
+            pdb.set_trace()
+            # Call SOAP portal:
+            service = get_soap_service(wsdl_root, namespace)
+            res = service.login(
+                username=username, time=timestamp, number=number,
+                hash=hash_text)
 
-                pdb.set_trace()
-                # Call SOAP portal:
-                service = get_soap_service(wsdl_root, namespace)
-                res = service.login(
-                    username=username, time=timestamp, number=number,
-                    hash=hash_text)
-
-                payload['reply']['res'] = res
-            except:
-                print('Errore: %s' % (sys.exc_info(), ))
-                payload['reply'].update({
-                    'error': 'Errore nella chiamata ad MSC portale: '
-                             '{}'.format(account_command),
-                })
-                return payload
-            else:
-                payload['reply'].update({
-                    'error': 'Errore non gestito o non correttamente '
-                             'passato dal gestionale',
-                })
-        finally:
-            pass
+            payload['reply']['res'] = res
+            return payload
+        except:
+            print('Errore: %s' % (sys.exc_info(), ))
+            payload['reply'].update({
+                'error': 'Errore nella chiamata ad MSC portale: '
+                         '{}'.format(account_command),
+            })
+            return payload
+        # finally:
+        #    pass
 
     elif command == 'order':
          pass
@@ -201,5 +197,6 @@ def ODOOCall():
     # -------------------------------------------------------------------------
     return payload
 
+
 app.run(debug=True, host=host, port=port)
-write_log(log_f, 'End ODOO-Mexal Flask agent')
+write_log(log_f, 'End ODOO-MSC Flask agent')

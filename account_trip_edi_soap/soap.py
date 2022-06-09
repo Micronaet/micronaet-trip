@@ -220,7 +220,8 @@ class EdiSoapConnection(orm.Model):
                     },
                 }
             }
-            response = requests.post(url, headers=headers, data=json.dumps(payload))
+            response = requests.post(
+                url, headers=headers, data=json.dumps(payload))
             pdb.set_trace()
             response_json = response.json()
             if response_json['success']:
