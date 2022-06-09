@@ -60,6 +60,75 @@ secret = bytes('5BC478479AB65798A4420F3FB19EF68E96ECFEA8')
 namespace = bytes('{it.niuma.mscsoapws.ws}MscWsPortSoap11')
 wsdl_root = bytes('https://layer7prod.msccruises.com/pep/wsdl')
 
+# datetime_field = []
+decimal_field = [
+    # Header:
+    'documentValue',
+
+    # Line:
+    'itemPrice',
+    'quantityOrdered',
+    'quantityConfirmed',
+    'quantityLogistic',
+    'nrPzConf',
+    'flDogana',
+]
+
+
+def soap2dict(reply):
+    """ Convert soap to dict
+    """
+    res = {}
+
+    # -------------------------------------------------------------------------
+    # Outcome part:
+    # -------------------------------------------------------------------------
+    res['operationOutcome'] = eval(str(reply['operationOutcome']))
+
+    # -------------------------------------------------------------------------
+    # Orders part:
+    # -------------------------------------------------------------------------
+    for order in res['orders']:
+        new_order = {}  # New structure:
+
+        # ---------------------------------------------------------------------
+        # All order fields
+        # ---------------------------------------------------------------------
+        for field in dir(order):
+            # A. Order line updated after:
+            if field == 'orderLines':
+                new_order['orderLines'] = []
+                continue  # after
+
+            # B. Datetime field:
+            if type(order[field]) == datetime:
+                new_order[field] = str(order[field])
+
+            # C. Decimal field:
+            elif field in decimal_field:
+                new_order[field] = float(order[field])
+
+            # D. Normal fields (string, integer, boolean)
+            else:
+                new_order[field] = order[field]
+
+        # ---------------------------------------------------------------------
+        # Line part:
+        # ---------------------------------------------------------------------
+        for line in order['orderLines']:
+            new_line = {}
+
+            # Loop on every field:
+            for line_field in dir(order['orderLines']):
+                # a. Float
+                if line_field in decimal_field:
+                    new_line[line_field] = float(line[line_field])
+                # b. Normal fields (string, integer, boolean)
+                else:
+                    new_line[line_field] = line[line_field]
+
+            order['orderLines'].append(new_line)
+    return res
 
 def get_soap_service():
     """ Get WSDL Service link
@@ -194,9 +263,9 @@ def ODOOCall():
         token = get_token()
         token = token['accessToken']  # Extract order from reply
         service = get_soap_service()
-        res = service.getOngoingPOrders(accessToken=token)
+        reply = service.getOngoingPOrders(accessToken=token)
 
-        payload['reply']['res'] = eval(str(res))
+        payload['reply']['res'] = soap2dict(reply)
         payload['success'] = True
         return payload
 
