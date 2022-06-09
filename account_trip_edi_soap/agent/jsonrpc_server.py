@@ -32,6 +32,7 @@ except:
 
 token = False
 
+
 # -----------------------------------------------------------------------------
 #                                  Utility:
 # -----------------------------------------------------------------------------
@@ -119,7 +120,7 @@ def soap2dict(reply):
             new_line = {}
 
             # Loop on every field:
-            for line_field in dir(order['orderLines']):
+            for line_field in dir(line):
                 # a. Float
                 if line_field in decimal_field:
                     new_line[line_field] = float(line[line_field])
