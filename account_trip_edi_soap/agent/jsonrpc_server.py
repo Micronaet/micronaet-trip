@@ -8,11 +8,15 @@
 
 import os
 import sys
+import hmac
+import hashlib
+import base64
+import uuid
 import pytz
 import pdb
-from flask import Flask, request
 from datetime import datetime
 from zeep import Client
+from flask import Flask, request
 
 try:
     import ConfigParser
@@ -46,17 +50,17 @@ def write_log(log_f, message, mode='INFO', verbose=True):
 # -----------------------------------------------------------------------------
 # SOAP:
 # -----------------------------------------------------------------------------
-def get_soap_service(wsdl_root=None, namespace=None):
+def _get_soap_service(wsdl_root=False, namespace=False):
     """ Get WSDL Service link
-        if passed namespace and wsdl root use that, instead of read from
+        if passed namespace and wsdl root use that, instead of
+        read from
         parameters
     """
-    pdb.set_trace()
     client = Client(wsdl_root)
     return client.create_service(namespace, wsdl_root)
 
 
-def get_datetime_tz():
+def _get_datetime_tz():
     """ Change datetime removing gap from now and GMT 0
     """
     return pytz.utc.localize(datetime.now()).astimezone(
@@ -140,6 +144,27 @@ def ODOOCall():
             # Call for token
             # -----------------------------------------------------------------
             try:
+                message_mask = 'GET+/users/%s/account+%s+%s'
+                username = bytes('GENERALFOOD')  # bytes('GENERALFOOD')
+                secret = bytes('5BC478479AB65798A4420F3FB19EF68E96ECFEA8')
+                namespace = bytes('{it.niuma.mscsoapws.ws}MscWsPortSoap11')
+                wsdl_root = bytes('https://layer7prod.msccruises.com/pep/wsdl')
+                timestamp = _get_datetime_tz().strftime('%d%m%Y%H%M%S')
+
+                number = str(uuid.uuid4())[-6:]
+                message = message_mask % (username, timestamp, number)
+
+                signature = hmac.new(secret, msg=message,
+                                     digestmod=hashlib.sha256).digest()
+
+                hash_text = base64.b64encode(signature)
+
+                service = _get_soap_service(wsdl_root, namespace)
+                res = service.login(
+                    username=username, time=timestamp, number=number,
+                    hash=hash_text)
+                print(res)
+
                 # Call SOAP portal:
                 pdb.set_trace()
                 service = get_soap_service(wsdl_root, namespace)
