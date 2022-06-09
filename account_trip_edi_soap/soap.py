@@ -795,7 +795,6 @@ class EdiSoapConnection(orm.Model):
         parameter = self.browse(cr, uid, ids, context=context)[0]
         order_pool = self.pool.get('edi.soap.order')
 
-        pdb.set_trace()
         flask_host = parameter.flask_host
         flask_port = parameter.flask_port
         if flask_host:
@@ -821,6 +820,7 @@ class EdiSoapConnection(orm.Model):
             }
             response = requests.post(
                 url, headers=headers, data=json.dumps(payload))
+            pdb.set_trace()
             response_json = response.json()
             if response_json['success']:
                 res = response_json.get('reply', {}).get('res')
