@@ -89,6 +89,7 @@ def soap2dict(reply):
     # -------------------------------------------------------------------------
     # Orders part:
     # -------------------------------------------------------------------------
+    res['orders'] = []
     for order in reply['orders']:
         new_order = {}  # New structure:
 
@@ -141,6 +142,7 @@ def soap2dict(reply):
                     new_line[line_field] = line[line_field]
 
             new_order['orderLines'].append(new_line)
+        res['orders'].append(new_order)
     return res
 
 def get_soap_service():
