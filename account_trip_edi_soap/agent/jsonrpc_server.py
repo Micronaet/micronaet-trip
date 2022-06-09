@@ -192,10 +192,10 @@ def ODOOCall():
     elif command == 'order':
         pdb.set_trace()
         token = get_token()
-        token = token['accessToken']
+        token = token['accessToken']  # Extract order from reply
         service = get_soap_service()
         # res = service.getOngoingPOrders(accessToken=token)
-        res = '{}'
+        res = {}
 
         payload['reply']['res'] = eval(str(res))
         payload['success'] = True
