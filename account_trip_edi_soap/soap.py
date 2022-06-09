@@ -50,6 +50,8 @@ import hashlib
 import base64
 import uuid
 import pytz
+import requests
+import json
 
 #try:
 from zeep import Client
@@ -164,6 +166,9 @@ class EdiSoapConnection(orm.Model):
         # Ex.: 'https://layer7test.msccruises.com/pep/wsdl'  DEMO
         # Ex.: 'https://layer7prod.msccruises.com/pep/wsdl'  PRODUCTION
         token = parameter.token
+        # Flask agent present:
+        flask_host = parameter.flask_host
+        flask_port = parameter.flask_port
 
         # ---------------------------------------------------------------------
         # Check if present last token saved:
@@ -189,12 +194,53 @@ class EdiSoapConnection(orm.Model):
             ).digest()
         hash_text = base64.b64encode(signature)
 
-        service = self._get_soap_service(
-            cr, uid, ids, wsdl_root, namespace, context=context)
+        # ---------------------------------------------------------------------
+        #                           CALL MODE:
+        # ---------------------------------------------------------------------
+        # Flask Agent:
+        # ---------------------------------------------------------------------
+        if flask_host:
+            # Authenticate to get Session ID:
+            url = 'http://%s:%s/API/v1.0/micronaet/launcher' % (
+                flask_host, flask_port)
+            headers = {
+                'content-type': 'application/json',
+            }
+            payload = {
+                'jsonrpc': '2.0',
+                'params': {
+                    'command': 'token',
+                    'parameters': {
+                        'wsdl_root': wsdl_root,
+                        'namespace': namespace,
+                        'username': username,
+                        'timestamp': timestamp,
+                        'number': number,
+                        'hash_text': hash_text,
+                    },
+                }
+            }
 
-        # todo this part raise error:
-        res = service.login(
-            username=username, time=timestamp, number=number, hash=hash_text)
+            response = requests.post(
+                url, headers=headers, data=json.dumps(payload))
+            response_json = response.json()
+            if response_json['success']:
+                # print(response_json)
+                res = response_json.get('reply', {}).get('res')
+            else:
+                res = {}  # No reply
+
+        # ---------------------------------------------------------------------
+        # Direct:
+        # ---------------------------------------------------------------------
+        else:  # todo this part raise error:
+            service = self._get_soap_service(
+                cr, uid, ids, wsdl_root, namespace, context=context)
+
+            res = service.login(
+                username=username, time=timestamp, number=number,
+                hash=hash_text)
+
         self.check_return_status(res, 'Login')
 
         # Get new token and save for next calls:

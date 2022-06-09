@@ -149,9 +149,7 @@ def ODOOCall():
                 res = service.login(
                     username=username, time=timestamp, number=number,
                     hash=hash_text)
-
-                print(res)
-
+                payload['reply']['res'] = res
             except:
                 payload['reply'].update({
                     'error': 'Errore nella chiamata ad MSC portale: '
