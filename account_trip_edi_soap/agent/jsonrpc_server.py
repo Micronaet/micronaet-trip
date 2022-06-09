@@ -161,7 +161,6 @@ def ODOOCall():
 
             hash_text = base64.b64encode(signature)
 
-            pdb.set_trace()
             # Call SOAP portal:
             service = get_soap_service(wsdl_root, namespace)
             res = service.login(
