@@ -30,6 +30,8 @@ except:
         sys.exit()
 
 
+token = False
+
 # -----------------------------------------------------------------------------
 #                                  Utility:
 # -----------------------------------------------------------------------------
@@ -52,7 +54,14 @@ def write_log(log_f, message, mode='INFO', verbose=True):
 # -----------------------------------------------------------------------------
 # SOAP:
 # -----------------------------------------------------------------------------
-def get_soap_service(wsdl_root=False, namespace=False):
+message_mask = 'GET+/users/%s/account+%s+%s'
+username = bytes('GENERALFOOD')
+secret = bytes('5BC478479AB65798A4420F3FB19EF68E96ECFEA8')
+namespace = bytes('{it.niuma.mscsoapws.ws}MscWsPortSoap11')
+wsdl_root = bytes('https://layer7prod.msccruises.com/pep/wsdl')
+
+
+def get_soap_service():
     """ Get WSDL Service link
         if passed namespace and wsdl root use that, instead of
         read from
@@ -67,6 +76,27 @@ def get_datetime_tz():
     """
     return pytz.utc.localize(datetime.now()).astimezone(
         pytz.timezone('Europe/Rome'))
+
+
+def get_token():
+    """ Call server and get token
+    """
+    timestamp = get_datetime_tz().strftime('%d%m%Y%H%M%S')
+    number = str(uuid.uuid4())[-6:]
+    message = message_mask % (username, timestamp, number)
+
+    signature = hmac.new(
+        secret, msg=message, digestmod=hashlib.sha256).digest()
+    hash_text = base64.b64encode(signature)
+
+    # Call SOAP portal:
+    service = get_soap_service()
+    res = service.login(
+        username=username, time=timestamp, number=number,
+        hash=hash_text)
+    res = eval(str(res))
+    token = res['accessToken']
+    return res
 
 
 # -----------------------------------------------------------------------------
@@ -122,9 +152,7 @@ def ODOOCall():
     # Start reply payload:
     payload = {
         'success': False,
-        'reply': {
-
-        },
+        'reply': {},
     }
     # -------------------------------------------------------------------------
     #                       Import invoice procedure:
@@ -133,9 +161,9 @@ def ODOOCall():
         account_command = parameter.get('command')  # account command
         #try:
 
-        # -----------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # Call for token
-        # -----------------------------------------------------------------
+        # ---------------------------------------------------------------------
         try:
             # -----------------------------------------------------------------
             # Read parameters:
@@ -147,28 +175,8 @@ def ODOOCall():
             # number = parameter.get('number')
             # hash_text = parameter.get('hash_text')
 
-            message_mask = 'GET+/users/%s/account+%s+%s'
-            username = bytes('GENERALFOOD')
-            secret = bytes('5BC478479AB65798A4420F3FB19EF68E96ECFEA8')
-            namespace = bytes('{it.niuma.mscsoapws.ws}MscWsPortSoap11')
-            wsdl_root = bytes('https://layer7prod.msccruises.com/pep/wsdl')
-            timestamp = get_datetime_tz().strftime('%d%m%Y%H%M%S')
-
-            number = str(uuid.uuid4())[-6:]
-            message = message_mask % (username, timestamp, number)
-
-            signature = hmac.new(secret, msg=message,
-                                 digestmod=hashlib.sha256).digest()
-
-            hash_text = base64.b64encode(signature)
-
-            # Call SOAP portal:
-            service = get_soap_service(wsdl_root, namespace)
-            res = service.login(
-                username=username, time=timestamp, number=number,
-                hash=hash_text)
-
-            payload['reply']['res'] = eval(str(res))
+            res = get_token()
+            payload['reply']['res'] = res
             payload['success'] = True
             return payload
         except:
@@ -182,7 +190,15 @@ def ODOOCall():
         #    pass
 
     elif command == 'order':
-         pass
+        token = get_token()
+        service = get_soap_service()
+        # res = service.getOngoingPOrders(accessToken=token)
+        res = '{}'
+
+        payload['reply']['res'] = eval(str(res))
+        payload['success'] = True
+        return payload
+
     elif command == 'invoice':
          pass
     else:

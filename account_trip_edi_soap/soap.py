@@ -222,10 +222,8 @@ class EdiSoapConnection(orm.Model):
             }
             response = requests.post(
                 url, headers=headers, data=json.dumps(payload))
-            pdb.set_trace()
             response_json = response.json()
             if response_json['success']:
-                # print(response_json)
                 res = response_json.get('reply', {}).get('res')
             else:
                 res = {}  # No reply
@@ -794,15 +792,49 @@ class EdiSoapConnection(orm.Model):
     def load_new_order(self, cr, uid, ids, context=None):
         """ Load order from WSDL Soap Connection
         """
+        parameter = self.browse(cr, uid, ids, context=context)[0]
         order_pool = self.pool.get('edi.soap.order')
 
-        service = self._get_soap_service(cr, uid, ids, context=context)
+        pdb.set_trace()
+        flask_host = parameter.flask_host
+        flask_port = parameter.flask_port
+        if flask_host:
+            # Authenticate to get Session ID:
+            url = 'http://%s:%s/API/v1.0/micronaet/launcher' % (
+                flask_host, flask_port)
+            headers = {
+                'content-type': 'application/json',
+            }
+            payload = {
+                'jsonrpc': '2.0',
+                'params': {
+                    'command': 'order',
+                    'parameters': {
+                        # 'wsdl_root': wsdl_root,
+                        # 'namespace': namespace,
+                        # 'username': username,
+                        # 'timestamp': timestamp,
+                        # 'number': number,
+                        # 'hash_text': hash_text,
+                    },
+                }
+            }
+            response = requests.post(
+                url, headers=headers, data=json.dumps(payload))
+            response_json = response.json()
+            if response_json['success']:
+                res = response_json.get('reply', {}).get('res')
+            else:
+                res = {}  # No reply
 
-        res = service.getOngoingPOrders(
-            accessToken=self.get_token(cr, uid, ids, context=context))
+        else:
+            service = self._get_soap_service(cr, uid, ids, context=context)
+            res = service.getOngoingPOrders(
+                accessToken=self.get_token(cr, uid, ids, context=context))
+
         self.check_return_status(res, 'Load new order')
 
-        # TODO Manage token problem
+        # todo Manage token problem
         for order in res['orders']:
             order_pool.create_new_order(
                 cr, uid, ids[0], order, force=False, context=context)
@@ -1150,7 +1182,7 @@ class EdiSoapOrder(orm.Model):
         order_id = self.create(cr, uid, header, context=context)
         _logger.info('New Order %s' % po_number)
 
-        # TODO load also file for ERP Management
+        # todo load also file for ERP Management
         weight = {}
         for line in order['orderLines']:
             # -----------------------------------------------------------------
@@ -1229,7 +1261,7 @@ class EdiSoapOrder(orm.Model):
                 'order_id': order_id,
                 }, context=context)
 
-        # TODO generate pallet list if empty?
+        # todo generate pallet list if empty?
         return order_id
 
     def extract_order_csv_file(self, cr, uid, ids, context=None):
