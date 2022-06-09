@@ -111,7 +111,7 @@ def soap2dict(reply):
                 try:
                     new_order[field] = float(order[field])
                 except:
-                    pdb.set_trace()
+                    print('Field empty: %s' % field)
                     new_order[field] = 0.0
 
             # D. Normal fields (string, integer, boolean)
@@ -133,7 +133,7 @@ def soap2dict(reply):
                     try:
                         new_line[line_field] = float(line[line_field])
                     except:
-                        pdb.set_trace()
+                        print('Field empty: %s' % line_field)
                         new_line[line_field] = 0.0
                 # b. Normal fields (string, integer, boolean)
                 else:
