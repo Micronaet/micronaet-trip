@@ -70,7 +70,7 @@
                                 </page>
                                 <page string="Flask">
                                     <group colspan="4" col="4">
-                                        <separator string="Parametri Flask Agent:" colspan="2"/>
+                                        <separator string="Parametri Flask Agent:" colspan="4"/>
                                         <field name="flask_host" />
                                         <field name="flask_port" />
                                     </group>
