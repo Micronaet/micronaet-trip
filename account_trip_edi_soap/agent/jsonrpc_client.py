@@ -21,7 +21,7 @@ headers = {
 payload = {
     'jsonrpc': '2.0',
     'params': {
-        'command': 'invoice',
+        'command': 'token',
         'parameters': {
             'wsdl': '',
             },
@@ -34,4 +34,4 @@ response_json = response.json()
 if response_json['success']:
     print(response_json)
 
-print 
+print

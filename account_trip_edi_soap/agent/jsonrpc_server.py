@@ -18,6 +18,7 @@ import pdb
 from datetime import datetime
 from zeep import Client
 from flask import Flask, request
+from flask import Response
 
 try:
     import ConfigParser
@@ -168,7 +169,9 @@ def ODOOCall():
                 hash=hash_text)
 
             payload['reply']['res'] = res
-            return json.loads(payload)
+            return Response(
+                json.dumps(payload), mimetype='application/json')
+            # return payload  # json.dumps(payload)
         except:
             print('Errore: %s' % (sys.exc_info(), ))
             payload['reply'].update({
