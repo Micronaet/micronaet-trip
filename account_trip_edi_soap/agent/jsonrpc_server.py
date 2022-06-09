@@ -190,7 +190,9 @@ def ODOOCall():
         #    pass
 
     elif command == 'order':
+        pdb.set_trace()
         token = get_token()
+        token = token['accessToken']
         service = get_soap_service()
         # res = service.getOngoingPOrders(accessToken=token)
         res = '{}'
