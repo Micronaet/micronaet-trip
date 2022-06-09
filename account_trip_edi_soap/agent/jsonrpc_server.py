@@ -126,7 +126,7 @@ def soap2dict(reply):
 
             # Loop on every field:
             for line_field in dir(line):
-                print('Line field %s' % field)
+                print('Line field %s' % line_field)
 
                 # a. Float
                 if line_field in decimal_field:
@@ -135,6 +135,7 @@ def soap2dict(reply):
                     except:
                         print('Field empty: %s' % line_field)
                         new_line[line_field] = 0.0
+
                 # b. Normal fields (string, integer, boolean)
                 else:
                     new_line[line_field] = line[line_field]
