@@ -168,10 +168,8 @@ def ODOOCall():
                 username=username, time=timestamp, number=number,
                 hash=hash_text)
 
-            payload['reply']['res'] = res
-            # return Response(
-            #    json.dumps(payload), mimetype='application/json')
-            return res  # payload  # json.dumps(payload)
+            payload['reply']['res'] = eval(str(res))
+            return payload
         except:
             print('Errore: %s' % (sys.exc_info(), ))
             payload['reply'].update({
