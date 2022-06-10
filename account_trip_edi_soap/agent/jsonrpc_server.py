@@ -284,6 +284,7 @@ def ODOOCall():
         return payload
 
     elif command == 'invoice':
+        # todo debug from here: pdb.set_trace()
         parameters = parameter.get('parameters')
         plotToCreate = parameters.get('plotToCreate')
         if not plotToCreate:
