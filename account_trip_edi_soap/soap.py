@@ -1795,6 +1795,7 @@ class EdiSoapLogistic(orm.Model):
         # ---------------------------------------------------------------------
         # Flask:
         # ---------------------------------------------------------------------
+        pdb.set_trace()  # todo debug from here!
         if flask_host:
             # Authenticate to get Session ID:
             url = 'http://%s:%s/API/v1.0/micronaet/launcher' % (
