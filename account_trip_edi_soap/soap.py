@@ -1701,17 +1701,14 @@ class EdiSoapLogistic(orm.Model):
         """
         connection_pool = self.pool.get('edi.soap.connection')
         mapping_pool = self.pool.get('edi.soap.mapping')
-        product_pool = self.pool.get('product.product')
 
         # ---------------------------------------------------------------------
         # Send logistic order:
         # ---------------------------------------------------------------------
         logistic = self.browse(cr, uid, ids, context=context)[0]
-        service = connection_pool._get_soap_service(
-            cr, uid, [logistic.connection_id.id], context=context)
-
-        token = connection_pool.get_token(
-            cr, uid, [logistic.connection_id.id], context=context)
+        parameter = logistic.connection_id
+        flask_host = parameter.flask_host
+        flask_port = parameter.flask_port
 
         # Header:
         try:
@@ -1723,8 +1720,7 @@ class EdiSoapLogistic(orm.Model):
                 )
 
         plotToCreate = {
-            'ponumber': logistic.order_id.name or \
-                logistic.customer_order,
+            'ponumber': logistic.order_id.name or logistic.customer_order,
             'dfDocIngresso': first_line.invoice,
             'dtEmissione': first_line.invoice_date,
             'dtIngresso': logistic.delivery_date,
@@ -1793,8 +1789,47 @@ class EdiSoapLogistic(orm.Model):
                 'dfFattura': line.invoice or '',  # Number
                 'dtFattura': line.invoice_date or '',  # Date
                 })
-        res = service.createNewPLot(
-            accessToken=token, plotToCreate=plotToCreate)
+
+        # ---------------------------------------------------------------------
+        # Send to the SOAP Portal
+        # ---------------------------------------------------------------------
+        # Flask:
+        # ---------------------------------------------------------------------
+        if flask_host:
+            # Authenticate to get Session ID:
+            url = 'http://%s:%s/API/v1.0/micronaet/launcher' % (
+                flask_host, flask_port)
+            headers = {
+                'content-type': 'application/json',
+            }
+            payload = {
+                'jsonrpc': '2.0',
+                'params': {
+                    'command': 'invoice',
+                    'parameters': {
+                        # Invoice to be sent:
+                        'plotToCreate': plotToCreate,
+                    },
+                }
+            }
+            response = requests.post(
+                url, headers=headers, data=json.dumps(payload))
+            response_json = response.json()
+            if response_json['success']:
+                res = response_json.get('reply', {}).get('res')
+            else:
+                res = {}  # No reply
+
+        # ---------------------------------------------------------------------
+        # SOAP portal:
+        # ---------------------------------------------------------------------
+        else:
+            service = connection_pool._get_soap_service(
+                cr, uid, [logistic.connection_id.id], context=context)
+            token = connection_pool.get_token(
+                cr, uid, [logistic.connection_id.id], context=context)
+            res = service.createNewPLot(
+                accessToken=token, plotToCreate=plotToCreate)
 
         # XXX ? res['ricevuta']  # file (base64) filename
 

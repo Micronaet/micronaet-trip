@@ -284,7 +284,22 @@ def ODOOCall():
         return payload
 
     elif command == 'invoice':
-         pass
+        parameters = parameter.get('parameters')
+        plotToCreate = parameters.get('plotToCreate')
+        if not plotToCreate:
+            payload['reply']['error'] = 'Non passato nessun ordine logistico'
+            return payload
+
+        token = get_token()
+        token = token['accessToken']  # Extract order from reply
+        service = get_soap_service()
+        reply = service.createNewPLot(
+            accessToken=token, plotToCreate=plotToCreate)
+
+        payload['reply']['res'] = eval(str(reply))
+        payload['success'] = True
+        return payload
+
     else:
         # ---------------------------------------------------------------------
         # Bad call:
