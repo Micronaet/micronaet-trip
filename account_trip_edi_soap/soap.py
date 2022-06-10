@@ -267,7 +267,6 @@ class EdiSoapConnection(orm.Model):
     def load_new_invoice(self, cr, uid, ids, context=None):
         """ Load invoice from file
         """
-        return True  # todo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         # ---------------------------------------------------------------------
         # Function
         # ---------------------------------------------------------------------
@@ -366,7 +365,6 @@ class EdiSoapConnection(orm.Model):
         logistic_pool = self.pool.get('edi.soap.logistic')
         line_pool = self.pool.get('edi.soap.logistic.line')
         pallet_pool = self.pool.get('edi.soap.logistic.pallet')
-        company_pool = self.pool.get('res.company')
         order_pool = self.pool.get('edi.soap.order')
         product_pool = self.pool.get('product.product')
         mapping_pool = self.pool.get('edi.soap.mapping')
@@ -475,9 +473,9 @@ class EdiSoapConnection(orm.Model):
                         # 'footer': {},
                         }
 
-                    # -------------------------------------------------------------
+                    # ---------------------------------------------------------
                     # Read all file and save always from header
-                    # -------------------------------------------------------------
+                    # ---------------------------------------------------------
                     file_rows = []
                     for line in open(fullname):
                         if line.startswith(start['header']):
@@ -488,15 +486,16 @@ class EdiSoapConnection(orm.Model):
                         data['i'] += 1
                         line = line.strip()
 
-                        # ---------------------------------------------------------
+                        # -----------------------------------------------------
                         # Check part of document:
-                        # ---------------------------------------------------------
+                        # -----------------------------------------------------
                         line_mode = 'normal'
                         if line.startswith(start['header']):
                             data.update({
                                 'header': line,
                                 'i': 1,  # Restart from 1
-                                'text': '',  # line + newline, # Restart from here
+                                'text': '',
+                                # line + newline, # Restart from here
 
                                 'detail': [],
                                 'footer': {},
@@ -504,26 +503,29 @@ class EdiSoapConnection(orm.Model):
                         elif line.startswith(start['detail']):
                             data['detail_status'] = 'on'
 
-                        # ---------------------------------------------------------
+                        # -----------------------------------------------------
                         #                         Header data:
-                        # ---------------------------------------------------------
-                        elif data['i'] == start['customer_order']:  # Custom. order
+                        # -----------------------------------------------------
+                        elif data['i'] == start['customer_order']:
+                            # Custom. order
                             data['customer_order'] = line
-                        elif data['i'] == start['invoice']:  # Invoice number
+                        elif data['i'] == start['invoice']:
+                            # Invoice number
                             data['invoice'] = line
-                        elif data['i'] == start['invoice_date']:  # Invoice date
+                        elif data['i'] == start['invoice_date']:
+                            # Invoice date
                             data['invoice_date'] = line
 
-                        # ---------------------------------------------------------
+                        # -----------------------------------------------------
                         #                         Detail data:
-                        # ---------------------------------------------------------
+                        # -----------------------------------------------------
                         elif data['detail_status'] == 'on':  # Start details
                             if line.startswith(separator):  # Detail line
                                 # 1. Article line:
                                 data['detail_text'] = line
                                 data['product_insert'] = False
                             elif not data['product_insert'] and \
-                                    start['weight'] in line:  # weigh line (second)
+                                    start['weight'] in line:  # weight line (2)
                                 # 2A. Error: Weight double
                                 data['detail'].append((
                                     data['detail_text'],
@@ -533,7 +535,7 @@ class EdiSoapConnection(orm.Model):
                                 data['product_insert'] = True
 
                             elif data['product_insert'] and \
-                                    start['weight'] in line:  # weigh line (second)
+                                    start['weight'] in line:  # weight line (2)
                                 # 2B. Check error (ex. 2 PESO LORDO line)
                                 _logger.warning('Extra line: %s' % line)
                                 line_mode = 'error'
@@ -544,31 +546,35 @@ class EdiSoapConnection(orm.Model):
                             # else:
                             #    data['error'] = True
                             #    data['error_comment'] += \
-                            #        '%s Detail without correct schema' % data['i']
+                            #        '%s Detail without correct schema' %
+                            #        data['i']
 
-                        # ---------------------------------------------------------
+                        # -----------------------------------------------------
                         #         End of document part (always done):
-                        # ---------------------------------------------------------
+                        # -----------------------------------------------------
                         if data['detail_status'] == 'end':  # Start details
                             # CONSEGNA DEL:
 
                             # DESTINAZIONE:
 
-                            # -----------------------------------------------------
+                            # -------------------------------------------------
                             # Extract remain line:
-                            # -----------------------------------------------------
-                            # order_line = check_startswith(line, start, 'order')
+                            # -------------------------------------------------
+                            # order_line =
+                            # check_startswith(line, start, 'order')
                             delivery_line = check_startwith(
                                 line, start, 'delivery_date')
-                            # lord_line = check_startswith(line, start, 'lord')
-                            # total_line = check_startswith(line, start, 'total')
+                            # lord_line =
+                            # check_startswith(line, start, 'lord')
+                            # total_line =
+                            # check_startswith(line, start, 'total')
 
                             pallet_line = check_startwith(
                                 line, start, 'pallet')
 
-                            # -----------------------------------------------------
+                            # -------------------------------------------------
                             # Extract needed data:
-                            # -----------------------------------------------------
+                            # -------------------------------------------------
                             # if order_line:
                             #    pass # XXX get in first line of file no needed
 
@@ -590,19 +596,20 @@ class EdiSoapConnection(orm.Model):
                                     _logger.error(
                                         'Cannot decode pallet: %s' % line)
 
-                        # ---------------------------------------------------------
+                        # -----------------------------------------------------
                         # Keep only last part of the file:
-                        # ---------------------------------------------------------
+                        # -----------------------------------------------------
                         if line_mode == 'error':
-                            data['text'] += '<font color="red">%s</font><br/>' % (
-                                line, )
+                            data['text'] += \
+                                '<font color="red">%s</font><br/>' % (line, )
                         else:
                             data['text'] += '%s<br />' % line
 
-                    # -------------------------------------------------------------
+                    # ---------------------------------------------------------
                     # Create ODOO Record:
-                    # -------------------------------------------------------------
-                    name = '%s del %s' % (data['invoice'], data['invoice_date'])
+                    # ---------------------------------------------------------
+                    name = '%s del %s' % (
+                        data['invoice'], data['invoice_date'])
                     logistic_ids = logistic_pool.search(cr, uid, [
                         ('name', '=', name),
                         ], context=context)
@@ -615,10 +622,12 @@ class EdiSoapConnection(orm.Model):
                             # Yet load cannot override:
                             # TODO move in after folder (unused)
                             _logger.error(
-                                'Order yet present, cannot be deleted: %s' % name)
+                                'Order yet present, cannot be deleted: %s' %
+                                name)
                             continue
                         else:
-                            _logger.error('Order yet present, deleted: %s' % name)
+                            _logger.error(
+                                'Order yet present, deleted: %s' % name)
 
                         # Delete and override:
                         logistic_pool.unlink(
@@ -627,9 +636,9 @@ class EdiSoapConnection(orm.Model):
                     # Bug management:
                     text = data['text'].replace('\xb0', ' ')
 
-                    # -------------------------------------------------------------
+                    # ---------------------------------------------------------
                     # Link to order
-                    # -------------------------------------------------------------
+                    # ---------------------------------------------------------
                     customer_order = data['customer_order']
 
                     # Update order if is full name or partial:
@@ -645,7 +654,8 @@ class EdiSoapConnection(orm.Model):
                     if order_ids:
                         order_id = order_ids[0]
                     else:
-                        _logger.error('Cannot link logistic to generator order!')
+                        _logger.error(
+                            'Cannot link logistic to generator order!')
                         order_id = False
 
                     # A. Import order:
@@ -671,9 +681,11 @@ class EdiSoapConnection(orm.Model):
                             'logistic_id': logistic_id,
                             }, context=context)
                         if len(pallet_ids):
-                            default_pallet_id = pallet_ids[0]  # TODO Check if 1st
+                            # todo Check if 1st
+                            default_pallet_id = pallet_ids[0]
                             default_pallet = pallet_pool.browse(
-                                cr, uid, default_pallet_id, context=context).name
+                                cr, uid, default_pallet_id,
+                                context=context).name
                         else:
                             default_pallet_id = False
                             default_pallet = False
@@ -772,7 +784,6 @@ class EdiSoapConnection(orm.Model):
         for filename, history in history_list:
             shutil.move(filename, history)
             log_data(log_f, 'File history: %s > %s' % (filename, history))
-
         log_f.close()
         return True
 
