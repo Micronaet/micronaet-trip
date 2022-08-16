@@ -274,6 +274,7 @@ def ODOOCall():
         #    pass
 
     elif command == 'order':
+        pdb.set_trace()
         token = get_token()
         token = token['accessToken']  # Extract order from reply
         service = get_soap_service()
