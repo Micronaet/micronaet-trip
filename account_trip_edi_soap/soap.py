@@ -837,8 +837,8 @@ class EdiSoapConnection(orm.Model):
             except:
                 raise osv.except_osv(
                     _('Errore di connessione con MSC'),
-                    _('Verificare se il portale è operativo o se è ' 
-                      'scaduto il codice "secret", richidere a MSC o Niuma!'),
+                    _('Verificare se il portale MCS è operativo o se è ' 
+                      'scaduto il codice "secret", richiedere a MSC o Niuma!'),
                 )
             if response_json['success']:
                 res = response_json.get('reply', {}).get('res')
