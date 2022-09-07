@@ -260,7 +260,7 @@ for root, dirs, files in os.walk(in_path):
             out_path, '%s' % (
                 '%s_%s_%s.txt' % (
                     create_date, f[:-4], command),
-                ))  # TODO change name
+                ))  # todo change name
 
         # ---------------------------------------------------------------------
         # Read input file:
@@ -358,6 +358,7 @@ for root, dirs, files in os.walk(in_path):
                     order_note,
                     line_note,
                     cig,
+                    # price,
                     ))
         f_in.close()
 
