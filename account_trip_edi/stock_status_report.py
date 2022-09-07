@@ -539,6 +539,21 @@ class edi_company_report(orm.Model):
                 ])
 
         # ---------------------------------------------------------------------
+        # Read convert customer code
+        # ---------------------------------------------------------------------
+        cmp_2_cust_code = {}
+        try:
+            filename = '/home/openerp/mexal/cella/csv/codelior.csv'
+            for line in open(filename, 'r'):
+                row = line.strip().split(';')
+                if len(row) == 2:
+                    default_code = row[0].strip()
+                    customer_code = row[1].strip()
+                    cmp_2_cust_code[default_code] = customer_code
+        except:
+            _logger.error('Error reading %s, no customer code' % filename)
+
+        # ---------------------------------------------------------------------
         # Excel file:
         # ---------------------------------------------------------------------
         extension = 'xlsx'
@@ -651,7 +666,6 @@ class edi_company_report(orm.Model):
                     c,
                     )):
             row += 1
-            customer_code = ''
             delta = report['data'][default_code]
             try:
                 name, uom, net_qty, oc_qty, start_qty, of_qty = \
@@ -671,7 +685,8 @@ class edi_company_report(orm.Model):
                 (u'Neg.' if has_negative else u'Pos.', color['text']),
                 (self.get_product_category(default_code), color['text']),
                 (default_code, color['text']),
-                (customer_code, color['text']),  # Customer code
+                (cmp_2_cust_code.get(
+                    default_code), color['text']),  # Customer code
                 (name, color['text']),
                 uom,
                 (of_qty, black['number']),
