@@ -651,7 +651,6 @@ class edi_company_report(orm.Model):
             ], excel_format['header'], col=fixed_cols)
 
         excel_pool.autofilter(ws_name, row, 0, row, 3)
-        # excel_pool.freeze_panes(ws_name, row + 1, 3) # Lock row / col
 
         # ---------------------------------------------------------------------
         # Data
