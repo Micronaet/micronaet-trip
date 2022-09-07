@@ -650,7 +650,7 @@ class edi_company_report(orm.Model):
             clean_header_date(item) for item in sorted(report['header'].keys())
             ], excel_format['header'], col=fixed_cols)
 
-        excel_pool.autofilter(ws_name, row, 0, row, 2)
+        excel_pool.autofilter(ws_name, row, 0, row, 3)
         # excel_pool.freeze_panes(ws_name, row + 1, 3) # Lock row / col
 
         # ---------------------------------------------------------------------
