@@ -334,7 +334,7 @@ class edi_company_report(orm.Model):
                 has_negative = True
 
         # Format cell (not installed on Ubuntu 12.04 server:
-        locale.setlocale(locale.LC_ALL, '') # Default en_US
+        locale.setlocale(locale.LC_ALL, '')  # Default en_US
         for col in range(0, len(delta)):
             delta[col] = (
                 locale.format('%0.0f', delta[col][0], grouping=True).replace(
@@ -512,7 +512,7 @@ class edi_company_report(orm.Model):
                 col = -1
             elif of_delivery > report['max']:
                 comment = u'Messo ultima colonna (< max)'
-                col = report['days'] - 1 # Go in last cell
+                col = report['days'] - 1  # Go in last cell
             else:
                 comment = u'Usato'
                 col = report['header'][of_delivery]
@@ -525,17 +525,17 @@ class edi_company_report(orm.Model):
                     of_qty,
                     )
 
-            # TODO add detail data?
-            report['detail'].append(
-                [default_code,
-                 col,
-                 u'OF',
-                 supplier,
-                 u'',
-                 number,
-                 of_delivery,
-                 of_qty,
-                 comment,
+            # todo add detail data?
+            report['detail'].append([
+                default_code,
+                col,
+                u'OF',
+                supplier,
+                u'',
+                number,
+                of_delivery,
+                of_qty,
+                comment,
                 ])
 
         # ---------------------------------------------------------------------
@@ -586,8 +586,10 @@ class edi_company_report(orm.Model):
             }
 
         col_width = [
-            6, 8, 11, 40, 2, 6, 6, 6, 6
-            # TODO append date total
+            6, 8,
+            11, 11,
+            40, 2, 6, 6, 6, 6
+            # todo append date total
             ]
         col_width.extend([6 for item in range(context.get('report_days'))])
 
@@ -595,7 +597,8 @@ class edi_company_report(orm.Model):
             # Product:
             _(u'Stato'),
             _(u'Categoria'),
-            _(u'Codice'),
+            _(u'Cod. GFD'),
+            _(u'Cod. cliente'),
             _(u'Nome'),
             _(u'UM'),
 
@@ -648,6 +651,7 @@ class edi_company_report(orm.Model):
                     c,
                     )):
             row += 1
+            customer_code = ''
             delta = report['data'][default_code]
             try:
                 name, uom, net_qty, oc_qty, start_qty, of_qty = \
@@ -667,6 +671,7 @@ class edi_company_report(orm.Model):
                 (u'Neg.' if has_negative else u'Pos.', color['text']),
                 (self.get_product_category(default_code), color['text']),
                 (default_code, color['text']),
+                (customer_code, color['text']),  # Customer code
                 (name, color['text']),
                 uom,
                 (of_qty, black['number']),
