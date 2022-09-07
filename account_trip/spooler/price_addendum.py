@@ -23,8 +23,7 @@ cfg_file = 'openerp_s.cfg'  # same directory
 config = ConfigParser.ConfigParser()
 config.read(cfg_file)
 
-mexal_user = config.get('mexal', 'user')
-mexal_password = config.get('mexal', 'password')
+# mexal_user = config.get('mexal', 'user')
 
 partic_filename = '/home/openerp/mexal/cella/csv/PARTIC.GFD'
 loop = {
