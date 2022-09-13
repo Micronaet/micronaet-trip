@@ -27,8 +27,8 @@ config.read(cfg_file)
 # mexal_user = config.get('mexal', 'user')
 
 pdb.set_trace()
-mexal_server = r'\\192.168.21.246\edi'
-edi_server = r'S:\script'
+mexal_server = r'C:\Passepartout\EDI'
+edi_server = r'\\192.168.21.203\script$'
 
 partic_filename = os.path.join(mexal_server, 'cella', 'csv', 'PARTIC.GFD')
 
