@@ -592,7 +592,6 @@ class trip_import_edi_wizard(orm.Model):
         """
         comment = ''
         try:
-            pdb.set_trace()
             company_id = self.browse(
                 cr, uid, ids, context=context)[0].company_id.id
             edi_pool = self.pool.get('edi.company')
@@ -637,8 +636,9 @@ class trip_import_edi_wizard(orm.Model):
             # -----------------------------------------------------------------
             # Log deletion:
             # -----------------------------------------------------------------
-            log_file = open(os.path.join(
-                delete_folder, 'log', 'delete.log'), 'a')
+            log_folder = os.path.join(delete_folder, 'log')
+            os.system('mkdir -p %s' % log_folder)
+            log_file = open(os.path.join(log_folder, 'delete.log'), 'a')
             log_file.write('[INFO] %s. USER: %s FILE: %s RIF: %s [%s]\r\n' % (
                 datetime.now(), uid, item_proxy.name, item_proxy.number,
                 comment))
