@@ -83,16 +83,61 @@ log_schedulers_file = open(log_scheduler, 'a')
 # Utility function:
 # -----------------
 # Price function:
-def integrate_price(fullname, company):
+price_setup = {
+    'FAB': {
+        'from_code': 162,
+        'to_code': 178,
+        'separator': '|',
+        'return': '\r\n',
+        'partic': False,
+    },
+}
+
+
+def integrate_price(order, company):
     """ Add price when not present in EDI order
     """
     partic_filename = os.path.join(
         price_path, '%s.csv' % company)
+    setup = price_setup.get(company)
+
+    # Check if need integration for price:
     if not os.path.isfile(partic_filename):
         print('No price integration for %s' % company)
         return False
 
+    # Read partic once before upate:
+    if not setup['partic']:
+        # Load partic file for this operations:
+        for line in open(partic_filename):
+            default_code = line[:11].strip()
+            price = float(line[-6:].strip().replace(',', '.'))
+            setup['partic'][default_code] = price
+
     # Price integration:
+    new_filename = '%s.price' % order
+    new_f = open(new_filename, 'w')
+    for line in open(order, 'r'):
+        default_code = line[setup['from_code']:setup['to_code']]
+        price = setup['partic'].get(default_code, 0.0)
+        price = '%10.3f' % price
+        new_line = '%s%s%s%s' % (
+            line[:-len(setup['return'])],  # remove 2 last char
+            setup['separator'],
+            price,
+            setup['return']
+        )
+        new_f.write(new_line)
+
+    # -------------------------------------------------------------------------
+    # Replace file operation:
+    # -------------------------------------------------------------------------
+    # todo manage errors?
+    # Delete original:
+    os.remove(order)
+
+    # Restore new created:
+    shutil.move(new_filename, order)
     return True
 
 # Pickle function:
@@ -278,6 +323,7 @@ for ts, file_in in file_list:
 
     # Integrate price in file:
     integrate_price(order_in, company)
+    # order_1 = join(path_out, 'ordine.1.txt')
 
     order_1 = join(path_out, 'ordine.1.txt')
     order_2 = join(path_out, 'ordine.2.txt')
