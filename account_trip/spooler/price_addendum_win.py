@@ -26,7 +26,6 @@ config.read(cfg_file)
 
 # mexal_user = config.get('mexal', 'user')
 
-pdb.set_trace()
 mexal_server = r'C:\Passepartout\EDI'
 edi_server = r'\\192.168.21.203\script$'
 
