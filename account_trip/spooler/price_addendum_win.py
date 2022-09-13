@@ -38,10 +38,10 @@ check_file = [
     partic_filename,
     ]
 
-loop = {
+loop = [
     [os.path.join(edi_server, 'price', 'fabbro.csv'), '06.02923'],  # 8
     [os.path.join(edi_server, 'price', 'hospes.csv'), '06.02901'],  # 10 as ELI
-}
+]
 
 # Check files:
 error = ''
