@@ -649,6 +649,19 @@ class trip_import_edi_wizard(orm.Model):
                 _("Error deleting file %s") % (sys.exc_info(), ),
                 )
 
+    def _get_is_deletable(
+            self, cr, uid, ids, args=None, fields=None, context=None):
+        """ Return number of active order if is a destination
+        """
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            if order.company_id.force_delete:
+                res[order.id] = True
+            else:
+                res[order.id] = not(
+                    order.recursion == 1 and order.type == 'create')
+        return res
+
     _columns = {
         'name': fields.char('Name', size=80, required=True, readonly=True),
         'timestamp': fields.char('Timestamp', size=30, help='Arriving order'),
@@ -658,13 +671,17 @@ class trip_import_edi_wizard(orm.Model):
         'customer': fields.char('Customer', size=100, readonly=True),
         'destination': fields.char('Destination (customer)', size=110,
             readonly=True),
-        'company_id':fields.many2one('edi.company', 'Company', required=True),
+        'company_id': fields.many2one('edi.company', 'Company', required=True),
         'destination_id': fields.many2one(
             'res.partner', 'Destination (internal)',
             readonly=True, domain=[('is_address', '=', True)],
             ondelete='set null'),
         'destination_description': fields.char('Destination description',
             size=100, readonly=True),
+        'is_deletable': fields.function(
+            _get_is_deletable, method=True,
+            type='boolean', string='Cancellabile?', store=False),
+
         'tour1_id': fields.related('destination_id','tour1_id',
             type='many2one',
             relation='trip.tour', string='Trip 1', store=True),
@@ -810,6 +827,10 @@ class edi_company(orm.Model):
         return []
 
     _columns = {
+        'force_delete': fields.boolean(
+            'Attiva cancellazione',
+            help='Forza la cancellazione quindi il bottone è sempre attivo'),
+
         'name': fields.char('Code', size=15, required=True),
         'partner_id': fields.many2one(
             'res.partner', 'Partner', required=False),

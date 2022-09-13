@@ -26,10 +26,23 @@ config.read(cfg_file)
 # mexal_user = config.get('mexal', 'user')
 
 partic_filename = '/home/openerp/mexal/cella/csv/PARTIC.GFD'
+
+check_file = [
+    '/home/openerp/mexal/whoami.mexal',
+    '/home/openerp/etl/edi/whoami.edi',
+    partic_filename,
+    ]
+
 loop = {
     ['/home/openerp/etl/edi/price/fabbro.csv', '06.02923'],  # 8
     ['/home/openerp/etl/edi/price/hospes.csv', '06.02901'],  # 10 (same as ELI)
 }
+
+# Check files:
+for filename in check_file:
+    if os.path.isfile(filename):
+        continue
+    # todo raise error, no mounted server for manage price
 
 for out_filename, customer_code in loop:
     command = 'cat %s | grep %s > %s' % (

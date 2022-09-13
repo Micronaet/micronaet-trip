@@ -88,11 +88,12 @@
 
                     <field name="partner_id" />
                     <field name="type_importation_id" />
-                    <newline />
+		            <field name="force_delete" />
 
 		            <field name="trip_import_folder" />
 		            <field name="trip_todo_file" />
 		            <field name="trip_delete_folder" />
+
 		        </group>
             </form>
         </field>
@@ -109,7 +110,8 @@
                 <field name="partner_id" />
 	            <field name="trip_import_folder" />
 	            <field name="trip_todo_file" />
-	            <field name="trip_delete_folder" />
+                <field name="trip_delete_folder" />
+                <field name="force_delete" />
 	            <button name="generate_future_order_data_report" string="EDI stampa progressivi magazzino" type="object" icon="gtk-print" />
             </tree>
         </field>
@@ -210,7 +212,8 @@
                    <field name="priority" invisible="1"/>
                    <button name="action_null" string="Urgent" type="object" icon="gtk-about" attrs="{'invisible': [('priority','!=','high')]}"/>
                    <field name="name" />
-                   <button name="delete_order" type="object" string="Delete order" icon="gtk-delete" attrs="{'invisible':[('recursion','=',1),('type','=','create')]}" /><!--invisible="context.get('hide_delete',True)"-->
+                   <field name="is_deletable" invisible="1" />
+                   <button name="delete_order" type="object" string="Delete order" icon="gtk-delete" attrs="{'invisible':[('is_deletable','=',False)]}" /><!--invisible="context.get('hide_delete',True)"-->
 
                    <!--Standard mode:-->
                    <button name="force_import" type="object" string="Force import order" icon="gtk-refresh" attrs="{'invisible':['|',('recursion','>',1),('type','!=','create')]}" invisible="context.get('force_button_on', False)"/>
@@ -242,7 +245,8 @@
                    <field name="type" />
                    <field name="priority" invisible="1"/>
                    <button name="action_null" string="Urgent" type="object" icon="gtk-about" attrs="{'invisible': [('priority','!=','high')]}"/>
-                   <button name="delete_order" type="object" string="Delete order" icon="gtk-delete" attrs="{'invisible':[('recursion','=',1),('type','=','create')]}" /><!--invisible="context.get('hide_delete',True)"-->
+                   <field name="is_deletable" invisible="1" />
+                   <button name="delete_order" type="object" string="Delete order" icon="gtk-delete" attrs="{'invisible':[('is_deletable','=',False)]}" /><!--invisible="context.get('hide_delete',True)"-->
                    <button name="force_import" type="object" string="Force import order" icon="gtk-refresh" attrs="{'invisible':['|',('recursion','>',1),('type','!=','create')]}" />
                    <button name="unforce_import" type="object" string="Unforce import order" icon="gtk-undo" attrs="{'invisible':[('type','!=','forced')]}" />
                 </tree>
