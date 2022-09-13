@@ -61,4 +61,4 @@ for out_filename, customer_code in loop:
         out_filename
     )
     print('Executing %s...' % command)
-    # os.system(command)
+    os.system(command)
