@@ -20,7 +20,7 @@ import ConfigParser
 # -----------
 # Parameters:
 # -----------
-cfg_file = 'openerp_s.cfg'  # same directory
+cfg_file = 'openerp.cfg'  # same directory
 config = ConfigParser.ConfigParser()
 config.read(cfg_file)
 
