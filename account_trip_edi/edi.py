@@ -592,6 +592,7 @@ class trip_import_edi_wizard(orm.Model):
         """
         comment = ''
         try:
+            pdb.set_trace()
             company_id = self.browse(
                 cr, uid, ids, context=context)[0].company_id.id
             edi_pool = self.pool.get('edi.company')
