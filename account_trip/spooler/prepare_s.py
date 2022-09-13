@@ -29,34 +29,39 @@ from_addr = config.get('smtp', 'from_addr')
 mexal_user = config.get('mexal', 'user')
 mexal_password = config.get('mexal', 'password')
 
+# General Parameters:
+price_path = config.get('general', 'price_path')
+
 # Setup depend on parameter passed (default SDX if not present)
 try:
     company = sys.argv[1]
 except:
-    company = "SDX" # default company
+    company = "SDX"  # default company
 
 smtp_subject_mask = "%s > %s" % (company, config.get('smtp', 'subject_mask'))
 
 try:
     # Read parameters depend on start up company:
     char_cr = eval(config.get(company, 'return'))  # Return format
-    split_file = eval(config.get(company, 'split_file'))  # Split or simply copy
+    split_file = eval(config.get(company, 'split_file'))  # Split or copy
     post_action = config.get(company, 'post_action')  # Action after import
     update_order = eval(config.get(company, 'update_order'))  # Update order
 
     if post_action == 'False':
         post_action = False
 
-    file_err = config.get(company, 'file_err')  # Log file from mexal (empty = OK, else error)
+    # Log file from mexal (empty = OK, else error)
+    file_err = config.get(company, 'file_err')
     mexal_company = config.get(company, 'company')
     to_addr = config.get(company, 'to_addr')
     path_in = config.get(company, 'path_in')  # Folder: in files
     path_out = config.get(company, 'path_out')  # Folder: destination
     path_history = config.get(company, 'path_history')  # Folder: history
     log_file_name = config.get(company, 'log_file_name')
-    log_scheduler = config.get(company, 'log_scheduler_name')  # Scheduler log file
     sprix_number = config.get(company, 'sprix_number')
     urgent_order = eval(config.get(company, 'urgent_order'))
+    # Scheduler log file:
+    log_scheduler = config.get(company, 'log_scheduler_name')
 
     # Jump order too new:
     jump_order_days = eval(config.get(company, 'jump_order_days'))
@@ -73,18 +78,33 @@ except:
 log_file = open(log_file_name, 'a')
 log_schedulers_file = open(log_scheduler, 'a')
 
+
 # -----------------
 # Utility function:
 # -----------------
+# Price function:
+def integrate_price(fullname, company):
+    """ Add price when not present in EDI order
+    """
+    partic_filename = os.path.join(
+        price_path, '%s.csv' % company)
+    if not os.path.isfile(partic_filename):
+        print('No price integration for %s' % company)
+        return False
+
+    # Price integration:
+    return True
+
 # Pickle function:
 def store_forced(filename, forced_list):
     """ Load pickle file in a list that is returned
     """
     try:
-        pickle.dump(forced_list, open(filename, "wb" ) )
+        pickle.dump(forced_list, open(filename, "wb"))
         return True
     except:
         return False
+
 
 def load_forced(filename):
     """ Load list of forced from file
@@ -178,10 +198,12 @@ log_scheduler_message(
     log_schedulers_file, "Start importation [EDI: %s]" % company)
 
 # Mexal parameters:
-sprix_command = r"C:\Passepartout\PassClient\mxdesk1297479000\prog\mxdesk.exe -command=mxrs.exe -a%s -t0 -x2 win32g -p%s -k%s:%s" % (
-    mexal_company, sprix_number, mexal_user, mexal_password)
+mxdesk = r'C:\Passepartout\PassClient\mxdesk1297479000\prog\mxdesk.exe'
+sprix_command = r"%s -command=mxrs.exe -a%s -t0 -x2 win32g -p%s -k%s:%s" % (
+    mxdesk, mexal_company, sprix_number, mexal_user, mexal_password)
 
-if datetime.today().weekday() in (3, 4, 5):  # todo (change depend on number of day left)
+# todo (change depend on number of day left)
+if datetime.today().weekday() in (3, 4, 5):
     left_days += 2
     log_message(log_file, "Aggiunto due giorni extra alla data")
 
@@ -200,8 +222,8 @@ try:
 
     # Print list of sorted files for log the operation:
     for ts, file_in in file_list:
-        log_message(log_file, "ID: Date: %s\t File: %s" % (
-            ts, file_in ))
+        log_message(
+            log_file, "ID: Date: %s\t File: %s" % (ts, file_in))
 except:
     log_message(
         log_file,
@@ -225,18 +247,18 @@ for ts, file_in in file_list:
         force_list = load_forced(force_file)
         if file_in in force_list:
             force_list.remove(file_in)
-            store_forced(force_file, force_list) # TODO if not imported??
+            store_forced(force_file, force_list)  # todo if not imported??
             log_message(log_file, "Importazione forzata: %s > %s" % (
                 path_in, file_in))
 
         elif test_date >= max_date:
-            if urgent_order and urgent_order in file_in:# test urgent orders:
-                log_message(log_file, "Importazione urgente: %s > %s" % (
-
-                    path_in, file_in))
-
+            if urgent_order and urgent_order in file_in:  # test urgent orders:
+                log_message(
+                    log_file, "Importazione urgente: %s > %s" % (
+                        path_in, file_in))
             else:
-                log_message(log_file,
+                log_message(
+                    log_file,
                     "File saltato [%s] limite %s < data file %s" % (
                         file_in, max_date, test_date), "warning")
                 continue
@@ -253,6 +275,10 @@ for ts, file_in in file_list:
 
     # Split input file:
     order_in = join(path_in, file_in)
+
+    # Integrate price in file:
+    integrate_price(order_in, company)
+
     order_1 = join(path_out, 'ordine.1.txt')
     order_2 = join(path_out, 'ordine.2.txt')
     if split_file:
@@ -334,7 +360,7 @@ for ts, file_in in file_list:
             comment_err
         pass  # No file = no error
 
-    if mail_error: # Comunicate
+    if mail_error:  # Comunicate
         log_message(
             log_file, "Errore leggendo il file: %s" % mail_error, 'error')
 

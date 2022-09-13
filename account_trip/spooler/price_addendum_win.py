@@ -6,6 +6,11 @@
 #            https://it.linkedin.com/in/thebrush
 #            https://linktr.ee/nicolariolini
 ###############################################################################
+# PROCEDURA:
+# Procedura per splittare il file delle particolarità nelle singole
+# particolarità fornitore così da rendere più snella la lettura dei prezzi
+# quando si importano dei files
+###############################################################################
 
 import os
 import pdb
@@ -20,7 +25,7 @@ import ConfigParser
 # -----------
 # Parameters:
 # -----------
-cfg_file = 'openerp.cfg'  # same directory
+cfg_file = '../openerp.cfg'
 config = ConfigParser.ConfigParser()
 config.read(cfg_file)
 
@@ -38,8 +43,9 @@ check_file = [
     ]
 
 loop = [
-    [os.path.join(edi_server, 'price', 'fabbro.csv'), '06.02923'],  # 8
-    [os.path.join(edi_server, 'price', 'hospes.csv'), '06.02901'],  # 10 as ELI
+    [os.path.join(edi_server, 'price', 'FAB.csv'), '06.02923'],  # 8
+    [os.path.join(edi_server, 'price', 'HOS.csv'), '06.02901'],  # 10 as ELI
+    # [os.path.join(edi_server, 'price', 'hospes.csv'), '06.02901'],  # FAB
 ]
 
 # Check files:
