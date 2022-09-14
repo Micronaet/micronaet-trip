@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os
+import pdb
 import sys
 import pickle
 import shutil
@@ -102,13 +103,13 @@ price_setup = {
         'from_code': 162,
         'to_code': 173,  # Load only first 11 char (parent code)
         'separator': '|',
-        'partic': False,
+        'partic': False,  # Partic on file
     },
     'HOS': {
         'from_code': 162,
         'to_code': 173,  # Load only first 11 char (parent code)
         'separator': '|',
-        'partic': False,
+        'partic': False,  # Partic on file
     }
 }
 
@@ -116,6 +117,7 @@ price_setup = {
 def integrate_price(order, company):
     """ Add price when not present in EDI order
     """
+    pdb.set_trace()
     mail_error = ''
     partic_filename = os.path.join(price_path, '%s.csv' % company)
     # Read partic once before upate:
