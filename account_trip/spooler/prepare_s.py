@@ -117,7 +117,6 @@ price_setup = {
 def integrate_price(order, company):
     """ Add price when not present in EDI order
     """
-    pdb.set_trace()
     mail_error = ''
     partic_filename = os.path.join(price_path, '%s.csv' % company)
     # Read partic once before upate:
@@ -129,6 +128,7 @@ def integrate_price(order, company):
         return mail_error
 
     # Load partic file for this operations:
+    pdb.set_trace()
     try:
         for line in open(partic_filename):
             default_code = line[:11].strip()
