@@ -102,14 +102,12 @@ price_setup = {
         'from_code': 162,
         'to_code': 173,  # Load only first 11 char (parent code)
         'separator': '|',
-        'return': '\r\n',
         'partic': False,
     },
     'HOS': {
         'from_code': 162,
         'to_code': 173,  # Load only first 11 char (parent code)
         'separator': '|',
-        'return': '\r\n',
         'partic': False,
     }
 }
@@ -149,10 +147,10 @@ def integrate_price(order, company):
             price = setup['partic'].get(default_code, 0.0)
             price = '%10.3f' % price
             new_line = '%s%s%s%s' % (
-                line[:-len(setup['return'])],  # remove 2 last char
+                line[:-len(char_cr)],  # remove final EOL CR
                 setup['separator'],
                 price,
-                setup['return']
+                char_cr,
             )
             new_f.write(new_line)
     except:
