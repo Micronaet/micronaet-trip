@@ -67,6 +67,7 @@ try:
     mexal_company = config.get(company, 'company')
     to_addr = config.get(company, 'to_addr')
     path_in = config.get(company, 'path_in')  # Folder: in files
+    path_in_original = os.path.join(path_in, 'original')
     path_out = config.get(company, 'path_out')  # Folder: destination
     path_history = config.get(company, 'path_history')  # Folder: history
     log_file_name = config.get(company, 'log_file_name')
@@ -122,7 +123,7 @@ price_setup = {
 # price_setup = {}
 
 
-def integrate_price(order, company):
+def integrate_price(order, order_original, company):
     """ Add price particularity when not present in EDI order
     """
     mail_error = ''
@@ -149,6 +150,12 @@ def integrate_price(order, company):
         return mail_error
 
     # Price integration:
+    # Save order in original:
+    if os.path.isfile(order_original):
+        print('Original yet present: %s' % order_original)
+    else:
+        print('Keep original order in: %s' % order_original)
+        shutil.copy(order_in, order_original)
     try:
         new_filename = '%s.price' % order
         old_f = open(order, 'r')
@@ -391,11 +398,12 @@ for ts, file_in in file_list:
 
     # Input file (to be splitted):
     order_in = join(path_in, file_in)
+    order_original = join(path_in_original, file_in)
 
     # -------------------------------------------------------------------------
     # B. Integrate price in file:
     # -------------------------------------------------------------------------
-    integrate_error = integrate_price(order_in, company)
+    integrate_error = integrate_price(order_in, order_original, company)
     if integrate_error:
         mail_error += integrate_error
     else:
