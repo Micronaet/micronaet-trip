@@ -119,7 +119,7 @@ price_setup = {
     },
 }
 # todo Debug mode: remove when ready with this procedure
-price_setup = {}
+# price_setup = {}
 
 
 def integrate_price(order, company):
