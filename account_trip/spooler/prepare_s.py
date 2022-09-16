@@ -164,6 +164,7 @@ def integrate_price(order, company):
                 char_cr,
             )
             new_f.write(new_line)
+        new_f.close()
     except:
         mail_error += 'Errore integrando i prezzi sul file, fare un debug' \
                       'per capire dove va in errore'
