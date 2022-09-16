@@ -67,7 +67,7 @@ try:
     mexal_company = config.get(company, 'company')
     to_addr = config.get(company, 'to_addr')
     path_in = config.get(company, 'path_in')  # Folder: in files
-    path_in_original = os.path.join(path_in, 'original')
+    path_in_original = os.path.join(path_in, 'original')  # todo create before!
     path_out = config.get(company, 'path_out')  # Folder: destination
     path_history = config.get(company, 'path_history')  # Folder: history
     log_file_name = config.get(company, 'log_file_name')
