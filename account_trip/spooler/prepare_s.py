@@ -142,7 +142,9 @@ def integrate_price(order, order_original, company):
             for line in open(partic_filename):
                 default_code = line[:11].strip()
                 price = float(line[-6:].strip().replace(',', '.'))
-                setup['partic'][default_code] = price
+                if default_code not in setup['partic']:
+                    setup['partic'][default_code] = price
+                # else old prices
     except:
         mail_error += 'Errore leggendo il file per ricavare il prezzo, fare' \
                       'un debug per capire se sono disallineati i dati letti' \
