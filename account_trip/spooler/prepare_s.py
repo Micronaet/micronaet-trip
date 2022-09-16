@@ -183,7 +183,6 @@ def integrate_price(order, order_original, company):
     # -------------------------------------------------------------------------
     # Replace file operation:
     # -------------------------------------------------------------------------
-    pdb.set_trace()
     # todo manage errors?
     # Delete original:
     try:
