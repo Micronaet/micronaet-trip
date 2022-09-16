@@ -118,7 +118,8 @@ price_setup = {
         'partic': False,  # Partic on file
     },
 }
-price_setup = {}  # todo remove when ready with this procedure
+# todo Debug mode: remove when ready with this procedure
+price_setup = {}
 
 
 def integrate_price(order, company):
