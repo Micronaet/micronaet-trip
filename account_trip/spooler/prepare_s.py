@@ -125,7 +125,6 @@ price_setup = {
 def integrate_price(order, company):
     """ Add price particularity when not present in EDI order
     """
-    pdb.set_trace()
     mail_error = ''
     partic_filename = os.path.join(price_path, '%s.csv' % company)
     # Read particularity once before upate:
@@ -137,7 +136,6 @@ def integrate_price(order, company):
         return mail_error
 
     # Load particularity file for this operations:
-    pdb.set_trace()
     try:
         if not setup['partic']:
             for line in open(partic_filename):
@@ -151,6 +149,7 @@ def integrate_price(order, company):
         return mail_error
 
     # Price integration:
+    pdb.set_trace()
     try:
         new_filename = '%s.price' % order
         new_f = open(new_filename, 'w')
