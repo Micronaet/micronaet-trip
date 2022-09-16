@@ -122,11 +122,11 @@ price_setup = {}  # todo remove when ready with this procedure
 
 
 def integrate_price(order, company):
-    """ Add price when not present in EDI order
+    """ Add price particularity when not present in EDI order
     """
     mail_error = ''
     partic_filename = os.path.join(price_path, '%s.csv' % company)
-    # Read partic once before upate:
+    # Read particularity once before upate:
     setup = price_setup.get(company)  # this company (if present)
 
     # Check if need integration for price, partic file or setup must be present
@@ -134,7 +134,7 @@ def integrate_price(order, company):
         print('No price integration for %s' % company)
         return mail_error
 
-    # Load partic file for this operations:
+    # Load particularity file for this operations:
     pdb.set_trace()
     try:
         for line in open(partic_filename):
