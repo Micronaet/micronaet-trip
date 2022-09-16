@@ -12,9 +12,24 @@ set mexal=C:\Passepartout\PassClient\mxdesk1297479000\
 set python=C:\Python27\
 
 echo **********************************************************
-echo * EDI ORDER OPERATIONS                                   *
+echo * GIT UPDATE:                                            *
 echo **********************************************************
 s:
+cd S:\script\git\micronaet-trip
+git pull
+copy S:\script\git\micronaet-trip\account_trip\spooler\prepare_s.py S:\script\prepare_s.py
+
+echo **********************************************************
+echo * PREPROCESS (DOWNLOAD ORDER)                            *
+echo **********************************************************
+echo * MARKAS:                                                *
+echo **********************************************************
+echo Update git and convert attachments to order EDI file:
+call S:\script\markas\order\script\import.bat
+
+echo **********************************************************
+echo * EDI ORDER OPERATIONS                                   *
+echo **********************************************************
 cd %base%
 
 echo Import ELI:
@@ -53,6 +68,9 @@ echo Cella esportazione odini:
 echo Cella esportazione lotti e prodotti:
 %mexal%prog\mxdesk.exe -command=mxrs.exe -agfd -t0 -x2 win32g -p297479TABLET@sprix9 -kedi:edi
 
+echo Carica tutti i dati nella Cella:
+call S:\script\cron\load_freeze\update_freeze_data.cmd
+
 echo **********************************************************
 echo * PIATTAFORMA:                                           *
 echo **********************************************************
@@ -72,30 +90,15 @@ echo **********************************************************
 echo SIR: Operazioni extra per il portale
 cd %base%SIR\stock
 call %base%SIR\stock\extract_stock_s.bat
-%python%python.exe %base%SIR\stock\portal_sir_s.py
+"%python%python.exe" %base%SIR\stock\portal_sir_s.py
 
 %mexal%prog\mxdesk.exe -command=mxrs.exe -agfd -t0 -x2 win32g -p297479SIR001@sprix4 -kedi:edi
-
-echo **********************************************************
-echo * NON ATTIVI QUESTI:                                     *
-echo **********************************************************
-rem echo Convert and import SAR:
-rem "%python%python.exe" csv2txt.py
-rem "%python%python.exe" prepare_s.py SAR
-rem echo Import SDX:
-rem "%python%python.exe" prepare_s.py SDX
 
 echo **********************************************************
 echo * STAMPA PROGRESSIVI DI MAGAZZINO:                       *
 echo **********************************************************
 %echo Export Stampa progressivi di magazzino:
 %mexal%prog\mxdesk.exe -command=mxrs.exe -agfd -t0 -x2 win32g -p297479MA001@sprix9 -kedi:edi
-
-echo **********************************************************
-echo * MARKAS:                                                *
-echo **********************************************************
-echo Markas convert attachments
-call S:\script\markas\order\script\import.bat
 
 echo **********************************************************
 echo * END OPERATIONS:                                        *
