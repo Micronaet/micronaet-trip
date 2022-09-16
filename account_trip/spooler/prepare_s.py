@@ -149,11 +149,11 @@ def integrate_price(order, company):
         return mail_error
 
     # Price integration:
-    pdb.set_trace()
     try:
         new_filename = '%s.price' % order
+        old_f = open(order, 'r')
         new_f = open(new_filename, 'w')
-        for line in open(order, 'r'):
+        for line in old_f:
             default_code = line[setup['from_code']:setup['to_code']]
             price = setup['partic'].get(default_code, 0.0)
             price = '%10.3f' % price
@@ -164,6 +164,7 @@ def integrate_price(order, company):
                 char_cr,
             )
             new_f.write(new_line)
+        old_f.close()
         new_f.close()
     except:
         mail_error += 'Errore integrando i prezzi sul file, fare un debug' \
@@ -173,6 +174,7 @@ def integrate_price(order, company):
     # -------------------------------------------------------------------------
     # Replace file operation:
     # -------------------------------------------------------------------------
+    pdb.set_trace()
     # todo manage errors?
     # Delete original:
     try:
