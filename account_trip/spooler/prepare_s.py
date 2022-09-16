@@ -103,19 +103,19 @@ price_setup = {
         'from_code': 162,
         'to_code': 173,  # Load only first 11 char (parent code)
         'separator': '|',
-        'partic': False,  # Partic on file
+        'partic': {},  # Partic on file
     },
     'HOS': {
         'from_code': 162,
         'to_code': 173,  # Load only first 11 char (parent code)
         'separator': '|',
-        'partic': False,  # Partic on file
+        'partic': {},  # Partic on file
     },
     'MRK': {
         'from_code': 65,  # todo Wrong position?
         'to_code': 76,  # Load only first 11 char (parent code)
         'separator': '|',
-        'partic': False,  # Partic on file
+        'partic': {},  # Partic on file
     },
 }
 # todo Debug mode: remove when ready with this procedure
