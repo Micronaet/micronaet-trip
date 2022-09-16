@@ -132,17 +132,18 @@ def integrate_price(order, company):
     setup = price_setup.get(company)  # this company (if present)
 
     # Check if need integration for price, partic file or setup must be present
-    if not setup['partic'] or not os.path.isfile(partic_filename):
+    if not setup or not os.path.isfile(partic_filename):
         print('No price integration for %s' % company)
         return mail_error
 
     # Load particularity file for this operations:
     pdb.set_trace()
     try:
-        for line in open(partic_filename):
-            default_code = line[:11].strip()
-            price = float(line[-6:].strip().replace(',', '.'))
-            setup['partic'][default_code] = price
+        if not setup['partic']:
+            for line in open(partic_filename):
+                default_code = line[:11].strip()
+                price = float(line[-6:].strip().replace(',', '.'))
+                setup['partic'][default_code] = price
     except:
         mail_error += 'Errore leggendo il file per ricavare il prezzo, fare' \
                       'un debug per capire se sono disallineati i dati letti' \
