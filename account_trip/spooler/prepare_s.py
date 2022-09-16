@@ -110,8 +110,15 @@ price_setup = {
         'to_code': 173,  # Load only first 11 char (parent code)
         'separator': '|',
         'partic': False,  # Partic on file
-    }
+    },
+    'MRK': {
+        'from_code': 65,  # todo Wrong position?
+        'to_code': 76,  # Load only first 11 char (parent code)
+        'separator': '|',
+        'partic': False,  # Partic on file
+    },
 }
+price_setup = {}  # todo remove when ready with this procedure
 
 
 def integrate_price(order, company):
@@ -120,10 +127,10 @@ def integrate_price(order, company):
     mail_error = ''
     partic_filename = os.path.join(price_path, '%s.csv' % company)
     # Read partic once before upate:
-    setup = price_setup.get(company)  # this company (if present
+    setup = price_setup.get(company)  # this company (if present)
 
     # Check if need integration for price, partic file or setup must be present
-    if not os.path.isfile(partic_filename) or not setup['partic']:
+    if not setup['partic'] or not os.path.isfile(partic_filename):
         print('No price integration for %s' % company)
         return mail_error
 
