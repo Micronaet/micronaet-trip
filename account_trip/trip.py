@@ -230,10 +230,10 @@ class trip_trip(orm.Model):
             row = line.strip().split(';')
             if len(row) != 7:
                 continue
-            oc = row[7].strip()
+            oc = row[6].strip()
             # todo No needed for now:
             # reference = row[4].strip(),
-            # customer_code = row[6].strip(),
+            # customer_code = row[5].strip(),
 
             data = '%s/%s/%s [Colli: %s]; ' % (
                 row[0].strip(),
