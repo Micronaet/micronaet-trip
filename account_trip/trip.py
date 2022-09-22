@@ -352,7 +352,7 @@ class trip_trip(orm.Model):
                     phone,
                     '%s %s \nSc. %s' % (
                         order.time or '', note or '', order.date or ''),
-                    extra_info.get(order.name, ''),
+                    extra_info.get(order_name, ''),
                     ], default_format=excel_format['white']['text'])
             excel_pool.row_height(ws_name, [row], height=25)
             excel_pool.merge_cell(ws_name, [row, 1, row, 2])
