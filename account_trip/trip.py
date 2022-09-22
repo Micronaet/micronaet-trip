@@ -222,7 +222,7 @@ class trip_trip(orm.Model):
         user = user_pool.browse(cr, uid, uid, context=context)
         company = user.company_id
         filepath = os.path.expanduser(company.edi_account_data)
-        filename = os.path.join(filepath, 'csv', 'oc_ft.csv')
+        filename = os.path.join(filepath, 'viaggi', 'oc_ft.csv')
         _logger.info('Read extra accounting info for report: %s' % filename)
         info_file = open(filename, 'r')
         extra_info = {}
