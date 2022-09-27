@@ -93,11 +93,13 @@ class edi_company_c8(orm.Model):
                 command = file_part[6][:3].upper()
                 if command == 'NEW':
                     return 'create'
-                # todo not used:
-                elif command == 'CAN':
-                    return 'deleting'  # TODO delete?
-                else:  # UPD
+                elif command == 'UPD':
                     return 'change'
+                elif command == 'CAN':
+                    # todo delete is not managed!
+                    return 'deleting'
+                else:
+                    return 'anomaly'
         except:
             return 'anomaly'
 

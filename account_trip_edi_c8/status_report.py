@@ -39,7 +39,6 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DATETIME_FORMATS_MAP,
     float_compare)
 
-
 _logger = logging.getLogger(__name__)
 
 
@@ -49,7 +48,7 @@ class edi_company_report_this(orm.Model):
     _inherit = 'edi.company'
 
     # -------------------------------------------------------------------------
-    # OVERRIDE: Collect data for report
+    # todo OVERRIDE: Collect data for report
     # -------------------------------------------------------------------------
     '''def collect_future_order_data_report(self, cr, uid, context=None):
         """ Overridable procedure for manage the report data collected in all

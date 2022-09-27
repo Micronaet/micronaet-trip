@@ -24,6 +24,7 @@ import shutil
 import ConfigParser
 from datetime import datetime
 
+
 # -----------------------------------------------------------------------------
 # Utility:
 # -----------------------------------------------------------------------------
@@ -65,7 +66,7 @@ def sort_line(row):
             'Char not found %s - %s -%s\n' % (start_1, start_2, start_3))
         print('Char not found %s - %s - %s' % (start_1, start_2, start_3))
         f_error.close()
-        return (5, code)
+        return 5, code
 
 
 def clean_text(text, length, uppercase=False, error=None, truncate=False):
@@ -191,7 +192,7 @@ in_history = os.path.expanduser(config.get('in', 'history'))
 in_log = os.path.expanduser(config.get('in', 'log'))
 in_schedule = os.path.expanduser(config.get('in', 'schedule'))
 
-# Outp arameters:
+# Out parameters:
 out_check = os.path.expanduser(config.get('out', 'check'))
 out_path = os.path.expanduser(config.get('out', 'path'))
 out_log = os.path.expanduser(config.get('out', 'log'))
@@ -202,7 +203,7 @@ out_original = os.path.expanduser(config.get('out', 'original'))
 mail_error = config.get('mail', 'error')
 mail_info = config.get('mail', 'info')
 
-# TODO put in config file:
+# todo put in config file:
 separator = config.get('file', 'separator')
 tot_col = eval(config.get('file', 'tot_col'))
 
@@ -245,7 +246,7 @@ for root, dirs, files in os.walk(in_path):
 
     for f in files:
         file_part = f.split('_')
-        command = 'NEW'  # Only this!
+        command = ''  # 'NEW'  # todo change (depend on version number)
 
         # Fullname needed:
         file_in = os.path.join(root, f)
@@ -255,12 +256,6 @@ for root, dirs, files in os.walk(in_path):
         create_date = datetime.fromtimestamp(
             os.path.getctime(file_in)
             ).strftime('%Y%m%d_%H%M%S')
-
-        file_out = os.path.join(
-            out_path, '%s' % (
-                '%s_%s_%s.txt' % (
-                    create_date, f[:-4], command),
-                ))  # todo change name
 
         # ---------------------------------------------------------------------
         # Read input file:
@@ -276,6 +271,10 @@ for root, dirs, files in os.walk(in_path):
         for line in f_in:
             line = line.strip()
             row = line.split(separator)
+
+            # -----------------------------------------------------------------
+            # Header line:
+            # -----------------------------------------------------------------
             if row[0] == 'TM':
                 if counter:
                     # Double order
@@ -283,11 +282,18 @@ for root, dirs, files in os.walk(in_path):
                 # Start header:
                 print('Found header in %s file' % f)
                 continue
+
+            # -----------------------------------------------------------------
+            # Footer line
+            # -----------------------------------------------------------------
             if row[0] == 'FM':  # End order:
                 # todo check total lines?
                 print('Found end of line in %s file' % f)
                 continue
 
+            # -----------------------------------------------------------------
+            # Data lines:
+            # -----------------------------------------------------------------
             counter += 1
             if len(row) != tot_col:
                 log_on_file(
@@ -306,11 +312,19 @@ for root, dirs, files in os.walk(in_path):
             cook_center = clean_text(row[2], 10, error=error)
             deadline = row[3].strip()
             order = clean_text(row[4], 13, error=error)
+            version = order[-3:]  # 000 is original, 00x are update
             sequence = clean_text(row[5], 4, error=error)
             default_code = clean_text(row[6], 16, uppercase=True, error=error)
             name = clean_text(row[7], 60, error=error, truncate=True)
             um = clean_text(row[8], 2, uppercase=True, error=error)
             quantity = clean_float(row[9], 15, 2, 1000.0, error=error)
+
+            # Order mode:
+            if not command:
+                if version == '000':
+                    command = 'NEW'
+                else:  # 00x
+                    command = 'UPD'
 
             # Company fields:
             default_code_supplier = clean_text(
@@ -372,6 +386,13 @@ for root, dirs, files in os.walk(in_path):
         # Save file out:
         # ---------------------------------------------------------------------
         error = []
+
+        file_out = os.path.join(
+            out_path, '%s' % (
+                '%s_%s_%s.txt' % (
+                    create_date, f[:-4], command),
+                ))  # todo change name
+
         # Convert file:
         f_out = open(file_out, 'w')
 
@@ -404,7 +425,7 @@ for root, dirs, files in os.walk(in_path):
                 'History company file: %s [%s]' % (file_original, company),
                 mode='INFO', file_list=[f_in_log, f_out_log])
         except:
-            error += 'Error copy orginal folder %s >> %s' % (
+            error += 'Error copy original folder %s >> %s' % (
                 file_in, file_original)
         try:
             os.remove(file_history)
