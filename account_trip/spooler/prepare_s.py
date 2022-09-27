@@ -128,7 +128,7 @@ def integrate_price(order, order_original, company):
     """
     mail_error = ''
     partic_filename = os.path.join(price_path, '%s.csv' % company)
-    # Read particularity once before upate:
+    # Read particularity once before update:
     setup = price_setup.get(company)  # this company (if present)
 
     # Check if need integration for price, partic file or setup must be present
@@ -401,6 +401,7 @@ for ts, file_in in file_list:
     order_in = join(path_in, file_in)
     order_original = join(path_in_original, file_in)
 
+    # todo integrate also order references here (company 8)?
     # -------------------------------------------------------------------------
     # B. Integrate price in file:
     # -------------------------------------------------------------------------
@@ -469,6 +470,7 @@ for ts, file_in in file_list:
             if test_err[:2] != 'ok':
                 comment_err = 'test contenuto file ko'
                 mail_error += test_err or 'Errore generico (non gestito)'
+                # todo save order created reference here?
             else:
                 comment_err = 'test contenuto file ok'
                 result = test_err.split(';')
