@@ -142,7 +142,9 @@ def integrate_price(order, order_original, company):
                 lines.append(line)
 
             # Sort line (last is the new price)
+            log_used = open(partic_filename + '.used', 'w')
             for line in sorted(lines):
+                log_used.write(line)  # Log operation
                 default_code = line[:11].strip()
                 price = float(line[-6:].strip().replace(',', '.'))
 
@@ -153,8 +155,7 @@ def integrate_price(order, order_original, company):
                 # if default_code not in setup['partic']:
                 #    setup['partic'][default_code] = price
                 # else old prices
-            print(setup['partic'])
-            pdb.set_trace()
+
     except:
         mail_error += 'Errore leggendo il file per ricavare il prezzo, fare' \
                       'un debug per capire se sono disallineati i dati letti' \
