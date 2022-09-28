@@ -140,6 +140,8 @@ def integrate_price(order, order_original, company):
             lines = []
             for line in open(partic_filename):
                 lines.append(line)
+
+            # Sort line (last is the new price)
             for line in sorted(lines):
                 default_code = line[:11].strip()
                 price = float(line[-6:].strip().replace(',', '.'))
