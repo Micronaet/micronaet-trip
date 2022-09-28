@@ -119,8 +119,6 @@ price_setup = {
         'partic': {},  # Partic on file
     },
 }
-# todo Debug mode: remove when ready with this procedure
-# price_setup = {}
 
 
 def integrate_price(order, order_original, company):
