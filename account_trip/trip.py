@@ -242,7 +242,7 @@ class trip_trip(orm.Model):
                 row[0].strip(),
                 row[1].strip(),
                 row[2].strip(),
-                row[3].strip(),
+                row[4].strip(),
             )
             if oc in extra_info:
                 extra_info[oc] += data
