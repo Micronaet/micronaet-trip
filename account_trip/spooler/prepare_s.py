@@ -137,12 +137,22 @@ def integrate_price(order, order_original, company):
     # Load particularity file for this operations:
     try:
         if not setup['partic']:
+            lines = []
             for line in open(partic_filename):
+                lines.append(line)
+            for line in sorted(lines):
                 default_code = line[:11].strip()
                 price = float(line[-6:].strip().replace(',', '.'))
-                if default_code not in setup['partic']:
-                    setup['partic'][default_code] = price
+
+                # Take last price:
+                setup['partic'][default_code] = price
+
+                # Take the first price:
+                #if default_code not in setup['partic']:
+                #    setup['partic'][default_code] = price
                 # else old prices
+            print(setup['partic'])
+            pdb.set_trace()
     except:
         mail_error += 'Errore leggendo il file per ricavare il prezzo, fare' \
                       'un debug per capire se sono disallineati i dati letti' \
