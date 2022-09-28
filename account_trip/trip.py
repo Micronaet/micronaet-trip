@@ -229,6 +229,7 @@ class trip_trip(orm.Model):
         for line in info_file:
             row = line.strip().split(';')
             if len(row) != 7:
+                _logger.error('No 7 cols in this line: %s' % line)
                 continue
             oc = row[6].strip()
             # todo No needed for now:
