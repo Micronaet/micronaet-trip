@@ -313,6 +313,7 @@ class trip_trip(orm.Model):
         # ---------------------------------------------------------------------
         # Print order line:
         # ---------------------------------------------------------------------
+        pdb.set_trace()
         for order in sorted(trip.order_ids, key=lambda o: (o.sequence, o.id)):
             # Prepare data:
             if order.destination_id:
