@@ -148,7 +148,7 @@ def integrate_price(order, order_original, company):
                 setup['partic'][default_code] = price
 
                 # Take the first price:
-                #if default_code not in setup['partic']:
+                # if default_code not in setup['partic']:
                 #    setup['partic'][default_code] = price
                 # else old prices
             print(setup['partic'])
