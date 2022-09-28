@@ -269,10 +269,6 @@ class trip_trip(orm.Model):
                 'text': excel_pool.get_format('text'),
                 'number': excel_pool.get_format('number'),
             },
-            # 'white':  {
-            #    'text': excel_pool.get_format('text'),
-            #    'number': excel_pool.get_format('number'),
-            # },
         }
 
         # ---------------------------------------------------------------------
