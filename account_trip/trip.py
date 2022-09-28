@@ -221,7 +221,9 @@ class trip_trip(orm.Model):
         # ---------------------------------------------------------------------
         user = user_pool.browse(cr, uid, uid, context=context)
         company = user.company_id
-        filepath = os.path.expanduser(company.edi_account_data)
+        # todo put in paremeters company.edi_account_data
+        rootpath = '~/mexal/cella/csv'
+        filepath = os.path.expanduser(rootpath)
         filename = os.path.join(filepath, 'oc_ft.csv')
         _logger.info('Read extra accounting info for report: %s' % filename)
         info_file = open(filename, 'r')
@@ -341,7 +343,6 @@ class trip_trip(orm.Model):
 
             # Write data:
             row += 1
-            pdb.set_trace()
             excel_pool.write_xls_line(
                 ws_name, row, [
                     order.sequence or '',
