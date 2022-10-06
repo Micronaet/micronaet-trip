@@ -171,7 +171,7 @@ def integrate_price(order, order_original, company):
         shutil.copy(order_in, order_original)
     try:
         new_filename = '%s.price' % order
-        old_f = open(order, 'r')
+        old_f = open(order_original, 'r')
         new_f = open(new_filename, 'w')
         for line in old_f:
             default_code = line[setup['from_code']:setup['to_code']]
