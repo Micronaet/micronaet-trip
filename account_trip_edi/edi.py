@@ -255,7 +255,7 @@ class trip_import_edi_wizard(orm.Model):
                                 # ---------------------------------------------
                                 if start:  # Part only one:
                                     start = False
-                                    # TODO Extra html header not present here!!
+                                    # todo Extra html header not present here!!
                                     # Only HTML header for structure
                                     html += _(
                                        """<table class='table_trip'>
@@ -305,9 +305,11 @@ class trip_import_edi_wizard(orm.Model):
                                         line[
                                             trace['destination_site'][0]:
                                             trace['destination_site'][1]])
-                                    destination_description = parametrized.format_string(line[
-                                        trace['destination_description'][0]:
-                                        trace['destination_description'][1]])
+                                    destination_description = \
+                                        parametrized.format_string(line[
+                                            trace['destination_description'][0]:
+                                            trace['destination_description'][1]
+                                            ])
                                     destination = parametrized.get_destination(
                                         supplier_facility,
                                         supplier_cost,
@@ -362,8 +364,16 @@ class trip_import_edi_wizard(orm.Model):
                                     html += "<p>"
                                     html += _("Date: %s<br/>") % date
                                     html += _("Deadline: %s<br/>") % deadline
-                                    html += _("Destination: %s<br/>") % destination
-                                    html += _("Customer ref.: %s<br/>") % customer
+                                    html += \
+                                        _("Destination: %s<br/>") % destination
+                                    html += \
+                                        _("Codice Alernativo: %s%s<br/>") % (
+                                            supplier_facility, supplier_cost)
+                                    html += \
+                                        _("Documento predefinito - Sito: %s"
+                                          "<br/>") % supplier_site
+                                    html += \
+                                        _("Customer ref.: %s<br/>") % customer
                                     html += "</p>"
                                     html += _(
                                         """<table class='table_trip'>
