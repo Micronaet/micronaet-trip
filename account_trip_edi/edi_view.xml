@@ -74,6 +74,27 @@
             </field>
         </field>
     </record>
+    <record model="ir.ui.view" id="view_res_partner_trip_code_tree">
+        <field name="name">res.partner.trip.code.tree</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="name" />
+                <field name="address" />
+                <field name="city" />
+
+                <field name="sql_customer_code" />
+                <field name="sql_supplier_code" />
+                <field name="sql_destination_code" />
+
+                <field name="trip_supplier_facility_code" />
+                <field name="trip_supplier_destination_code" />
+
+                <field name="tour1_id"/>
+                <field name="tour2_id"/>
+            </tree>
+        </field>
+    </record>
 
     <!-- edi.company -->
     <record model="ir.ui.view" id="edi_company_trip_parameter_form_view">
@@ -115,6 +136,14 @@
 	            <button name="generate_future_order_data_report" string="EDI stampa progressivi magazzino" type="object" icon="gtk-print" />
             </tree>
         </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_res_partner_trip_detail">
+        <field name="name">Dettaglio partner</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_res_partner_trip_code_tree"/>
     </record>
 
     <record model="ir.actions.act_window" id="action_edi_company_trip_parameter">
@@ -353,8 +382,7 @@
              <menuitem parent="menu_trip_view" id="menu_trip_view_change" name="Change check" sequence="35" action="action_trip_edi_line_view_change"/>
              <menuitem parent="menu_trip_view" id="menu_trip_view_check_destination" name="Check destination" sequence="40" action="action_trip_edi_line_check_destination_view_list"/>
 
+    <menuitem parent="account_trip.menu_trip_configuration" id="menu_res_partner_trip_detail" name="Partner gestionale" sequence="80" action="action_res_partner_trip_detail"/>
     <menuitem parent="account_trip.menu_trip_configuration" id="menu_edi_company_trip_parameter" name="EDI Company" sequence="90" action="action_edi_company_trip_parameter"/>
-
-
    </data>
 </openerp>
