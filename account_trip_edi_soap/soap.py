@@ -300,6 +300,36 @@ class EdiSoapConnection(orm.Model):
                 _logger.error('Cannot parse float: %s' % value)
                 return 0.0  # TODO raise error
 
+        def get_last_day(month):
+            """ Last day of the month
+            """
+            if month in ('02', 2):
+                return '28'
+            elif month in ('01', '03', '05', '07', '08', '10', '12',
+                           1, 3, 5, 7, 8, 10, 12):
+                return '31'
+            else:
+                return '30'
+
+        def get_lot_date(value):
+            """ Extract lot data
+                Format present: 4-22 04-22 5/22 05/22
+            """
+            if not value:
+                return False
+            value = value.replace('-', '/')
+            part = value.split('/')
+            try:
+                year, month = part
+                day = get_last_day(month)
+                date = '20%02d-%02d-%s' % (int(year), int(month), day)
+                datetime.strptime(deadline, '%Y-%m-%d')  # test
+                _logger.info('Date: %s >> %s' % (value, date))
+                return date
+            except:
+                _logger.error('Not a Lot date: %s' % value)
+                return False
+
         def get_date(value):
             """ Clean weight text:
             """
@@ -328,16 +358,6 @@ class EdiSoapConnection(orm.Model):
             except:
                 _logger.error('Cannot parse int: %s' % value)
                 return 0  # TODO raise error
-
-        def get_last_day(month):
-            """ Last day of the month
-            """
-            if month == '02':
-                return '28'
-            elif month in ('04', '06', '09', '11'):
-                return '30'
-            else:
-                return '31'
 
         def check_startwith(text, start, key):
             """ Check if element passed start with key of start DB
@@ -711,18 +731,7 @@ class EdiSoapConnection(orm.Model):
                             _logger.error('Wrong code %s' % customer_code)
                             customer_code = ''
 
-                        # Deadline:
-                        deadline = False
-                        if line_part[12]:
-                            deadline = '20%s-%s-%s' % (
-                                line_part[12][-2:],
-                                line_part[12][:2],
-                                get_last_day(line_part[12][:2]),
-                                )
-                            try:
-                                datetime.strptime(deadline, '%Y-%m-%d')  # test
-                            except:
-                                _logger.error('Not a date: %s' % deadline)
+                        deadline = get_lot_date(line_part[12])
 
                         default_code = line_part[4]
                         product_ids = product_pool.search(cr, uid, [
