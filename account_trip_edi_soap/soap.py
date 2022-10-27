@@ -333,7 +333,6 @@ class EdiSoapConnection(orm.Model):
         def get_date(value):
             """ Clean weight text:
             """
-            pdb.set_trace()
             value = value.strip()
             try:
                 if len(value) == 10:
