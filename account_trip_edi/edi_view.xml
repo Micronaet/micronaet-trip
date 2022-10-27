@@ -79,19 +79,19 @@
         <field name="model">res.partner</field>
         <field name="arch" type="xml">
             <tree string="Partner gestionale" editable="bottom">
-                <field name="name" />
+                <field name="name" readonly="1"/>
                 <!--<field name="address" />-->
-                <field name="city" />
+                <field name="city" readonly="1"/>
 
-                <field name="sql_customer_code" />
-                <field name="sql_supplier_code" />
-                <field name="sql_destination_code" />
+                <field name="sql_customer_code" readonly="1"/>
+                <field name="sql_supplier_code" readonly="1"/>
+                <field name="sql_destination_code" readonly="1"/>
 
-                <field name="trip_supplier_facility_code" />
-                <field name="trip_supplier_destination_code" />
+                <field name="trip_supplier_facility_code" readonly="1"/>
+                <field name="trip_supplier_destination_code" readonly="1"/>
 
-                <field name="tour1_id"/>
-                <field name="tour2_id"/>
+                <field name="tour1_id" readonly="1"/>
+                <field name="tour2_id" readonly="1"/>
             </tree>
         </field>
     </record>
