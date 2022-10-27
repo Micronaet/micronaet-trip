@@ -319,12 +319,11 @@ class EdiSoapConnection(orm.Model):
                 return False
             value = value.replace('-', '/')
             part = value.split('/')
-            pdb.set_trace()
             try:
                 month, year = part
                 day = get_last_day(month)
                 date = '20%02d-%02d-%s' % (int(year), int(month), day)
-                datetime.strptime(deadline, '%Y-%m-%d')  # test
+                datetime.strptime(date, '%Y-%m-%d')  # test
                 _logger.info('Date: %s >> %s' % (value, date))
                 return date
             except:
