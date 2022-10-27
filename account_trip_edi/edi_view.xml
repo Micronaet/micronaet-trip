@@ -78,7 +78,7 @@
         <field name="name">res.partner.trip.code.tree</field>
         <field name="model">res.partner</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <tree string="Partner gestionale" editable="bottom">
                 <field name="name" />
                 <!--<field name="address" />-->
                 <field name="city" />
