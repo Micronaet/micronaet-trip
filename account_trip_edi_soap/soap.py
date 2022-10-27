@@ -337,13 +337,19 @@ class EdiSoapConnection(orm.Model):
             value = value.strip()
             try:
                 if len(value) == 10:
+                    year = value[-4:]
                     month = value[3:5]
                 elif len(value) == 8:
-                    month = value[2:4]
+                    if '/' in value:  # 01/12/22
+                        month = value[3:5]
+                        year = '20' + value[-2:]
+                    else:  # 01122022
+                        month = value[2:4]
+                        year = value[-4:]
                 else:
                     _logger.error('Cannot parse date: %s' % value)
                     return False
-                res = '%s-%s-%s' % (value[-4:], month, value[:2])
+                res = '%s-%s-%s' % (year, month, value[:2])
                 return res
 
             except:
