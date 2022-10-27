@@ -62,8 +62,8 @@
                <field name="sql_supplier_code" string="Codice fornitore"/>
                <field name="sql_destination_code" string="Codice destinazione"/>
 
-               <field name="trip_supplier_facility_code" string="Codice Sito"/>
                <field name="trip_supplier_destination_code" string="Codice Alternativo"/>
+               <field name="trip_supplier_facility_code" string="Codice Impianto"/>
            </field>
         </field>
     </record>
@@ -73,8 +73,8 @@
         <field name="inherit_id" ref="account_trip.view_res_partner_destination_form" />
         <field name="arch" type="xml">
             <field name="tour2_id" position="after">
-               <field name="trip_supplier_facility_code" string="Codice Sito"/>
                <field name="trip_supplier_destination_code" string="Codice Alternativo"/>
+               <field name="trip_supplier_facility_code" string="Codice Impianto"/>
             </field>
         </field>
     </record>
@@ -91,8 +91,8 @@
                 <field name="sql_supplier_code" readonly="1"/>
                 <field name="sql_destination_code" readonly="1"/>
 
-                <field name="trip_supplier_facility_code" readonly="1"/>
-                <field name="trip_supplier_destination_code" readonly="1"/>
+               <field name="trip_supplier_destination_code" string="Codice Alternativo" readonly="1"/>
+               <field name="trip_supplier_facility_code" string="Codice Impianto" readonly="1"/>
 
                 <field name="tour1_id" readonly="1"/>
                 <field name="tour2_id" readonly="1"/>
