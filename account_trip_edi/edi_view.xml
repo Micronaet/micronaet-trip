@@ -144,6 +144,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree</field>
         <field name="view_id" ref="view_res_partner_trip_code_tree"/>
+        <field name="search_view_id" ref="account_trip.view_res_partner_destination_search"/>
     </record>
 
     <record model="ir.actions.act_window" id="action_edi_company_trip_parameter">
