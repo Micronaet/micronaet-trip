@@ -368,10 +368,10 @@ class trip_import_edi_wizard(orm.Model):
                                         _("Destination: %s<br/>") % destination
                                     html += \
                                         _("Codice Alernativo: %s%s<br/>") % (
-                                            supplier_facility, supplier_cost)
+                                            supplier_cost, supplier_site)
                                     html += \
                                         _("Documento predefinito - Sito: %s"
-                                          "<br/>") % supplier_site
+                                          "<br/>") % supplier_facility
                                     html += \
                                         _("Customer ref.: %s<br/>") % customer
                                     html += "</p>"
