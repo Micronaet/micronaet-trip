@@ -142,7 +142,8 @@ class res_partner(osv.osv):
                     code = record['CKY_CNT'].strip()
                     if not i % 200:
                         _logger.info(
-                            'Import destination tour code: %s record updated!' % i)
+                            'Import destination tour code: %s record '
+                            'updated!' % i)
                     destination_id = self.get_partner_from_sql_code(
                         cr, uid, code, context=context)
                     if not destination_id:

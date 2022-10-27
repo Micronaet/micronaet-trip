@@ -782,7 +782,7 @@ class trip_order(orm.Model):
                 'master': '',
                 'warning': '',
                 'record': '',
-            }
+                }
             for record in cursor:
                 try:
                     i += 1
@@ -1178,10 +1178,12 @@ class res_partner(orm.Model):
         return res
 
     _columns = {
-        'tour1_id': fields.many2one('trip.tour', 'Tour 1',
+        'tour1_id': fields.many2one(
+            'trip.tour', 'Tour 1',
             required=False,
             ondelete='set null'),
-        'tour2_id': fields.many2one('trip.tour', 'Tour 2',
+        'tour2_id': fields.many2one(
+            'trip.tour', 'Tour 2',
             required=False,
             ondelete='set null'),
         # 'sequence': fields.integer('Sequence',

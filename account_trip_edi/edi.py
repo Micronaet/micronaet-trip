@@ -56,7 +56,7 @@ class trip_import_edi_wizard(orm.Model):
             """ Try to remove not ascii char (replaced with #)
             """
             try:
-                value.decode("utf8") # test for raise error
+                value.decode("utf8")  # test for raise error
                 return value
             except:
                 # remove char not ascii
@@ -66,7 +66,7 @@ class trip_import_edi_wizard(orm.Model):
                         char.decode("utf8")
                         v += char
                     except:
-                        v += "#" # replaced
+                        v += "#"  # replaced
                 return v
 
         def ascii_check(value):
@@ -78,9 +78,9 @@ class trip_import_edi_wizard(orm.Model):
                 else:
                     res += '#'
             # Particular case:
-            res = res.replace('###', '') # Error (file start with wrong char!)
+            res = res.replace('###', '')  # Error (file start with wrong char!)
             return res.replace('##', '#')
-            #return res
+            # return res
 
         # ---------------------------------------------------------------------
         #                  Main code (common part)
@@ -120,7 +120,7 @@ class trip_import_edi_wizard(orm.Model):
         try:
             self.unlink(cr, uid, line_ids, context=context)
         except:
-            pass # No comunication of error
+            pass  # No comunication of error
 
         # Load destination dict:
         destination_not_found = []
@@ -158,7 +158,7 @@ class trip_import_edi_wizard(orm.Model):
                 cr, uid, company.id, context=context)
 
             if not path_in:
-                pass  # TODO comunicate error
+                pass  # todo comunicate error
 
             file_list = []
             try:
@@ -174,6 +174,8 @@ class trip_import_edi_wizard(orm.Model):
 
                 # Print list of sorted files for logging the operation:
                 for ts, file_in in file_list:
+                    if file_in == 'ELIORD202210260857161.ASC':
+                        pdb.set_trace()
                     _logger.info('Read file: %s' % file_in)
 
                     # Reset parameter for destination code:
@@ -238,11 +240,11 @@ class trip_import_edi_wizard(orm.Model):
                         customer = False
                         destination = False
 
-                    else: # create
+                    else:  # create
                         for line in fin:
                             # Check if line is cancel
                             if parametrized.is_an_invalid_row(line):
-                                continue # Line cancel
+                                continue  # Line cancel
 
                             line = ascii_check(line)
                             # -------------------------------------------------
@@ -253,7 +255,7 @@ class trip_import_edi_wizard(orm.Model):
                                 # ---------------------------------------------
                                 #                 STRUCTURED
                                 # ---------------------------------------------
-                                if start: # Part only one:
+                                if start:  # Part only one:
                                     start = False
                                     # TODO Extra html header not present here!!
                                     # Only HTML header for structure
@@ -318,7 +320,7 @@ class trip_import_edi_wizard(orm.Model):
                                 # ---------------------------------------------
                                 #            NOT STRUCTURED HEADER
                                 # ---------------------------------------------
-                                if start: # header value (only one)
+                                if start:  # header value (only one)
                                     start = False
 
                                     # Read fields
@@ -670,26 +672,31 @@ class trip_import_edi_wizard(orm.Model):
         'deadline': fields.date('Deadline'),
         'number': fields.char('Reference', size=20, readonly=True),
         'customer': fields.char('Customer', size=100, readonly=True),
-        'destination': fields.char('Destination (customer)', size=110,
+        'destination': fields.char(
+            'Destination (customer)', size=110,
             readonly=True),
         'company_id': fields.many2one('edi.company', 'Company', required=True),
         'destination_id': fields.many2one(
             'res.partner', 'Destination (internal)',
             readonly=True, domain=[('is_address', '=', True)],
             ondelete='set null'),
-        'destination_description': fields.char('Destination description',
+        'destination_description': fields.char(
+            'Destination description',
             size=100, readonly=True),
         'is_deletable': fields.function(
             _get_is_deletable, method=True,
             type='boolean', string='Cancellabile?', store=False),
 
-        'tour1_id': fields.related('destination_id','tour1_id',
+        'tour1_id': fields.related(
+            'destination_id', 'tour1_id',
             type='many2one',
             relation='trip.tour', string='Trip 1', store=True),
-        'tour2_id': fields.related('destination_id','tour2_id',
+        'tour2_id': fields.related(
+            'destination_id', 'tour2_id',
             type='many2one',
             relation='trip.tour', string='Trip 2', store=True),
-        'information': fields.text('Information',
+        'information': fields.text(
+            'Information',
             help='Short info about context of order (detail, destination'),
         'priority': fields.selection([
             ('low', 'Low'),
