@@ -174,8 +174,6 @@ class trip_import_edi_wizard(orm.Model):
 
                 # Print list of sorted files for logging the operation:
                 for ts, file_in in file_list:
-                    if file_in == 'ELIORD202210260857161.ASC':
-                        pdb.set_trace()
                     _logger.info('Read file: %s' % file_in)
 
                     # Reset parameter for destination code:
