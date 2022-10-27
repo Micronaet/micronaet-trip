@@ -319,6 +319,7 @@ class EdiSoapConnection(orm.Model):
                 return False
             value = value.replace('-', '/')
             part = value.split('/')
+            pdb.set_trace()
             try:
                 month, year = part
                 day = get_last_day(month)
