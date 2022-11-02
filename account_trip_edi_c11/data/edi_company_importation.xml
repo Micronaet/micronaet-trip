@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!--Add element for choose importation type-->
+        <record id="importation_account_trip_edi_c11" model="edi.company.importation">
+            <field name="name">Company 11</field>
+            <field name="code">DUS</field>
+            <field name="note">Specific importation for company 11</field>
+            <field name="object">edi.company.c11</field>
+        </record>
+   </data>
+</openerp>
