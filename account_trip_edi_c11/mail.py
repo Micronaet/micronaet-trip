@@ -47,7 +47,12 @@ class edi_company_c11(orm.Model):
         pdb.set_trace()
         # attachment_content = part.get_content_type()
         # attachment_content == content_type and \
-        filename = part.get_filename() or ''
+        filename = part.get_filename()
+        if not filename:
+            if verbose:
+                _logger.info('Empty filename')
+            return False
+
         filename_part = filename.split('_')
         if filename and filename.endswith('.txt') and len(filename_part) == 3:
             if verbose:
