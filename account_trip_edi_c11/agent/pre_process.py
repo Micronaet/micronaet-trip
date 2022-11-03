@@ -247,8 +247,13 @@ for root, dirs, files in os.walk(in_path):
             # -----------------------------------------------------------------
             # Create file every code break:
             # -----------------------------------------------------------------
-            order_year = line[3:7]
-            order_number = line[7:13]
+            order_year = line[3:7].strip()
+            order_number = line[7:13].strip()
+            if not order_number or not order_year:
+                log_on_file(
+                    'Error cannot read order or year: %s [%s]' % (
+                        file_in, company),
+                    mode='ERROR', file_list=[f_in_log, f_out_log])
 
             # Generate filename for every order included:
             order_file = '%s_%s_%s_%s.%s' % (
