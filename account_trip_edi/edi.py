@@ -391,50 +391,51 @@ class trip_import_edi_wizard(orm.Model):
                             #                      DETAILS:
                             # -------------------------------------------------
                             # Common part:
-                            if not structured or structured[ # test w/art. code
+                            # test w/art. code:
+                            if not structured or structured[
                                    'detail_code'] == line_type:
                                 html += """
                                     <tr>
-                                         <td>&nbsp;%s&nbsp;</td>
-                                         <td>&nbsp;%s&nbsp;</td>
-                                         <td>&nbsp;%s&nbsp;</td>
-                                         <td>&nbsp;%s&nbsp;</td>
-                                         <td>&nbsp;%s&nbsp;</td>
-                                         <td>&nbsp;%s&nbsp;</td>
-                                     </tr>""" % (
-                                         parametrized.format_string(
-                                             line[
-                                                 trace['detail_code'][0]:
-                                                 trace['detail_code'][1]]),
-                                         parametrized.format_string(
-                                         line[
-                                             trace[
-                                                 'detail_description'][0]:
-                                             trace[
-                                                 'detail_description'][1]]
-                                                 ),
-                                         parametrized.format_string(
-                                             line[
-                                                 trace['detail_um'][0]:
-                                                 trace['detail_um'][1]]),
-                                         parametrized.format_float(
-                                             line[
-                                                 trace['detail_quantity'][0]:
-                                                 trace['detail_quantity'][1]]),
-                                         parametrized.format_float(
-                                             line[
-                                                 trace['detail_price'][0]:
-                                                 trace['detail_price'][1]]),
-                                         parametrized.format_float(
-                                             line[
-                                                 trace['detail_total'][0]:
-                                                 trace['detail_total'][1]]),
-                                         )
-                        html += "</table>"  # TODO if empty??
+                                        <td>&nbsp;%s&nbsp;</td>
+                                        <td>&nbsp;%s&nbsp;</td>
+                                        <td>&nbsp;%s&nbsp;</td>
+                                        <td>&nbsp;%s&nbsp;</td>
+                                        <td>&nbsp;%s&nbsp;</td>
+                                        <td>&nbsp;%s&nbsp;</td>
+                                    </tr>""" % (
+                                        parametrized.format_string(
+                                            line[
+                                                trace['detail_code'][0]:
+                                                trace['detail_code'][1]]),
+                                        parametrized.format_string(
+                                            line[
+                                                trace[
+                                                    'detail_description'][0]:
+                                                trace[
+                                                    'detail_description'][1]]
+                                                    ),
+                                        parametrized.format_string(
+                                            line[
+                                                trace['detail_um'][0]:
+                                                trace['detail_um'][1]]),
+                                        parametrized.format_float(
+                                            line[
+                                                trace['detail_quantity'][0]:
+                                                trace['detail_quantity'][1]]),
+                                        parametrized.format_float(
+                                            line[
+                                                trace['detail_price'][0]:
+                                                trace['detail_price'][1]]),
+                                        parametrized.format_float(
+                                            line[
+                                                trace['detail_total'][0]:
+                                                trace['detail_total'][1]]),
+                                        )
+                        html += "</table>"  # todo if empty??
                     fin.close()
 
                     # Create file list
-                    # TODO old code: Read from file
+                    # todo old code: Read from file
                     # timestamp = datetime.fromtimestamp(ts).strftime(
                     #        DEFAULT_SERVER_DATETIME_FORMAT + ".%f" )
                     destination_id = parametrized.get_destination_id(
