@@ -205,7 +205,8 @@ class ImapServer(orm.Model):
 
                 # todo if not record['Message-Id']:
                 for company in company_records:
-                    pdb.set_trace()
+                    if company.name == 'DUS':
+                        pdb.set_trace()
                     if not company_pool.email_belong_to(company, record):
                         # todo archive unused files
                         continue  # Mail not belong to this company
