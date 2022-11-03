@@ -50,7 +50,7 @@ class edi_company_c11(orm.Model):
         'detail_description': (179, 239),
         'detail_um': (654, 669),  # OK
         'detail_quantity': (652, 664),  # OK
-        'detail_price': (0, 0),  # Not present
+        'detail_price': (0, 0),  # todo add from partic
         'detail_total': (0, 0),  # Not present
 
         # Destination blocks:
