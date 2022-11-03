@@ -263,6 +263,9 @@ for root, dirs, files in os.walk(in_path):
                 command,  # Mode
                 extension,   # Extension same as original
             )
+            print('Creating order: %s' % order_file)
+            pdb.set_trace()
+
             if order_file not in data:
                 data[order_file] = {
                     'counter': 0,
