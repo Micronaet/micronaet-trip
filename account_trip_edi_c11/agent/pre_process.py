@@ -60,8 +60,8 @@ def sort_line(row):
         return 3, code  # dry
     elif start_1 in 'G':
         return 4, code  # pasta
-    else: # Error list
-        f_error = open('./sort_error.log', 'w')
+    else:  # Error list
+        f_error = open('./sort_error.dus.log', 'w')
         f_error.write(
             'Char not found %s - %s -%s\n' % (start_1, start_2, start_3))
         print('Char not found %s - %s - %s' % (start_1, start_2, start_3))
@@ -248,6 +248,7 @@ for root, dirs, files in os.walk(in_path):
             file_list=[f_in_log, f_out_log])
 
         counter = 0
+        # todo change procedure here!!!!!
         for line in f_in:
             counter += 1
             line = line.strip()
@@ -263,6 +264,7 @@ for root, dirs, files in os.walk(in_path):
                     'document': line[67:69].strip(),
                 }
                 continue
+
             # Detail lines:
             detail = {
                 'type': line[:2].strip(),
