@@ -58,7 +58,6 @@ class ImapServer(orm.Model):
         """ Try to extract the attachments from all files in company folder
             Extract single file and move same time the email
         """
-        pdb.set_trace()
         folder = {
             # 'eml': os.path.expanduser(company.mail_eml_folder),
             'attachment': os.path.expanduser(company.mail_attach_folder),
@@ -67,6 +66,8 @@ class ImapServer(orm.Model):
         content_type = company.mail_content_type
         extension = company.attachment_extension
         utility = self.pool.get(company.type_importation_id.object)  # xxx
+        # mail_multi_order = company.mail_multi_order
+        pdb.set_trace()
         for imap, msg_uid, record in data:
             order_name = utility.get_order_number(record)
 
@@ -89,6 +90,7 @@ class ImapServer(orm.Model):
                 # Check if is the correct attachment:
                 if utility.is_order_attachment(
                         part, content_type, attach_filename):
+
                     # ---------------------------------------------------------
                     # Save Attachment: todo 'Content-Transfer-Encoding' base64
                     # ---------------------------------------------------------
@@ -351,12 +353,12 @@ class EdiCompany(orm.Model):
             ], 'Content type',
             help='Content type allegato da prendere in considereazione per la'
                  'procedura di import'),
-        'mail_multi_order': fields.boolean(
-            'Ordini multipli',
-            help='Indica che il file allegato può contenere più ordini da '
-                 'processare, in questo caso la cartella history conterrà'
-                 'l\'allegato ufficiale non gli ordini spezzati che finiranno'
-                 'poi nella cartella degli ordini IN'),
+        # 'mail_multi_order': fields.boolean(
+        #    'Ordini multipli',
+        #    help='Indica che il file allegato può contenere più ordini da '
+        #         'processare, in questo caso la cartella history conterrà'
+        #         'l\'allegato ufficiale non gli ordini spezzati che finiranno'
+        #         'poi nella cartella degli ordini IN'),
         'attachment_extension': fields.char(
             'Estensione allegato', size=6,
             help='Estensione utilizzata per salvare il file allegato'),

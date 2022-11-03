@@ -61,6 +61,7 @@ class edi_company_c11(orm.Model):
         """ EDI mail: Extract order number
             Format: 'Ord. A/2022/205327 - Forn. 31218 App. 7072'
         """
+        pdb.set_trace()
         subject = record['Subject']
         return subject.split(' ')[1].replace('/', '-')
 
