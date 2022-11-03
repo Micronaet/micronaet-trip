@@ -136,7 +136,6 @@ def log_on_file(message, mode='INFO', file_list=None, verbose=True):
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
-pdb.set_trace()
 try:
     company = sys.argv[1]
     if len(company) > 3:
@@ -243,6 +242,10 @@ for root, dirs, files in os.walk(in_path):
         counter = 0
         for line in f_in:
             line = line.strip()
+
+            # Clean base 64 data:
+            line = line.replace('\xff', '').replace('\xfe', '').replace(
+                '\x00', '')
 
             # -----------------------------------------------------------------
             # Create file every code break:
