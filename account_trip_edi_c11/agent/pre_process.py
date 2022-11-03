@@ -168,6 +168,7 @@ out_path = os.path.expanduser(config.get('out', 'path'))
 out_log = os.path.expanduser(config.get('out', 'log'))
 out_schedule = os.path.expanduser(config.get('out', 'schedule'))
 out_original = os.path.expanduser(config.get('out', 'original'))
+out_history = os.path.expanduser(config.get('out', 'history'))
 
 # Mail parameters:
 mail_error = config.get('mail', 'error')
@@ -205,7 +206,7 @@ if out_check:
 log_on_file(
     'Start import order mode: %s' % company, mode='INFO', file_list=[
         f_in_schedule, f_out_schedule])
-
+pdb.set_trace()
 for root, dirs, files in os.walk(in_path):
     log_on_file(
         'Read root folder: %s [%s]' % (root, company),
@@ -219,69 +220,85 @@ for root, dirs, files in os.walk(in_path):
                 file_list=[
                     f_in_schedule, f_out_schedule])
             continue
-        # file_part = f.split('_')
-        command = 'NEW'  # Only this!
 
         # Fullname needed:
+        command = 'NEW'  # Only this!
         file_in = os.path.join(root, f)
+        create_date = datetime.fromtimestamp(
+            os.path.getctime(file_in)).strftime('%Y%m%d_%H%M%S')
         file_history = os.path.join(in_history, f)
         file_original = os.path.join(out_original, f)
-
-        create_date = datetime.fromtimestamp(
-            os.path.getctime(file_in)
-            ).strftime('%Y%m%d_%H%M%S')
-
-        file_out = os.path.join(
-            out_path, '%s' % (
-                '%s_%s_%s.txt' % (  # todo change date creation?
-                    create_date, f[:-4], command),
-                ))  # TODO change name
 
         # ---------------------------------------------------------------------
         # Read input file:
         # ---------------------------------------------------------------------
         error = []
         f_in = open(file_in, 'r')
-        row_out = []
+        data = {}
         log_on_file(
             'Parsing file: %s [%s]' % (file_in, company),
             mode='INFO',
             file_list=[f_in_log, f_out_log])
 
         counter = 0
-        # todo change procedure here!!!!!
         for line in f_in:
-            counter += 1
             line = line.strip()
-            if line.startswith('01'):  # Header block:
-                header = {
-                    'type': line[:2].strip(),
-                    'sequence': line[2:7].strip(),
-                    'order': line[7:23].strip(),
-                    'date': line[23:29].strip(),
-                    'deadline': line[29:35].strip(),
-                    'company_code': line[35:51].strip(),
-                    'destination_code': line[51:67].strip(),
-                    'document': line[67:69].strip(),
-                }
-                continue
 
-            # Detail lines:
+            # -----------------------------------------------------------------
+            # Create file every code break:
+            # -----------------------------------------------------------------
+            order_year = line[3:7]
+            order_number = line[7:13]
+
+            # Generate filename for every order included:
+            order_file = '%s_%s_%s_%s.%s' % (
+                order_year,  # Year
+                order_number,  # Number
+                create_date,  # Date of file
+                command,  # Mode
+                extension,   # Extension same as original
+            )
+            if order_file not in data:
+                data[order_file] = {
+                    'counter': 0,
+                    'line': [],
+                    'file_out': os.path.join(
+                        out_path, order_file),
+
+                    'header': {
+                        'type': line[:2].strip(),  # AA
+                        # 'sequence': line[2:7].strip(),
+                        'order': '%s-%s' % (order_year, order_number),
+                        'date': line[13:21].strip(),
+                        'deadline': line[644:652].strip(),
+                        'company_code': line[26:33].strip(),
+                        'destination_code': line[21:25].strip(),
+                        # 'document': line[67:69].strip(),
+                        # 'destination_facility': (26, 33),  # OK Stock code
+                        # 'destination_cost': (21, 25),  # OK CDC
+                        # 'destination_site': (33, 37),  # OK Address code
+
+                        'cig': line[719:744].strip(),
+                    },
+                    }
+
+                # Detail lines:
             detail = {
-                'type': line[:2].strip(),
-                'sequence': line[2:7].strip(),
-                'code': line[7:23].strip(),
-                'name': line[23:63].strip(),
-                'uom': line[63:65].strip(),
-                'quantity': line[65:72].strip(),
-                'price': line[72:81].strip(),
-                'vat': line[67:69].strip(),
+                'type': '',  # line[:2].strip(),
+                'sequence': line[278:282].strip(),
+                'code': line[614:644].strip(),
+                'name': line[359:614].strip(),
+                'uom': line[664:669].strip(),
+                'quantity': line[652:664].strip(),
+                'price': '',   # line[72:81].strip(),
+                'vat': '',   # line[67:69].strip(),
             }
 
             # -----------------------------------------------------------------
             # Convert row input file:
             # -----------------------------------------------------------------
-            row_out.append(
+            data[order_file]['counter'] += 1
+            data[order_file]['line'].append(
                 '%-3s|%-10s|%-10s|%-10s|%-8s|'
                 '%-13s|%4s|%-16s|%-60s|%-2s|%15s|'
                 '%-16s|%-60s|%-2s|%15s|'
@@ -292,16 +309,17 @@ for root, dirs, files in os.walk(in_path):
                     # Destination code:
                     '',
                     clean_text(
-                        header['destination_code'], 10, error=error,
-                        truncate=True),
+                        data[order_file]['header']['destination_code'], 10,
+                        error=error, truncate=True),
                     '',
 
-                    clean_date(header['deadline']),
+                    clean_date(data[order_file]['header']['deadline']),
                     clean_text(
-                        header['order'], 13, error=error, truncate=True),
+                        data[order_file]['header']['order'], 13,
+                        error=error, truncate=True),
 
                     # Line:
-                    counter - 1,  # remove header line
+                    data[order_file]['counter'],
                     clean_text(detail['code'], 16, error=error, truncate=True,
                                uppercase=True),
                     clean_text(detail['name'], 60, error=error, truncate=True),
@@ -320,10 +338,12 @@ for root, dirs, files in os.walk(in_path):
                         detail['quantity'], 15, 2, 100.0, error=error),
 
                     # Footer:
-                    clean_date(header['date']),
+                    clean_date(data[order_file]['header']['date']),
                     '',  # header note
                     '',  # line note
-                    '',  # CIG
+                    clean_text(
+                        data[order_file]['header']['cig'], 15, error=error,
+                        truncate=True),
                     # todo price?
                     ))
         f_in.close()
@@ -337,27 +357,39 @@ for root, dirs, files in os.walk(in_path):
         # ---------------------------------------------------------------------
         # Save file out:
         # ---------------------------------------------------------------------
-        error = []
-        # Convert file:
-        f_out = open(file_out, 'w')
+        for order_name in data:
+            check_history_file = os.path.join(out_history, order_name)
+            if os.path.exists(check_history_file):
+                log_on_file(
+                    'Order yet present in history, jumped: %s [%s]' % (
+                        order_name, company),
+                    mode='ERROR', file_list=[f_in_log, f_out_log])
+                continue
 
-        # for line in sorted(row_out, key=lambda x: sort_line(x)):  todo sort?
-        for line in row_out:
-            f_out.write(line)
-        f_out.close()
+            # todo check also if in history present
+            error = []  # Error when exporting one of this orders
 
-        if error:
-            log_on_file(
-                'Error generating out file: %s [%s]' % (error, company),
-                mode='ERROR', file_list=[f_in_log, f_out_log])
-            continue
-        else:
-            log_on_file(
-                'Created file: %s [%s]' % (file_out, company),
-                mode='INFO', file_list=[f_in_log, f_out_log])
+            # Convert file:
+            file_out = data[order_name]['file_out']
+            f_out = open(file_out, 'w')  # if present override!
+
+            # for line in sorted(data, key=lambda x: sort_line(x)):  todo sort?
+            for line in data[order_name]['line']:
+                f_out.write(line)
+            f_out.close()
+
+            if error:
+                log_on_file(
+                    'Error generating out file: %s [%s]' % (error, company),
+                    mode='ERROR', file_list=[f_in_log, f_out_log])
+                # continue
+            else:
+                log_on_file(
+                    'Created file: %s [%s]' % (file_out, company),
+                    mode='INFO', file_list=[f_in_log, f_out_log])
 
         # ---------------------------------------------------------------------
-        # History the in file:
+        #           History the attachment file (after all):
         # ---------------------------------------------------------------------
         error = ''
         try:
@@ -387,7 +419,7 @@ for root, dirs, files in os.walk(in_path):
         if error:
             log_on_file(
                 error, mode='ERROR', file_list=[f_in_log, f_out_log])
-            # XXX TODO delete OUT file
+            # XXX todo delete OUT file
             continue
     break  # only root folder is read
 
