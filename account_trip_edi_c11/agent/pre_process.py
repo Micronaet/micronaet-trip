@@ -243,6 +243,8 @@ for root, dirs, files in os.walk(in_path):
             # Clean base 64 data (clean start editor char):
             line = line.replace('\xff', '').replace('\xfe', '').replace(
                 '\x00', '')
+            if not line:
+                continue  # Jump empty line
 
             # -----------------------------------------------------------------
             # Create file every code break:
