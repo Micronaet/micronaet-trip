@@ -63,7 +63,7 @@ class edi_company_c11(orm.Model):
         """
         return '%s_%s' % (
             record['Subject'],
-            record['Date'].replace(',', '_').replace(':', '_').replace(
-                ' ', '_'),
+            record['Date'].replace(',', '').replace(':', '_').replace(
+                ' ', '_').replace('+', ''),
             )
 
