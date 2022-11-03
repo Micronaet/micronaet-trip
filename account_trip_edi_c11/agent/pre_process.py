@@ -338,7 +338,7 @@ for root, dirs, files in os.walk(in_path):
                     clean_text(detail['uom'], 2, error=error, truncate=True,
                                uppercase=True),
                     clean_float(
-                        detail['quantity'], 15, 2, 100.0, error=error),
+                        detail['quantity'], 15, 2, 1.0, error=error),
 
                     # Supplier reference (here is the same)
                     clean_text(detail['code'], 16, error=error, truncate=True,
