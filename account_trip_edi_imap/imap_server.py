@@ -58,6 +58,7 @@ class ImapServer(orm.Model):
         """ Try to extract the attachments from all files in company folder
             Extract single file and move same time the email
         """
+        pdb.set_trace()
         folder = {
             # 'eml': os.path.expanduser(company.mail_eml_folder),
             'attachment': os.path.expanduser(company.mail_attach_folder),
