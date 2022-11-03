@@ -138,7 +138,9 @@ class edi_company_c11(orm.Model):
         value = value.strip()
         if not value:
             return False
-        return "%s-%s-%s" % (value[:4], value[4:6], value[6:8])
+        res = "%s-%s-%s" % (value[:4], value[4:6], value[6:8])
+        _logger.info('Convert %s in %s' % (value, res))
+        return res
 
     # todo align in correct new format for 11:
     def format_string(self, value):
