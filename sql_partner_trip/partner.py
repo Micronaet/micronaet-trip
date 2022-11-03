@@ -31,14 +31,15 @@ from openerp.tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
+
 class res_partner(osv.osv):
     """ Add extra info for trip (partner address)
     """
     _inherit = 'res.partner'
 
     # Utility for search
-    def search_supplier_destination(self, cr, uid, facility, code,
-            context=None):
+    def search_supplier_destination(
+            self, cr, uid, facility, code, context=None):
         """ Search code in alternative code if more than one is present
             search also facility
         """

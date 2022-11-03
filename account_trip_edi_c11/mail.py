@@ -42,11 +42,13 @@ class edi_company_c11(orm.Model):
     def is_order_attachment(
             self, part, content_type, attach_filename, verbose=True):
         """ Check if the attachment is in correct format
+            31218_20221006_906.txt
         """
         # attachment_content = part.get_content_type()
         # attachment_content == content_type and \
         filename = part.get_filename()
-        if filename and filename.endswith('_v2.txt'):
+        filename_part = filename.split('_')
+        if filename and filename.endswith('.txt') and len(filename_part) == 3:
             if verbose:
                 _logger.info('Found order, attach: %s' % filename)
             return True
@@ -57,8 +59,8 @@ class edi_company_c11(orm.Model):
 
     def get_order_number(self, record):
         """ EDI mail: Extract order number
-            Format: 'Ordine n.30451/21 - VETROPACK - RISTORAZIONE - 29/11/2021'
+            Format: 'Ord. A/2022/205327 - Forn. 31218 App. 7072'
         """
         subject = record['Subject']
-        return subject.split('-')[0].split('.')[-1].strip().replace('/', '-')
+        return subject.split(' ')[1].replace('/', '-')
 

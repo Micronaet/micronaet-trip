@@ -64,89 +64,75 @@ class edi_company_c11(orm.Model):
     # todo align in correct new format for 11:
     def get_timestamp_from_file(self, file_in, path_in=None):
         """ Get timestamp value from file name
-            File is: 20151231_120000_NAME.ASC
+            File is: 31218_20221006_906.txt
                      Date Time Filename
         """
         # todo better is manage data in file instead change name!!
-        date_block = file_in[:15]
-        return "%s/%s/%s %s:%s:%s" % (
+        date_block = file_in.split('_')[1]
+        return "%s/%s/%s 08:00:00" % (
             date_block[:4],
             date_block[4:6],
             date_block[6:8],
 
-            date_block[9:11],
-            date_block[11:13],
-            date_block[13:15],
+            # date_block[9:11],
+            # date_block[11:13],
+            # date_block[13:15],
             )
 
-    # todo allign in correct new format for 11:
+    # todo align in correct new format for 11:
     def is_an_invalid_row(self, row):
         """ Always valid
         """
         return False
 
-    # todo allign in correct new format for 11:
+    # todo align in correct new format for 11:
     def get_state_of_file(self, file_in, forced_list):
         """ Test state of file depend on name and forced presence
         """
         # Always create (no modify management)
-        try:
-            if file_in in forced_list:  # Forced (pickle file)
-                return 'forced'
-            else:
-                file_part = file_in.split('_')
-                command = file_part[3][:3].upper()
-                if command == 'NEW':
-                    return 'create'
-                # todo not used:
-                elif command == 'CAN':
-                    return 'deleting'  # TODO delete?
-                else:  # UPD
-                    return 'change'
-        except:
-            return 'anomaly'
+        return 'create'
 
-    # todo allign in correct new format for 11:
+    # todo align in correct new format for 11:
     def get_destination(self, facility, cost, site):
         """ Mask for code destination (only the last: site is used)
         """
-        return "[H%s]" % cost
+        return "[%s]" % cost
 
-    # todo allign in correct new format for 11:
+    # todo align in correct new format for 11:
     def get_destination_id(self, cr, uid, facility, cost, site, context=None):
         """ Get 3 parameters for destination and return ID get from res.partner
             generated during importation
         """
         return self.pool.get('res.partner').search_supplier_destination(
-            cr, uid, '', 'H' + cost, context=context)
+            cr, uid, '', cost, context=context)
 
-    # todo allign in correct new format for 11:
+    # todo align in correct new format for 11:
     def get_priority(self, cr, uid, file_in):
         """ Always normal (no priority management)
         """
         return 'normal'
 
     # Format:
-    # todo allign in correct new format for 11:
+    # todo align in correct new format for 11:
     def format_int(self, value):
         """ EDI integer format
         """
         return value
 
-    # todo allign in correct new format for 11:
+    # todo align in correct new format for 11:
     def format_float(
             self, value, decimal=3, with_separator=False, separator='.'):
         """ EDI float format
         """
-        return value
+        return float(value.replace(',', '.'))
 
-    # todo allign in correct new format for 11:
+    # todo align in correct new format for 11:
     def format_date(self, value, date_format='ISO'):
         """ EDI file date format YYYYMMDD
         """
         return "%s-%s-%s" % (value[:4], value[4:6], value[6:8])
 
-    # todo allign in correct new format for 11:
+    # todo align in correct new format for 11:
     def format_string(self, value):
         """ EDI file string
         """
