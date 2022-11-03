@@ -68,15 +68,16 @@ class edi_company_c11(orm.Model):
                      Date Time Filename
         """
         # todo better is manage data in file instead change name!!
-        date_block = file_in.split('_')[1]
-        return "%s/%s/%s 08:00:00" % (
+        date_block = file_in.split('_')[2]
+        hour_block = file_in.split('_')[3]
+        return "%s/%s/%s %s:%s:%s" % (
             date_block[:4],
             date_block[4:6],
             date_block[6:8],
 
-            # date_block[9:11],
-            # date_block[11:13],
-            # date_block[13:15],
+            hour_block[:2],
+            hour_block[2:4],
+            hour_block[4:6],
             )
 
     # todo align in correct new format for 11:
