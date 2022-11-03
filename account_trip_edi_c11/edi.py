@@ -129,6 +129,7 @@ class edi_company_c11(orm.Model):
             return float(value.replace(',', '.'))
         except:
             _logger.error('Cannot convert float: %s' % value)
+            return 0.0
 
     # todo align in correct new format for 11:
     def format_date(self, value, date_format='ISO'):
