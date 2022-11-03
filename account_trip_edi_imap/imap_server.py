@@ -66,7 +66,6 @@ class ImapServer(orm.Model):
         content_type = company.mail_content_type
         extension = company.attachment_extension
         utility = self.pool.get(company.type_importation_id.object)  # xxx
-        # mail_multi_order = company.mail_multi_order
         pdb.set_trace()
         for imap, msg_uid, record in data:
             order_name = utility.get_order_number(record)
