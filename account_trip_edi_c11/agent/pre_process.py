@@ -90,9 +90,9 @@ def clean_text(text, length, uppercase=False, error=None, truncate=False):
 def clean_date(company_date):
     """ Current format: YYMMDD
     """
-    #if len(company_date) == 6:
+    # if len(company_date) == 6:
     #    return '20%s' % company_date.strip()
-    #else:
+    # else:
     return company_date.strip()
 
 
@@ -309,6 +309,7 @@ for root, dirs, files in os.walk(in_path):
             # Convert row input file:
             # -----------------------------------------------------------------
             data[order_file]['counter'] += 1
+            pdb.set_trace()
             data[order_file]['line'].append(
                 '%-3s|%-10s|%-10s|%-10s|%-8s|'
                 '%-13s|%4s|%-16s|%-60s|%-2s|%15s|'

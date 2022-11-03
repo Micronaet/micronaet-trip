@@ -20,7 +20,6 @@
 ###############################################################################
 
 import os
-import pdb
 import sys
 import logging
 from openerp.osv import fields, osv, expression, orm
