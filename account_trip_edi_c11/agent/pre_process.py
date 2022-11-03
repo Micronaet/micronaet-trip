@@ -205,7 +205,6 @@ if out_check:
 log_on_file(
     'Start import order mode: %s' % company, mode='INFO', file_list=[
         f_in_schedule, f_out_schedule])
-pdb.set_trace()
 for root, dirs, files in os.walk(in_path):
     log_on_file(
         'Read root folder: %s [%s]' % (root, company),
@@ -241,9 +240,7 @@ for root, dirs, files in os.walk(in_path):
 
         counter = 0
         for line in f_in:
-            line = line.strip()
-
-            # Clean base 64 data:
+            # Clean base 64 data (clean start editor char):
             line = line.replace('\xff', '').replace('\xfe', '').replace(
                 '\x00', '')
 
@@ -283,9 +280,9 @@ for root, dirs, files in os.walk(in_path):
 
                         'cig': line[719:744].strip(),
                     },
-                    }
+                }
 
-                # Detail lines:
+            # Detail lines:
             detail = {
                 'type': '',  # line[:2].strip(),
                 'sequence': line[278:282].strip(),
@@ -295,7 +292,7 @@ for root, dirs, files in os.walk(in_path):
                 'quantity': line[652:664].strip(),
                 'price': '',   # line[72:81].strip(),
                 'vat': '',   # line[67:69].strip(),
-            }
+                }
 
             # -----------------------------------------------------------------
             # Convert row input file:
