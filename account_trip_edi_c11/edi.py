@@ -42,22 +42,23 @@ class edi_company_c11(orm.Model):
     # -------------------------------------------------------------------------
     # todo align in correct new format for 11:
     trace = {
-        'number': (46, 59),
-        'date': (259, 267),  # Insert with parser function
-        'deadline': (37, 45),
+        'number': (7, 13),  # OK
+        'date': (13, 21),  # OK Insert with parser function
+        'deadline': (644, 652),  # OK
         'customer': (0, 0),  # Not present
-        'detail_code': (162, 178),
+        'detail_code': (614, 644),  # OK
         'detail_description': (179, 239),
-        'detail_um': (240, 242),
-        'detail_quantity': (243, 258),
+        'detail_um': (654, 669),  # OK
+        'detail_quantity': (652, 664),  # OK
         'detail_price': (0, 0),  # Not present
         'detail_total': (0, 0),  # Not present
 
         # Destination blocks:
-        'destination_facility': (4, 14),
-        'destination_cost': (15, 25),
-        'destination_site': (26, 36),
-        'destination_description': (0, 0),  # Not present
+        # todo add also 25 char for type of stock?
+        'destination_facility': (26, 33),  # OK Stock code
+        'destination_cost': (21, 25),  # OK CDC
+        'destination_site': (33, 37),  # OK Address code
+        'destination_description': (359, 614),  # OK Company description
         }
 
     # todo align in correct new format for 11:

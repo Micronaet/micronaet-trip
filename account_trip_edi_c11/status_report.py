@@ -60,7 +60,7 @@ class edi_company_report_this(orm.Model):
                 'data'
                 'empty_record'
         """
-        this_id = 9
+        this_id = 11
         report = super(
             edi_company_report_this, self).collect_future_order_data_report(
                 cr, uid, context=context)
