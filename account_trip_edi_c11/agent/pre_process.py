@@ -309,7 +309,6 @@ for root, dirs, files in os.walk(in_path):
             # Convert row input file:
             # -----------------------------------------------------------------
             data[order_file]['counter'] += 1
-            pdb.set_trace()
             data[order_file]['line'].append(
                 '%-3s|%-10s|%-10s|%-10s|%-8s|'
                 '%-13s|%4s|%-16s|%-60s|%-2s|%15s|'
