@@ -20,6 +20,7 @@
 ###############################################################################
 
 import os
+import pdb
 import sys
 import logging
 from openerp.osv import fields, osv, expression, orm
@@ -140,6 +141,7 @@ class edi_company_c11(orm.Model):
             return False
         res = "%s-%s-%s" % (value[:4], value[4:6], value[6:8])
         _logger.info('Convert %s in %s' % (value, res))
+        pdb.set_trace()
         return res
 
     # todo align in correct new format for 11:
