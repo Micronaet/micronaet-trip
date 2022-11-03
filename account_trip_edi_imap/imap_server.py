@@ -205,8 +205,6 @@ class ImapServer(orm.Model):
 
                 # todo if not record['Message-Id']:
                 for company in company_records:
-                    if company.name == 'DUS':
-                        pdb.set_trace()
                     if not company_pool.email_belong_to(company, record):
                         # todo archive unused files
                         continue  # Mail not belong to this company
@@ -237,6 +235,7 @@ class ImapServer(orm.Model):
             # Move operations:
             # -----------------------------------------------------------------
             _logger.info('Parse attachment mail read')
+            pdb.set_trace()
             for company in company_records:
                 if company_records[company]:
                     self.save_attachment_from_eml_file(
