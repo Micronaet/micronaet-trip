@@ -74,7 +74,7 @@ class ImapServer(orm.Model):
             attach_filename = '%s.%s' % (order_name, extension)
             attach_fullname = os.path.join(
                 folder['attachment'], attach_filename)
-            history_fullname = os.path.join(
+            history_fullname = os.path.join(  # Only for check !
                 folder['history'], attach_filename)
 
             # Check if present:
@@ -236,7 +236,6 @@ class ImapServer(orm.Model):
             # Move operations:
             # -----------------------------------------------------------------
             _logger.info('Parse attachment mail read')
-            pdb.set_trace()
             for company in company_records:
                 if company_records[company]:
                     self.save_attachment_from_eml_file(
@@ -352,6 +351,12 @@ class EdiCompany(orm.Model):
             ], 'Content type',
             help='Content type allegato da prendere in considereazione per la'
                  'procedura di import'),
+        'mail_multi_order': fields.boolean(
+            'Ordini multipli',
+            help='Indica che il file allegato può contenere più ordini da '
+                 'processare, in questo caso la cartella history conterrà'
+                 'l\'allegato ufficiale non gli ordini spezzati che finiranno'
+                 'poi nella cartella degli ordini IN'),
         'attachment_extension': fields.char(
             'Estensione allegato', size=6,
             help='Estensione utilizzata per salvare il file allegato'),
