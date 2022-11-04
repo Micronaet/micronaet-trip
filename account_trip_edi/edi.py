@@ -177,19 +177,15 @@ class trip_import_edi_wizard(orm.Model):
                     _logger.info('Read file: %s' % file_in)
 
                     # Reset parameter for destination code:
-                    supplier_facility = ""
-                    supplier_cost = ""
-                    supplier_site = ""
-                    destination_description = ""
-                    # Not raise warning:
-                    destination = ""
-                    deadline = False
-                    date = False
+                    supplier_facility = supplier_cost = supplier_site = ''
+                    destination_description = destination = ''
+                    deadline = date = False
+                    number = customer = ''
 
-                    # Open file for read informations:
-                    fin = open(os.path.join(path_in, file_in), "r")
+                    # Open file for read information:
+                    fin = open(os.path.join(path_in, file_in), 'r')
 
-                    # Type mode valutation:
+                    # Type mode valuatation:
                     mode_type = parametrized.get_state_of_file(
                         file_in, forced_list)
 
@@ -218,7 +214,7 @@ class trip_import_edi_wizard(orm.Model):
                         """
 
                     start = True  # not structured, read header only first line
-                    # TODO load elements in importing state (depend on date)
+                    # todo load elements in importing state (depend on date)
                     if mode_type == 'delete':
                         # Short read (get info from 1st line only)
                         line = fin.readline()
@@ -316,7 +312,6 @@ class trip_import_edi_wizard(orm.Model):
                                         supplier_cost,
                                         supplier_site,
                                         )
-
                             else:
                                 # ---------------------------------------------
                                 #            NOT STRUCTURED HEADER
@@ -464,13 +459,14 @@ class trip_import_edi_wizard(orm.Model):
                         'priority': parametrized.get_priority(
                             cr, uid, file_in),
                         }
-                    # try:
-                    line_id = self.create(
-                        cr, uid, data_line, context=context)
-                    # except:
-                    #    _logger.error(
-                    #        'Error writing order data: %s' % data_line)
-                    #    continue
+                    try:
+                        line_id = self.create(
+                            cr, uid, data_line, context=context)
+                    except:
+                        _logger.error(
+                            'Error writing order data: %s' % data_line)
+                        pdb.set_trace()
+                        continue
 
                     # Create record for test recursions:
                     if number not in recursion:
