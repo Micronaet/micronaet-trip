@@ -47,7 +47,7 @@ class edi_company_c11(orm.Model):
         'deadline': (259, 267),  # DDMMYYYY
         'customer': (0, 0),  # Not present
         'detail_code': (162, 178),
-        'detail_description': (179, 349),
+        'detail_description': (179, 239),
         'detail_um': (240, 242),
         'detail_quantity': (146, 161),  # OK
         'detail_price': (0, 0),  # todo add from partic
@@ -56,10 +56,10 @@ class edi_company_c11(orm.Model):
         # Destination blocks:
         # todo add also 25 char for type of stock?
         # todo correct data:
-        'destination_facility': (26, 33),  # OK Stock code
+        'destination_facility': (0, 0),  # OK Stock code
         'destination_cost': (15, 25),  # OK CDC (ok?)
-        'destination_site': (33, 37),  # OK Address code
-        'destination_description': (359, 614),  # OK Company description
+        'destination_site': (0, 0),  # OK Address code
+        'destination_description': (0, 0),  # OK Company description
         }
 
     # todo align in correct new format for 11:
