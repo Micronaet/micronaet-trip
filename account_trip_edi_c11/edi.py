@@ -44,7 +44,7 @@ class edi_company_c11(orm.Model):
     trace = {
         'number': (46, 59),
         'date': (37, 45),  # DDMMYYYY
-        'deadline': (259, 266),  # DDMMYYYY
+        'deadline': (259, 267),  # DDMMYYYY
         'customer': (0, 0),  # Not present
         'detail_code': (162, 178),
         'detail_description': (179, 349),
@@ -139,7 +139,7 @@ class edi_company_c11(orm.Model):
         value = value.strip()
         if not value:
             return False
-        res = '%s-%s-%s' % (value[:-4], value[4:6], value[:2])
+        res = '%s-%s-%s' % (value[:-4], value[2:4], value[:2])
         _logger.info('>>>> Convert %s in %s' % (value, res))
         return res
 
