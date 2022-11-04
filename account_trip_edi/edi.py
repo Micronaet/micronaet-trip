@@ -459,13 +459,13 @@ class trip_import_edi_wizard(orm.Model):
                         'priority': parametrized.get_priority(
                             cr, uid, file_in),
                         }
-                    try:
-                        line_id = self.create(
-                            cr, uid, data_line, context=context)
-                    except:
-                        _logger.error(
-                            'Error writing order data: %s' % data_line)
-                        continue
+                    # try:
+                    line_id = self.create(
+                        cr, uid, data_line, context=context)
+                    # except:
+                    #    _logger.error(
+                    #        'Error writing order data: %s' % data_line)
+                    #    continue
 
                     # Create record for test recursions:
                     if number not in recursion:
