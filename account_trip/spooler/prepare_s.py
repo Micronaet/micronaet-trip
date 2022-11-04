@@ -118,6 +118,12 @@ price_setup = {
         'separator': '|',
         'partic': {},  # Partic on file
     },
+    'DUS': {
+        'from_code': 162,
+        'to_code': 173,  # Load only first 11 char (parent code)
+        'separator': '|',
+        'partic': {},  # Partic on file
+    },
 }
 
 
