@@ -288,6 +288,7 @@ for root, dirs, files in os.walk(in_path):
                         # 'destination_facility': (26, 33),  # OK Stock code
                         # 'destination_cost': (21, 25),  # OK CDC
                         # 'destination_site': (33, 37),  # OK Address code
+                        'destination_description': line[14:97].strip(),
 
                         'cig': line[719:744].strip(),
                     },
@@ -314,7 +315,7 @@ for root, dirs, files in os.walk(in_path):
                 '%-3s|%-10s|D%-9s|%-10s|%-8s|'
                 '%-13s|%4s|%-16s|%-60s|%-2s|%15s|'
                 '%-16s|%-60s|%-2s|%15s|'
-                '%-8s|%-40s|%-40s|%-15s\r\n' % (
+                '%-8s|%-40s|%-40s|%-15s|%-40s\r\n' % (
                     # Header:
                     clean_text(company, 3, error=error, truncate=True),  # args
 
@@ -356,6 +357,9 @@ for root, dirs, files in os.walk(in_path):
                     clean_text(
                         data[order_file]['header']['cig'], 15, error=error,
                         truncate=True),
+                    clean_text(
+                        data[order_file]['header']['destination_description'],
+                        40, error=error, truncate=True),
                     # todo price?
                     ))
         f_in.close()
