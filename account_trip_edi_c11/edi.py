@@ -98,14 +98,13 @@ class edi_company_c11(orm.Model):
     def get_destination(self, facility, cost, site):
         """ Mask for code destination (only the last: site is used)
         """
-        return "[D%s]" % cost
+        return "[%s]" % cost
 
     # todo align in correct new format for 11:
     def get_destination_id(self, cr, uid, facility, cost, site, context=None):
         """ Get 3 parameters for destination and return ID get from res.partner
             generated during importation
         """
-        cost = 'D%s % code'
         return self.pool.get('res.partner').search_supplier_destination(
             cr, uid, '', cost, context=context)
 
