@@ -338,18 +338,24 @@ class trip_import_edi_wizard(orm.Model):
                                             trace['customer'][1]])
 
                                     # Read all destination code (max 3 parts):
-                                    supplier_facility = parametrized.format_string(line[
-                                        trace['destination_facility'][0]:
-                                        trace['destination_facility'][1]])
-                                    supplier_cost = parametrized.format_string(line[
-                                        trace['destination_cost'][0]:
-                                        trace['destination_cost'][1]])
-                                    supplier_site = parametrized.format_string(line[
-                                        trace['destination_site'][0]:
-                                        trace['destination_site'][1]])
-                                    destination_description = parametrized.format_string(line[
-                                        trace['destination_description'][0]:
-                                        trace['destination_description'][1]])
+                                    supplier_facility = \
+                                        parametrized.format_string(line[
+                                            trace['destination_facility'][0]:
+                                            trace['destination_facility'][1]])
+                                    supplier_cost = parametrized.format_string(
+                                        line[
+                                            trace['destination_cost'][0]:
+                                            trace['destination_cost'][1]])
+                                    supplier_site = parametrized.format_string(
+                                        line[
+                                            trace['destination_site'][0]:
+                                            trace['destination_site'][1]])
+                                    destination_description = parametrized.\
+                                        format_string(line[
+                                            trace['destination_description']
+                                            [0]:
+                                            trace['destination_description'][1]
+                                            ])
                                     destination = parametrized.get_destination(
                                         supplier_facility,
                                         supplier_cost,
@@ -459,13 +465,8 @@ class trip_import_edi_wizard(orm.Model):
                         'priority': parametrized.get_priority(
                             cr, uid, file_in),
                         }
-                    # try:
                     line_id = self.create(
                         cr, uid, data_line, context=context)
-                    # except:
-                    #    _logger.error(
-                    #        'Error writing order data: %s' % data_line)
-                    #    continue
 
                     # Create record for test recursions:
                     if number not in recursion:
@@ -492,7 +493,7 @@ class trip_import_edi_wizard(orm.Model):
             except:
                 _logger.error("Generic error: %s" % (sys.exc_info(), ))
 
-        # Update recursion informations (write totals recursions):
+        # Update recursion information (write totals recursions):
         for key in recursion:
             total, record_ids = recursion[key]
             self.write(cr, uid, record_ids, {
