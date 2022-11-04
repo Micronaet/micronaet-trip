@@ -127,7 +127,7 @@ class edi_company_c11(orm.Model):
         """ EDI float format
         """
         try:
-            return float(value.replace(',', '.'))
+            return float(value.replace(',', '.').strip())
         except:
             _logger.error('Cannot convert float: %s' % value)
             return 0.0
