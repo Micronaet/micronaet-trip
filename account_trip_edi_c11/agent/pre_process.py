@@ -313,7 +313,7 @@ for root, dirs, files in os.walk(in_path):
             data[order_file]['counter'] += 1
 
             # todo keep D? in destination code?
-            alternative_code = 'D%s-%s' % (
+            alternative_code = '%s-%s' % (
                 data[order_file]['header']['destination_code'],
                 int(data[order_file]['header']['destination_address_code']),
             )
