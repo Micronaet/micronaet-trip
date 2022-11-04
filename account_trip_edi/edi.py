@@ -465,7 +465,6 @@ class trip_import_edi_wizard(orm.Model):
                     except:
                         _logger.error(
                             'Error writing order data: %s' % data_line)
-                        pdb.set_trace()
                         continue
 
                     # Create record for test recursions:
