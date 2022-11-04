@@ -284,6 +284,7 @@ for root, dirs, files in os.walk(in_path):
                         'deadline': line[644:652].strip(),
                         'company_code': line[26:33].strip(),
                         'destination_code': line[21:25].strip(),
+                        'destination_address_code': line[33:37].strip(),
                         # 'document': line[67:69].strip(),
                         # 'destination_facility': (26, 33),  # OK Stock code
                         # 'destination_cost': (21, 25),  # OK CDC
@@ -311,8 +312,14 @@ for root, dirs, files in os.walk(in_path):
             # -----------------------------------------------------------------
             data[order_file]['counter'] += 1
 
+            # todo keep D? in destination code?
+            alternative_code = 'D%s-%s' % (
+                data[order_file]['header']['destination_code'],
+                int(data[order_file]['header']['destination_address_code']),
+            )
+
             data[order_file]['line'].append(
-                '%-3s|%-10s|D%-9s|%-10s|%-8s|'
+                '%-3s|%-10s|%-10s|%-10s|%-8s|'
                 '%-13s|%4s|%-16s|%-60s|%-2s|%15s|'
                 '%-16s|%-60s|%-2s|%15s|'
                 '%-8s|%-40s|%-40s|%-15s|%-40s\r\n' % (
@@ -322,8 +329,7 @@ for root, dirs, files in os.walk(in_path):
                     # Destination code:
                     '',
                     clean_text(
-                        data[order_file]['header']['destination_code'], 9,
-                        error=error, truncate=True),
+                        alternative_code, 10, error=error, truncate=True),
                     '',
 
                     clean_date(data[order_file]['header']['deadline']),
