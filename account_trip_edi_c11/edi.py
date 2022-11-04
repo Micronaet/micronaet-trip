@@ -140,7 +140,7 @@ class edi_company_c11(orm.Model):
         if not value:
             return False
         res = '%s-%s-%s' % (value[:-4], value[4:6], value[:2])
-        _logger.info('Convert %s in %s' % (value, res))
+        _logger.info('>>>> Convert %s in %s' % (value, res))
         return res
 
     # todo align in correct new format for 11:
