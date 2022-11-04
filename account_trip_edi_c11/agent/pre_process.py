@@ -288,7 +288,7 @@ for root, dirs, files in os.walk(in_path):
                         # 'destination_facility': (26, 33),  # OK Stock code
                         # 'destination_cost': (21, 25),  # OK CDC
                         # 'destination_site': (33, 37),  # OK Address code
-                        'destination_description': line[14:97].strip(),
+                        'destination_description': line[37:97].strip(),
 
                         'cig': line[719:744].strip(),
                     },
