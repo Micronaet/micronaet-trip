@@ -139,7 +139,7 @@ class edi_company_c11(orm.Model):
         value = value.strip()
         if not value:
             return False
-        res = '%s-%s-%s' % (value[:-4], value[2:4], value[:2])
+        res = '%s-%s-%s' % (value[4:8], value[2:4], value[:2])
         _logger.info('>>>> Convert %s in %s' % (value, res))
         return res
 
