@@ -59,7 +59,7 @@ class edi_company_c11(orm.Model):
         'destination_facility': (0, 0),  # OK Stock code
         'destination_cost': (15, 25),  # OK CDC (ok?)
         'destination_site': (0, 0),  # OK Address code
-        'destination_description': (0, 0),  # OK Company description
+        'destination_description': (366, 406),
         }
 
     # todo align in correct new format for 11:
