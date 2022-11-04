@@ -126,8 +126,11 @@ class edi_company_c11(orm.Model):
             self, value, decimal=3, with_separator=False, separator='.'):
         """ EDI float format
         """
+        value = value.replace(',', '.').strip()
+        if not value:
+            return 0.0
         try:
-            return float(value.replace(',', '.').strip())
+            return float(value)
         except:
             _logger.error('Cannot convert float: %s' % value)
             return 0.0
@@ -139,9 +142,7 @@ class edi_company_c11(orm.Model):
         value = value.strip()
         if not value:
             return False
-        res = '%s-%s-%s' % (value[4:8], value[2:4], value[:2])
-        _logger.info('>>>> Convert %s in %s' % (value, res))
-        return res
+        return '%s-%s-%s' % (value[4:8], value[2:4], value[:2])
 
     # todo align in correct new format for 11:
     def format_string(self, value):
