@@ -134,12 +134,12 @@ class edi_company_c11(orm.Model):
 
     # todo align in correct new format for 11:
     def format_date(self, value, date_format='ISO'):
-        """ EDI file date format YYYYMMDD
+        """ EDI file date format DDMMYYYY
         """
         value = value.strip()
         if not value:
             return False
-        res = '%s-%s-%s' % (value[:2], value[4:6], value[:-4])
+        res = '%s-%s-%s' % (value[:-4], value[4:6], value[:2])
         _logger.info('Convert %s in %s' % (value, res))
         return res
 
