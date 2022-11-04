@@ -291,7 +291,7 @@ def get_timestamp_from_file(file_in, path_in, company='ELI'):
             file_in[18:20],  # Second
             '00' if file_in.startswith('ELIORD') else '10'  # Millisecond
             )
-    else: # company == 'SDX':
+    else:  # company == 'SDX':
         return datetime.fromtimestamp(
             os.path.getctime(join(path_in, file_in)))
 
