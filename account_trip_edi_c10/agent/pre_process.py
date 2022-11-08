@@ -92,6 +92,10 @@ def clean_date(company_date):
     """
     return '20%s' % company_date.strip()
 
+def reformat_date(company_date):
+    """ Current format: DDMMYYYY in YYYYMMDD
+    """
+    return company_date[:-4] + company_date[2:4] + company_date[:2]
 
 def clean_float(
         value, length, decimal=3, multiple=1.0, separator='.', error=None):
@@ -256,8 +260,8 @@ for root, dirs, files in os.walk(in_path):
                     'type': line[:2].strip(),
                     'sequence': line[2:7].strip(),
                     'order': line[7:23].strip(),
-                    'date': line[23:29].strip(),
-                    'deadline': line[29:35].strip(),
+                    'date': reformat_date(line[23:29].strip()),
+                    'deadline': reformat_date(line[29:35].strip()),
                     'company_code': line[35:51].strip(),
                     'destination_code': line[51:67].strip(),
                     'document': line[67:69].strip(),
