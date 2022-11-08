@@ -95,18 +95,21 @@ def clean_date(company_date):
     # else:
     # return company_date.strip()
     company_date = company_date.strip()
+
     if len(company_date) == 6:
-        return '20%s%s%s' % (
+        res = '20%s%s%s' % (
             company_date[:-2],
             company_date[2:4],
             company_date[:2],
         )
     else:
-        return '%s%s%s' % (
+        res = '%s%s%s' % (
             company_date[:-4],
             company_date[2:4],
             company_date[:2],
         )
+    print ('Convert %s to %s' % (company_date, res))
+    return res
 
 
 
