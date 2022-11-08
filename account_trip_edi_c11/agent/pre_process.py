@@ -87,28 +87,28 @@ def clean_text(text, length, uppercase=False, error=None, truncate=False):
     return text
 
 
-def clean_date(company_date):
+def clean_date(date):
     """ Current format: YYMMDD
     """
     # if len(company_date) == 6:
     #    return '20%s' % company_date.strip()
     # else:
     # return company_date.strip()
-    company_date = company_date.strip()
+    date = date.strip()
 
-    if len(company_date) == 6:
+    if len(date) == 6:
         res = '20%s%s%s' % (
-            company_date[:-2],
-            company_date[2:4],
-            company_date[:2],
+            date[4:6],
+            date[2:4],
+            date[:2],
         )
     else:
         res = '%s%s%s' % (
-            company_date[:-4],
-            company_date[2:4],
-            company_date[:2],
+            date[4:8],
+            date[2:4],
+            date[:2],
         )
-    print ('Convert %s to %s' % (company_date, res))
+    print('Convert %s to %s' % (date, res))
     return res
 
 
