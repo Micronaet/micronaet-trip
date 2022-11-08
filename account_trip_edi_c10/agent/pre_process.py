@@ -90,25 +90,8 @@ def clean_text(text, length, uppercase=False, error=None, truncate=False):
 def clean_date(company_date):
     """ Current format: YYMMDD
     """
-    company_date = company_date.strip()
-    if len(company_date) == 6:
-        return '20%s%s%s' % (
-            company_date[:-2],
-            company_date[2:4],
-            company_date[:2],
-        )
-    else:
-        return '%s%s%s' % (
-            company_date[:-4],
-            company_date[2:4],
-            company_date[:2],
-        )
+    return '20%s' % company_date.strip()
 
-
-def reformat_date(company_date):
-    """ Current format: DDMMYYYY in YYYYMMDD
-    """
-    return company_date[:-4] + company_date[2:4] + company_date[:2]
 
 def clean_float(
         value, length, decimal=3, multiple=1.0, separator='.', error=None):
