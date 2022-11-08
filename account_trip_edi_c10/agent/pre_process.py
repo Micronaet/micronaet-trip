@@ -90,7 +90,20 @@ def clean_text(text, length, uppercase=False, error=None, truncate=False):
 def clean_date(company_date):
     """ Current format: YYMMDD
     """
-    return '20%s' % company_date.strip()
+    company_date = company_date.strip()
+    if len(company_date) == 6:
+        return '20%s%s%s' % (
+            company_date[:-2],
+            company_date[2:4],
+            company_date[:2],
+        )
+    else:
+        return '%s%s%s' % (
+            company_date[:-4],
+            company_date[2:4],
+            company_date[:2],
+        )
+
 
 def reformat_date(company_date):
     """ Current format: DDMMYYYY in YYYYMMDD
@@ -260,8 +273,8 @@ for root, dirs, files in os.walk(in_path):
                     'type': line[:2].strip(),
                     'sequence': line[2:7].strip(),
                     'order': line[7:23].strip(),
-                    'date': reformat_date(line[23:29].strip()),
-                    'deadline': reformat_date(line[29:35].strip()),
+                    'date': line[23:29].strip(),
+                    'deadline': line[29:35].strip(),
                     'company_code': line[35:51].strip(),
                     'destination_code': line[51:67].strip(),
                     'document': line[67:69].strip(),
