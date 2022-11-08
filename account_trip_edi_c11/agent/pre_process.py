@@ -93,7 +93,21 @@ def clean_date(company_date):
     # if len(company_date) == 6:
     #    return '20%s' % company_date.strip()
     # else:
-    return company_date.strip()
+    # return company_date.strip()
+    company_date = company_date.strip()
+    if len(company_date) == 6:
+        return '20%s%s%s' % (
+            company_date[:-2],
+            company_date[2:4],
+            company_date[:2],
+        )
+    else:
+        return '%s%s%s' % (
+            company_date[:-4],
+            company_date[2:4],
+            company_date[:2],
+        )
+
 
 
 def clean_float(
