@@ -142,7 +142,8 @@ class edi_company_c11(orm.Model):
         value = value.strip()
         if not value:
             return False
-        return '%s-%s-%s' % (value[4:8], value[2:4], value[:2])
+        # return '%s-%s-%s' % (value[4:8], value[2:4], value[:2])
+        return '%s-%s-%s' % (value[:4], value[4:6], value[6:8])
 
     # todo align in correct new format for 11:
     def format_string(self, value):
