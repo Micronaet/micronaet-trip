@@ -100,6 +100,9 @@ log_schedulers_file = open(log_scheduler, 'a')
 # A. Price integration setup:
 # -----------------------------------------------------------------------------
 price_setup = {
+    # From / To code = position of code in order file
+    # Separator used
+    # Partic loaded only once
     'FAB': {
         'from_code': 162,
         'to_code': 173,  # Load only first 11 char (parent code)

@@ -46,7 +46,7 @@ loop = [
     [os.path.join(edi_server, 'price', 'FAB.csv'), '06.02999'],  # 8
     [os.path.join(edi_server, 'price', 'HOS.csv'), '06.03110'],  # 10 as ELI
     [os.path.join(edi_server, 'price', 'MRK.csv'), '06.02934'],  # 9
-    [os.path.join(edi_server, 'price', 'DUS.csv'), '06.00445'],  # 9
+    [os.path.join(edi_server, 'price', 'DUS.csv'), '06.02222'],  # 9
 ]
 
 # Check files:
