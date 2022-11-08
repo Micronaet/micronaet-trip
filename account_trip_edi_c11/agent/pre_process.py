@@ -108,9 +108,7 @@ def clean_date(date):
             date[2:4],
             date[:2],
         )
-    print('Convert %s to %s' % (date, res))
     return res
-
 
 
 def clean_float(
