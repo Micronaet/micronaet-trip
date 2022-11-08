@@ -43,8 +43,8 @@ class edi_company_c11(orm.Model):
     # todo align in correct new format for 11:
     trace = {
         'number': (46, 59),
-        'date': (37, 45),  # DDMMYYYY
-        'deadline': (259, 267),  # DDMMYYYY
+        'deadline': (37, 45),  # DDMMYYYY
+        'date': (259, 267),  # DDMMYYYY
         'customer': (0, 0),  # Not present
         'detail_code': (162, 178),
         'detail_description': (179, 239),
