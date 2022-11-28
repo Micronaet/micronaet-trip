@@ -694,7 +694,7 @@ class trip_import_edi_wizard(orm.Model):
             ondelete='set null'),
         'destination_description': fields.char(
             'Destination description',
-            size=100, readonly=True),
+            size=120, readonly=True),
         'is_deletable': fields.function(
             _get_is_deletable, method=True,
             type='boolean', string='Cancellabile?', store=False),
