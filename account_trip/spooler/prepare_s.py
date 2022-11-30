@@ -108,24 +108,28 @@ price_setup = {
         'to_code': 173,  # Load only first 11 char (parent code)
         'separator': '|',
         'partic': {},  # Partic on file
+        'remove': 2,
     },
     'HOS': {
         'from_code': 162,
         'to_code': 173,  # Load only first 11 char (parent code)
         'separator': '|',
         'partic': {},  # Partic on file
+        'remove': 2,
     },
     'MRK': {
         'from_code': 65,  # todo Wrong position?
         'to_code': 76,  # Load only first 11 char (parent code)
         'separator': '|',
         'partic': {},  # Partic on file
+        'remove': 2,
     },
     'DUS': {
         'from_code': 162,
         'to_code': 173,  # Load only first 11 char (parent code)
         'separator': '|',
         'partic': {},  # Partic on file
+        'remove': 1,
     },
 }
 
@@ -174,7 +178,8 @@ def integrate_price(order, order_original, company):
     # Price integration:
     # Save order in original:
     if os.path.isfile(order_original):
-        print('Original yet present: %s' % order_original)
+        print('Original yet present (no price integration): '
+              '%s' % order_original)
     else:
         print('Keep original order in: %s' % order_original)
         shutil.copy(order_in, order_original)
@@ -187,7 +192,7 @@ def integrate_price(order, order_original, company):
             price = setup['partic'].get(default_code, 0.0)
             price = '%10.3f' % price
             new_line = '%s%s%s%s' % (
-                line[:-len(char_cr)],  # remove final EOL CR
+                line[:-setup['remove']],  # -len(char_cr)],  # remove EOL CR
                 setup['separator'],
                 price,
                 char_cr,
