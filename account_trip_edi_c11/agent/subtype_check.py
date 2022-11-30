@@ -172,7 +172,7 @@ for root, dirs, files in os.walk(in_history):
                         # 'deadline': line[644:652].strip(),
                         'stock_type': line[25:26].strip(),
                         'company_code': line[26:33].strip(),
-                        # 'destination_code': line[21:25].strip(),
+                        'destination_code': line[21:25].strip(),
                         # 'destination_address_code': line[33:37].strip(),
                         # # 'document': line[67:69].strip(),
                         # # 'destination_facility': (26, 33),  # OK Stock code
@@ -201,7 +201,7 @@ for root, dirs, files in os.walk(in_history):
             data[order_file]['counter'] += 1
             counter = str(data[order_file]['counter'])
             # Only subtype
-            text_line = '%-20s|%-1s|%-7s|%-30s|%-4s|%4s|%-2s\r\n' % (
+            text_line = '%-20s|%-1s|%-7s|%-4s|%-30s|%-4s|%4s|%-2s\r\n' % (
                 clean_text(
                     data[order_file]['header']['order'],
                     20, error=error, truncate=True),
@@ -210,7 +210,10 @@ for root, dirs, files in os.walk(in_history):
                     1, error=error, truncate=True),
                 clean_text(
                     data[order_file]['header']['company_code'],
-                    10, error=error, truncate=True),
+                    7, error=error, truncate=True),
+                clean_text(
+                    data[order_file]['header']['destination_code'],
+                    4, error=error, truncate=True),
                 clean_text(
                     detail['code'],
                     20, error=error, truncate=True),
