@@ -297,6 +297,7 @@ for root, dirs, files in os.walk(in_path):
                         'order': '%s-%s' % (order_year, order_number),
                         'date': line[13:21].strip(),
                         'deadline': line[644:652].strip(),
+                        'stock_type': line[25:26].strip(),
                         'company_code': line[26:33].strip(),
                         'destination_code': line[21:25].strip(),
                         'destination_address_code': line[33:37].strip(),
