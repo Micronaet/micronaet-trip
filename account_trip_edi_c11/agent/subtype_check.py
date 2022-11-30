@@ -226,4 +226,6 @@ file_original = './total_check.log'
 f_out = open(file_original, 'w')
 for order_name in data:
     for line in data[order_name]['line']:
+        f_out.write(order_name)
+        f_out.write('|')
         f_out.write(line)
