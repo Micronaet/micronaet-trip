@@ -186,7 +186,7 @@ for root, dirs, files in os.walk(in_history):
             detail = {
                 # 'type': '',  # line[:2].strip(),
                 'sequence': line[278:282].strip(),
-                # 'code': line[614:644].strip(),
+                'code': line[614:644].strip(),
                 # 'name': line[359:614].strip(),
                 # 'uom': line[664:669].strip(),
                 # 'quantity': line[652:664].strip(),
@@ -200,9 +200,12 @@ for root, dirs, files in os.walk(in_history):
             data[order_file]['counter'] += 1
 
             # Only subtype
-            text_line = '%-20s|%-5s|%-2s\r\n' % (
+            text_line = '%-20s|%-30s|%-5s|%-2s\r\n' % (
                 clean_text(
                     data[order_file]['header']['order'],
+                    20, error=error, truncate=True),
+                clean_text(
+                    detail['code'],
                     20, error=error, truncate=True),
                 clean_text(
                     detail['sequence'],
