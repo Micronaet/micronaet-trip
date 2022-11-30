@@ -117,7 +117,7 @@ extension = 'txt'
 # Read IN folder:
 # -----------------------------------------------------------------------------
 pdb.set_trace()
-for root, dirs, files in os.walk(in_path):
+for root, dirs, files in os.walk(in_history):
     for f in files:
         if not f.lower().endswith(extension):
             continue
