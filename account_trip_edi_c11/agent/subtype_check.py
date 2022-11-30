@@ -167,7 +167,7 @@ for root, dirs, files in os.walk(in_history):
                     'header': {
                         'type': line[:2].strip(),  # AA
                         # 'sequence': line[2:7].strip(),
-                        'order': '%s-%s' % (order_year, order_number),
+                        'order': '%s%s' % (order_year, order_number),
                         # 'date': line[13:21].strip(),
                         # 'deadline': line[644:652].strip(),
                         # 'company_code': line[26:33].strip(),
@@ -202,7 +202,7 @@ for root, dirs, files in os.walk(in_history):
             # Only subtype
             text_line = '%-20s|%-30s|%-4s|%4s|%-2s\r\n' % (
                 clean_text(
-                    data[order_file]['header']['order'].replace('-', ''),
+                    data[order_file]['header']['order'],
                     20, error=error, truncate=True),
                 clean_text(
                     detail['code'],
