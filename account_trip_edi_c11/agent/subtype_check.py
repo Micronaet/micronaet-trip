@@ -203,7 +203,7 @@ for root, dirs, files in os.walk(in_history):
                         data[order_file]['header']['order'],
                         20, error=error, truncate=True),
                     clean_text(
-                        data[order_file]['detail']['sequence'],
+                        detail['sequence'],
                         5, error=error, truncate=True),
 
                     clean_text(
