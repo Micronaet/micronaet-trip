@@ -116,7 +116,7 @@ extension = 'txt'
 # -----------------------------------------------------------------------------
 # Read IN folder:
 # -----------------------------------------------------------------------------
-file_original = './total_check.log'
+file_original = '/home/openerp/etl/edi/dussmann_check.log'
 f_out = open(file_original, 'w')
 
 data = {}
@@ -201,18 +201,18 @@ for root, dirs, files in os.walk(in_history):
 
             # Only subtype
             text_line = '%-20s|%-5s|%-2s\r\n' % (
-                    clean_text(
-                        data[order_file]['header']['order'],
-                        20, error=error, truncate=True),
-                    clean_text(
-                        detail['sequence'],
-                        5, error=error, truncate=True),
+                clean_text(
+                    data[order_file]['header']['order'],
+                    20, error=error, truncate=True),
+                clean_text(
+                    detail['sequence'],
+                    5, error=error, truncate=True),
 
-                    clean_text(
-                        data[order_file]['header']['type'],
-                        2, error=error, truncate=True),
-                    # price: added in spooler procedure
-                    )
+                clean_text(
+                    data[order_file]['header']['type'],
+                    2, error=error, truncate=True),
+                # price: added in spooler procedure
+                )
             f_out.write(text_line)
         f_in.close()
         if error:
