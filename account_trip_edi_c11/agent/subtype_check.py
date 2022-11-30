@@ -198,7 +198,7 @@ for root, dirs, files in os.walk(in_history):
             # Convert row input file:
             # -----------------------------------------------------------------
             data[order_file]['counter'] += 1
-
+            counter = str(data[order_file]['counter'])
             # Only subtype
             text_line = '%-20s|%-30s|%-4s|%-4|%-2s\r\n' % (
                 clean_text(
@@ -211,7 +211,7 @@ for root, dirs, files in os.walk(in_history):
                     detail['sequence'],
                     4, error=error, truncate=True),
                 clean_text(
-                    str(data[order_file]['counter']),
+                    counter,
                     4, error=error, truncate=True),
 
                 clean_text(
