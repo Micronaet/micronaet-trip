@@ -116,7 +116,7 @@ extension = 'txt'
 # -----------------------------------------------------------------------------
 # Read IN folder:
 # -----------------------------------------------------------------------------
-pdb.set_trace()
+data = {}
 for root, dirs, files in os.walk(in_history):
     for f in files:
         if not f.lower().endswith(extension):
@@ -133,7 +133,6 @@ for root, dirs, files in os.walk(in_history):
         # ---------------------------------------------------------------------
         error = []
         f_in = open(file_in, 'r')
-        data = {}
 
         counter = 0
         for line in f_in:
