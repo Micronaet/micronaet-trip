@@ -297,10 +297,19 @@ for root, dirs, files in os.walk(in_path):
                         'order': '%s-%s' % (order_year, order_number),
                         'date': line[13:21].strip(),
                         'deadline': line[644:652].strip(),
+
+                        # -----------------------------------------------------
+                        # Destination:
+                        # -----------------------------------------------------
+                        # Tipo mag.:
                         'stock_type': line[25:26].strip(),
+                        # Codice mag.:
                         'company_code': line[26:33].strip(),
+                        # CDC (same as "Codice di magazzino" for now)
                         'destination_code': line[21:25].strip(),
+                        # Indirizzo del magazzino:
                         'destination_address_code': line[33:37].strip(),
+
                         # 'document': line[67:69].strip(),
                         # 'destination_facility': (26, 33),  # OK Stock code
                         # 'destination_cost': (21, 25),  # OK CDC
