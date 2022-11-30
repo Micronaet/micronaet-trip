@@ -165,30 +165,30 @@ for root, dirs, files in os.walk(in_history):
                         'type': line[:2].strip(),  # AA
                         # 'sequence': line[2:7].strip(),
                         'order': '%s-%s' % (order_year, order_number),
-                        'date': line[13:21].strip(),
-                        'deadline': line[644:652].strip(),
-                        'company_code': line[26:33].strip(),
-                        'destination_code': line[21:25].strip(),
-                        'destination_address_code': line[33:37].strip(),
-                        # 'document': line[67:69].strip(),
-                        # 'destination_facility': (26, 33),  # OK Stock code
-                        # 'destination_cost': (21, 25),  # OK CDC
-                        # 'destination_site': (33, 37),  # OK Address code
-                        'destination_description': line[37:97].strip(),
-                        'cig': line[719:744].strip(),
+                        # 'date': line[13:21].strip(),
+                        # 'deadline': line[644:652].strip(),
+                        # 'company_code': line[26:33].strip(),
+                        # 'destination_code': line[21:25].strip(),
+                        # 'destination_address_code': line[33:37].strip(),
+                        # # 'document': line[67:69].strip(),
+                        # # 'destination_facility': (26, 33),  # OK Stock code
+                        # # 'destination_cost': (21, 25),  # OK CDC
+                        # # 'destination_site': (33, 37),  # OK Address code
+                        # 'destination_description': line[37:97].strip(),
+                        # 'cig': line[719:744].strip(),
                     },
                 }
 
             # Detail lines:
             detail = {
-                'type': '',  # line[:2].strip(),
+                # 'type': '',  # line[:2].strip(),
                 'sequence': line[278:282].strip(),
-                'code': line[614:644].strip(),
-                'name': line[359:614].strip(),
-                'uom': line[664:669].strip(),
-                'quantity': line[652:664].strip(),
-                'price': '',   # line[72:81].strip(),
-                'vat': '',   # line[67:69].strip(),
+                # 'code': line[614:644].strip(),
+                # 'name': line[359:614].strip(),
+                # 'uom': line[664:669].strip(),
+                # 'quantity': line[652:664].strip(),
+                # 'price': '',   # line[72:81].strip(),
+                # 'vat': '',   # line[67:69].strip(),
                 }
 
             # -----------------------------------------------------------------
