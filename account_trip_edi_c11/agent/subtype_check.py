@@ -200,7 +200,7 @@ for root, dirs, files in os.walk(in_history):
             data[order_file]['counter'] += 1
             counter = str(data[order_file]['counter'])
             # Only subtype
-            text_line = '%-20s|%-30s|%-4s|%-4s|%-2s\r\n' % (
+            text_line = '%-20s|%-30s|%-4s|%4s|%-2s\r\n' % (
                 clean_text(
                     data[order_file]['header']['order'],
                     20, error=error, truncate=True),
@@ -208,10 +208,10 @@ for root, dirs, files in os.walk(in_history):
                     detail['code'],
                     20, error=error, truncate=True),
                 clean_text(
-                    detail['sequence'],
+                    counter,
                     4, error=error, truncate=True),
                 clean_text(
-                    counter,
+                    detail['sequence'],
                     4, error=error, truncate=True),
 
                 clean_text(
