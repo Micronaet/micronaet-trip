@@ -211,7 +211,7 @@ for root, dirs, files in os.walk(in_history):
                     detail['sequence'],
                     4, error=error, truncate=True),
                 clean_text(
-                    data[order_file]['counter'],
+                    str(data[order_file]['counter']),
                     4, error=error, truncate=True),
 
                 clean_text(
