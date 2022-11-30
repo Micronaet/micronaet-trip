@@ -196,18 +196,15 @@ for root, dirs, files in os.walk(in_history):
             # -----------------------------------------------------------------
             data[order_file]['counter'] += 1
 
-            # todo keep D? in destination code?
-            alternative_code = '%s-%s' % (
-                data[order_file]['header']['destination_code'],
-                int(data[order_file]['header']['destination_address_code']),
-            )
-
             # Only subtype
             data[order_file]['line'].append(
-                '%-20s%-2s\r\n' % (
+                '%-20s|%-5s|%-2s\r\n' % (
                     clean_text(
                         data[order_file]['header']['order'],
-                        2, error=error, truncate=True),
+                        20, error=error, truncate=True),
+                    clean_text(
+                        data[order_file]['detail']['sequence'],
+                        5, error=error, truncate=True),
 
                     clean_text(
                         data[order_file]['header']['type'],
