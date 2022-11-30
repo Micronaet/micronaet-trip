@@ -218,7 +218,6 @@ for root, dirs, files in os.walk(in_history):
 # -----------------------------------------------------------------------------
 # Save file out:
 # -----------------------------------------------------------------------------
-pdb.set_trace()
 file_original = './total_check.log'
 f_out = open(file_original, 'w')
 for order_name in data:
