@@ -116,6 +116,9 @@ extension = 'txt'
 # -----------------------------------------------------------------------------
 # Read IN folder:
 # -----------------------------------------------------------------------------
+file_original = './total_check.log'
+f_out = open(file_original, 'w')
+
 data = {}
 for root, dirs, files in os.walk(in_history):
     for f in files:
@@ -197,8 +200,7 @@ for root, dirs, files in os.walk(in_history):
             data[order_file]['counter'] += 1
 
             # Only subtype
-            data[order_file]['line'].append(
-                '%-20s|%-5s|%-2s\r\n' % (
+            text_line = '%-20s|%-5s|%-2s\r\n' % (
                     clean_text(
                         data[order_file]['header']['order'],
                         20, error=error, truncate=True),
@@ -210,18 +212,8 @@ for root, dirs, files in os.walk(in_history):
                         data[order_file]['header']['type'],
                         2, error=error, truncate=True),
                     # price: added in spooler procedure
-                    ))
+                    )
+            f_out.write(text_line)
         f_in.close()
         if error:
             continue
-
-# -----------------------------------------------------------------------------
-# Save file out:
-# -----------------------------------------------------------------------------
-file_original = './total_check.log'
-f_out = open(file_original, 'w')
-for order_name in data:
-    for line in data[order_name]['line']:
-        # f_out.write(order_name)
-        # f_out.write('|')
-        f_out.write(line)
