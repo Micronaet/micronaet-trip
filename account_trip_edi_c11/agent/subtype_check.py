@@ -218,7 +218,6 @@ for root, dirs, files in os.walk(in_history):
         f_in.close()
         if error:
             continue
-        break  # only root folder is read
 
 # -----------------------------------------------------------------------------
 # Save file out:
