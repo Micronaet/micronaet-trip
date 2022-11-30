@@ -202,7 +202,7 @@ for root, dirs, files in os.walk(in_history):
             # Only subtype
             text_line = '%-20s|%-30s|%-4s|%4s|%-2s\r\n' % (
                 clean_text(
-                    data[order_file]['header']['order'],
+                    data[order_file]['header']['order'].replace('-', ''),
                     20, error=error, truncate=True),
                 clean_text(
                     detail['code'],
