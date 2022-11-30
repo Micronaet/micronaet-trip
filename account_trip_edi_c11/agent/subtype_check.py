@@ -200,7 +200,7 @@ for root, dirs, files in os.walk(in_history):
             data[order_file]['counter'] += 1
             counter = str(data[order_file]['counter'])
             # Only subtype
-            text_line = '%-20s|%-30s|%-4s|%-4|%-2s\r\n' % (
+            text_line = '%-20s|%-30s|%-4s|%-4s|%-2s\r\n' % (
                 clean_text(
                     data[order_file]['header']['order'],
                     20, error=error, truncate=True),
