@@ -353,7 +353,9 @@ for root, dirs, files in os.walk(in_path):
                         error=error, truncate=True),
 
                     # Line:
-                    data[order_file]['counter'],
+                    # data[order_file]['counter'],
+                    clean_text(detail['sequence'], 4, error=error,
+                               truncate=True, uppercase=False),
                     clean_text(detail['code'], 16, error=error, truncate=True,
                                uppercase=True),
                     clean_text(detail['name'], 60, error=error, truncate=True),
