@@ -260,3 +260,38 @@ for root, dirs, files in os.walk(in_history):
 # Integrate data:
 print(conversion)
 pdb.set_trace()
+
+from_path = '/home/openerp/git/micronaet-trip/account_trip_edi_c11/agent'
+to_path = '/home/openerp/git/micronaet-trip/account_trip_edi_c11/agent/' \
+          'rielaborati'
+
+for root, folders, files in os.walk(from_path):
+    for filename in files:
+        if not filename.endswith('txt'):
+            print('Jump %s' % filename)
+            continue
+        fullname = os.path.join(root, filename)
+        integrate = os.path.join(to_path, filename)
+        new_f = open(integrate, 'w')
+
+        for row in open(fullname, 'r'):
+
+            left_row = row[:385]
+            right_row = row[388:]
+            default_code = row[54:84].strip()
+            order = row[364:374].strip()
+            if not order:
+                pass  # no order error
+
+            sequence = conversion.get(order, {}).get(default_code)
+            if not sequence:
+                pass  # no order error
+
+            new_row = '%s%s%s' % (
+                left_row,
+                sequence[1:],  # remove left 0
+                right_row,
+            )
+
+            new_f.write(new_row)
+        new_f.close()
