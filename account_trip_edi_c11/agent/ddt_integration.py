@@ -272,6 +272,11 @@ for root, folders, files in os.walk(from_path):
         fullname = os.path.join(root, filename)
         integrate = os.path.join(to_path, filename)
         new_f = open(integrate, 'w')
+        total = {
+            'done': 0,
+            'error': 0,
+            'total': 0,
+        }
         for row in open(fullname, 'r'):
             row = row.replace('\x00', ' ')
             left_row = row[:385]
@@ -279,7 +284,9 @@ for root, folders, files in os.walk(from_path):
             default_code = row[54:84].strip()
             order = row[364:374].strip()
             error = False
+            total['total'] += 1
             if len(order) <= 4:  # no order present
+                total['error'] += 1
                 print('%s. No order for code %s' % (
                     filename, default_code,
                 ))
@@ -287,11 +294,13 @@ for root, folders, files in os.walk(from_path):
             else:
                 sequence = conversion.get(order, {}).get(default_code)
                 if not sequence:
+                    total['error'] += 1
                     print('%s. Order %s No sequence for code: %s' % (
                         filename, order, default_code,
                     ))
                     new_row = row  # same line
                 else:
+                    total['done'] += 1
                     new_row = '%s%s%s' % (
                         left_row,
                         sequence[1:],  # remove left 0
@@ -300,4 +309,7 @@ for root, folders, files in os.walk(from_path):
 
             new_f.write(new_row)
         new_f.close()
+        print('>> %s Righe: %s Errore: %s Fatte: %s' % (
+            filename, total['total'], total['error'], total['done'],
+        ))
     break  # No subfolder
