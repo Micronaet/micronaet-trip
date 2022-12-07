@@ -240,11 +240,12 @@ for root, dirs, files in os.walk(in_history):
                     2, error=error, truncate=True),
                 # price: added in spooler procedure
                 )
+
             order = data[order_file]['header']['order']
             code = detail['code']
             sequence = detail['sequence']
             if order not in conversion:
-                conversion[order]
+                conversion[order] = {}
             if code in conversion[order]:
                 # log error
                 pass
