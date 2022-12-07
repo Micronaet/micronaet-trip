@@ -261,9 +261,8 @@ for root, dirs, files in os.walk(in_history):
 print(conversion)
 pdb.set_trace()
 
-from_path = '/home/openerp/git/micronaet-trip/account_trip_edi_c11/agent'
-to_path = '/home/openerp/git/micronaet-trip/account_trip_edi_c11/agent/' \
-          'rielaborati'
+from_path = '/home/openerp/mexal/ddtdussmann'
+to_path = '/home/openerp/mexal/ddtdussmann/rielaborati'
 
 for root, folders, files in os.walk(from_path):
     for filename in files:
