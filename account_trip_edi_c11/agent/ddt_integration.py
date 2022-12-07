@@ -279,18 +279,19 @@ for root, folders, files in os.walk(from_path):
             right_row = row[388:]
             default_code = row[54:84].strip()
             order = row[364:374].strip()
-            if not order:
-                pass  # no order error
-
-            sequence = conversion.get(order, {}).get(default_code)
-            if not sequence:
-                pass  # no order error
-
-            new_row = '%s%s%s' % (
-                left_row,
-                sequence[1:],  # remove left 0
-                right_row,
-            )
+            error = False
+            if not order:  # no order
+                new_row = row  # same line
+            else:
+                sequence = conversion.get(order, {}).get(default_code)
+                if not sequence:
+                    new_row = row  # same line
+                else:
+                    new_row = '%s%s%s' % (
+                        left_row,
+                        sequence[1:],  # remove left 0
+                        right_row,
+                    )
 
             new_f.write(new_row)
         new_f.close()
