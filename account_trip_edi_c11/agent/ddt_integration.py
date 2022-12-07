@@ -274,11 +274,11 @@ for root, folders, files in os.walk(from_path):
         new_f = open(integrate, 'w')
         pdb.set_trace()
         for row in open(fullname, 'r'):
-
+            row = row.replace('\x00', ' ')
             left_row = row[:385]
             right_row = row[388:]
             default_code = row[54:84].strip()
-            order = row[364:374].replace('\x00', ' ').strip()
+            order = row[364:374].strip()
             error = False
             if len(order) <= 4:  # no order present
                 new_row = row  # same line
