@@ -258,8 +258,7 @@ for root, dirs, files in os.walk(in_history):
             continue
 
 # Integrate data:
-print(conversion)
-pdb.set_trace()
+# print(conversion)
 
 from_path = '/home/openerp/mexal/ddtdussmann'
 to_path = '/home/openerp/mexal/ddtdussmann/rielaborati'
