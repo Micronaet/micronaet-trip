@@ -280,7 +280,7 @@ for root, folders, files in os.walk(from_path):
             default_code = row[54:84].strip()
             order = row[364:374].replace('\x00', ' ').strip()
             error = False
-            if len(order) >= 4:  # no order present
+            if len(order) <= 4:  # no order present
                 new_row = row  # same line
             else:
                 sequence = conversion.get(order, {}).get(default_code)
