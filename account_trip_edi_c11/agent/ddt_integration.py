@@ -310,7 +310,7 @@ for root, folders, files in os.walk(from_path):
             new_f.write(new_row)
         new_f.close()
         if total['error'] > 0:
-            print('>> %s\nRighe: %s\nErrore: %s\nFatte: %s' % (
+            print('>> %s\nRighe: %s\nErrore: %s\nFatte: %s\n\n' % (
                 filename, total['total'], total['error'], total['done'],
             ))
     break  # No subfolder
