@@ -278,9 +278,9 @@ for root, folders, files in os.walk(from_path):
             left_row = row[:385]
             right_row = row[388:]
             default_code = row[54:84].strip()
-            order = row[364:374].strip()
+            order = row[364:374].replace('\x00', ' ').strip()
             error = False
-            if not order:  # no order
+            if len(order) >= 4:  # no order present
                 new_row = row  # same line
             else:
                 sequence = conversion.get(order, {}).get(default_code)
