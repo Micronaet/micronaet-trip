@@ -273,7 +273,7 @@ for root, folders, files in os.walk(from_path):
         fullname = os.path.join(root, filename)
         integrate = os.path.join(to_path, filename)
         new_f = open(integrate, 'w')
-
+        pdb.set_trace()
         for row in open(fullname, 'r'):
 
             left_row = row[:385]
@@ -295,4 +295,5 @@ for root, folders, files in os.walk(from_path):
 
             new_f.write(new_row)
         new_f.close()
+        pdb.set_trace()
     break  # No subfolder
