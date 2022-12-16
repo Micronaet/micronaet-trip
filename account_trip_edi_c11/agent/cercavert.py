@@ -218,30 +218,31 @@ for root, dirs, files in os.walk(in_history):
             counter = str(data[order_file]['counter'])
 
             key = (data[order_file]['header']['order'], detail['code'])
-
+            pdb.set_trace()
             mexal_line = mexal_db.get(key, '')
-            text_line = '%-20s|%-20s|%-30s|%-12s|%-4s|%-4s\r\n' % (
-                # Mexal
-                clean_text(
-                    mexal_line,
-                    20, error=error, truncate=True),
+            if mexal_line:
+                text_line = '%-20s|%-20s|%-30s|%-12s|%-4s|%-4s\r\n' % (
+                    # Mexal
+                    clean_text(
+                        mexal_line,
+                        20, error=error, truncate=True),
 
-                clean_text(
-                    data[order_file]['header']['order'],
-                    20, error=error, truncate=True),
-                clean_text(
-                    detail['code'],
-                    30, error=error, truncate=True),
-                clean_text(
-                    detail['quantity'],
-                    12, error=error, truncate=True),
-                clean_text(
-                    counter,
-                    4, error=error, truncate=True),
-                clean_text(
-                    detail['sequence'],
-                    4, error=error, truncate=True),
-                )
+                    clean_text(
+                        data[order_file]['header']['order'],
+                        20, error=error, truncate=True),
+                    clean_text(
+                        detail['code'],
+                        30, error=error, truncate=True),
+                    clean_text(
+                        detail['quantity'],
+                        12, error=error, truncate=True),
+                    clean_text(
+                        counter,
+                        4, error=error, truncate=True),
+                    clean_text(
+                        detail['sequence'],
+                        4, error=error, truncate=True),
+                    )
             '''# Only subtype
             text_line = '%-20s|%-1s|%-7s|%-4s|%-4s|%-30s|%-12s|%-4s|%4s|%-2s' \
                         '\r\n' % (
