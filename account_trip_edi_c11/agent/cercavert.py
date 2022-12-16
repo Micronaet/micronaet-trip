@@ -243,6 +243,8 @@ for root, dirs, files in os.walk(in_history):
                         detail['sequence'],
                         4, error=error, truncate=True),
                     )
+                f_out.write(text_line)
+
             '''# Only subtype
             text_line = '%-20s|%-1s|%-7s|%-4s|%-4s|%-30s|%-12s|%-4s|%4s|%-2s' \
                         '\r\n' % (
@@ -280,7 +282,6 @@ for root, dirs, files in os.walk(in_history):
                 # price: added in spooler procedure
                 )
                 '''
-            f_out.write(text_line)
         f_in.close()
         if error:
             continue
