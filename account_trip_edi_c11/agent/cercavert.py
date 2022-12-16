@@ -218,7 +218,6 @@ for root, dirs, files in os.walk(in_history):
             counter = str(data[order_file]['counter'])
 
             key = (data[order_file]['header']['order'], detail['code'])
-            pdb.set_trace()
             mexal_line = mexal_db.get(key, '')
             if mexal_line:
                 text_line = '%-20s|%-20s|%-30s|%-12s|%-4s|%-4s\r\n' % (
