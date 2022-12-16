@@ -116,7 +116,8 @@ extension = 'txt'
 # -----------------------------------------------------------------------------
 # Read IN folder:
 # -----------------------------------------------------------------------------
-file_original = '/home/openerp/etl/edi/dussmann_check.log'
+file_original = \
+    '/home/openerp/etl/edi/dussmann/check/ordinato_dussman_completo.log'
 f_out = open(file_original, 'w')
 
 data = {}
