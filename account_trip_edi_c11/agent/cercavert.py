@@ -116,8 +116,9 @@ extension = 'txt'
 # -----------------------------------------------------------------------------
 # Read IN folder:
 # -----------------------------------------------------------------------------
+mode = 'ddt'
 mexal_db = {}
-for line in open('/home/openerp/etl/edi/dussmann/check/oc.csv', 'r'):
+for line in open('/home/openerp/etl/edi/dussmann/check/%s.csv' % mode, 'r'):
     line = line.strip()
     row = line.split(';')
     reference = row[0].strip()
@@ -130,7 +131,7 @@ for line in open('/home/openerp/etl/edi/dussmann/check/oc.csv', 'r'):
     mexal_db[key] = reference  # reference  # Save all line
 
 file_original = \
-    '/home/openerp/etl/edi/dussmann/check/cercavert_dussmann_check.log'
+    '/home/openerp/etl/edi/dussmann/check/integrazioni_%s.log' % mode
 f_out = open(file_original, 'w')
 
 data = {}
