@@ -217,10 +217,12 @@ for root, dirs, files in os.walk(in_history):
             data[order_file]['counter'] += 1
             counter = str(data[order_file]['counter'])
 
-            text_line = '%-30|%-20|%-30|%-12|%-4|%-4\r\n' % (
+            key = (data[order_file]['header']['order'], detail['code'])
+
+            text_line = '%-30s|%-20s|%-30s|%-12s|%-4s|%-4s\r\n' % (
                 # Mexal
                 clean_text(
-                    mexal_db.get(key) or '',
+                    mexal_db.get(key, ''),
                     30, error=error, truncate=True),
 
                 clean_text(
@@ -238,7 +240,7 @@ for root, dirs, files in os.walk(in_history):
                 clean_text(
                     detail['sequence'],
                     4, error=error, truncate=True),
-            )
+                )
             '''# Only subtype
             text_line = '%-20s|%-1s|%-7s|%-4s|%-4s|%-30s|%-12s|%-4s|%4s|%-2s' \
                         '\r\n' % (
