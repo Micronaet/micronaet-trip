@@ -121,13 +121,13 @@ for line in open('/home/openerp/etl/edi/dussmann/check/oc.csv', 'r'):
     line = line.strip()
     row = line.split(';')
     reference = row[0].strip()
-    order = row[1].strip()
+    order = row[1].strip().replace('-', '')
     if not order:
         print('No order jump line')
         continue
     code = row[2].strip()
     key = (order, code)
-    mexal_db[key] = line  # reference  # Save all line
+    mexal_db[key] = reference  # reference  # Save all line
 
 file_original = \
     '/home/openerp/etl/edi/dussmann/check/cercavert_dussmann_check.log'
