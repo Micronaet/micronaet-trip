@@ -243,7 +243,6 @@ for root, dirs, files in os.walk(in_history):
                         4, error=error, truncate=True),
                     )
                 f_out.write(text_line)
-                del(mexal_db[key])
 
             '''# Only subtype
             text_line = '%-20s|%-1s|%-7s|%-4s|%-4s|%-30s|%-12s|%-4s|%4s|%-2s' \
@@ -282,11 +281,6 @@ for root, dirs, files in os.walk(in_history):
                 # price: added in spooler procedure
                 )
                 '''
-
-        f_out.write('\nNON TROVATE:\n')
-        for key in mexal_db:
-            f_out.write('%s;%s\n' % (key, mexal_db[key]))
-
         f_in.close()
         if error:
             continue
