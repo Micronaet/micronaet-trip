@@ -164,7 +164,7 @@ def integrate_price(order, order_original, company):
 
                 # Take last price:
                 setup['partic'][default_code] = price
-                print('{} >> {}'.format(default_code, price))
+                # print('{} >> {}'.format(default_code, price))
 
                 # Take the first price:
                 # if default_code not in setup['partic']:
@@ -433,7 +433,6 @@ for ts, file_in in file_list:
     # B. Integrate price in file:
     # -------------------------------------------------------------------------
     integrate_error = integrate_price(order_in, order_original, company)
-    pdb.set_trace()
     if integrate_error:
         mail_error += integrate_error
     else:
