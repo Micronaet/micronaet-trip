@@ -433,6 +433,7 @@ for ts, file_in in file_list:
     # B. Integrate price in file:
     # -------------------------------------------------------------------------
     integrate_error = integrate_price(order_in, order_original, company)
+    pdb.set_trace()
     if integrate_error:
         mail_error += integrate_error
     else:
