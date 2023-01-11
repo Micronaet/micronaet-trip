@@ -159,7 +159,8 @@ def integrate_price(order, order_original, company):
             for line in sorted(lines):
                 # log_used.write(line)  # Log operation
                 default_code = line[:11].strip()
-                price = float(line[-6:].strip().replace(',', '.'))
+                # Last 6 char from here:
+                price = float(line[28:].strip().replace(',', '.'))
 
                 # Take last price:
                 setup['partic'][default_code] = price

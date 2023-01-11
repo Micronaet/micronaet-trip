@@ -27,9 +27,9 @@ from datetime import datetime
 # Utility:
 # -----------------------------------------------------------------------------
 def clean_text(text, length, uppercase=False, error=None, truncate=False):
-    ''' Return clean text with limit cut
+    """ Return clean text with limit cut
         Log in error if over length
-    '''
+    """
     if error is None:
         error = []
 
@@ -41,79 +41,79 @@ def clean_text(text, length, uppercase=False, error=None, truncate=False):
             error.append('Text: %s > %s' % (text, length))
     if uppercase:
         return text.upper()
-    return text    
+    return text
 
 def clean_date(italian_date, separator='', out_format='iso', error=None):
-    ''' Return clean text with limit cut
+    """ Return clean text with limit cut
         Log in error if over length
-    '''
+    """
     if error is None:
         error = []
     italian_date = italian_date.split(' ')[0] # remove hour block
     if len(italian_date) != 10:
         error.append('Error not italian date: %s' % italian_date)
         # not stopped
-    if out_format == 'iso': 
+    if out_format == 'iso':
         return '%s%s%s%s%s' % (
             italian_date[-4:],
             separator,
             italian_date[3:5],
-            separator,        
+            separator,
             italian_date[:2],
             )
-    elif out_format == 'italian': 
+    elif out_format == 'italian':
         return '%s%s%s%s%s' % (
             italian_date[:2],
             separator,
             italian_date[3:5],
-            separator,        
+            separator,
             italian_date[-4:],
             )
-    elif out_format == 'english': 
+    elif out_format == 'english':
         return '%s%s%s%s%s' % (
             italian_date[3:5],
             separator,
             italian_date[:2],
-            separator,        
+            separator,
             italian_date[-4:],
             )
-    else: # incorrect format:        
+    else: # incorrect format:
         return italian_date # nothing todo
 
 def clean_float(value, length, decimal=3, separator='.', error=None):
-    ''' Clean float and return float format 
-    '''
+    """ Clean float and return float format
+    """
     if error is None:
         error = []
-    try:    
-        value = value.replace(',', '.')    
+    try:
+        value = value.replace(',', '.')
         float_value = float(value.strip())
     except:
         error.append('Not a float: %s' % value)
         float_value = 0.0
-    
+
     mask = '%%%s.%sf' % (length, decimal)
     res = mask % float_value
     res = res.replace('.', separator)
     return res
 
 def log_on_file(message, mode='INFO', file_list=None, verbose=True):
-    ''' Write message in file list passed
+    """ Write message in file list passed
         mode: INFO WARNING ERROR
-    '''
+    """
     if file_list is None:
         return False
 
     message_log = '%s. [%s] %s\n' % (datetime.now(), mode, message)
     if verbose:
         print message_log.strip()
-        
+
     for f_log in file_list:
         if not f_log:
             continue
         f_log.write(message_log)
     return True
-            
+
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
@@ -123,12 +123,12 @@ try:
         print 'Run: python ./pre_process.py CMP (must be max 3 char length)'
         sys.exit()
 except:
-    print 'Launch program as:\n\npython ./pre_process.py CMP' 
+    print 'Launch program as:\n\npython ./pre_process.py CMP'
 
 try:
     cfg_file = os.path.expanduser('./%s.cfg' % company)
 except:
-    print 'Config file not found: %s.cfg' % company 
+    print 'Config file not found: %s.cfg' % company
 
 config = ConfigParser.ConfigParser()
 config.read([cfg_file])
@@ -185,18 +185,18 @@ if out_check:
 log_on_file(
     'Start import order mode: %s' % company, mode='INFO', file_list=[
         f_in_schedule, f_out_schedule])
-    
+
 for root, dirs, files in os.walk(in_path):
     log_on_file(
-        'Read root folder: %s [%s]' % (root, company), 
-        mode='INFO', 
+        'Read root folder: %s [%s]' % (root, company),
+        mode='INFO',
         file_list=[f_in_log, f_out_log])
 
     for f in files:
         # Fullname needed:
         file_in = os.path.join(root, f)
-        file_history = os.path.join(in_history, f)        
-        file_original = os.path.join(out_original, f)        
+        file_history = os.path.join(in_history, f)
+        file_original = os.path.join(out_original, f)
 
         create_date = datetime.fromtimestamp(
             os.path.getctime(file_in)
@@ -206,7 +206,7 @@ for root, dirs, files in os.walk(in_path):
             out_path, '%s' % (
                 '%s_%s' % (create_date, f),
                 )) # TODO change name
-        
+
         # ---------------------------------------------------------------------
         # Read input file:
         # ---------------------------------------------------------------------
@@ -214,25 +214,25 @@ for root, dirs, files in os.walk(in_path):
         f_in = open(file_in, 'r')
         row_out = []
         log_on_file(
-            'Parsing file: %s [%s]' % (file_in, company), 
-            mode='INFO', 
-            file_list=[f_in_log, f_out_log])        
+            'Parsing file: %s [%s]' % (file_in, company),
+            mode='INFO',
+            file_list=[f_in_log, f_out_log])
         for line in f_in:
             row = line.split(separator)
             if len(row) != tot_col:
                 log_on_file(
                     'Different number columns: %s [%s]' % (file_in, company),
-                    mode='INFO', file_list=[f_in_log, f_out_log])  
+                    mode='INFO', file_list=[f_in_log, f_out_log])
                 break
-            
+
             # -----------------------------------------------------------------
             # Read fields:
             # -----------------------------------------------------------------
             date = create_date[:8] # From create date
-            
-            deadline = clean_date(row[0], separator='', out_format='iso', 
+
+            deadline = clean_date(row[0], separator='', out_format='iso',
                 error=error)
-            
+
             # Char:
             code = clean_text(row[1], 9, error=error)
             cook_center = clean_text(row[2], 110, error=error)[:60]# XXX Trunc
@@ -246,7 +246,7 @@ for root, dirs, files in os.walk(in_path):
                 row[9], 16, uppercase=True, error=error)
             name = clean_text(row[10], 60, error=error, truncate=True)
             um = clean_text(row[11], 2, uppercase=True, error=error)
-            
+
             # Float:
             quantity = clean_float(row[12], 15, 2, error=error)
             price = clean_float(row[13], 15, 3, error=error)
@@ -255,7 +255,7 @@ for root, dirs, files in os.walk(in_path):
             # -----------------------------------------------------------------
             # Convert row input file:
             # -----------------------------------------------------------------
-            row_out.append(            
+            row_out.append(
                 '%3s|%-8s|%-9s|%-60s|%-60s|%-5s|%-60s|%-4s|%-10s|%-16s|%-16s|'
                 '%-60s|%-2s|%-15s|%-15s|%-15s|%-8s\r\n' % (
                     company, # depend on parameter
@@ -277,37 +277,37 @@ for root, dirs, files in os.walk(in_path):
                     date,
                     ))
         f_in.close()
-        
+
         if error:
             log_on_file(
-                'Error reading file: %s [%s]' % (error, company), 
+                'Error reading file: %s [%s]' % (error, company),
                 mode='ERROR', file_list=[f_in_log, f_out_log])
             continue
-        
+
         # ---------------------------------------------------------------------
         # Save file out:
         # ---------------------------------------------------------------------
         error = []
         # Convert file:
         f_out = open(file_out, 'w')
-        
+
         for line in row_out:
             f_out.write(line)
         f_out.close()
-        
+
         if error:
             log_on_file(
-                'Error generating out file: %s [%s]' % (error, company), 
+                'Error generating out file: %s [%s]' % (error, company),
                 mode='ERROR', file_list=[f_in_log, f_out_log])
             continue
-        else:    
+        else:
             log_on_file(
-                'Created file: %s [%s]' % (file_out, company), 
+                'Created file: %s [%s]' % (file_out, company),
                 mode='INFO', file_list=[f_in_log, f_out_log])
-        
+
         # ---------------------------------------------------------------------
         # History the in file:
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         error = ''
         try:
             os.remove(file_original)
@@ -316,7 +316,7 @@ for root, dirs, files in os.walk(in_path):
         try:
             shutil.copy(file_in, file_original)
             log_on_file(
-                'History company file: %s [%s]' % (file_original, company), 
+                'History company file: %s [%s]' % (file_original, company),
                 mode='INFO', file_list=[f_in_log, f_out_log])
         except:
             error += 'Error copy orginal folder %s >> %s' % (
@@ -328,7 +328,7 @@ for root, dirs, files in os.walk(in_path):
         try:
             shutil.move(file_in, file_history)
             log_on_file(
-                'History supplier file: %s [%s]' % (file_history, company), 
+                'History supplier file: %s [%s]' % (file_history, company),
                 mode='INFO', file_list=[f_in_log, f_out_log])
         except:
             error += 'Error moving file %s >> %s' % (file_in, file_history)
@@ -337,7 +337,7 @@ for root, dirs, files in os.walk(in_path):
             log_on_file(
                 error, mode='ERROR', file_list=[f_in_log, f_out_log])
             # XXX TODO delete OUT file
-            continue            
+            continue
     break # only root folder is read
 
 log_on_file(
