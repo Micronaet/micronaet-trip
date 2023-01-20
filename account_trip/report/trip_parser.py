@@ -78,13 +78,10 @@ class Parser(rml_parse):
         """ Pack same line
         """
         order_line = []
-        unsorted_order = True  # All sequence = 0
         if trip.report_line == 'packed':
             # Preload phase:
             preload = {}
             for order in trip.order_ids:
-                if order.sequence:
-                    unsorted_order = False
                 key = (
                     order.partner_id,
                     order.destination_id,
@@ -129,8 +126,6 @@ class Parser(rml_parse):
             counter = 1
             extra = {}
             for order in trip.order_ids:
-                if order.sequence:
-                    unsorted_order = False
                 order_line.append(
                     (counter, order, extra)
                 )
@@ -138,14 +133,8 @@ class Parser(rml_parse):
         # ---------------------------------------------------------------------
         # Sort:
         # ---------------------------------------------------------------------
-        # Sort with city:
-        if unsorted_order:
-            return sorted(order_line,
-                          key=lambda record: record[1].city)
-
-        else:  # Sort for sequence (lost original order):
-            return sorted(order_line,
-                          key=lambda record: record[1].sequence)
+        return sorted(order_line, key=lambda record: (
+            record[1].sequence, record[1].city))
 
     def get_counter(self, name):
         """ Get counter with name passed (else create an empty)
