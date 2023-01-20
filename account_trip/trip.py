@@ -172,7 +172,7 @@ class trip_trip(orm.Model):
     _order = 'date desc, create_date desc'
 
     def get_province(self, cr, uid, partner, context=None):
-        """ Provice form partner
+        """ Province form partner
         """
         city_pool = self.pool.get('res.partner.city')
 
