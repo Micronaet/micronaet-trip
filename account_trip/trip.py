@@ -321,6 +321,7 @@ class trip_trip(orm.Model):
         # ---------------------------------------------------------------------
         # Print order line:
         # ---------------------------------------------------------------------
+        order_name = ''
         for order in sorted(trip.order_ids, key=lambda o: (o.sequence, o.id)):
             # Prepare data:
             if order.destination_id:
@@ -381,7 +382,7 @@ class trip_trip(orm.Model):
                 '',
                 '',
                 '',
-                parcel_info.get(oc, ''),
+                parcel_info.get(order_name, ''),
                 ], default_format=excel_format['white']['text'])
         excel_pool.merge_cell(ws_name, [row, 0, row, 3])
         excel_pool.merge_cell(ws_name, [row, 6, row, 10])
