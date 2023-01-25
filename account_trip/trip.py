@@ -228,6 +228,7 @@ class trip_trip(orm.Model):
         _logger.info('Read extra accounting info for report: %s' % filename)
         info_file = open(filename, 'r')
         extra_info = {}
+        parcel_info = {}
         for line in info_file:
             row = line.strip().split(';')
             if len(row) != 7:
@@ -238,16 +239,23 @@ class trip_trip(orm.Model):
             # reference = row[4].strip(),
             # customer_code = row[5].strip(),
 
+            try:
+                parcel = int(row[4].strip())
+            except:
+                _logger.error('Cannot convert %s' % row[4].strip())
+                parcel = 0.0
             data = '%s/%s/%s [Colli: %s]; ' % (
                 row[0].strip(),
                 row[1].strip(),
                 row[2].strip(),
-                row[4].strip(),
+                parcel,
             )
             if oc in extra_info:
                 extra_info[oc] += data
+                parcel_info[oc] += parcel
             else:
                 extra_info[oc] = data
+                parcel_info[oc] = parcel
 
         # ---------------------------------------------------------------------
         # Parameters and domain filter:
@@ -274,7 +282,7 @@ class trip_trip(orm.Model):
         # ---------------------------------------------------------------------
         # Header:
         # ---------------------------------------------------------------------
-        col_width = [3, 7, 20, 30, 20, 10, 10, 10, 15, 40]
+        col_width = [3, 7, 20, 30, 20, 10, 10, 10, 15, 40, 10]
         excel_pool.column_width(ws_name, col_width)
 
         row = 0
@@ -282,11 +290,11 @@ class trip_trip(orm.Model):
             ws_name, row, [
                 ('', excel_format['white']['text']),
                 ('', excel_format['white']['text']),
-                'DATA', 'AUTISTA', '', '', 'GIRO', '', '', '',
+                'DATA', 'AUTISTA', '', '', 'GIRO', '', '', '', '',
             ], default_format=excel_format['header'])
         excel_pool.row_height(ws_name, [row], height=25)
         excel_pool.merge_cell(ws_name, [row, 3, row, 5])
-        excel_pool.merge_cell(ws_name, [row, 6, row, 9])
+        excel_pool.merge_cell(ws_name, [row, 6, row, 10])
 
         row += 1
         excel_pool.write_xls_line(
@@ -294,17 +302,18 @@ class trip_trip(orm.Model):
                 '', '',
                 trip.date or '',
                 trip.camion_id.name or '', '', '',
-                trip.tour_id.name, '', '', '',
+                trip.tour_id.name, '', '', '', '',
             ], default_format=excel_format['white']['text'])
         excel_pool.merge_cell(ws_name, [row-1, 0, row, 1])
         excel_pool.merge_cell(ws_name, [row, 3, row, 5])
-        excel_pool.merge_cell(ws_name, [row, 6, row, 9])
+        excel_pool.merge_cell(ws_name, [row, 6, row, 10])
 
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
                 'N', 'CLIENTE', '', 'DESTINAZIONE', 'INDIRIZZO', 'KG\nCARICO',
                 'RIF.\nORDINE', 'TELEFONO', 'ORARIO CONS.\nNOTE', 'FATTURE',
+                'COLLI',
                 ], default_format=excel_format['header'])
         excel_pool.row_height(ws_name, [row], height=25)
         excel_pool.merge_cell(ws_name, [row, 1, row, 2])
@@ -372,20 +381,21 @@ class trip_trip(orm.Model):
                 '',
                 '',
                 '',
+                parcel_info.get(oc, ''),
                 ], default_format=excel_format['white']['text'])
         excel_pool.merge_cell(ws_name, [row, 0, row, 3])
-        excel_pool.merge_cell(ws_name, [row, 6, row, 9])
+        excel_pool.merge_cell(ws_name, [row, 6, row, 10])
 
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
                 u'RITIRO MERCE', '',
-                '', '', '', '', '', '', '',
+                '', '', '', '', '', '', '', '',
                 trip.good_collection,
                 ], default_format=excel_format['white']['text'])
         excel_pool.row_height(ws_name, [row], height=30)
         excel_pool.merge_cell(ws_name, [row, 0, row, 1])
-        excel_pool.merge_cell(ws_name, [row, 2, row, 9])
+        excel_pool.merge_cell(ws_name, [row, 2, row, 10])
 
         row += 1
         excel_pool.write_xls_line(
@@ -394,78 +404,78 @@ class trip_trip(orm.Model):
                 u'dettagliata nei ns.\n' 
                 u'Ordini sopraelencati dei quali deve verificarne la '
                 u'quantità prima del carico',
-                '', '', '', '', '', '', '', '', '',
+                '', '', '', '', '', '', '', '', '', '',
                 ], default_format=excel_format['white']['text'])
         excel_pool.row_height(ws_name, [row], height=30)
-        excel_pool.merge_cell(ws_name, [row, 0, row, 9])
+        excel_pool.merge_cell(ws_name, [row, 0, row, 10])
 
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
                 u'KM PARTENZA:', '', '', '',
-                u'NOTE:', '', '', '', '', '',
+                u'NOTE:', '', '', '', '', '', '',
                 ], default_format=excel_format['white']['text'])
         excel_pool.row_height(ws_name, [row], height=25)
         excel_pool.merge_cell(ws_name, [row, 0, row, 3])
-        excel_pool.merge_cell(ws_name, [row, 4, row, 9])
+        excel_pool.merge_cell(ws_name, [row, 4, row, 10])
 
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
                 u'KM ARRIVO: ', '', '', '',
-                u'FIRMA SMA: ', '', '', '', '', '',
+                u'FIRMA SMA: ', '', '', '', '', '', '',
                 ], default_format=excel_format['white']['text'])
         excel_pool.row_height(ws_name, [row], height=25)
         excel_pool.merge_cell(ws_name, [row, 0, row, 3])
-        excel_pool.merge_cell(ws_name, [row, 4, row, 9])
+        excel_pool.merge_cell(ws_name, [row, 4, row, 10])
 
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
                 u'TOT. KM.: ', '', '', '',
-                u'FIRMA AUTISTA: ', '', '', '', '', '',
+                u'FIRMA AUTISTA: ', '', '', '', '', '', '',
                 ], default_format=excel_format['white']['text'])
         excel_pool.row_height(ws_name, [row], height=25)
         excel_pool.merge_cell(ws_name, [row, 0, row, 3])
-        excel_pool.merge_cell(ws_name, [row, 4, row, 9])
+        excel_pool.merge_cell(ws_name, [row, 4, row, 10])
 
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
                 u'CONSEGNATI N. DOC.: ', '', '', '',
-                u'BANCALI CARICATI: ', '', '', '', '', '',
+                u'BANCALI CARICATI: ', '', '', '', '', '', '',
                 ], default_format=excel_format['white']['text'])
         excel_pool.row_height(ws_name, [row], height=25)
         excel_pool.merge_cell(ws_name, [row, 0, row, 3])
-        excel_pool.merge_cell(ws_name, [row, 4, row, 9])
+        excel_pool.merge_cell(ws_name, [row, 4, row, 10])
 
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
                 '', '', '', '',
-                u'BANCALI RESI: ', '', '', '', '', '',
+                u'BANCALI RESI: ', '', '', '', '', '', '',
                 ], default_format=excel_format['white']['text'])
         excel_pool.row_height(ws_name, [row], height=25)
         excel_pool.merge_cell(ws_name, [row, 0, row, 3])
-        excel_pool.merge_cell(ws_name, [row, 4, row, 9])
+        excel_pool.merge_cell(ws_name, [row, 4, row, 10])
 
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
                 u'NOTE:', '', trip.note or '',
-                '', '', '', '', '', '', '',
+                '', '', '', '', '', '', '', '',
                 ], default_format=excel_format['white']['text'])
         excel_pool.row_height(ws_name, [row], height=25)
         excel_pool.merge_cell(ws_name, [row, 0, row, 1])
-        excel_pool.merge_cell(ws_name, [row, 2, row, 9])
+        excel_pool.merge_cell(ws_name, [row, 2, row, 10])
 
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
-                '', '', '', '', '', '', '', '', '', '',
+                '', '', '', '', '', '', '', '', '', '', '',
                 ], default_format=excel_format['white']['text'])
         excel_pool.row_height(ws_name, [row], height=65)
-        excel_pool.merge_cell(ws_name, [row, 0, row, 9])
+        excel_pool.merge_cell(ws_name, [row, 0, row, 10])
 
         row += 1
         excel_pool.write_xls_line(
@@ -473,22 +483,22 @@ class trip_trip(orm.Model):
                 u'CONTROLLI PRE CARICO – '
                 u'COMPILAZIONE A CARICO DI GENERAL FOOD',
                 '', '', '', '', '',
-                u'FIRMA DEL MAGAZZINIERE', '', '', '',
+                u'FIRMA DEL MAGAZZINIERE', '', '', '', '',
                 ], default_format=excel_format['white']['text'])
         excel_pool.merge_cell(ws_name, [row, 0, row, 5])
-        excel_pool.merge_cell(ws_name, [row, 6, row, 9])
+        excel_pool.merge_cell(ws_name, [row, 6, row, 10])
 
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
                 u'Vano del camion pulito', '', '',
                 u'SI', u'NO', '',
-                '', '', '', '',
+                '', '', '', '', '',
                 ], default_format=excel_format['white']['text'])
         excel_pool.row_height(ws_name, [row], height=25)
         excel_pool.merge_cell(ws_name, [row, 0, row, 2])
         excel_pool.merge_cell(ws_name, [row, 4, row, 5])
-        excel_pool.merge_cell(ws_name, [row, 6, row+1, 9])
+        excel_pool.merge_cell(ws_name, [row, 6, row+1, 10])
 
         row += 1
         excel_pool.write_xls_line(
@@ -507,19 +517,19 @@ class trip_trip(orm.Model):
                 u'*prodotti surgelati: T≤- 18° C; '
                 u'prodotti freschi T> 0°C e ≤ 4°C, '
                 u'prodotti secchi non deperibili T> 4°C, < 20°C',
-                '', '', '', '', '', '', '', '', '',
+                '', '', '', '', '', '', '', '', '', '',
                 ], default_format=excel_format['white']['text'])
-        excel_pool.merge_cell(ws_name, [row, 0, row, 9])
+        excel_pool.merge_cell(ws_name, [row, 0, row, 10])
 
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
                 u'[ MSQ 30 Versione 2.1 del 09/03/2022 ]',
                 '', '', '', '', '', '',
-                u'Stampato il: %s' % str(datetime.now())[:19], '', '',
+                u'Stampato il: %s' % str(datetime.now())[:19], '', '', '',
                 ], default_format=excel_format['header'])
         excel_pool.merge_cell(ws_name, [row, 0, row, 5])
-        excel_pool.merge_cell(ws_name, [row, 6, row, 9])
+        excel_pool.merge_cell(ws_name, [row, 6, row, 10])
 
         return excel_pool.return_attachment(
             cr, uid, ws_name, version='7.0', php=True, context=context)
