@@ -362,6 +362,7 @@ class trip_trip(orm.Model):
                     '%s %s \nSc. %s' % (
                         order.time or '', note or '', order.date or ''),
                     extra_info.get(order_name, ''),
+                    parcel_info.get(order_name, ''),
                     ], default_format=excel_format['white']['text'])
             excel_pool.row_height(ws_name, [row], height=25)
             excel_pool.merge_cell(ws_name, [row, 1, row, 2])
@@ -382,7 +383,7 @@ class trip_trip(orm.Model):
                 '',
                 '',
                 '',
-                parcel_info.get(order_name, ''),
+                '',
                 ], default_format=excel_format['white']['text'])
         excel_pool.merge_cell(ws_name, [row, 0, row, 3])
         excel_pool.merge_cell(ws_name, [row, 6, row, 10])
