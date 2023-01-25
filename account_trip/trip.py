@@ -389,8 +389,7 @@ class trip_trip(orm.Model):
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, [
-                u'RITIRO MERCE', '',
-                '', '', '', '', '', '', '', '',
+                u'RITIRO MERCE', '', '', '', '', '', '', '', '', '',
                 trip.good_collection,
                 ], default_format=excel_format['white']['text'])
         excel_pool.row_height(ws_name, [row], height=30)
