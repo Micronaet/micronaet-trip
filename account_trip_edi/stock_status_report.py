@@ -214,7 +214,10 @@ class edi_company_report(orm.Model):
                 else:
                     _logger.error('Company not active: #%s' % company.name)
         except:
-            _logger.error('Error get company reference #%s' % company.name)
+            if company:
+                _logger.error('Error get company reference #%s' % company.name)
+            else:
+                _logger.error('Error get company reference (no company)')
         return False
 
     # -------------------------------------------------------------------------
