@@ -58,8 +58,6 @@ class edi_company_report(orm.Model):
             Function call from company module to use internal object for
             extract data
         """
-        if this_id == 11:
-            pdb.set_trace()
         company = self.get_module_company(cr, uid, this_id, context=context)
         if not company:
             return report
@@ -194,8 +192,8 @@ class edi_company_report(orm.Model):
         """
         model_pool = self.pool.get('ir.model.data')
 
+        company = False
         try:
-            # bug fix for bad XMLID name!
             try:
                 reference_id = model_pool.get_object_reference(
                     cr, uid,
@@ -242,7 +240,7 @@ class edi_company_report(orm.Model):
         # Read parameters:
         account_days_covered = context.get('account_days_covered', 2)
         report_days = context.get('report_days', 28)
-        columns = report_days # Report Days total columns
+        columns = report_days  # Report Days total columns
 
         now_dt = datetime.now()
         now = now_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
