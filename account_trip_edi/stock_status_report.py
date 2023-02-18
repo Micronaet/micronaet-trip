@@ -85,7 +85,7 @@ class edi_company_report(orm.Model):
                 else:
                     _logger.warning('Not used: %s' % filename)
                     continue   # todo complete!!
-                    sign = +1
+                    # sign = +1
 
                 fullname = os.path.join(root, filename)
                 order_file = open(fullname)
@@ -412,7 +412,9 @@ class edi_company_report(orm.Model):
                     edi_account_data)),
                 )
 
-        # A. Stock satus:
+        # ---------------------------------------------------------------------
+        # A. Stock status:
+        # ---------------------------------------------------------------------
         account_data = {}
         for line in stock_status:
             line = line.strip()
@@ -473,7 +475,9 @@ class edi_company_report(orm.Model):
                 of_qty,
                 ]
 
+        # ---------------------------------------------------------------------
         # B. Supplier order (update report database)
+        # ---------------------------------------------------------------------
         supplier_comment = {}
         for line in supplier_order:
             line = line.strip()
@@ -506,7 +510,6 @@ class edi_company_report(orm.Model):
                 continue
 
             # Define col position:
-            comment = ''
             if of_delivery < report['min']:
                 comment = u'Non usato (< min)'
                 col = -1
@@ -542,8 +545,8 @@ class edi_company_report(orm.Model):
         # Read convert customer code
         # ---------------------------------------------------------------------
         cmp_2_cust_code = {}
+        filename = '/home/openerp/mexal/cella/csv/codelior.csv'
         try:
-            filename = '/home/openerp/mexal/cella/csv/codelior.csv'
             for line in open(filename, 'r'):
                 row = line.strip().split(';')
                 if len(row) == 2:

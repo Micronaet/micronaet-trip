@@ -51,7 +51,6 @@ class edi_company_report_this(orm.Model):
     # -------------------------------------------------------------------------
     # OVERRIDE: Collect data for report
     # -------------------------------------------------------------------------
-    '''
     def collect_future_order_data_report(self, cr, uid, context=None):
         """ Overridable procedure for manage the report data collected in all
             company with active EDI company
@@ -66,4 +65,3 @@ class edi_company_report_this(orm.Model):
                 cr, uid, context=context)
         return self.update_report_with_company_data(
             cr, uid, this_id, report, context=context)
-    '''
