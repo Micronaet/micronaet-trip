@@ -58,8 +58,6 @@ class edi_company_report(orm.Model):
             Function call from company module to use internal object for
             extract data
         """
-        if this_id == 11:
-            pdb.set_trace()
         company = self.get_module_company(cr, uid, this_id, context=context)
         if not company:
             return report
@@ -150,6 +148,7 @@ class edi_company_report(orm.Model):
                         '',
                         ])
                 order_file.close()
+            break  # No subfolder!
         return report
 
     # -------------------------------------------------------------------------
