@@ -186,7 +186,7 @@ class edi_company_report(orm.Model):
             return _('Secchi')  # 3
         elif start_1 in 'G':
             return _('Pasta')  # 4
-        else: # Error list
+        else:  # Error list
             return _('Non identificata')  # 5
 
     def get_module_company(self, cr, uid, module_id, context=None):
@@ -195,11 +195,20 @@ class edi_company_report(orm.Model):
         model_pool = self.pool.get('ir.model.data')
 
         try:
-            reference_id = model_pool.get_object_reference(
-                cr, uid,
-                'account_trip_edi_c%s' % module_id,
-                'importatione_account_trip_edi_c%s' % module_id,
-                )[1]
+            # bug fix for bad XMLID name!
+            try:
+                reference_id = model_pool.get_object_reference(
+                    cr, uid,
+                    'account_trip_edi_c%s' % module_id,
+                    'importatione_account_trip_edi_c%s' % module_id,
+                    )[1]
+            except:
+                # bug fix for bad XMLID name!
+                reference_id = model_pool.get_object_reference(
+                    cr, uid,
+                    'account_trip_edi_c%s' % module_id,
+                    'importation_account_trip_edi_c%s' % module_id,
+                    )[1]
 
             company_ids = self.search(cr, uid, [
                 ('type_importation_id', '=', reference_id),
