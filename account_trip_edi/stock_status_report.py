@@ -557,17 +557,24 @@ class edi_company_report(orm.Model):
         # ---------------------------------------------------------------------
         # Read convert customer code
         # ---------------------------------------------------------------------
+        code_loop = {
+            'Elior': '/home/openerp/mexal/cella/csv/codelior.csv',
+            'Dusmann': '/home/openerp/mexal/cella/csv/coddussmann.csv',
+        }
         cmp_2_cust_code = {}
-        filename = '/home/openerp/mexal/cella/csv/codelior.csv'
-        try:
-            for line in open(filename, 'r'):
-                row = line.strip().split(';')
-                if len(row) == 2:
-                    default_code = row[0].strip()
-                    customer_code = row[1].strip()
-                    cmp_2_cust_code[default_code] = customer_code
-        except:
-            _logger.error('Error reading %s, no customer code' % filename)
+        for code_company in code_loop:
+            cmp_2_cust_code[code_company] = {}
+            filename = code_loop[code_company]
+            try:
+                for line in open(filename, 'r'):
+                    row = line.strip().split(';')
+                    if len(row) == 2:
+                        default_code = row[0].strip()
+                        customer_code = row[1].strip()
+                        cmp_2_cust_code[code_company][default_code] = \
+                            customer_code
+            except:
+                _logger.error('Error reading %s, no customer code' % filename)
 
         # ---------------------------------------------------------------------
         # Excel file:
@@ -618,7 +625,7 @@ class edi_company_report(orm.Model):
 
         col_width = [
             6, 8,
-            11, 11,
+            11, 10, 10,
             40, 2, 6, 6, 6, 6
             # todo append date total
             ]
@@ -629,7 +636,8 @@ class edi_company_report(orm.Model):
             _(u'Stato'),
             _(u'Categoria'),
             _(u'Cod. GFD'),
-            _(u'Cod. cliente'),
+            _(u'Elior'),
+            _(u'Dussmann'),
             _(u'Nome'),
             _(u'UM'),
 
@@ -701,8 +709,10 @@ class edi_company_report(orm.Model):
                 (u'Neg.' if has_negative else u'Pos.', color['text']),
                 (self.get_product_category(default_code), color['text']),
                 (default_code, color['text']),
-                (cmp_2_cust_code.get(
-                    default_code), color['text']),  # Customer code
+                (cmp_2_cust_code['Elior'].get(
+                    default_code), color['text']),  # Customer ELI code
+                (cmp_2_cust_code['Dussmann'].get(
+                    default_code), color['text']),  # Customer DUS code
                 (name, color['text']),
                 uom,
                 (of_qty, black['number']),
