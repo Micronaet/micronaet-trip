@@ -559,7 +559,7 @@ class edi_company_report(orm.Model):
         # ---------------------------------------------------------------------
         code_loop = {
             'Elior': '/home/openerp/mexal/cella/csv/codelior.csv',
-            'Dusmann': '/home/openerp/mexal/cella/csv/coddussmann.csv',
+            'Dussmann': '/home/openerp/mexal/cella/csv/coddussmann.csv',
         }
         cmp_2_cust_code = {}
         for code_company in code_loop:
