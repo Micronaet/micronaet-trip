@@ -119,7 +119,6 @@ extension = 'txt'
 from_path = os.path.expanduser('~/etl/edi/dussmann/check')
 to_path = os.path.expanduser('~/cron/dussmann/output')
 
-pdb.set_trace()
 for mode in ('ddt', 'oc'):
     mexal_db = {}
     from_file = os.path.join(from_path, '%s.csv' % mode)
