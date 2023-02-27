@@ -116,10 +116,13 @@ extension = 'txt'
 # -----------------------------------------------------------------------------
 # Read IN folder:
 # -----------------------------------------------------------------------------
+from_path = os.path.expanduser('~/etl/edi/dussmann/check')
+to_path = os.path.expanduser('~/cron/dussmann/output')
+
 for mode in ('ddt', 'oc'):
     mexal_db = {}
-    for line in open(
-            '/home/openerp/etl/edi/dussmann/check/%s.csv' % mode, 'r'):
+    from_file = os.path.join(from_path, '%s.csv' % mode)
+    for line in open(from_file, 'r'):
         line = line.strip()
         row = line.split(';')
         reference = row[0].strip()
@@ -131,10 +134,7 @@ for mode in ('ddt', 'oc'):
         key = (order, code)
         mexal_db[key] = reference  # reference  # Save all line
 
-    file_original = \
-        '/home/openerp/datastore/docnaet/EDI/Dussmann/Controllo_%s.csv' % mode
-    # file_original = \
-    #    '/home/openerp/etl/edi/dussmann/check/integrazioni_%s.csv' % mode
+    file_original = os.path.join(to_path, 'Controllo_%s.csv' % mode)
     f_out = open(file_original, 'w')
 
     data = {}
