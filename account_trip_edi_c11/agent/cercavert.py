@@ -119,6 +119,7 @@ extension = 'txt'
 from_path = os.path.expanduser('~/etl/edi/dussmann/check')
 to_path = os.path.expanduser('~/cron/dussmann/output')
 
+pdb.set_trace()
 for mode in ('ddt', 'oc'):
     mexal_db = {}
     from_file = os.path.join(from_path, '%s.csv' % mode)
@@ -134,7 +135,6 @@ for mode in ('ddt', 'oc'):
         key = (order, code)
         mexal_db[key] = reference  # reference  # Save all line
 
-    pdb.set_trace()
     file_original = os.path.join(to_path, 'Controllo_%s.csv' % mode)
     f_out = open(file_original, 'w')
 
