@@ -88,14 +88,14 @@ class Parser(rml_parse):
                     # order.order_mode,
                     )
                 order_mode = order.order_mode
-                if order.order_mode:
-                    order_detail = '%s%s' % (order, order_mode)
-                else:
-                    order_detail = order
+                #if order.order_mode:
+                #    order_detail = '%s%s' % (order, order_mode)
+                #else:
+                #    order_detail = order
                 if key in preload:
-                    preload[key][1].append(order_detail)
+                    preload[key][1].append(order)
                 else:
-                    preload[key] = [order.sequence, [order_detail]]
+                    preload[key] = [order.sequence, [order]]
 
             # Prepare data phase:
             for key in sorted(preload):  # sequence is the sort key
