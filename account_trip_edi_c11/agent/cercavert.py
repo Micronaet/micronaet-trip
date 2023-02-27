@@ -134,6 +134,7 @@ for mode in ('ddt', 'oc'):
         key = (order, code)
         mexal_db[key] = reference  # reference  # Save all line
 
+    pdb.set_trace()
     file_original = os.path.join(to_path, 'Controllo_%s.csv' % mode)
     f_out = open(file_original, 'w')
 
@@ -149,9 +150,9 @@ for mode in ('ddt', 'oc'):
             create_date = datetime.fromtimestamp(
                 os.path.getctime(file_in)).strftime('%Y%m%d_%H%M%S')
 
-            # ---------------------------------------------------------------------
+            # -----------------------------------------------------------------
             # Read input file:
-            # ---------------------------------------------------------------------
+            # -----------------------------------------------------------------
             error = []
             f_in = open(file_in, 'r')
 
@@ -163,9 +164,9 @@ for mode in ('ddt', 'oc'):
                 if not line:
                     continue  # Jump empty line
 
-                # -----------------------------------------------------------------
+                # -------------------------------------------------------------
                 # Create file every code break:
-                # -----------------------------------------------------------------
+                # -------------------------------------------------------------
                 order_year = line[3:7].strip()
                 order_number = line[7:13].strip()
 
