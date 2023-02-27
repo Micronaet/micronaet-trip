@@ -79,8 +79,8 @@ class Parser(rml_parse):
         """
         mode = {
             'D': '',
-            'A': 'Freschi',
-            'F': '+F'
+            'A': ' [Freschi]',
+            'F': ' [+F]'
         }
         order_line = []
         if trip.report_line == 'packed':
