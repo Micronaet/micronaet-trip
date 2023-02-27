@@ -132,7 +132,9 @@ for mode in ('ddt', 'oc'):
         mexal_db[key] = reference  # reference  # Save all line
 
     file_original = \
-        '/home/openerp/etl/edi/dussmann/check/integrazioni_%s.log' % mode
+        '/home/openerp/datastore/docnaet/EDI/Dussmann/Controllo_%s.csv' % mode
+    # file_original = \
+    #    '/home/openerp/etl/edi/dussmann/check/integrazioni_%s.csv' % mode
     f_out = open(file_original, 'w')
 
     data = {}
