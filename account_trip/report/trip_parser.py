@@ -77,6 +77,11 @@ class Parser(rml_parse):
     def get_order_list(self, trip):
         """ Pack same line
         """
+        mode = {
+            'D': '',
+            'A': 'Freschi',
+            'F': '+F'
+        }
         order_line = []
         if trip.report_line == 'packed':
             # Preload phase:
@@ -87,11 +92,6 @@ class Parser(rml_parse):
                     order.destination_id,
                     # order.order_mode,
                     )
-                order_mode = order.order_mode
-                #if order.order_mode:
-                #    order_detail = '%s%s' % (order, order_mode)
-                #else:
-                #    order_detail = order
                 if key in preload:
                     preload[key][1].append(order)
                 else:
@@ -102,6 +102,7 @@ class Parser(rml_parse):
                 sequence, orders = preload[key]
                 counter = len(orders)
 
+                # Extra data:
                 extra = {
                     'time': set(),
                     'deadline': set(),
@@ -115,8 +116,13 @@ class Parser(rml_parse):
                     deadline = (order.date or '').strip()
                     if deadline:
                         extra['deadline'].add(deadline)
+
+                    order_mode = mode.get(order.order_mode, '')
                     number = '/' if not order.name else \
-                        order.name.split('-')[-1].strip()
+                        '%s%s' % (
+                            order.name.split('-')[-1].strip(),
+                            order_mode,
+                        )
                     extra['number'].add(number)
                     extra['quantity'] += order.prevision_load
                 extra['time'] = ' '.join(extra['time'])
