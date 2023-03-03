@@ -65,7 +65,7 @@ class edi_company_report_this(orm.Model):
         report = super(
             edi_company_report_this, self).collect_future_order_data_report(
                 cr, uid, context=context)
-        ctx = context['multiplier'] = 0.001
+        context['multiplier'] = 0.001
         return self.update_report_with_company_data(
-            cr, uid, this_id, report, context=ctx)
+            cr, uid, this_id, report, context=context)
 
