@@ -58,7 +58,12 @@ class edi_company_report(orm.Model):
             Function call from company module to use internal object for
             extract data
         """
+        if context is None:
+            context = []
+        multiplier = context.get('multiplier', 1.0)
+
         company = self.get_module_company(cr, uid, this_id, context=context)
+
         if not company:
             return report
 
@@ -116,7 +121,7 @@ class edi_company_report(orm.Model):
                         trace['detail_code'][0]:
                             trace['detail_code'][1]].strip()
                     try:
-                        quantity = float(row[
+                        quantity = multiplier * float(row[
                             trace['detail_quantity'][0]:
                                 trace['detail_quantity'][1]])
                     except:
