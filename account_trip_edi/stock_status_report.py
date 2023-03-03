@@ -59,7 +59,7 @@ class edi_company_report(orm.Model):
             extract data
         """
         if context is None:
-            context = []
+            context = {}
         multiplier = context.get('multiplier', 1.0)
 
         company = self.get_module_company(cr, uid, this_id, context=context)
