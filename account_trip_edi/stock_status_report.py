@@ -487,10 +487,10 @@ class edi_company_report(orm.Model):
                 clean_name,
                 uom,
 
+                of_qty,
                 net_qty,
                 oc_qty,
                 available_qty,
-                of_qty,
                 ]
 
         # ---------------------------------------------------------------------
