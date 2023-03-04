@@ -58,6 +58,10 @@ class edi_company_report_this(orm.Model):
                 'data'
                 'empty_record'
         """
+        if context is None:
+            context = {}
+        context['multiplier'] = 1
+
         this_id = 7
         report = super(
             edi_company_report_this, self).collect_future_order_data_report(

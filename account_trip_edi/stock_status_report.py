@@ -459,7 +459,7 @@ class edi_company_report(orm.Model):
                 of_qty))
 
             # Calculated:
-            net_qty = inventory_qty + load_qty - unload_qty
+            net_qty = inventory_qty + load_qty - unload_qty  # Stock net Q.
             oc_qty = oc_e_qty + oc_s_qty  # XXX OF added in real columns
             available_qty = net_qty - oc_qty
 
