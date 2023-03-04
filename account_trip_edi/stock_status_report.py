@@ -448,8 +448,6 @@ class edi_company_report(orm.Model):
             # -----------------------------------------------------------------
             # Description:
             default_code = column[0].strip()
-            if default_code == 'IPNARR000CL':
-                pdb.set_trace()
             name = column[1].strip()
             uom = column[2].strip().upper()
 
@@ -703,6 +701,8 @@ class edi_company_report(orm.Model):
                     )):
             row += 1
             delta = report['data'][default_code]
+            if default_code == 'IPNARR000CL':
+                pdb.set_trace()
             try:
                 name, uom, net_qty, oc_qty, start_qty, of_qty = \
                     account_data[default_code]
