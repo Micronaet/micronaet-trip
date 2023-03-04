@@ -61,6 +61,7 @@ class edi_company_report(orm.Model):
         if context is None:
             context = {}
         multiplier = context.get('multiplier', 1.0)
+        # todo reset here multiplier in context for next overriden?
 
         company = self.get_module_company(cr, uid, this_id, context=context)
 
@@ -96,6 +97,9 @@ class edi_company_report(orm.Model):
                 order_file = open(fullname)
                 deadline = False
 
+                # -------------------------------------------------------------
+                # Load OC in EDI folder (not in Accounting)
+                # -------------------------------------------------------------
                 for row in order_file:
                     # Use only data row:
                     if this_pool.is_an_invalid_row(row):
@@ -410,7 +414,8 @@ class edi_company_report(orm.Model):
         # Get data from account
         company_pool = self.pool.get('res.company')
         company_ids = company_pool.search(cr, uid, [], context=None)
-        company = company_pool.browse(cr, uid, company_ids, context=context)[0]
+        company = company_pool.browse(
+            cr, uid, company_ids, context=context)[0]
         edi_account_data = company.edi_account_data
         if not edi_account_data:
             raise osv.except_osv(
@@ -443,6 +448,8 @@ class edi_company_report(orm.Model):
             # -----------------------------------------------------------------
             # Description:
             default_code = column[0].strip()
+            if default_code == 'IPNARR000CL':
+                pdb.set_trace()
             name = column[1].strip()
             uom = column[2].strip().upper()
 
