@@ -60,6 +60,9 @@ class edi_company_report(orm.Model):
         """
         if context is None:
             context = {}
+        if this_id == 3:
+            pdb.set_trace()
+
         multiplier = context.get('multiplier', 1.0)
         # Restored to 1 for next data (if not present)
         context['multiplier'] = 1.0
