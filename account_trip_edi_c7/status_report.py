@@ -42,6 +42,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+
 class edi_company_report_this(orm.Model):
     """ Manage more than one importation depend on company
     """

@@ -60,8 +60,6 @@ class edi_company_report(orm.Model):
         """
         if context is None:
             context = {}
-        if this_id == 3:
-            pdb.set_trace()
 
         multiplier = context.get('multiplier', 1.0)
         # Restored to 1 for next data (if not present)
@@ -131,8 +129,6 @@ class edi_company_report(orm.Model):
                         trace['detail_code'][0]:
                             trace['detail_code'][1]].strip()
                     try:
-                        if this_id == 3 and default_code == 'P00041300RL':
-                            pdb.set_trace()
                         quantity = multiplier * float(row[
                             trace['detail_quantity'][0]:
                                 trace['detail_quantity'][1]])
