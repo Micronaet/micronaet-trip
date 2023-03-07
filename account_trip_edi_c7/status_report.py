@@ -43,8 +43,8 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 _logger = logging.getLogger(__name__)
 
 class edi_company_report_this(orm.Model):
-    ''' Manage more than one importation depend on company
-    '''
+    """ Manage more than one importation depend on company
+    """
     _inherit = 'edi.company'
 
     # -------------------------------------------------------------------------
@@ -60,7 +60,7 @@ class edi_company_report_this(orm.Model):
         """
         if context is None:
             context = {}
-        context['multiplier'] = 1
+        # context['multiplier'] = 1
 
         this_id = 7
         report = super(

@@ -60,7 +60,7 @@ class edi_company_report_this(orm.Model):
         """
         if context is None:
             context = {}
-        context['multiplier'] = 1
+        # context['multiplier'] = 1
 
         this_id = 6
         report = super(

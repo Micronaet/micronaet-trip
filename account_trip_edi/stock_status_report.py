@@ -61,7 +61,10 @@ class edi_company_report(orm.Model):
         if context is None:
             context = {}
         multiplier = context.get('multiplier', 1.0)
-        # todo reset here multiplier in context for next overriden?
+        # Restored to 1 for next data (if not present)
+        context['multiplier'] = 1.0
+
+        # todo reset here multiplier in context for next overridden?
 
         company = self.get_module_company(cr, uid, this_id, context=context)
 
