@@ -382,6 +382,18 @@ class edi_company_report(orm.Model):
                 date_part[1],
                 )
 
+        def clean_not_ascii_char(value):
+            """ Clean float from csv file
+            """
+            value = value or u''
+            res = u''
+            for c in value:
+                if ord(c) < 127:
+                    res += c
+                else:
+                    res += '#'
+            return res
+
         def clean_float(value):
             """ Clean float from csv file
             """
@@ -801,7 +813,7 @@ class edi_company_report(orm.Model):
                 sign = 1
             else:
                 sign = -1
-            print(code)
+
             data = [
                 company,
                 filename,
@@ -811,7 +823,7 @@ class edi_company_report(orm.Model):
                 deadline,
                 (position, black['number']),
                 self.get_product_category(code),
-                u'{}'.format(code),
+                clean_not_ascii_char(code),
                 (sign * q, black['number']),
                 comment,
                 ]
