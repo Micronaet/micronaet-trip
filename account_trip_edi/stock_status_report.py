@@ -176,11 +176,14 @@ class edi_company_report(orm.Model):
                         ])
                 order_file.close()
             break  # No subfolder!
-        _logger.warning('[%s] Read %s order from folder: %s' % (
-            company.name,
-            total_order,
-            path,
-        ))
+        _logger.warning('\n[%s] Read %s order from folder: %s '
+                        '(param: multiplier: %s, jump_line %s' % (
+                            company.name,
+                            total_order,
+                            path,
+                            multiplier,
+                            jump_line,
+                        ))
         return report
 
     # -------------------------------------------------------------------------
