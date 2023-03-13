@@ -683,10 +683,6 @@ class edi_company_report(orm.Model):
         excel_pool.write_xls_line(
             ws_name, row, header, excel_format['header'])
 
-        return excel_pool.return_attachment(
-            cr, uid, ws_name,
-            name_of_file=u'future_stock_status.xls', version='7.0',
-            php=True, context=context)
         # Integration:
         excel_pool.write_xls_line(ws_name, row, [
             clean_header_date(item) for item in sorted(report['header'].keys())
@@ -701,6 +697,10 @@ class edi_company_report(orm.Model):
         black = excel_format['black']
         red = excel_format['red']
 
+        return excel_pool.return_attachment(
+            cr, uid, ws_name,
+            name_of_file=u'future_stock_status.xls', version='7.0',
+            php=True, context=context)
         for default_code in sorted(
                 report['data'],
                 key=lambda c: (
