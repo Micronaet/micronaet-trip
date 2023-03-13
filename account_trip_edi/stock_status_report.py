@@ -393,7 +393,6 @@ class edi_company_report(orm.Model):
             return float(value)
 
         excel_pool = self.pool.get('excel.writer')
-
         if context is None:
             context = {}
 
@@ -594,7 +593,7 @@ class edi_company_report(orm.Model):
         # Excel file:
         # ---------------------------------------------------------------------
         extension = 'xlsx'
-        ws_name = _('EDI stato magazzino')
+        ws_name = _(u'EDI stato magazzino')
         excel_pool.create_worksheet(ws_name, extension=extension)
 
         # excel_pool.set_format(number_format='0.#0')
@@ -643,23 +642,24 @@ class edi_company_report(orm.Model):
             40, 2, 6, 6, 6, 6
             # todo append date total
             ]
-        col_width.extend([6 for item in range(context.get('report_days'))])
+        col_width.extend(
+            [6 for item in range(context.get('report_days'))])
 
         header = [
             # Product:
-            _(u'Stato'),
-            _(u'Categoria'),
-            _(u'Cod. GFD'),
-            _(u'Elior'),
-            _(u'Dussmann'),
-            _(u'Nome'),
-            _(u'UM'),
+            u'Stato',
+            u'Categoria',
+            u'Cod. GFD',
+            u'Elior',
+            u'Dussmann',
+            u'Nome',
+            u'UM',
 
             # Account program:
             u'OF',
-            _(u'Mag.'),
-            _(u'OC'),
-            _(u'Mag.-OC'),
+            u'Mag.',
+            u'OC',
+            u'Mag.-OC',
 
             # Number data:
             ]
@@ -675,6 +675,10 @@ class edi_company_report(orm.Model):
         excel_pool.write_xls_line(ws_name, row, (
             report['title'],
             ), excel_format['title'])
+        return excel_pool.return_attachment(
+            cr, uid, ws_name,
+            name_of_file=u'future_stock_status.xls', version='7.0',
+            php=True, context=context)
 
         # ---------------------------------------------------------------------
         # Header:
@@ -817,5 +821,5 @@ class edi_company_report(orm.Model):
 
         return excel_pool.return_attachment(
             cr, uid, ws_name,
-            name_of_file='future_stock_status.xls', version='7.0',
+            name_of_file=u'future_stock_status.xls', version='7.0',
             php=True, context=context)
