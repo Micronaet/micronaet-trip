@@ -32,7 +32,6 @@ import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 import pickle
 
-
 _logger = logging.getLogger(__name__)
 
 
@@ -114,7 +113,7 @@ class trip_import_edi_wizard(orm.Model):
                 DEFAULT_SERVER_DATE_FORMAT)
 
         # Delete all previous:
-        # TODO >> force single company importation?
+        # todo >> force single company importation?
         # If we create a wizard for select only one company:
         line_ids = self.search(cr, uid, [], context=context)
         try:
@@ -185,7 +184,7 @@ class trip_import_edi_wizard(orm.Model):
                     # Open file for read information:
                     fin = open(os.path.join(path_in, file_in), 'r')
 
-                    # Type mode valuatation:
+                    # Type mode valutation:
                     mode_type = parametrized.get_state_of_file(
                         file_in, forced_list)
 
@@ -488,6 +487,7 @@ class trip_import_edi_wizard(orm.Model):
                             order_info['anomaly'].append(line_id)
 
                 if destination_not_found:
+                    # todo add log on Telegram
                     _logger.warning(_('\n\nDestination not found: \n[%s]') % (
                         destination_not_found, ))
             except:
@@ -501,7 +501,7 @@ class trip_import_edi_wizard(orm.Model):
                 }, context=context)
 
         # TODO parametrize:
-        # Update type informations (for create-delete-recreate management):
+        # Update type information (for create-delete-recreate management):
         for key in order_info:
             if key == 'deleting':
                 if order_info['deleting']:
@@ -555,7 +555,7 @@ class trip_import_edi_wizard(orm.Model):
                   line_proxy.number,
                   ))
         # Read transit file:
-        edi_pool = self.pool.get("edi.company")
+        edi_pool = self.pool.get('edi.company')
         forced_list = edi_pool.load_forced(
             cr, uid, company_id, context=context)
 
