@@ -809,8 +809,8 @@ class edi_company_report(orm.Model):
                 deadline,
                 position,
                 # self.get_product_category(code),
-                code,
-                sign * q,
+                #code,
+                #sign * q,
                 # comment,
                 ]
             print(data)
