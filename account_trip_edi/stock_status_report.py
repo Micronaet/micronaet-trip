@@ -742,12 +742,12 @@ class edi_company_report(orm.Model):
 
             # Integration:
             excel_pool.write_xls_line(
-                ws_name, row, delta, col=fixed_cols, debug=True)
+                ws_name, row, delta, col=fixed_cols)
 
             # Comment: # todo
-            excel_pool.write_comment_line(
-                ws_name, row, report['comment'].get(default_code, []),  # todo!
-                col=fixed_cols)
+            #excel_pool.write_comment_line(
+            #    ws_name, row, report['comment'].get(default_code, []),  # todo!
+            #    col=fixed_cols)
 
         # ---------------------------------------------------------------------
         #                                Detail
