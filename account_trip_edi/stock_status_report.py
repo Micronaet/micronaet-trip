@@ -377,7 +377,7 @@ class edi_company_report(orm.Model):
             """ Clean data in italian mode
             """
             date_part = date.split('-')
-            return '%s/%s' % (
+            return u'%s/%s' % (
                 date_part[2],
                 date_part[1],
                 )
@@ -385,7 +385,7 @@ class edi_company_report(orm.Model):
         def clean_float(value):
             """ Clean float from csv file
             """
-            value = (value or '')
+            value = (value or u'')
             if not value:
                 return 0.0
 
@@ -572,8 +572,8 @@ class edi_company_report(orm.Model):
         # Read convert customer code
         # ---------------------------------------------------------------------
         code_loop = {
-            'Elior': '/home/openerp/mexal/cella/csv/codelior.csv',
-            'Dussmann': '/home/openerp/mexal/cella/csv/coddussmann.csv',
+            'Elior': u'/home/openerp/mexal/cella/csv/codelior.csv',
+            'Dussmann': u'/home/openerp/mexal/cella/csv/coddussmann.csv',
         }
         cmp_2_cust_code = {}
         for code_company in code_loop:
@@ -741,12 +741,13 @@ class edi_company_report(orm.Model):
                     ws_name, row, supplier_col, supplier_comment[default_code])
 
             # Integration:
+            _logger.info(row)
             excel_pool.write_xls_line(
                 ws_name, row, delta, col=fixed_cols)
 
-            # Comment: # TODO
+            # Comment: # todo
             excel_pool.write_comment_line(
-                ws_name, row, report['comment'].get(default_code, []), # TODO!!
+                ws_name, row, report['comment'].get(default_code, []),  # todo!
                 col=fixed_cols)
 
         # ---------------------------------------------------------------------
