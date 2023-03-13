@@ -827,10 +827,9 @@ class edi_company_report(orm.Model):
                 code,
                 (sign * q, black['number']),
                 comment,
-                ]
-            
-            # excel_pool.write_xls_line(ws_name, row, data, black['text'])
+                ]            
             '''
+            excel_pool.write_xls_line(ws_name, row, data, black['text'])
         return excel_pool.return_attachment(
             cr, uid, ws_name,
             name_of_file=u'future_stock_status.xls', version='7.0',
