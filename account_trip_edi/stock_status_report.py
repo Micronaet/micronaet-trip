@@ -62,8 +62,11 @@ class edi_company_report(orm.Model):
             context = {}
 
         multiplier = context.get('multiplier', 1.0)
+        jump_line = context.get('jump_line', 0)
+
         # Restored to 1 for next data (if not present)
         context['multiplier'] = 1.0
+        context['jump_line'] = 0
 
         # todo reset here multiplier in context for next overridden?
 
@@ -104,7 +107,15 @@ class edi_company_report(orm.Model):
                 # -------------------------------------------------------------
                 # Load OC in EDI folder (not in Accounting)
                 # -------------------------------------------------------------
+                counter = 0
                 for row in order_file:
+                    counter += 1
+                    # Jump first line of file (when thers' a header):
+                    if jump_line and counter <= jump_line:
+                        _logger.warning('Jump first %s line of %s' % (
+                            jump_line, fullname))
+                        continue
+
                     # Use only data row:
                     if this_pool.is_an_invalid_row(row):
                         continue
