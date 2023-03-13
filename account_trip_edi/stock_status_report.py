@@ -801,6 +801,7 @@ class edi_company_report(orm.Model):
                 sign = 1
             else:
                 sign = -1
+            '''    
             excel_pool.write_xls_line(ws_name, row, [
                 company,
                 filename,
@@ -814,7 +815,7 @@ class edi_company_report(orm.Model):
                 (sign * q, black['number']),
                 comment,
                 ], black['text'])
-
+            '''
         return excel_pool.return_attachment(
             cr, uid, ws_name,
             name_of_file=u'future_stock_status.xls', version='7.0',
