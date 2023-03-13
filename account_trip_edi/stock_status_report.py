@@ -177,7 +177,7 @@ class edi_company_report(orm.Model):
                 order_file.close()
             break  # No subfolder!
         _logger.warning('\n[%s] Read %s order from folder: %s '
-                        '(param: multiplier: %s, jump_line %s' % (
+                        '(param: multiplier: %s, jump_line %s\n' % (
                             company.name,
                             total_order,
                             path,
