@@ -63,6 +63,8 @@ class edi_company_report(orm.Model):
 
         multiplier = context.get('multiplier', 1.0)
         jump_line = context.get('jump_line', 0)
+        if jump_line > 0:
+            pdb.set_trace()
 
         # Restored to 1 for next data (if not present)
         context['multiplier'] = 1.0
