@@ -804,6 +804,20 @@ class edi_company_report(orm.Model):
             data = [
                 company,
                 filename,
+                mode,
+                order,
+                deadline,
+                position,
+                self.get_product_category(code),
+                code,
+                sign * q,
+                comment,
+                ]
+            print(data)
+            '''
+            data = [
+                company,
+                filename,
 
                 mode,
                 order,
@@ -814,8 +828,9 @@ class edi_company_report(orm.Model):
                 (sign * q, black['number']),
                 comment,
                 ]
-            print(data)
+            
             # excel_pool.write_xls_line(ws_name, row, data, black['text'])
+            '''
         return excel_pool.return_attachment(
             cr, uid, ws_name,
             name_of_file=u'future_stock_status.xls', version='7.0',
