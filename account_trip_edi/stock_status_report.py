@@ -116,6 +116,7 @@ class edi_company_report(orm.Model):
                         if counter == 1:  # Only first warning
                             _logger.warning('Jump first %s line of %s' % (
                                 jump_line, fullname))
+                        _logger.warning(row)
                         continue
 
                     # Use only data row:
