@@ -583,8 +583,8 @@ class edi_company_report(orm.Model):
                 for line in open(filename, 'r'):
                     row = line.strip().split(';')
                     if len(row) == 2:
-                        default_code = row[0].strip()
-                        customer_code = row[1].strip()
+                        default_code = u'{}'.format(row[0].strip())
+                        customer_code = u'{}'.format(row[1].strip())
                         cmp_2_cust_code[code_company][default_code] = \
                             customer_code
             except:
@@ -745,9 +745,9 @@ class edi_company_report(orm.Model):
                 ws_name, row, delta, col=fixed_cols)
 
             # Comment: # todo
-            #excel_pool.write_comment_line(
-            #    ws_name, row, report['comment'].get(default_code, []),  # todo!
-            #    col=fixed_cols)
+            excel_pool.write_comment_line(
+                ws_name, row, report['comment'].get(default_code, []),  # todo!
+                col=fixed_cols)
 
         # ---------------------------------------------------------------------
         #                                Detail
