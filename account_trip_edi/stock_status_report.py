@@ -737,8 +737,8 @@ class edi_company_report(orm.Model):
                 #(default_code, color['text']),
                 #(cmp_2_cust_code['Elior'].get(
                 #    default_code), color['text']),  # Customer ELI code
-                #(cmp_2_cust_code['Dussmann'].get(
-                #    default_code), color['text']),  # Customer DUS code
+                (cmp_2_cust_code['Dussmann'].get(
+                    default_code), color['text']),  # Customer DUS code
                 (name, color['text']),
                 uom,
                 (of_qty, black['number']),
