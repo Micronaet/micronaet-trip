@@ -741,9 +741,8 @@ class edi_company_report(orm.Model):
                     ws_name, row, supplier_col, supplier_comment[default_code])
 
             # Integration:
-            _logger.info(row)
             excel_pool.write_xls_line(
-                ws_name, row, delta, col=fixed_cols)
+                ws_name, row, delta, col=fixed_cols, debug=True)
 
             # Comment: # todo
             excel_pool.write_comment_line(
