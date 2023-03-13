@@ -811,7 +811,7 @@ class edi_company_report(orm.Model):
                 deadline,
                 (position, black['number']),
                 self.get_product_category(code),
-                # code,
+                u'{}'.format(code),
                 (sign * q, black['number']),
                 comment,
                 ]
