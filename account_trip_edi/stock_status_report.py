@@ -801,20 +801,7 @@ class edi_company_report(orm.Model):
                 sign = 1
             else:
                 sign = -1
-            data = [
-                company,
-                filename,
-                mode,
-                order,
-                deadline,
-                position,
-                self.get_product_category(code),
-                #code,
-                sign * q,
-                comment,
-                ]
-            print(data)
-            '''
+            print(code)
             data = [
                 company,
                 filename,
@@ -824,11 +811,10 @@ class edi_company_report(orm.Model):
                 deadline,
                 (position, black['number']),
                 self.get_product_category(code),
-                code,
+                # code,
                 (sign * q, black['number']),
                 comment,
-                ]            
-            '''
+                ]
             excel_pool.write_xls_line(ws_name, row, data, black['text'])
         return excel_pool.return_attachment(
             cr, uid, ws_name,
