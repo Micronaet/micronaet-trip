@@ -61,11 +61,16 @@ class edi_company_report_this(orm.Model):
         """
         if context is None:
             context = {}
-        # context['multiplier'] = 1
 
         this_id = 1
+        context['multiplier'] = 1
+        context['jump_line'] = 0
+
         report = super(
             edi_company_report_this, self).collect_future_order_data_report(
                 cr, uid, context=context)
+
+        context['multiplier'] = 1
+        context['jump_line'] = 0
         return self.update_report_with_company_data(
             cr, uid, this_id, report, context=context)
