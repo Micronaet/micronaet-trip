@@ -697,10 +697,6 @@ class edi_company_report(orm.Model):
         black = excel_format['black']
         red = excel_format['red']
 
-        return excel_pool.return_attachment(
-            cr, uid, ws_name,
-            name_of_file=u'future_stock_status.xls', version='7.0',
-            php=True, context=context)
         for default_code in sorted(
                 report['data'],
                 key=lambda c: (
@@ -753,6 +749,10 @@ class edi_company_report(orm.Model):
                 ws_name, row, report['comment'].get(default_code, []),  # todo!
                 col=fixed_cols)
 
+        return excel_pool.return_attachment(
+            cr, uid, ws_name,
+            name_of_file=u'future_stock_status.xls', version='7.0',
+            php=True, context=context)
         # ---------------------------------------------------------------------
         #                                Detail
         # ---------------------------------------------------------------------
