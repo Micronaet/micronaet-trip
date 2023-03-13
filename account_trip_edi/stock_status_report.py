@@ -803,9 +803,9 @@ class edi_company_report(orm.Model):
                 sign = -1
             data = [
                 company,
-                filename,
+                #filename,
                 mode,
-                order,
+                #order,
                 deadline,
                 position,
                 # self.get_product_category(code),
