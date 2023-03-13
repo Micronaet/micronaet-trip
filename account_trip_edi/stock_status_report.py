@@ -808,10 +808,10 @@ class edi_company_report(orm.Model):
                 order,
                 deadline,
                 position,
-                self.get_product_category(code),
+                # self.get_product_category(code),
                 code,
                 sign * q,
-                comment,
+                # comment,
                 ]
             print(data)
             '''
