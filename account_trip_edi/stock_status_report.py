@@ -110,7 +110,7 @@ class edi_company_report(orm.Model):
                 counter = 0
                 for row in order_file:
                     counter += 1
-                    # Jump first line of file (when thers' a header):
+                    # Jump first line of file (when there's a header):
                     if jump_line and counter <= jump_line:
                         _logger.warning('Jump first %s line of %s' % (
                             jump_line, fullname))
