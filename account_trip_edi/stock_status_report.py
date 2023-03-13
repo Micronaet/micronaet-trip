@@ -89,6 +89,7 @@ class edi_company_report(orm.Model):
 
         # Append this company data:
         path = os.path.expanduser(company.trip_import_folder)
+        total_order = 0
         for root, folders, files in os.walk(path):
             for filename in files:
                 # create or delete mode TODO
@@ -103,6 +104,7 @@ class edi_company_report(orm.Model):
                 fullname = os.path.join(root, filename)
                 order_file = open(fullname)
                 deadline = False
+                total_order += 1
 
                 # -------------------------------------------------------------
                 # Load OC in EDI folder (not in Accounting)
@@ -174,6 +176,11 @@ class edi_company_report(orm.Model):
                         ])
                 order_file.close()
             break  # No subfolder!
+        _logger.warning('[%s] Read %s order from folder: %s' % (
+            company.name,
+            total_order,
+            path,
+        ))
         return report
 
     # -------------------------------------------------------------------------
