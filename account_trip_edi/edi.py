@@ -541,11 +541,19 @@ class trip_import_edi_wizard(orm.Model):
 
     # Utility (for button):
     def force_import_common(self, cr, uid, ids, force=True, context=None):
-        """ Common procedure for 2 botton for force and unforce
+        """ Common procedure for 2 button for force and unforce
         """
         # Read company elements:
         line_proxy = self.browse(cr, uid, ids, context=context)[0]
-        company_id = line_proxy.company_id.id
+        try:
+            company_id = line_proxy.company_id.id
+        except:
+            raise osv.except_osv(
+                _('Error'),
+                _('Errore leggendo azienda nella riga ordine: %s - %s' %
+                  line_proxy.name,
+                  line_proxy.number,
+                  ))
         # Read transit file:
         edi_pool = self.pool.get("edi.company")
         forced_list = edi_pool.load_forced(
