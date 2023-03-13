@@ -61,14 +61,13 @@ class edi_company_report(orm.Model):
         if context is None:
             context = {}
 
+        # Read context parameters:
         multiplier = context.get('multiplier', 1.0)
         jump_line = context.get('jump_line', 0)
 
-        # Restored to 1 for next data (if not present)
+        # Reset parameter in context (for next EDI Campany):
         context['multiplier'] = 1.0
         context['jump_line'] = 0
-
-        # todo reset here multiplier in context for next overridden?
 
         company = self.get_module_company(cr, uid, this_id, context=context)
 
@@ -92,7 +91,7 @@ class edi_company_report(orm.Model):
         total_order = 0
         for root, folders, files in os.walk(path):
             for filename in files:
-                # create or delete mode TODO
+                # create or delete mode todo
                 mode = this_pool.get_state_of_file(filename, [])  # No forced
                 if mode == 'create':
                     sign = -1  # Note: create order is negative for stock!
@@ -176,14 +175,16 @@ class edi_company_report(orm.Model):
                         ])
                 order_file.close()
             break  # No subfolder!
-        _logger.warning('\n[%s] Read %s order from folder: %s '
-                        '(param: multiplier: %s, jump_line %s)\n' % (
-                            company.name,
-                            total_order,
-                            path,
-                            multiplier,
-                            jump_line,
-                        ))
+
+        _logger.warning(
+            '\n[%s] Read %s order from folder: %s '
+            '(param: multiplier: %s, jump_line %s)\n' % (
+                company.name,
+                total_order,
+                path,
+                multiplier,
+                jump_line,
+            ))
         return report
 
     # -------------------------------------------------------------------------
