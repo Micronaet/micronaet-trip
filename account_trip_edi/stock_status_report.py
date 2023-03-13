@@ -718,7 +718,6 @@ class edi_company_report(orm.Model):
                 color = red
             else:
                 color = black
-            continue
             excel_pool.write_xls_line(ws_name, row, [
                 (u'Neg.' if has_negative else u'Pos.', color['text']),
                 (self.get_product_category(default_code), color['text']),
@@ -760,16 +759,16 @@ class edi_company_report(orm.Model):
             ]
 
         header = [
-            _(u'Azienda'),
-            _(u'File'),
-            _(u'Tipo'),
-            _(u'Numero'),
-            _(u'Scadenza'),
-            _(u'Pos.'),
-            _(u'Categoria'),
-            _(u'Codice'),
-            _(u'Q.'),
-            _(u'Commento'),
+            u'Azienda',
+            u'File',
+            u'Tipo',
+            u'Numero',
+            u'Scadenza',
+            u'Pos.',
+            u'Categoria',
+            u'Codice',
+            u'Q.',
+            u'Commento',
             ]
         excel_pool.column_width(ws_name, col_width)
 
