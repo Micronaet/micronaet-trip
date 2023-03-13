@@ -112,8 +112,9 @@ class edi_company_report(orm.Model):
                     counter += 1
                     # Jump first line of file (when there's a header):
                     if jump_line and counter <= jump_line:
-                        _logger.warning('Jump first %s line of %s' % (
-                            jump_line, fullname))
+                        if counter == 1:  # Only first warning
+                            _logger.warning('Jump first %s line of %s' % (
+                                jump_line, fullname))
                         continue
 
                     # Use only data row:
