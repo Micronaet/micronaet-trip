@@ -730,7 +730,7 @@ class edi_company_report(orm.Model):
                 color = red
             else:
                 color = black
-            '''    
+
             excel_pool.write_xls_line(ws_name, row, [
                 (u'Neg.' if has_negative else u'Pos.', color['text']),
                 (self.get_product_category(default_code), color['text']),
@@ -759,7 +759,6 @@ class edi_company_report(orm.Model):
             excel_pool.write_comment_line(
                 ws_name, row, report['comment'].get(default_code, []),  # todo!
                 col=fixed_cols)
-            '''
 
         # ---------------------------------------------------------------------
         #                                Detail
