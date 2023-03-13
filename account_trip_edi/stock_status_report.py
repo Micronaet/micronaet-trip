@@ -731,21 +731,20 @@ class edi_company_report(orm.Model):
             else:
                 color = black
 
-            clean_code = clean_not_ascii_char(default_code)
             excel_pool.write_xls_line(ws_name, row, [
-                (u'Neg.' if has_negative else u'Pos.', color['text']),
-                (self.get_product_category(clean_code), color['text']),
-                (default_code, color['text']),
-                (cmp_2_cust_code['Elior'].get(
-                    default_code), color['text']),  # Customer ELI code
-                (cmp_2_cust_code['Dussmann'].get(
-                    default_code), color['text']),  # Customer DUS code
-                (name, color['text']),
-                uom,
-                (of_qty, black['number']),
-                (net_qty, black['number']),
-                (oc_qty, black['number']),
-                (start_qty, black['number']),
+                #(u'Neg.' if has_negative else u'Pos.', color['text']),
+                #(self.get_product_category(default_code), color['text']),
+                #(default_code, color['text']),
+                #(cmp_2_cust_code['Elior'].get(
+                #    default_code), color['text']),  # Customer ELI code
+                #(cmp_2_cust_code['Dussmann'].get(
+                #    default_code), color['text']),  # Customer DUS code
+                #(name, color['text']),
+                #uom,
+                #(of_qty, black['number']),
+                #(net_qty, black['number']),
+                #(oc_qty, black['number']),
+                #(start_qty, black['number']),
                 ], black['text'])
             # OF comment:
             if supplier_comment.get(default_code):
