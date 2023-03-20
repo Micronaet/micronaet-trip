@@ -25,100 +25,12 @@ import ConfigParser
 from datetime import datetime
 
 
-# -----------------------------------------------------------------------------
-# Utility:
-# -----------------------------------------------------------------------------
-def clean_text(text, length, uppercase=False, error=None, truncate=False):
-    """ Return clean text with limit cut
-        Log in error if over length
-    """
-    if error is None:
-        error = []
-
-    text = text.strip()
-    if len(text) > length:
-        if truncate:
-            text = text[:length]
-        else:
-            error.append('Text: %s > %s' % (text, length))
-    if uppercase:
-        return text.upper()
-    return text
-
-
-def clean_date(date):
-    """ Current format: YYMMDD
-    """
-    # if len(company_date) == 6:
-    #    return '20%s' % company_date.strip()
-    # else:
-    # return company_date.strip()
-    date = date.strip()
-
-    if len(date) == 6:
-        res = '20%s%s%s' % (
-            date[4:6],
-            date[2:4],
-            date[:2],
-        )
-    else:
-        res = '%s%s%s' % (
-            date[4:8],
-            date[2:4],
-            date[:2],
-        )
-    return res
-
-
-def clean_float(
-        value, length, decimal=3, multiple=1.0, separator='.', error=None):
-    """ Clean float and return float format
-    """
-    value = value.strip()
-    if not value:
-        return 0.0
-
-    if error is None:
-        error = []
-    try:
-        value = value.replace(',', '.')
-        float_value = float(value.strip())
-    except:
-        error.append('Not a float: %s' % value)
-        float_value = 0.0
-    float_value /= multiple
-    mask = '%%%s.%sf' % (length, decimal)
-    res = mask % float_value
-    res = res.replace('.', separator)
-    return res
-
-
-# -----------------------------------------------------------------------------
-# Read configuration parameter:
-# -----------------------------------------------------------------------------
-# try:
-#    cfg_file = os.path.expanduser('./DUS.cfg')
-# except:
-#    print('Config file not found: DUS.cfg')
-#    sys.exit()
-
-# config = ConfigParser.ConfigParser()
-# config.read([cfg_file])
-
-# In parameters:
-# in_check = os.path.expanduser(config.get('in', 'check'))
-# in_path = os.path.expanduser(config.get('in', 'path'))
-# in_history = os.path.expanduser(config.get('in', 'history'))
-# in_log = os.path.expanduser(config.get('in', 'log'))
-# in_schedule = os.path.expanduser(config.get('in', 'schedule'))
+# Parameters:
 extension = 'txt'
-
-# -----------------------------------------------------------------------------
-# Read IN folder:
-# -----------------------------------------------------------------------------
 history_path = os.path.expanduser('~/etl/edi/dussmann/order/history')
 to_path = os.path.expanduser('~/cron/dussmann/output')
 
+# Export:
 file_original = os.path.join(to_path, 'Controllo_destinazioni.csv')
 f_out = open(file_original, 'w')
 f_out.write('Numero;Anno;Codice dest.;Descrizione dest.;Data;Ora\n')
