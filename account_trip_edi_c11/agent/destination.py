@@ -121,7 +121,7 @@ to_path = os.path.expanduser('~/cron/dussmann/output')
 
 file_original = os.path.join(to_path, 'Controllo_destinazioni.csv')
 f_out = open(file_original, 'w')
-f_out.write('Numero|Anno|Codice dest.|Descrizione dest.|Data|Ora\n')
+f_out.write('Numero;Anno;Codice dest.;Descrizione dest.;Data;Ora\n')
 pdb.set_trace()
 for root, dirs, files in os.walk(history_path):
     for filename in files:
@@ -146,7 +146,7 @@ for root, dirs, files in os.walk(history_path):
             code = line[15:25].strip()
             description = line[366:405].strip()
 
-            f_out.write('%s%s%s%s%s%s\n' % (
+            f_out.write('%s;%s;%s;%s;%s;%s\n' % (
                 number,
                 year,
                 code,
