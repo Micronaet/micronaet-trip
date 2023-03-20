@@ -143,8 +143,8 @@ for root, dirs, files in os.walk(history_path):
             # Clean base 64 data (clean start editor char):
             line = line.replace('\xff', '').replace('\xfe', '').replace(
                 '\x00', '')
-            code = line[15:25]
-            description = line[365:406]
+            code = line[15:25].strip()
+            description = line[366:405].strip()
 
             f_out.write('%s%s%s%s%s%s\n' % (
                 number,
