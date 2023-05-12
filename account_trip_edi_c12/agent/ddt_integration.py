@@ -263,8 +263,8 @@ for root, dirs, files in os.walk(in_history):
 # Integrate data:
 # print(conversion)
 
-from_path = '/home/openerp/mexal/ddtdussmann'
-to_path = '/home/openerp/mexal/ddtdussmann/rielaborati'
+from_path = '/home/openerp/mexal/ddtsercar'
+to_path = '/home/openerp/mexal/ddtsercar/rielaborati'
 
 for root, folders, files in os.walk(from_path):
     for filename in files:

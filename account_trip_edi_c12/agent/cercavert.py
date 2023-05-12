@@ -121,8 +121,8 @@ extension = 'txt'
 # -----------------------------------------------------------------------------
 # Read IN folder:
 # -----------------------------------------------------------------------------
-from_path = os.path.expanduser('~/etl/edi/dussmann/check')
-to_path = os.path.expanduser('~/cron/dussmann/output')
+from_path = os.path.expanduser('~/etl/edi/sercar/check')
+to_path = os.path.expanduser('~/cron/sercar/output')
 
 for mode in ('ddt', 'oc'):
     mexal_db = {}
