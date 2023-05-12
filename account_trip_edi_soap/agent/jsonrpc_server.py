@@ -145,6 +145,7 @@ def soap2dict(reply):
         res['orders'].append(new_order)
     return res
 
+
 def get_soap_service():
     """ Get WSDL Service link
         if passed namespace and wsdl root use that, instead of
