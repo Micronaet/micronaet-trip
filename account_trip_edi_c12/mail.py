@@ -54,7 +54,9 @@ class edi_company_c12(orm.Model):
 
         pdb.set_trace()
         filename_part = filename.split('_')
-        if filename and filename.endswith('.txt') and len(filename_part) == 3:
+        filename_upper = filename.upper()
+        if filename and filename_upper.endswith('.TXT') and \
+                len(filename_part) == 3:
             if verbose:
                 _logger.info('Found order, attach: %s' % filename)
             return True
