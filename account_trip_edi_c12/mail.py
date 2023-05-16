@@ -52,7 +52,6 @@ class edi_company_c12(orm.Model):
                 _logger.warning('Empty filename')
             return False
 
-        pdb.set_trace()
         filename_part = filename.split('_')
         filename_upper = filename.upper()
         if filename and filename_upper.endswith('.TXT') and \
