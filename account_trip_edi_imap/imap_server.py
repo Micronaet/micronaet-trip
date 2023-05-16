@@ -133,7 +133,6 @@ class ImapServer(orm.Model):
 
         imap_open = []
         company_records = {}
-        pdb.set_trace()
         for address in self.browse(cr, uid, address_ids, context=context):
             company_ids = company_pool.search(cr, uid, [
                 ('import', '=', True),  # Only active company
@@ -237,6 +236,7 @@ class ImapServer(orm.Model):
             # Move operations:
             # -----------------------------------------------------------------
             _logger.info('Parse attachment mail read')
+            pdb.set_trace()
             for company in company_records:
                 if company_records[company]:
                     self.save_attachment_from_eml_file(
