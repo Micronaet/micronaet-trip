@@ -44,6 +44,7 @@ class edi_company_c12(orm.Model):
         """ Check if the attachment is in correct format
             31218_20221006_906.txt
         """
+        pdb.set_trace()
         # attachment_content = part.get_content_type()
         # attachment_content == content_type and \
         filename = part.get_filename()
