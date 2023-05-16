@@ -236,7 +236,6 @@ class ImapServer(orm.Model):
             # Move operations:
             # -----------------------------------------------------------------
             _logger.info('Parse attachment mail read')
-            pdb.set_trace()
             for company in company_records:
                 if company_records[company]:
                     self.save_attachment_from_eml_file(
