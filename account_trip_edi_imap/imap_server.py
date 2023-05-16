@@ -66,7 +66,6 @@ class ImapServer(orm.Model):
         content_type = company.mail_content_type
         extension = company.attachment_extension
         utility = self.pool.get(company.type_importation_id.object)  # xxx
-        pdb.set_trace()
         for imap, msg_uid, record in data:
             order_name = utility.get_order_number(record)
 
@@ -134,6 +133,7 @@ class ImapServer(orm.Model):
 
         imap_open = []
         company_records = {}
+        pdb.set_trace()
         for address in self.browse(cr, uid, address_ids, context=context):
             company_ids = company_pool.search(cr, uid, [
                 ('import', '=', True),  # Only active company
@@ -314,9 +314,27 @@ class EdiCompany(orm.Model):
         if not correct:
             return False
 
+        # ---------------------------------------------------------------------
+        # Subject filter mode:
+        # ---------------------------------------------------------------------
+        subject_filter = (company.mail_subject or '')
+        subject = record['Subject']
+
+        # 1. AND Mode:
+        if subject_filter and '&&' in subject_filter:
+            # Always consider case unsensitive!
+            subject_filter = subject_filter.upper()
+            subject = subject.upper()
+            for partial in subject_filter.split('&&'):
+                if partial not in subject:
+                    return False
+            return True
+
+        # 2. Start With:
         if not record['Subject'] or not \
-                record['Subject'].startswith(company.mail_subject):
+                record['Subject'].startswith(subject_filter):
             return False
+
         return True
 
     _columns = {
@@ -329,7 +347,10 @@ class EdiCompany(orm.Model):
             help='Indica da quale indirizzo viene ricevuta la mail'),
         'mail_subject': fields.char(
             'Iniziale oggetto', size=50,
-            help='Indicare la parte iniziale dell\'oggetto'),
+            help='Indicare la parte iniziale dell\'oggetto, se si '
+                 'vuole utilizzare la modalità parti usare && per'
+                 'dividerle, es.: ORDINI&&DITTA XXX&&SPA, la ricerca'
+                 'è fatta case unsensitive!'),
         'mail_eml_folder': fields.char(
             'Cartella EML', size=80,
             help='Cartella dove vengono esporate le mail scaricate dalla '
