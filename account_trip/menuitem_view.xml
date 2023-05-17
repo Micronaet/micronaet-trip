@@ -25,5 +25,6 @@
                 <menuitem parent="menu_trip_order" id="menu_trip_order_manual_list" name="Ordini manuali o prese" action="action_trip_order_manual" sequence="40" />
 
             <menuitem parent="menu_trip_root" id="menu_trip_configuration" name="Configuration" sequence="99" />
+                <menuitem parent="menu_trip_configuration" id="menu_res_partner_city_action" action="res_partner_city_action" sequence="80" />
    </data>
 </openerp>
