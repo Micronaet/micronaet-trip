@@ -38,6 +38,9 @@ for root, folders, files in os.walk(path):
             os.path.getctime(fullname)
             ).strftime('%Y%m%d_%H%M%S')
         number = ''
+        for line in open(fullname, 'r'):
+            number = line[19:37].strip()
+            break
         print('%s|%s|%s\n' % (
             fullname,
             create_date,
