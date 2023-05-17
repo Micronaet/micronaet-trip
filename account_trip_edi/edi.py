@@ -132,7 +132,7 @@ class trip_import_edi_wizard(orm.Model):
             ('import', '=', True)], context=context)
         for company in edi_company_pool.browse(
                 cr, uid, edi_company_ids, context=context):
-            if company.code == 'SER':
+            if company.name == 'SER':
                 pdb.set_trace()
             # Load object for use the same function name where needed:
             parametrized = self.pool.get(company.type_importation_id.object)
