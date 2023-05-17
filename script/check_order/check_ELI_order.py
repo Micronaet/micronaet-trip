@@ -28,7 +28,7 @@ path = '/home/openerp/etl/edi/elior/in'
 extension = 'ASC'
 
 pdb.set_trace()
-for root, folders, files in os.path.walk(path):
+for root, folders, files in os.walk(path):
     for filename in sorted(files):
         if not filename.endswith(extension):
             continue
