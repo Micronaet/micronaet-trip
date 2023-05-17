@@ -21,9 +21,7 @@
 ###############################################################################
 import os
 import sys
-import erppeek
-from datetime import datetime, timedelta
-import ConfigParser
+from datetime import datetime
 import pdb
 
 path = '/home/openerp/etl/edi/elior/in'
