@@ -38,10 +38,16 @@ for root, folders, files in os.walk(path):
             os.path.getctime(fullname)
             ).strftime('%d/%m/%Y %H:%M:%S')
         number = ''
+        if filename.startswith('ELICHG'):
+            change = 'X'
+        else:
+            change = ''
+
         for line in open(fullname, 'r'):
             number = line[19:37].strip()
             break
-        print('%s|%s|%s\n' % (
+        print('%s|%s|%s|%s\n' % (
+            change,
             fullname,
             create_date,
             number,
