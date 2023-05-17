@@ -12,10 +12,13 @@
         </field>
     </record>
     <record id="res_partner_city_action" model="ir.actions.act_window">
-        <field name="name">Città</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">form</field>
-        <field name="view_mode">tree,form</field>
+        <field name="name">Citta</field>
+        <field name="res_model">res.partner.city</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="res_partner_city_view_tree"/>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
     </record>
 
     <record id="res_company_trip_operation_view_form" model="ir.ui.view">
