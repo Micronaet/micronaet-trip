@@ -36,7 +36,7 @@ for root, folders, files in os.walk(path):
 
         create_date = datetime.fromtimestamp(
             os.path.getctime(fullname)
-            ).strftime('%Y%m%d_%H%M%S')
+            ).strftime('%d/%m/%Y %H%M%S')
         number = ''
         for line in open(fullname, 'r'):
             number = line[19:37].strip()
