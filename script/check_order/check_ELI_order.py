@@ -32,7 +32,7 @@ for root, folders, files in os.walk(path):
     for filename in sorted(files):
         if not filename.endswith(extension):
             continue
-        fullname = os.path(root, filename)
+        fullname = os.path.join(root, filename)
 
         create_date = create_date = datetime.fromtimestamp(
             os.path.getctime(fullname)
