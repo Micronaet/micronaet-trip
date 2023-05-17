@@ -28,6 +28,7 @@ path = '/home/openerp/etl/edi/elior/in'
 extension = 'ASC'
 
 pdb.set_trace()
+log_f = open('./log.csv', 'w')
 for root, folders, files in os.walk(path):
     for filename in sorted(files):
         if not filename.endswith(extension):
@@ -46,9 +47,9 @@ for root, folders, files in os.walk(path):
         for line in open(fullname, 'r'):
             number = line[19:37].strip()
             break
-        print('%s|%s|%s|%s\n' % (
+        log_f.write('%s|%s|%s|%s\n' % (
             change,
-            fullname,
+            filename,
             create_date,
             number,
         ))
