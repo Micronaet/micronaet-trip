@@ -439,7 +439,6 @@ for root, dirs, files in os.walk(in_path):
         # ---------------------------------------------------------------------
         # Save file out:
         # ---------------------------------------------------------------------
-        pdb.set_trace()
         for order_name in data:
             check_history_file = os.path.join(out_history, order_name)
             if os.path.exists(check_history_file):
