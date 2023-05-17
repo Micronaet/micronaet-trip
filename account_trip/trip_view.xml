@@ -2,7 +2,7 @@
 <openerp>
   <data>
     <record id="res_partner_city_view_tree" model="ir.ui.view">
-        <field name="name">Citta'</field>
+        <field name="name">Citta</field>
         <field name="model">res.partner.city</field>
         <field name="arch" type="xml">
             <tree string="Città" editable="bottom">
