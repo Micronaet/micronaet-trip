@@ -73,7 +73,7 @@ class edi_company_c12(orm.Model):
         file_part = file_in.split('_')
         date_block = file_part[3]
         hour_block = file_part[4]
-        return "%s/%s/%s %s:%s:%s" % (
+        return '%s/%s/%s %s:%s:%s' % (
             date_block[:4],
             date_block[4:6],
             date_block[6:8],
