@@ -16,7 +16,6 @@
                     <menuitem parent="menu_all_configuration" id="menu_trip_destination" name="Destinazioni" action="action_res_partner_destination" sequence="50"  groups="group_trip_manager"/>
                         <menuitem parent="menu_trip_destination" id="menu_trip_destination_all" name="Obsolete" action="action_res_partner_destination_all" sequence="10"  groups="group_trip_manager"/>
 
-
             <menuitem parent="menu_trip_root" id="menu_trip_order" name="Order" sequence="15"/>
                 <menuitem parent="menu_trip_order" id="menu_trip_trip_operation_company" name="Operazioni" sequence="5" action="action_res_company_trip_operation"/>
                 <menuitem parent="menu_trip_order" id="menu_trip_order_prepare" name="Prepare order" action="action_trip_order_prepare" sequence="10" groups="group_trip_manager"/>
