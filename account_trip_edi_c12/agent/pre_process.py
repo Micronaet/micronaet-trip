@@ -423,7 +423,7 @@ for root, dirs, files in os.walk(in_path):
                             40, error=error, truncate=True),
                         '',   # Header type,
                         clean_float(
-                            detail['price'], 15, 2, 1000.0, error=error),
+                            detail['price'], 11, 3, 1000.0, error=error),
                         ))
             else:
                 print('Wrong syntax in this reference: %s' % line[:3])
