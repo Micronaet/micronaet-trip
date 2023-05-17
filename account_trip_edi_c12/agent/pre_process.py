@@ -260,15 +260,13 @@ for root, dirs, files in os.walk(in_path):
 
         counter = 0
         for line in f_in:
-            if not line or line == 'FTL':  # FTL = end of detail line
-                continue  # Jump empty line
+            # Parse mode:
+            if not line or line.startswith('FTL'):  # FTL = end of detail line
+                pass  # Jump empty line
 
-            # -----------------------------------------------------------------
-            #                 New order, start header block:
-            # -----------------------------------------------------------------
             elif line.startswith('BGM'):
                 # -------------------------------------------------------------
-                # Header line 1:
+                # Header line 1 (start new order block!):
                 # -------------------------------------------------------------
                 order_year = line[150:154].strip()
                 order_number = line[115:150].strip()
@@ -402,7 +400,7 @@ for root, dirs, files in os.walk(in_path):
                         clean_text(detail['uom'], 2, error=error,
                                    truncate=True, uppercase=True),
                         clean_float(
-                            detail['quantity'], 15, 2, 1.0, error=error),
+                            detail['quantity'], 15, 2, 1000.0, error=error),
 
                         # Supplier reference (here is the same)
                         clean_text(detail['code'], 16, error=error,
