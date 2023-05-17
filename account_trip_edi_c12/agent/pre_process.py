@@ -225,6 +225,7 @@ if out_check:
 log_on_file(
     'Start import order mode: %s' % company, mode='INFO', file_list=[
         f_in_schedule, f_out_schedule])
+pdb.set_trace()
 for root, dirs, files in os.walk(in_path):
     log_on_file(
         'Read root folder: %s [%s]' % (root, company),
@@ -251,42 +252,44 @@ for root, dirs, files in os.walk(in_path):
         # Read input file:
         # ---------------------------------------------------------------------
         error = []
+        data = {}  # Order splitted at the end of procedure
+
         f_in = open(file_in, 'r')
-        data = {}
         log_on_file(
             'Parsing file: %s [%s]' % (file_in, company),
-            mode='INFO',
-            file_list=[f_in_log, f_out_log])
+            mode='INFO', file_list=[f_in_log, f_out_log])
 
         counter = 0
         for line in f_in:
-            # Clean base 64 data (clean start editor char):
-            line = line.replace('\xff', '').replace('\xfe', '').replace(
-                '\x00', '')
-            if not line:
+            if not line or line == 'FTL':  # FTL = end of detail line
                 continue  # Jump empty line
 
             # -----------------------------------------------------------------
-            # Create file every code break:
+            #                 New order, start header block:
             # -----------------------------------------------------------------
-            order_year = line[3:7].strip()
-            order_number = line[7:13].strip()
-            if not order_number or not order_year:
-                log_on_file(
-                    'Error cannot read order or year: %s [%s]' % (
-                        file_in, company),
-                    mode='ERROR', file_list=[f_in_log, f_out_log])
+            elif line.startswith('BGM'):
+                # -------------------------------------------------------------
+                # Header line 1:
+                # -------------------------------------------------------------
+                order_year = line[150:154].strip()
+                order_number = line[115:150].strip()
 
-            # Generate filename for every order included:
-            order_file = '%s_%s_%s_%s.%s' % (
-                order_year,  # Year
-                order_number,  # Number
-                create_date,  # Date of file
-                command,  # Mode
-                extension,   # Extension same as original
-            )
+                if not order_number or not order_year:
+                    log_on_file(
+                        'Error cannot read order or year: %s [%s]' % (
+                            file_in, company),
+                        mode='ERROR', file_list=[f_in_log, f_out_log])
 
-            if order_file not in data:
+                # Create data block, generate filename for every order included
+                order_file = '%s_%s_%s_%s.%s' % (
+                    order_year,  # Year
+                    order_number,  # Number
+                    create_date,  # Date of file (not date order!)
+                    command,  # Mode
+                    extension,   # Extension same as original
+                )
+
+                # Not present in data so created here first time:
                 data[order_file] = {
                     'counter': 0,
                     'line': [],
@@ -294,112 +297,140 @@ for root, dirs, files in os.walk(in_path):
                         out_path, order_file),
 
                     'header': {
-                        'type': line[:2].strip(),  # AA
-                        # 'sequence': line[2:7].strip(),
+                        # todo clean list (will be updated every header line!)
+                        'type': '',  # used?
                         'order': '%s-%s' % (order_year, order_number),
-                        'date': line[13:21].strip(),
-                        'deadline': line[644:652].strip(),
+                        'date': line[150:159].strip(),  # YYYYMMDD format
 
                         # -----------------------------------------------------
                         # Destination:
                         # -----------------------------------------------------
-                        # Tipo mag.:
-                        'stock_type': line[25:26].strip(),
-                        # Codice mag.:
-                        'company_code': line[26:33].strip(),
-                        # CDC (same as "Codice di magazzino" for now)
-                        'destination_code': line[21:25].strip(),
-                        # Indirizzo del magazzino:
-                        'destination_address_code': line[33:37].strip(),
 
+                        # -----------------------------------------------------
+                        # Compiled next lines:
+                        # -----------------------------------------------------
+                        # 'destination_code': '',  NAD line
+                        # 'destination_description': '',  # NAD line
+                        # 'deadline': '',  # DTM line
+
+                        # -----------------------------------------------------
+                        # Not used:
+                        # -----------------------------------------------------
+                        # 'stock_type': '',  # Tipo mag.:
+                        # 'company_code': '',  # Codice mag.:
+                        # Indirizzo del magazzino:
+                        # 'destination_address_code': '',
+
+                        # 'cig': '',
+                        # 'sequence': line[2:7].strip(),
                         # 'document': line[67:69].strip(),
                         # 'destination_facility': (26, 33),  # OK Stock code
                         # 'destination_cost': (21, 25),  # OK CDC
                         # 'destination_site': (33, 37),  # OK Address code
-                        'destination_description': line[37:97].strip(),
-
-                        'cig': line[719:744].strip(),
                     },
                 }
 
-            # Detail lines:
-            detail = {
-                'type': '',  # line[:2].strip(),
-                'sequence': line[278:282].strip(),
-                'code': line[614:644].strip(),
-                'name': line[359:614].strip(),
-                'uom': line[664:669].strip(),
-                'quantity': line[652:664].strip(),
-                'price': '',   # line[72:81].strip(),
-                'vat': '',   # line[67:69].strip(),
-                }
+            elif line.startswith('NAS'):  # Header line 2:
+                pass  # Destination (Company reference)
 
-            # -----------------------------------------------------------------
-            # Convert row input file:
-            # -----------------------------------------------------------------
-            data[order_file]['counter'] += 1
+            elif line.startswith('NAB'):  # Header line 3:
+                pass  # Sender (Edi Company reference)
 
-            # todo keep D? in destination code?
-            alternative_code = '%s-%s' % (
-                data[order_file]['header']['company_code'],  # destination_code
-                int(data[order_file]['header']['destination_address_code']),
-            )
+            elif line.startswith('NAD'):  # Header line 4:
+                data[order_file]['header'].update({
+                    'destination_code': 'SER%s' % line[3:20].strip(),
+                    'destination_decription': line[23:69].strip(),
+                    })
 
-            data[order_file]['line'].append(
-                '%-3s|%-10s|%-10s|%-10s|%-8s|'
-                '%-13s|%4s|%-16s|%-60s|%-2s|%15s|'
-                '%-16s|%-60s|%-2s|%15s|'
-                '%-8s|%-40s|%-40s|%-15s|%-40s|%-2s\r\n' % (
-                    # Header:
-                    clean_text(company, 3, error=error, truncate=True),  # args
+            elif line.startswith('DTM'):  # Header line 5:
+                data[order_file]['header'].update({
+                    'date': line[3:11].strip(),  # YYYYMMDD format
+                    })
 
-                    # Destination code:
-                    '',
-                    clean_text(
-                        alternative_code, 10, error=error, truncate=True),
-                    '',
+            elif line.startswith('FTX'):  # Header line 6:
+                pass  # Currency
 
-                    clean_date(data[order_file]['header']['deadline']),
-                    clean_text(
-                        data[order_file]['header']['order'], 13,
-                        error=error, truncate=True),
+            elif line.startswith('LIN'):  # Detail line:
+                # Detail lines:
+                detail = {
+                    'type': '',  # line[:2].strip(),
+                    'sequence': line[3:5].strip(),
+                    'code': line[82:117].strip(),
+                    'name': line[152:187].strip(),
+                    'uom': line[205:208].strip(),
+                    'quantity': line[190:205].strip(),  # is x 1000!
+                    'price': line[208:223].strip(),
+                    'vat': '',   # line[67:69].strip(),
+                    }
 
-                    # Line:
-                    # data[order_file]['counter'],
-                    clean_text(detail['sequence'], 4, error=error,
-                               truncate=True, uppercase=False),
-                    clean_text(detail['code'], 16, error=error, truncate=True,
-                               uppercase=True),
-                    clean_text(detail['name'], 60, error=error, truncate=True),
-                    clean_text(detail['uom'], 2, error=error, truncate=True,
-                               uppercase=True),
-                    clean_float(
-                        detail['quantity'], 15, 2, 1.0, error=error),
+                # -------------------------------------------------------------
+                # Convert row input file:
+                # -------------------------------------------------------------
+                data[order_file]['counter'] += 1
 
-                    # Supplier reference (here is the same)
-                    clean_text(detail['code'], 16, error=error, truncate=True,
-                               uppercase=True),
-                    clean_text(detail['name'], 60, error=error, truncate=True),
-                    clean_text(detail['uom'], 2, error=error, truncate=True,
-                               uppercase=True),
-                    clean_float(
-                        detail['quantity'], 15, 2, 100.0, error=error),
+                # Update with SER + Code
+                alternative_code = \
+                    data[order_file]['header']['destination_code']
 
-                    # Footer:
-                    clean_date(data[order_file]['header']['date']),
-                    '',  # header note
-                    '',  # line note
-                    clean_text(
-                        data[order_file]['header']['cig'], 15, error=error,
-                        truncate=True),
-                    clean_text(
-                        data[order_file]['header']['destination_description'],
-                        40, error=error, truncate=True),
-                    clean_text(
-                        data[order_file]['header']['type'],
-                        2, error=error, truncate=True),
-                    # price: added in spooler procedure
-                    ))
+                data[order_file]['line'].append(
+                    '%-3s|%-10s|%-10s|%-10s|%-8s|'
+                    '%-13s|%4s|%-16s|%-60s|%-2s|%15s|'
+                    '%-16s|%-60s|%-2s|%15s|'
+                    '%-8s|%-40s|%-40s|%-15s|%-40s|%-2s\r\n' % (
+                        # Header:
+                        clean_text(company, 3, error=error, truncate=True),
+
+                        # Destination code:
+                        '',
+                        clean_text(
+                            alternative_code, 10, error=error, truncate=True),
+                        '',
+
+                        clean_date(data[order_file]['header']['deadline']),
+                        clean_text(
+                            data[order_file]['header']['order'], 13,
+                            error=error, truncate=True),
+
+                        # Line:
+                        # data[order_file]['counter'],
+                        clean_text(detail['sequence'], 4, error=error,
+                                   truncate=True, uppercase=False),
+                        clean_text(detail['code'], 16, error=error,
+                                   truncate=True, uppercase=True),
+                        clean_text(detail['name'], 60, error=error,
+                                   truncate=True),
+                        clean_text(detail['uom'], 2, error=error,
+                                   truncate=True, uppercase=True),
+                        clean_float(
+                            detail['quantity'], 15, 2, 1.0, error=error),
+
+                        # Supplier reference (here is the same)
+                        clean_text(detail['code'], 16, error=error,
+                                   truncate=True, uppercase=True),
+                        clean_text(detail['name'], 60, error=error,
+                                   truncate=True),
+                        clean_text(detail['uom'], 2, error=error,
+                                   truncate=True, uppercase=True),
+                        clean_float(
+                            detail['quantity'], 15, 2, 100.0, error=error),
+
+                        # Footer:
+                        clean_date(data[order_file]['header']['date']),
+                        '',  # header note
+                        '',  # line note
+                        '',  # CIG,
+                        clean_text(
+                            data[order_file]['header'][
+                                'destination_description'],
+                            40, error=error, truncate=True),
+                        '',   # Header type,
+                        # todo add here the price!!!
+                        # clean_float(
+                        #     detail['price'], 15, 2, 1.0, error=error),
+                        ))
+            else:
+                print('Wrong syntax in this reference: %s' % line[:3])
+
         f_in.close()
 
         if error:
