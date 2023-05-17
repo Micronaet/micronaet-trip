@@ -30,7 +30,7 @@ deadline_max = '20220519'  # <=
 pdb.set_trace()
 log_f = open('./log_move.csv', 'w')
 
-log_f.write('Cambio|Filename|File date|Numero|Scadenza\n')
+log_f.write('Cambio|Filename|File date|Numero|Scadenza|Cancellare\n')
 for root, folders, files in os.walk(path):
     for filename in sorted(files):
         if not filename.endswith(extension):
@@ -52,13 +52,16 @@ for root, folders, files in os.walk(path):
             break
 
         if deadline > deadline_max:
-            continue  # Keep
+            deadlined = ''
+        else:
+            deadlined = 'X'
 
-        log_f.write('%s|%s|%s|%s|%s\n' % (
+        log_f.write('%s|%s|%s|%s|%s|%s\n' % (
             change,
             filename,
             create_date,
             number,
             deadline,
+            deadlined,
         ))
     break
