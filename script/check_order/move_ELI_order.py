@@ -28,7 +28,7 @@ path = '/home/openerp/etl/edi/elior/in'
 extension = 'ASC'
 deadline_max = '20220519'  # <=
 pdb.set_trace()
-log_f = open('./log.csv', 'w')
+log_f = open('./log_move.csv', 'w')
 
 log_f.write('Cambio|Filename|File date|Numero|Scadenza\n')
 for root, folders, files in os.walk(path):
