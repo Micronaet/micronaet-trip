@@ -26,8 +26,8 @@ from datetime import datetime, timedelta
 import ConfigParser
 import pdb
 
-path = './elior'
-extension = 'txt'
+path = '/home/openerp/etl/edi/elior/in'
+extension = 'ASC'
 
 for root, folders, files in os.path.walk(path):
     for filename in files:
@@ -44,3 +44,4 @@ for root, folders, files in os.path.walk(path):
             create_date,
             number,
         ))
+    break
