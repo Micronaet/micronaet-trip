@@ -340,12 +340,12 @@ for root, dirs, files in os.walk(in_path):
             elif line.startswith('NAD'):  # Header line 4:
                 data[order_file]['header'].update({
                     'destination_code': 'SER%s' % line[3:20].strip(),
-                    'destination_decription': line[23:69].strip(),
+                    'destination_description': line[23:69].strip(),
                     })
 
             elif line.startswith('DTM'):  # Header line 5:
                 data[order_file]['header'].update({
-                    'date': line[3:11].strip(),  # YYYYMMDD format
+                    'deadline': line[3:11].strip(),  # YYYYMMDD format
                     })
 
             elif line.startswith('FTX'):  # Header line 6:
@@ -355,7 +355,7 @@ for root, dirs, files in os.walk(in_path):
                 # Detail lines:
                 detail = {
                     'type': '',  # line[:2].strip(),
-                    'sequence': line[3:5].strip(),
+                    'sequence': line[3:9].strip(),
                     'code': line[82:117].strip(),
                     'name': line[152:187].strip(),
                     'uom': line[205:208].strip(),
@@ -377,7 +377,7 @@ for root, dirs, files in os.walk(in_path):
                     '%-3s|%-10s|%-10s|%-10s|%-8s|'
                     '%-13s|%4s|%-16s|%-60s|%-2s|%15s|'
                     '%-16s|%-60s|%-2s|%15s|'
-                    '%-8s|%-40s|%-40s|%-15s|%-40s|%-2s\r\n' % (
+                    '%-8s|%-40s|%-40s|%-15s|%-40s|%-2s|%-15s\r\n' % (
                         # Header:
                         clean_text(company, 3, error=error, truncate=True),
 
@@ -413,7 +413,7 @@ for root, dirs, files in os.walk(in_path):
                         clean_text(detail['uom'], 2, error=error,
                                    truncate=True, uppercase=True),
                         clean_float(
-                            detail['quantity'], 15, 2, 100.0, error=error),
+                            detail['quantity'], 15, 2, 1000.0, error=error),
 
                         # Footer:
                         clean_date(data[order_file]['header']['date']),
@@ -425,9 +425,8 @@ for root, dirs, files in os.walk(in_path):
                                 'destination_description'],
                             40, error=error, truncate=True),
                         '',   # Header type,
-                        # todo add here the price!!!
-                        # clean_float(
-                        #     detail['price'], 15, 2, 1.0, error=error),
+                        clean_float(
+                            detail['price'], 15, 2, 1000.0, error=error),
                         ))
             else:
                 print('Wrong syntax in this reference: %s' % line[:3])
