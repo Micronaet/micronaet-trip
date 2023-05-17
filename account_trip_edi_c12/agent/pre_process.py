@@ -299,7 +299,8 @@ for root, dirs, files in os.walk(in_path):
                     'header': {
                         # todo clean list (will be updated every header line!)
                         'type': '',  # used?
-                        'order': '%s-%s' % (order_year, order_number),
+                        'order': order_number,
+                        # '%s-%s' % (order_year, order_number),
                         'date': line[150:159].strip(),  # YYYYMMDD format
 
                         # -----------------------------------------------------
