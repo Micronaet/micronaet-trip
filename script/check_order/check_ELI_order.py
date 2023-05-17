@@ -34,7 +34,7 @@ for root, folders, files in os.walk(path):
             continue
         fullname = os.path.join(root, filename)
 
-        create_date = create_date = datetime.fromtimestamp(
+        create_date = datetime.fromtimestamp(
             os.path.getctime(fullname)
             ).strftime('%Y%m%d_%H%M%S')
         number = ''
