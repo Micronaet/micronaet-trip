@@ -32,6 +32,9 @@ echo * EDI ORDER OPERATIONS                                   *
 echo **********************************************************
 cd %base%
 
+echo Import SER:
+"%python%python.exe" prepare_s.py SER
+
 echo Import DUS:
 "%python%python.exe" prepare_s.py DUS
 
