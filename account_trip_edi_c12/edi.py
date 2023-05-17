@@ -20,6 +20,7 @@
 ###############################################################################
 
 import os
+import pdb
 import sys
 import logging
 from openerp.osv import fields, osv, expression, orm
@@ -68,6 +69,7 @@ class edi_company_c12(orm.Model):
             File is: 31218_20221006_906.txt
                      Date Time Filename
         """
+        pdb.set_trace()
         # todo better is manage data in file instead change name!!
         file_part = file_in.split('_')
         date_block = file_part[3]
