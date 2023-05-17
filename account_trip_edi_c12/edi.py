@@ -69,8 +69,9 @@ class edi_company_c12(orm.Model):
                      Date Time Filename
         """
         # todo better is manage data in file instead change name!!
-        date_block = file_in.split('_')[2]
-        hour_block = file_in.split('_')[3]
+        file_part = file_in.split('_')
+        date_block = file_part[3]
+        hour_block = file_part[4]
         return "%s/%s/%s %s:%s:%s" % (
             date_block[:4],
             date_block[4:6],
