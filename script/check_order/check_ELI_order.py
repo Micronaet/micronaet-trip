@@ -37,7 +37,7 @@ for root, folders, files in os.walk(path):
 
         create_date = datetime.fromtimestamp(
             os.path.getctime(fullname)
-            ).strftime('%d/%m/%Y %H:%M:%S')
+            ).strftime('%Y/%m/%d %H:%M:%S')
         number = ''
         if filename.startswith('ELICHG'):
             change = 'X'
