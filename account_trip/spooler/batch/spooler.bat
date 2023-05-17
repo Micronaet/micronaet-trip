@@ -32,6 +32,9 @@ echo * EDI ORDER OPERATIONS                                   *
 echo **********************************************************
 cd %base%
 
+echo Import DUS:
+"%python%python.exe" prepare_s.py DUS
+
 echo Import ELI:
 "%python%python.exe" prepare_s.py ELI
 
@@ -50,18 +53,28 @@ echo Import SIR:
 echo Import MSC:
 "%python%python.exe" prepare_s.py MSC
 
-echo Import FAB:
-"%python%python.exe" prepare_s.py FAB
-
 echo Import HOS:
 "%python%python.exe" prepare_s.py HOS
+
+echo Import FAB:
+"%python%python.exe" prepare_s.py FAB
 
 echo Import MRK:
 "%python%python.exe" prepare_s.py MRK
 
 echo **********************************************************
+echo * OPERAZIONI VIAGGI                                      *
+echo **********************************************************
+echo Dettaglio documenti per piattaforma (stampa Excel):
+%mexal%prog\mxdesk.exe -command=mxrs.exe -agfd -t0 -x2 win32g -p297479A160@sprix3 -kedi:edi
+
+
+echo **********************************************************
 echo * OPERAZIONI CELLA                                       *
 echo **********************************************************
+rem Cella importa ordini in Mexal (prima di riesportarli)
+rem %mexal%prog\mxdesk.exe -command=mxrs.exe -agfd -t0 -x2 win32g -p297479TABLET@sprix10 -kedi:edi
+
 echo Cella esportazione odini:
 %mexal%prog\mxdesk.exe -command=mxrs.exe -agfd -t0 -x2 win32g -p297479TABLET@sprix4 -kedi:edi
 
@@ -70,6 +83,7 @@ echo Cella esportazione lotti e prodotti:
 
 echo Carica tutti i dati nella Cella:
 call S:\script\cron\load_freeze\update_freeze_data.cmd
+rem call S:\script\cron\load_freeze\update_freeze_product.cmd
 
 echo **********************************************************
 echo * PIATTAFORMA:                                           *
