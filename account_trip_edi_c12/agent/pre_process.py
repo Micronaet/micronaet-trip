@@ -225,7 +225,6 @@ if out_check:
 log_on_file(
     'Start import order mode: %s' % company, mode='INFO', file_list=[
         f_in_schedule, f_out_schedule])
-pdb.set_trace()
 for root, dirs, files in os.walk(in_path):
     log_on_file(
         'Read root folder: %s [%s]' % (root, company),
@@ -442,6 +441,7 @@ for root, dirs, files in os.walk(in_path):
         # ---------------------------------------------------------------------
         # Save file out:
         # ---------------------------------------------------------------------
+        pdb.set_trace()
         for order_name in data:
             check_history_file = os.path.join(out_history, order_name)
             if os.path.exists(check_history_file):
