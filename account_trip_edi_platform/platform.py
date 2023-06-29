@@ -607,7 +607,6 @@ class EdiCompany(orm.Model):
         # todo save file and send confirm of import
         endpoint_confirm_id = company.endpoint_dropship_ok_id.id
         payload = [
-            '''
             {
             "NUMERO_ORDINE":"190325943_000",
             "STATO": "OK",
@@ -616,11 +615,12 @@ class EdiCompany(orm.Model):
             "NUMERO_ORDINE":"190325945_000",
             "STATO": "KO",
             "DESCRIZIONE_STATO": "L’ORDINE CONTIENE ARTICOLI NON VALIDI",
-            }'''
+            }
             ]
 
         # parameter = context.get('endpoint_params', {})
         ctx['payload'] = payload
+        pdb.set_trace()
         result = connection_pool.call_endpoint(
             cr, uid, [endpoint_confirm_id], context=ctx)
         return True
