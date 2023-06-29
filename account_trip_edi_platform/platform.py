@@ -952,6 +952,15 @@ class EdiCompany(orm.Model):
             help='Forza la data di arrivo per leggere gli ordini, formato: '
                  'AAAAMMGG'),
 
+        'force_dropship_from_date': fields.char(
+            'Forza dalla data dropship', size=19,
+            help='Forza la data di partenza per leggere gli ordini dropship,'
+                 ' formato: AAAAMMGG'),
+        'force_dropship_to_date': fields.char(
+            'Forza alla data dropship', size=19,
+            help='Forza la data di arrivo per leggere gli ordini dropship,'
+                 ' formato: AAAAMMGG'),
+
         'edi_supplier_out_path': fields.char(
             'Cartella ordini produttore', size=50,
             help='Cartella dove vengono depositati gli ordini produttore da '
