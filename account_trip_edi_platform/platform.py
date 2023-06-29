@@ -505,7 +505,6 @@ class EdiCompany(orm.Model):
         """ Import supplier order from platform
             Period always yesterday to today (launched every day)
         """
-        pdb.set_trace()
         if context is None:
             context = {}
         order_pool = self.pool.get('edi.dropship.order')
