@@ -741,15 +741,15 @@ class EdiCompany(orm.Model):
         ctx = context.copy()
 
         loop = [
-            ('product.xlsx', company.endpoint_product_id),
-            ('producer_product.xlsx', company.endpoint_producer_product_id),
-            ('destination.xlsx', company.endpoint_destination_id),
-        ]
+            company.endpoint_product_id,
+            company.endpoint_producer_product_id,
+            company.endpoint_destination_id,
+            ]
 
         path = os.path.expanduser(company.edi_excel_data_in_path)
-        for file, endpoint in loop:
-            filename = os.path.join(path, file)
-            _logger.info('Esporting file: %s' % filename)
+        for endpoint in loop:
+            filename = os.path.join(path, '%s.xlsx' % endpoint.endpoint)
+            _logger.info('Exporting file: %s' % filename)
 
             result = connection_pool.call_endpoint(
                 cr, uid, [endpoint.id], context=ctx)
