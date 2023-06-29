@@ -499,6 +499,191 @@ class EdiCompany(orm.Model):
 
         return send_esit or True
 
+    # todo write import OC order procedura for Dropshipping:
+    def import_all_dropship_order(self, cr, uid, ids, context=None):
+        """ Import DDT from account
+        """
+        order_pool = self.pool.get('edi.supplier.order')
+        ddt_line_pool = self.pool.get('edi.supplier.order.ddt.line')
+        line_pool = self.pool.get('edi.supplier.order.line')
+
+        company = self.browse(cr, uid, ids, context=context)[0]
+        company_id = company.id
+        separator = company.separator or '|'
+        ddt_path = os.path.expanduser(company.edi_supplier_in_path)
+        history_path = os.path.join(ddt_path, 'history')
+        unused_path = os.path.join(ddt_path, 'unused')
+        # log_path = os.path.join(ddt_path, 'log')  # todo log events!
+        _logger.info('Start check DDT files: %s' % ddt_path)
+        send_order_ids = []  # Order to be sent afters
+        move_file_list = []  # File operation
+
+        for root, folders, files in os.walk(ddt_path):
+            for filename in files:
+                ddt_filename = os.path.join(root, filename)
+                if not filename.endswith('.csv'):
+                    _logger.warning('Jumped file (unused): %s' % filename)
+                    shutil.move(
+                        ddt_filename,
+                        os.path.join(unused_path, filename)
+                    )
+                    continue
+
+                # Pre read all lines (multi write)
+                start = True
+                new_path = history_path  # Was moved here after all
+                ddt_f = open(ddt_filename, 'r')
+                ddt_lines = []  # If no ODOO file
+                for line in ddt_f.read().split('\n'):
+                    if start and not line.startswith('ODOO'):
+                        _logger.error(
+                            'Order not start with ODOO, jumped')
+                        new_path = unused_path
+                        break  # Nothing else was ridden
+                    if start:
+                        start = False
+
+                    line = line.strip().replace('\r', '')
+                    if line.startswith('ODOO'):
+                        ddt_lines = []
+                    ddt_lines.append(line)
+
+                # todo Check if is a DDT for Portal
+                fixed = {  # Fixed data
+                    1: '',  # ID ODOO
+                    2: '',  # Site code
+                    3: '',  # DDT Date
+                    4: '',  # DDT Received
+                    5: '',  # DDT Number
+                    6: '',  # Company Order name
+                }
+
+                row = 0
+                order_id = False
+                order_ddt_yet_loaded = []
+                duplicated = False
+                for line in ddt_lines:
+                    row += 1
+                    if row in fixed:
+                        fixed[row] = line
+                        if row == 1:
+                            order_id = int(line[4:])
+
+                            # Check if it is a platform file still present:
+                            order_ids = order_pool.search(cr, uid, [
+                                ('company_id', '=', company_id),
+                                ('id', '=', order_id),
+                                # ('name', '=', line),
+                            ])
+
+                            if not order_ids:
+                                # todo remove file when imported?
+                                _logger.error(
+                                    'Order %s not in platform, '
+                                    'File %s jumped' % (line, filename),
+                                    )
+                                break
+
+                            order = order_pool.browse(
+                                cr, uid, order_ids, context=context)[0]
+                            for l in order.ddt_line_ids:
+                                ddt = l.name  # todo date?
+                                if ddt not in order_ddt_yet_loaded:
+                                    order_ddt_yet_loaded.append(ddt)
+                        continue
+
+                    # Check if DDT is yet present:
+                    ddt_number = fixed[5]
+                    if ddt_number in order_ddt_yet_loaded:
+                        _logger.error(
+                            'DDT yet present for this order (jumped)')
+                        duplicated = True
+                        break
+
+                    # Detail lines:
+                    line = line.split(separator)
+                    if len(line) != 8:
+                        _logger.error('Line not in correct format')
+                        continue
+                    sequence = line[0].strip()
+                    code = line[1].strip()
+                    company_code = line[2].strip()  # todo remove?
+                    product_uom = line[3].strip().upper()
+                    deadline_lot = self.iso_date_format(line[4].strip())
+                    lot = line[5].strip()
+                    product_qty = line[6].strip()
+                    # 7 not present
+
+                    # Order to be sent after:
+                    if order_id not in send_order_ids:
+                        send_order_ids.append(order_id)
+
+                    # Link to line:
+                    line_ids = line_pool.search(cr, uid, [
+                        ('order_id', '=', order_id),
+                        ('code', '=', code),
+                        # ('sequence', '=', sequence),
+                    ])
+                    if line_ids:  # Never override (for multi delivery)
+                        line_id = line_ids[0]
+                    else:
+                        # todo not correct way to manage link to OF lines
+                        line_id = False  # todo consider raise error!
+                        _logger.warning(
+                            'Cannot link to generator line [%s]!' %
+                            sequence)
+                        # break  # Not imported
+
+                    ddt_data = {
+                        'sequence': sequence,
+                        'name': ddt_number,
+                        'date': self.iso_date_format(fixed[3]),
+                        'date_received': self.iso_date_format(fixed[4]),
+                        'code': code,
+                        # todo company_code?
+                        'uom_product': product_uom,
+                        'product_qty': product_qty,
+                        'lot': lot,
+                        'deadline_lot': deadline_lot,
+
+                        'order_id': order_id,
+                        'line_id': line_id,  # todo manage correct link!!!!!!!!
+                    }
+                    ddt_line_pool.create(cr, uid, ddt_data, context=context)
+
+                if duplicated:
+                    # Go in unused folder with datetime before filename:
+                    dt = \
+                        str(datetime.now()).replace(
+                            ':', '-').replace('.', '-').replace(' ', '-')
+                    move_file_list.append((
+                        ddt_filename,
+                        os.path.join(
+                            unused_path,
+                            '%s_%s' % (dt, filename),
+                        ),
+                    ))
+                else:
+                    # Goes in history if works, in unused if problem:
+                    move_file_list.append((
+                        ddt_filename,
+                        os.path.join(new_path, filename),
+                    ))
+            break  # Only first folder!
+
+        # Send operation:
+        send_esit = order_pool.send_ddt_order(
+            cr, uid, send_order_ids, context=context)
+        # todo manage error if partially sent
+
+        # File operation (at the end):
+        for from_file, to_file in move_file_list:
+            _logger.warning('History used file: %s >> %s' % (
+                from_file, to_file))
+            shutil.move(from_file, to_file)
+
+        return send_esit or True
+
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
         """ Import supplier order from platform
             Period always yesterday to today (launched every day)
@@ -751,6 +936,8 @@ class EdiCompany(orm.Model):
         'endpoint_id': fields.many2one('http.request.endpoint', 'Endpoint OF'),
         'endpoint_ddt_id': fields.many2one(
             'http.request.endpoint', 'Endpoint DDT in (BF)'),
+        'endpoint_dropship_id': fields.many2one(
+            'http.request.endpoint', 'Endpoint OC Dropship'),
         'endpoint_ddt_out_id': fields.many2one(
             'http.request.endpoint', 'Endpoint DDT out (BC)'),
         'endpoint_stock_id': fields.many2one(
@@ -773,6 +960,10 @@ class EdiCompany(orm.Model):
             'Cartella DDT produttore', size=50,
             help='Cartella dove vengono prelevati i DDT del produttore da '
                  'inviare al portale per copia conforme.'),
+        'edi_dropship_order_in_path': fields.char(
+            'Cartella OC Dropship', size=50,
+            help='Cartella dove vengono prelevati gli ordini dsopship '
+                 'se vengono utilizzati.'),
         'edi_customer_out_path': fields.char(
             'Cartella DDT cliente', size=50,
             help='Cartella dove vengono prelevati i DDT del cliente da '

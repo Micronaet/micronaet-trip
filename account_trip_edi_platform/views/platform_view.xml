@@ -144,6 +144,12 @@
                                 <button name="import_all_customer_order" type="object" string="Importa e invia tutti i DDT in uscita" icon="gtk-refresh" colspan="2" />
                                 -->
 
+                                <separator string="Importazione DDT produttore in ERP e invio al portale:" colspan="6" />
+                                <field name="edi_dropship_order_in_path" />
+                                <field name="endpoint_dropship_id"  domain="[('connection_id', '=', connection_id)]"/>
+                                <button name="import_all_dropship_order" type="object" string="Importa e invia tutti gli ordini dropship" icon="gtk-refresh" colspan="2" />
+
+
                                 <separator string="Stato magazzino:" colspan="6" />
                                 <field name="platform_status_fullname" />
                                 <field name="platform_status_separator" />
