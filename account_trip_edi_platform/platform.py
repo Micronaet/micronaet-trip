@@ -746,7 +746,6 @@ class EdiCompany(orm.Model):
             ('destination.xlsx', company.endpoint_destination_id),
         ]
 
-        pdb.set_trace()
         path = os.path.expanduser(company.edi_excel_data_in_path)
         for file, endpoint in loop:
             filename = os.path.join(path, file)
@@ -776,11 +775,16 @@ class EdiCompany(orm.Model):
             # -----------------------------------------------------------------
             # Header:
             # -----------------------------------------------------------------
-            col_width = [10]
-            header = ['name']
-            excel_pool.column_width(ws_name, col_width)
+            if not result:
+                _logger.error('No result, jump')
+                continue
+
+            first_line = result[0]
+            # col_width = [10]
+            # excel_pool.column_width(ws_name, col_width)
 
             row = 0
+            header = first_line.keys()
             excel_pool.write_xls_line(
                 ws_name, row, header, default_format=excel_format['header'])
 
@@ -788,8 +792,8 @@ class EdiCompany(orm.Model):
                 row += 1
                 # name = line['NUMERO_ORDINE']
                 excel_pool.write_xls_line(
-                    ws_name, row, [
-                        ], default_format=excel_format['white']['text'])
+                    ws_name, row, line.values(),
+                    default_format=excel_format['white']['text'])
             excel_pool.save_file_as(filename)
             del excel_pool
         return True
