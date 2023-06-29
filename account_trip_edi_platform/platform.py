@@ -608,7 +608,7 @@ class EdiCompany(orm.Model):
         endpoint_confirm_id = company.endpoint_dropship_ok_id.id
         payload = [
             {
-            "NUMERO_ORDINE":"190325943_000",
+            "NUMERO_ORDINE": "190325943_000",
             "STATO": "OK",
             "DESCRIZIONE_STATO ": "Ordine ricevuto",
             }, {
