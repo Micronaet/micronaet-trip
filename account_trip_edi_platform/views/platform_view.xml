@@ -158,18 +158,17 @@
                                 <field name="platform_status_separator" />
                                 <button name="import_product_platform_account_status" type="object" string="Importa stato da contabilità" icon="gtk-refresh" colspan="2" />
 
-                                <separator string="Anagrafiche:" colspan="6" />
-                                <field name="endpoint_product_id"  domain="[('connection_id', '=', connection_id)]"/>
-                                <field name="endpoint_producer_product_id"  domain="[('connection_id', '=', connection_id)]"/>
-                                <field name="endpoint_destination_id"  domain="[('connection_id', '=', connection_id)]"/>
-
-                                <field name="edi_excel_data_in_path" colspan="4"/>
-                                <button name="import_simple_data_in_excel" type="object" string="Importa tutte le anagrafiche" icon="gtk-refresh" colspan="2" />
-
                                 <field name="endpoint_stock_id" domain="[('connection_id', '=', connection_id)]"/>
                                 <field name="last_stock_update" />
                                 <button name="update_stock_status" type="object" string="Invia stato di magazzino" icon="gtk-refresh" colspan="2" />
-                                <newline/>
+
+                                <separator string="Anagrafiche:" colspan="6" />
+                                <field name="edi_excel_data_in_path" colspan="4"/>
+                                <button name="import_simple_data_in_excel" type="object" string="Importa tutte le anagrafiche" icon="gtk-refresh" colspan="2" />
+
+                                <field name="endpoint_product_id"  domain="[('connection_id', '=', connection_id)]"/>
+                                <field name="endpoint_producer_product_id"  domain="[('connection_id', '=', connection_id)]"/>
+                                <field name="endpoint_destination_id"  domain="[('connection_id', '=', connection_id)]"/>
                             </group>
                         </page>
                         <page name="platform_product_page" string="Prodotti" >
