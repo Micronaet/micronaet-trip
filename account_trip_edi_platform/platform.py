@@ -24,6 +24,7 @@ import pdb
 import sys
 import shutil
 import logging
+import json
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime, timedelta
 from openerp.tools.translate import _
@@ -504,10 +505,10 @@ class EdiCompany(orm.Model):
         """ Import supplier order from platform
             Period always yesterday to today (launched every day)
         """
+        pdb.set_trace()
         if context is None:
             context = {}
-        order_pool = self.pool.get('edi.supplier.order')  # todo
-        line_pool = self.pool.get('edi.supplier.order.line')  # todo
+        order_pool = self.pool.get('edi.dropship.order')
         product_pool = self.pool.get('edi.platform.product')
 
         company = self.browse(cr, uid, ids, context=context)[0]
@@ -519,12 +520,12 @@ class EdiCompany(orm.Model):
             '-', '')
         to_date = str(datetime.now())[:10].replace('-', '')
         ctx['endpoint_params'] = {
-            'from_date': company.force_from_date or from_date,
-            'to_date': company.force_to_date or to_date,
+            'from_date': company.force_dropship_from_date or from_date,
+            'to_date': company.force_dropship_from_date or to_date,
         }
 
         connection_id = company.connection_id.id
-        endpoint_id = company.endpoint_id.id
+        endpoint_id = company.endpoint_dropship_id.id
         company_id = company.id
 
         order_lines = connection_pool.call_endpoint(
@@ -539,57 +540,60 @@ class EdiCompany(orm.Model):
                     ('name', '=', name),
                 ], context=context)
                 if order_ids:
-                    order_db[name] = [order_ids[0], []]
+                    _logger.warning('Order yet present, no more update: %s' % (
+                        name,
+                        ))
+                    continue
                 else:
                     data = {
                         'company_id': company_id,
                         'connection_id': connection_id,
                         'endpoint_id': endpoint_id,
                         'name': name,
-                        'supplier_code': line['CODICE_PRODUTTORE'],
-                        'dealer': line['CONCESSIONARIO'],
-                        'dealer_code': line['CODICE_CONCESSIONARIO'],
-                        'supplier': line['RAGIONE_SOCIALE_PRODUTTORE'],
+                        # 'supplier_code': line['CODICE_PRODUTTORE'],
                         'order_date': line['DATA_ORDINE'],
                         'deadline_date': line['DATA_CONSEGNA_RICHIESTA'],
-                        'note': line['NOTA_ORDINE'],
+                        # 'note': line['NOTA_ORDINE'],
                     }
                     order_id = order_pool.create(
                         cr, uid, data, context=context)
                     order_db[name] = [order_id, []]
-            order_id, lines = order_db[name]
-            customer_code = line['CODICE_ARTICOLO']
-            customer_name = line['DESCRIZIONE_ARTICOLO']
-            customer_uom = line['UM_ARTICOLO']
-            lines.append({
-                'order_id': order_id,
 
-                'sequence': line['RIGA_ORDINE'],
-                'name': customer_name,
-                'supplier_name': line['DESCRIZIONE_ARTICOLO_PRODUTTORE'],
-                'supplier_code': line['CODICE_ARTICOLO_PRODUTTORE'],
-                'code': customer_code,
-                'uom_supplier': line['UM_ARTICOLO_PRODUTTORE'],
-                'uom_product': customer_uom,
-                'product_qty': line['QTA_ORDINE'],
-                # todo change in float
-                'order_product_qty': line['QTA_ORDINE_PRODUTTORE'],
-                'note': line['NOTA_RIGA'],
-            })
+            order_id, lines = order_db[name]
+            lines.append(line)  # Keep al line in detail
+            # customer_code = line['CODICE_ARTICOLO']
+            # customer_name = line['DESCRIZIONE_ARTICOLO']
+            # customer_uom = line['UM_ARTICOLO']
+            # lines.append({
+            #    'order_id': order_id,
+
+            #    'sequence': line['RIGA_ORDINE'],
+            #    'name': customer_name,
+            #    'supplier_name': line['DESCRIZIONE_ARTICOLO_PRODUTTORE'],
+            #    'supplier_code': line['CODICE_ARTICOLO_PRODUTTORE'],
+            #    'code': customer_code,
+            #    'uom_supplier': line['UM_ARTICOLO_PRODUTTORE'],
+            #    'uom_product': customer_uom,
+            #    'product_qty': line['QTA_ORDINE'],
+            #    # todo change in float
+            #    'order_product_qty': line['QTA_ORDINE_PRODUTTORE'],
+            #    'note': line['NOTA_RIGA'],
+            # })
+
             # Update also platform product
-            platform_product_ids = product_pool.search(cr, uid, [
-                ('company_id', '=', company_id),
-                ('customer_code', '=', customer_code),
-            ], context=context)
-            if not platform_product_ids:
-                _logger.info('Create plaform product: %s' % customer_code)
-                product_pool.create(cr, uid, {
-                    'company_id': company_id,
-                    # 'product_id': False,
-                    'customer_code': customer_code,
-                    'customer_name': customer_name,
-                    'customer_uom': customer_uom,
-                }, context=context)
+            # platform_product_ids = product_pool.search(cr, uid, [
+            #    ('company_id', '=', company_id),
+            #    ('customer_code', '=', customer_code),
+            # ], context=context)
+            # if not platform_product_ids:
+            #    _logger.info('Create plaform product: %s' % customer_code)
+            #    product_pool.create(cr, uid, {
+            #        'company_id': company_id,
+            #        # 'product_id': False,
+            #        'customer_code': customer_code,
+            #        'customer_name': customer_name,
+            #        'customer_uom': customer_uom,
+            #    }, context=context)
 
         # Update lines:
         for name in order_db:
@@ -597,12 +601,12 @@ class EdiCompany(orm.Model):
 
             # Update order line deleting previous:
             order_pool.write(cr, uid, [order_id], {
-                'line_ids': [(6, 0, [])],
+                'json': json.dumps(lines),
             }, context=context)
 
-            for line in lines:
-                line_pool.create(cr, uid, line, context=context)
+        # todo save file and send confirm of import
         return True
+
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
         """ Import supplier order from platform
             Period always yesterday to today (launched every day)
