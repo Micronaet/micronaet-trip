@@ -755,10 +755,10 @@ class EdiCompany(orm.Model):
             result = connection_pool.call_endpoint(
                 cr, uid, [endpoint.id], context=ctx)
 
-            excel_pool = self.pool.get('excel.writer')  # New file
             # -----------------------------------------------------------------
             # Create XLSX file:
             # -----------------------------------------------------------------
+            excel_pool = self.pool.get('excel.writer')  # New file
             ws_name = 'Dati portale'
             excel_pool.create_worksheet(ws_name)
 
