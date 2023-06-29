@@ -984,6 +984,10 @@ class EdiCompany(orm.Model):
             'Cartella DDT produttore', size=50,
             help='Cartella dove vengono prelevati i DDT del produttore da '
                  'inviare al portale per copia conforme.'),
+        'edi_excel_data_in_path': fields.char(
+            'Cartella anagrafiche semplici', size=50,
+            help='Cartella dove vengono depositati i file anagraficih'
+                 'prelevati dal portale.'),
         'edi_dropship_order_in_path': fields.char(
             'Cartella OC Dropship', size=50,
             help='Cartella dove vengono prelevati gli ordini dsopship '
