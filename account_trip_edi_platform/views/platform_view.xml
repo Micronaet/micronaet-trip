@@ -334,6 +334,79 @@
             <field name="domain">[]</field>
         </record>
 
+        <!--edi.dropship.order-->
+        <record model="ir.ui.view" id="view_edi_dropship_order_search">
+            <field name="name">edi.dropship.order.search</field>
+            <field name="model">edi.dropship.order</field>
+            <field name="arch" type="xml">
+                <search string="Cerca ordini dropship">
+                    <field name="name" />
+                    <field name="company_id" filter_domain="[('company_id','=',self)]"/>
+                    <field name="connection_id" filter_domain="[('connection_id','=',self)]"/>
+                    <!--<filter name="sent_yes" string="Spedito" domain="[('sent', '=', True)]"/>
+                    <filter name="sent_no" string="Non spedito" domain="[('sent', '=', False)]"/>-->
+                    <group expand="0" string="Group By...">
+                        <filter name="group_date" string="Data ordine" context="{'group_by': 'order_date'}"/>
+                        <filter name="group_deadlie" string="Scadenza" context="{'group_by': 'deadline_date'}"/>
+                        <filter name="group_connector" string="Connettore" context="{'group_by': 'connection_id'}"/>
+                        <filter name="group_company" string="Azienda" context="{'group_by': 'company_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_edi_dropship_order_tree">
+            <field name="name">edi.dropship.order.tree</field>
+            <field name="model">edi.dropship.order</field>
+            <field name="arch" type="xml">
+                <tree string="Ordine">
+                    <field name="company_id"/>
+                    <field name="connection_id"/>
+                    <field name="endpoint_id" />
+                    <field name="name" />
+                    <field name="order_date" />
+                    <field name="deadline_date" />
+                    <!--<button name="extract_dropship_order" string="Estrai ordine" type="object" icon="gtk-save" attrs="{'invisible': [('extracted', '=', True)]}"/>
+                    <button name="send_ddt_order" string="Invia DDT" type="object" icon="gtk-save" attrs="{'invisible': [('sent', '=', True)]}"/>-->
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_edi_dropship_order_form">
+            <field name="name">edi.dropship.order.form</field>
+            <field name="model">edi.dropship.order</field>
+            <field name="arch" type="xml">
+                <form string="Ordine" version="7.0">
+                    <header>
+                        <!--<button name="extract_dropship_order" string="Estrai ordine" type="object" icon="gtk-save" attrs="{'invisible': [('extracted', '=', True)]}"/>
+                        <button name="send_ddt_order" string="Invia DDT" type="object" icon="gtk-connect" attrs="{'invisible': [('sent', '=', True)]}"/>-->
+                    </header>
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <field name="company_id"/>
+                            <field name="name" />
+
+                            <field name="connection_id"/>
+                            <field name="endpoint_id" />
+
+                            <field name="order_date" />
+                            <field name="deadline_date" />
+
+                            <separator string="Json" colspan="4"/>
+                            <field name="json" colspan="4" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_edi_dropship_order">
+            <field name="name">Ordini dropship</field>
+            <field name="res_model">edi.dropship.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_edi_dropship_order_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
         <!--wordpress.sale.order.ddt.line-->
         <record model="ir.ui.view" id="view_edi_supplier_order_ddt_line_tree">
             <field name="name">edi.supplier.order.ddt.line.form</field>
@@ -426,6 +499,19 @@
             name="Piattaforma"
             sequence="10"
             /><!--parent="base.menu_custom"-->
+
+            <menuitem
+                parent="menu_edi_supplier_order_root"
+                id="menu_edi_dropship_order_management"
+                name="Ordini Dropship"
+                sequence="5"
+                />
+                <menuitem
+                    parent="menu_edi_dropship_order_management"
+                    id="menu_action_edi_dropship_order"
+                    action="action_edi_dropship_order"
+                    sequence="10"
+                    />
 
             <menuitem
                 parent="menu_edi_supplier_order_root"

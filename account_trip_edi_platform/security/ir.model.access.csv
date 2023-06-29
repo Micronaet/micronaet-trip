@@ -1,5 +1,6 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
 access_edi_supplier_order_user,edi.supplier.order,model_edi_supplier_order,base.group_user,1,1,1,1
+access_edi_dropship_order_user,edi.dropship.order,model_edi_dropship_order,base.group_user,1,1,1,1
 access_edi_supplier_order_line_user,edi.supplier.order.line,model_edi_supplier_order_line,base.group_user,1,1,1,1
 access_edi_supplier_order_ddt_line_user,edi.supplier.order.ddt.line,model_edi_supplier_order_ddt_line,base.group_user,1,1,1,1
 access_edi_customer_ddt_line_user,edi.customer.ddt.line,model_edi_customer_ddt_line,base.group_user,1,1,1,1

@@ -501,189 +501,108 @@ class EdiCompany(orm.Model):
 
     # todo write import OC order procedura for Dropshipping:
     def import_all_dropship_order(self, cr, uid, ids, context=None):
-        """ Import DDT from account
+        """ Import supplier order from platform
+            Period always yesterday to today (launched every day)
         """
-        order_pool = self.pool.get('edi.supplier.order')
-        ddt_line_pool = self.pool.get('edi.supplier.order.ddt.line')
-        line_pool = self.pool.get('edi.supplier.order.line')
+        if context is None:
+            context = {}
+        order_pool = self.pool.get('edi.supplier.order')  # todo
+        line_pool = self.pool.get('edi.supplier.order.line')  # todo
+        product_pool = self.pool.get('edi.platform.product')
 
         company = self.browse(cr, uid, ids, context=context)[0]
+        # Call end point for get order:
+        # 20210101 data format
+        connection_pool = self.pool.get('http.request.endpoint')
+        ctx = context.copy()
+        from_date = str(datetime.now() - timedelta(days=1))[:10].replace(
+            '-', '')
+        to_date = str(datetime.now())[:10].replace('-', '')
+        ctx['endpoint_params'] = {
+            'from_date': company.force_from_date or from_date,
+            'to_date': company.force_to_date or to_date,
+        }
+
+        connection_id = company.connection_id.id
+        endpoint_id = company.endpoint_id.id
         company_id = company.id
-        separator = company.separator or '|'
-        ddt_path = os.path.expanduser(company.edi_supplier_in_path)
-        history_path = os.path.join(ddt_path, 'history')
-        unused_path = os.path.join(ddt_path, 'unused')
-        # log_path = os.path.join(ddt_path, 'log')  # todo log events!
-        _logger.info('Start check DDT files: %s' % ddt_path)
-        send_order_ids = []  # Order to be sent afters
-        move_file_list = []  # File operation
 
-        for root, folders, files in os.walk(ddt_path):
-            for filename in files:
-                ddt_filename = os.path.join(root, filename)
-                if not filename.endswith('.csv'):
-                    _logger.warning('Jumped file (unused): %s' % filename)
-                    shutil.move(
-                        ddt_filename,
-                        os.path.join(unused_path, filename)
-                    )
-                    continue
+        order_lines = connection_pool.call_endpoint(
+            cr, uid, [endpoint_id], context=ctx)
 
-                # Pre read all lines (multi write)
-                start = True
-                new_path = history_path  # Was moved here after all
-                ddt_f = open(ddt_filename, 'r')
-                ddt_lines = []  # If no ODOO file
-                for line in ddt_f.read().split('\n'):
-                    if start and not line.startswith('ODOO'):
-                        _logger.error(
-                            'Order not start with ODOO, jumped')
-                        new_path = unused_path
-                        break  # Nothing else was ridden
-                    if start:
-                        start = False
-
-                    line = line.strip().replace('\r', '')
-                    if line.startswith('ODOO'):
-                        ddt_lines = []
-                    ddt_lines.append(line)
-
-                # todo Check if is a DDT for Portal
-                fixed = {  # Fixed data
-                    1: '',  # ID ODOO
-                    2: '',  # Site code
-                    3: '',  # DDT Date
-                    4: '',  # DDT Received
-                    5: '',  # DDT Number
-                    6: '',  # Company Order name
-                }
-
-                row = 0
-                order_id = False
-                order_ddt_yet_loaded = []
-                duplicated = False
-                for line in ddt_lines:
-                    row += 1
-                    if row in fixed:
-                        fixed[row] = line
-                        if row == 1:
-                            order_id = int(line[4:])
-
-                            # Check if it is a platform file still present:
-                            order_ids = order_pool.search(cr, uid, [
-                                ('company_id', '=', company_id),
-                                ('id', '=', order_id),
-                                # ('name', '=', line),
-                            ])
-
-                            if not order_ids:
-                                # todo remove file when imported?
-                                _logger.error(
-                                    'Order %s not in platform, '
-                                    'File %s jumped' % (line, filename),
-                                    )
-                                break
-
-                            order = order_pool.browse(
-                                cr, uid, order_ids, context=context)[0]
-                            for l in order.ddt_line_ids:
-                                ddt = l.name  # todo date?
-                                if ddt not in order_ddt_yet_loaded:
-                                    order_ddt_yet_loaded.append(ddt)
-                        continue
-
-                    # Check if DDT is yet present:
-                    ddt_number = fixed[5]
-                    if ddt_number in order_ddt_yet_loaded:
-                        _logger.error(
-                            'DDT yet present for this order (jumped)')
-                        duplicated = True
-                        break
-
-                    # Detail lines:
-                    line = line.split(separator)
-                    if len(line) != 8:
-                        _logger.error('Line not in correct format')
-                        continue
-                    sequence = line[0].strip()
-                    code = line[1].strip()
-                    company_code = line[2].strip()  # todo remove?
-                    product_uom = line[3].strip().upper()
-                    deadline_lot = self.iso_date_format(line[4].strip())
-                    lot = line[5].strip()
-                    product_qty = line[6].strip()
-                    # 7 not present
-
-                    # Order to be sent after:
-                    if order_id not in send_order_ids:
-                        send_order_ids.append(order_id)
-
-                    # Link to line:
-                    line_ids = line_pool.search(cr, uid, [
-                        ('order_id', '=', order_id),
-                        ('code', '=', code),
-                        # ('sequence', '=', sequence),
-                    ])
-                    if line_ids:  # Never override (for multi delivery)
-                        line_id = line_ids[0]
-                    else:
-                        # todo not correct way to manage link to OF lines
-                        line_id = False  # todo consider raise error!
-                        _logger.warning(
-                            'Cannot link to generator line [%s]!' %
-                            sequence)
-                        # break  # Not imported
-
-                    ddt_data = {
-                        'sequence': sequence,
-                        'name': ddt_number,
-                        'date': self.iso_date_format(fixed[3]),
-                        'date_received': self.iso_date_format(fixed[4]),
-                        'code': code,
-                        # todo company_code?
-                        'uom_product': product_uom,
-                        'product_qty': product_qty,
-                        'lot': lot,
-                        'deadline_lot': deadline_lot,
-
-                        'order_id': order_id,
-                        'line_id': line_id,  # todo manage correct link!!!!!!!!
-                    }
-                    ddt_line_pool.create(cr, uid, ddt_data, context=context)
-
-                if duplicated:
-                    # Go in unused folder with datetime before filename:
-                    dt = \
-                        str(datetime.now()).replace(
-                            ':', '-').replace('.', '-').replace(' ', '-')
-                    move_file_list.append((
-                        ddt_filename,
-                        os.path.join(
-                            unused_path,
-                            '%s_%s' % (dt, filename),
-                        ),
-                    ))
+        order_db = {}
+        for line in order_lines:
+            name = line['NUMERO_ORDINE']
+            if name not in order_db:
+                order_ids = order_pool.search(cr, uid, [
+                    ('company_id', '=', company_id),
+                    ('name', '=', name),
+                ], context=context)
+                if order_ids:
+                    order_db[name] = [order_ids[0], []]
                 else:
-                    # Goes in history if works, in unused if problem:
-                    move_file_list.append((
-                        ddt_filename,
-                        os.path.join(new_path, filename),
-                    ))
-            break  # Only first folder!
+                    data = {
+                        'company_id': company_id,
+                        'connection_id': connection_id,
+                        'endpoint_id': endpoint_id,
+                        'name': name,
+                        'supplier_code': line['CODICE_PRODUTTORE'],
+                        'dealer': line['CONCESSIONARIO'],
+                        'dealer_code': line['CODICE_CONCESSIONARIO'],
+                        'supplier': line['RAGIONE_SOCIALE_PRODUTTORE'],
+                        'order_date': line['DATA_ORDINE'],
+                        'deadline_date': line['DATA_CONSEGNA_RICHIESTA'],
+                        'note': line['NOTA_ORDINE'],
+                    }
+                    order_id = order_pool.create(
+                        cr, uid, data, context=context)
+                    order_db[name] = [order_id, []]
+            order_id, lines = order_db[name]
+            customer_code = line['CODICE_ARTICOLO']
+            customer_name = line['DESCRIZIONE_ARTICOLO']
+            customer_uom = line['UM_ARTICOLO']
+            lines.append({
+                'order_id': order_id,
 
-        # Send operation:
-        send_esit = order_pool.send_ddt_order(
-            cr, uid, send_order_ids, context=context)
-        # todo manage error if partially sent
+                'sequence': line['RIGA_ORDINE'],
+                'name': customer_name,
+                'supplier_name': line['DESCRIZIONE_ARTICOLO_PRODUTTORE'],
+                'supplier_code': line['CODICE_ARTICOLO_PRODUTTORE'],
+                'code': customer_code,
+                'uom_supplier': line['UM_ARTICOLO_PRODUTTORE'],
+                'uom_product': customer_uom,
+                'product_qty': line['QTA_ORDINE'],
+                # todo change in float
+                'order_product_qty': line['QTA_ORDINE_PRODUTTORE'],
+                'note': line['NOTA_RIGA'],
+            })
+            # Update also platform product
+            platform_product_ids = product_pool.search(cr, uid, [
+                ('company_id', '=', company_id),
+                ('customer_code', '=', customer_code),
+            ], context=context)
+            if not platform_product_ids:
+                _logger.info('Create plaform product: %s' % customer_code)
+                product_pool.create(cr, uid, {
+                    'company_id': company_id,
+                    # 'product_id': False,
+                    'customer_code': customer_code,
+                    'customer_name': customer_name,
+                    'customer_uom': customer_uom,
+                }, context=context)
 
-        # File operation (at the end):
-        for from_file, to_file in move_file_list:
-            _logger.warning('History used file: %s >> %s' % (
-                from_file, to_file))
-            shutil.move(from_file, to_file)
+        # Update lines:
+        for name in order_db:
+            order_id, lines = order_db[name]
 
-        return send_esit or True
+            # Update order line deleting previous:
+            order_pool.write(cr, uid, [order_id], {
+                'line_ids': [(6, 0, [])],
+            }, context=context)
 
+            for line in lines:
+                line_pool.create(cr, uid, line, context=context)
+        return True
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
         """ Import supplier order from platform
             Period always yesterday to today (launched every day)
@@ -991,6 +910,30 @@ class EdiCompany(orm.Model):
     _defaults = {
         'separator': lambda *x: '|',
         'platform_status_separator': lambda *x: ';',
+    }
+
+
+class EdiDropshipOrder(orm.Model):
+    """ Model name: Edi Dropship Order
+    """
+
+    _name = 'edi.dropship.order'
+    _description = 'Dropship order'
+    _rec_name = 'name'
+    _order = 'order_date desc'
+
+    _columns = {
+        'company_id': fields.many2one(
+            'edi.company', 'Company'),
+        'connection_id': fields.many2one(
+            'http.request.connection', 'Connessione'),
+        'endpoint_id': fields.many2one(
+            'http.request.endpoint', 'Endpoint'),
+
+        'name': fields.char('Numero ordine', size=30, required=True),
+        'order_date': fields.char('Data ordine', size=20),
+        'deadline_date': fields.char('Data consegna richiesta', size=20),
+        'json': fields.text('JSON'),  # todo or pickle
     }
 
 
