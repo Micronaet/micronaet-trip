@@ -595,6 +595,7 @@ class EdiCompany(orm.Model):
             #    }, context=context)
 
         # Update lines:
+        payload = []
         for name in order_db:
             order_id, lines = order_db[name]
 
@@ -603,30 +604,32 @@ class EdiCompany(orm.Model):
                 'json': json.dumps(lines),
             }, context=context)
 
+            # todo manage in better mode (manage error)
+            payload.append({
+                'NUMERO_ORDINE': name,
+                'STATO': 'OK',
+                'DESCRIZIONE_STATO': 'Ordine ricevuto',
+
+            })
+            # When error:
+            # 'STATO': 'KO',
+            # 'DESCRIZIONE_STATO': 'L\’ORDINE CONTIENE ARTICOLI NON VALIDI',
+
         # todo save file and send confirm of import
         endpoint_confirm_id = company.endpoint_dropship_ok_id.id
         if not endpoint_confirm_id:
             _logger.error('Not present confirm endpoint for dropship')
             return False
 
-        payload = [
-            {
-            "NUMERO_ORDINE": "190325943_000",
-            "STATO": "OK",
-            "DESCRIZIONE_STATO ": "Ordine ricevuto",
-            }, {
-            "NUMERO_ORDINE":"190325945_000",
-            "STATO": "KO",
-            "DESCRIZIONE_STATO": "L’ORDINE CONTIENE ARTICOLI NON VALIDI",
-            }
-            ]
-
         # parameter = context.get('endpoint_params', {})
         del ctx['endpoint_params']  # Removed not used
         ctx['payload'] = payload
-        pdb.set_trace()
         result = connection_pool.call_endpoint(
             cr, uid, [endpoint_confirm_id], context=ctx)
+        if result != 'OK':
+            _logger.error('Error confirming order reference')
+            return False
+        _logger.info('Order confirmed to portal!')
         return True
 
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
