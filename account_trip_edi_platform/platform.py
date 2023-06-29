@@ -606,6 +606,10 @@ class EdiCompany(orm.Model):
 
         # todo save file and send confirm of import
         endpoint_confirm_id = company.endpoint_dropship_ok_id.id
+        if not endpoint_confirm_id:
+            _logger.error('Not present confirm endpoint for dropship')
+            return False
+
         payload = [
             {
             "NUMERO_ORDINE": "190325943_000",
@@ -619,6 +623,7 @@ class EdiCompany(orm.Model):
             ]
 
         # parameter = context.get('endpoint_params', {})
+        del ctx['parameter']  # Removed not used
         ctx['payload'] = payload
         pdb.set_trace()
         result = connection_pool.call_endpoint(
