@@ -790,7 +790,8 @@ class EdiCompany(orm.Model):
                 excel_pool.write_xls_line(
                     ws_name, row, [
                         ], default_format=excel_format['white']['text'])
-            return excel_pool.save_file_as(self, filename)
+            excel_pool.save_file_as(filename)
+            del excel_pool
         return True
 
     def import_product_platform_account_status(
