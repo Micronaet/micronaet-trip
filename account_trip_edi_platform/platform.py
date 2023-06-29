@@ -605,6 +605,24 @@ class EdiCompany(orm.Model):
             }, context=context)
 
         # todo save file and send confirm of import
+        endpoint_confirm_id = company.endpoint_dropship_ok_id.id
+        payload = [
+            '''
+            {
+            "NUMERO_ORDINE":"190325943_000",
+            "STATO": "OK",
+            "DESCRIZIONE_STATO ": "Ordine ricevuto",
+            }, {
+            "NUMERO_ORDINE":"190325945_000",
+            "STATO": "KO",
+            "DESCRIZIONE_STATO": "L’ORDINE CONTIENE ARTICOLI NON VALIDI",
+            }'''
+            ]
+
+        # parameter = context.get('endpoint_params', {})
+        ctx['payload'] = payload
+        result = connection_pool.call_endpoint(
+            cr, uid, [endpoint_confirm_id], context=ctx)
         return True
 
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
@@ -709,6 +727,70 @@ class EdiCompany(orm.Model):
 
             for line in lines:
                 line_pool.create(cr, uid, line, context=context)
+        return True
+
+    def import_simple_data_in_excel(self, cr, uid, ids, context=None):
+        """ Import supplier order from platform
+            Period always yesterday to today (launched every day)
+        """
+        if context is None:
+            context = {}
+
+        company = self.browse(cr, uid, ids, context=context)[0]
+        connection_pool = self.pool.get('http.request.endpoint')
+        ctx = context.copy()
+
+        loop = [
+            ('product.xlsx', company.endpoint_product_id),
+            ('producer_product.xlsx', company.endpoint_producer_product_id),
+            ('destination.xlsx', company.endpoint_destination_id),
+        ]
+
+        pdb.set_trace()
+        path = os.path.expanduser(company.edi_excel_data_in_path)
+        for file, endpoint in loop:
+            filename = os.path.join(path, file)
+            _logger.info('Esporting file: %s' % filename)
+
+            result = connection_pool.call_endpoint(
+                cr, uid, [endpoint.id], context=ctx)
+
+            excel_pool = self.pool.get('excel.writer')  # New file
+            # -----------------------------------------------------------------
+            # Create XLSX file:
+            # -----------------------------------------------------------------
+            ws_name = 'Dati portale'
+            excel_pool.create_worksheet(ws_name)
+
+            excel_pool.set_format()
+            excel_format = {
+                'title': excel_pool.get_format('title'),
+                'header': excel_pool.get_format('header'),
+
+                'white': {
+                    'text': excel_pool.get_format('text'),
+                    'number': excel_pool.get_format('number'),
+                },
+            }
+
+            # -----------------------------------------------------------------
+            # Header:
+            # -----------------------------------------------------------------
+            col_width = [10]
+            header = ['name']
+            excel_pool.column_width(ws_name, col_width)
+
+            row = 0
+            excel_pool.write_xls_line(
+                ws_name, row, header, default_format=excel_format['header'])
+
+            for line in result:
+                row += 1
+                # name = line['NUMERO_ORDINE']
+                excel_pool.write_xls_line(
+                    ws_name, row, [
+                        ], default_format=excel_format['white']['text'])
+            return excel_pool.save_file_as(self, filename)
         return True
 
     def import_product_platform_account_status(
@@ -861,6 +943,16 @@ class EdiCompany(orm.Model):
             'http.request.endpoint', 'Endpoint DDT in (BF)'),
         'endpoint_dropship_id': fields.many2one(
             'http.request.endpoint', 'Endpoint OC Dropship'),
+        'endpoint_dropship_ok_id': fields.many2one(
+            'http.request.endpoint', 'Endpoint OC Dropship OK',
+            help='Messaggio di conferma per ricezione corretta'
+                 'ordine Dropship scaricato'),
+        'endpoint_product_id': fields.many2one(
+            'http.request.endpoint', 'Endpoint Prodotti Excel'),
+        'endpoint_producer_product_id': fields.many2one(
+            'http.request.endpoint', 'Endpoint Prodotti fornitore Excel'),
+        'endpoint_destination_id': fields.many2one(
+            'http.request.endpoint', 'Endpoint Destinazioni Excel'),
         'endpoint_ddt_out_id': fields.many2one(
             'http.request.endpoint', 'Endpoint DDT out (BC)'),
         'endpoint_stock_id': fields.many2one(

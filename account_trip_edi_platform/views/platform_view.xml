@@ -151,14 +151,22 @@
                                 <field name="force_dropship_from_date" />
                                 <field name="force_dropship_to_date" />
                                 <newline/>
-
+                                <field name="endpoint_dropship_ok_id" domain="[('connection_id', '=', connection_id)]"/>
 
                                 <separator string="Stato magazzino:" colspan="6" />
                                 <field name="platform_status_fullname" />
                                 <field name="platform_status_separator" />
                                 <button name="import_product_platform_account_status" type="object" string="Importa stato da contabilità" icon="gtk-refresh" colspan="2" />
 
-                                <field name="endpoint_stock_id" />
+                                <separator string="Anagrafiche:" colspan="6" />
+                                <field name="endpoint_product_id"  domain="[('connection_id', '=', connection_id)]"/>
+                                <field name="endpoint_producer_product_id"  domain="[('connection_id', '=', connection_id)]"/>
+                                <field name="endpoint_destination_id"  domain="[('connection_id', '=', connection_id)]"/>
+
+                                <field name="edi_excel_data_in_path" colspan="4"/>
+                                <button name="import_simple_data_in_excel" type="object" string="Importa tutte le anagrafiche" icon="gtk-refresh" colspan="2" />
+
+                                <field name="endpoint_stock_id" domain="[('connection_id', '=', connection_id)]"/>
                                 <field name="last_stock_update" />
                                 <button name="update_stock_status" type="object" string="Invia stato di magazzino" icon="gtk-refresh" colspan="2" />
                                 <newline/>
