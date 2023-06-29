@@ -622,7 +622,7 @@ class EdiCompany(orm.Model):
             ]
 
         # parameter = context.get('endpoint_params', {})
-        del ctx['parameter']  # Removed not used
+        del ctx['endpoint_params']  # Removed not used
         ctx['payload'] = payload
         pdb.set_trace()
         result = connection_pool.call_endpoint(
