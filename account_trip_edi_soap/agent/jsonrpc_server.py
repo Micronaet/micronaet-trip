@@ -152,6 +152,7 @@ def get_soap_service():
         read from
         parameters
     """
+    print('Connecting %s' % wsdl_root)
     client = Client(wsdl_root)
     return client.create_service(namespace, wsdl_root)
 
@@ -166,7 +167,6 @@ def get_datetime_tz():
 def get_token():
     """ Call server and get token
     """
-    pdb.set_trace()
     timestamp = get_datetime_tz().strftime('%d%m%Y%H%M%S')
     number = str(uuid.uuid4())[-6:]
     message = message_mask % (username, timestamp, number)
