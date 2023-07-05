@@ -166,6 +166,7 @@ def get_datetime_tz():
 def get_token():
     """ Call server and get token
     """
+    pdb.set_trace()
     timestamp = get_datetime_tz().strftime('%d%m%Y%H%M%S')
     number = str(uuid.uuid4())[-6:]
     message = message_mask % (username, timestamp, number)
