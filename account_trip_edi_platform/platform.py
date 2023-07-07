@@ -632,6 +632,8 @@ class EdiCompany(orm.Model):
             _logger.error('Error confirming order reference')
             return False
         _logger.info('Order confirmed to portal!')
+
+        # todo export dump file as order
         return True
 
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
