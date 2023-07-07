@@ -25,6 +25,7 @@ import sys
 import shutil
 import logging
 import json
+import pickle
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime, timedelta
 from openerp.tools.translate import _
@@ -531,6 +532,7 @@ class EdiCompany(orm.Model):
             cr, uid, [endpoint_id], context=ctx)
 
         order_db = {}
+        pdb.set_trace()
         for line in order_lines:
             name = line['NUMERO_ORDINE']
             if name not in order_db:
@@ -601,7 +603,7 @@ class EdiCompany(orm.Model):
 
             # Update order line deleting previous:
             order_pool.write(cr, uid, [order_id], {
-                'json': json.dumps(lines),
+                'dump': pickle.dumps(lines),
             }, context=context)
 
             # todo manage in better mode (manage error)
@@ -1044,7 +1046,7 @@ class EdiDropshipOrder(orm.Model):
         'name': fields.char('Numero ordine', size=30, required=True),
         'order_date': fields.char('Data ordine', size=20),
         'deadline_date': fields.char('Data consegna richiesta', size=20),
-        'json': fields.text('JSON'),  # todo or pickle
+        'dump': fields.text('Dump'),  # todo or pickle
     }
 
 
