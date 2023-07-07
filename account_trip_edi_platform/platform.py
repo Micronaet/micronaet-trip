@@ -528,12 +528,12 @@ class EdiCompany(orm.Model):
         endpoint_id = company.endpoint_dropship_id.id
         company_id = company.id
 
+        pdb.set_trace()
         order_lines = connection_pool.call_endpoint(
             cr, uid, [endpoint_id], context=ctx)
 
         order_db = {}
         _logger.info('Found dropship lines: %s' % len(order_lines))
-        pdb.set_trace()
         for line in order_lines:
             name = line['NUMERO_ORDINE']
             if name not in order_db:
