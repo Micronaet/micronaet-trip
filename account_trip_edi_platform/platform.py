@@ -529,7 +529,6 @@ class EdiCompany(orm.Model):
         endpoint_id = company.endpoint_dropship_id.id
         company_id = company.id
 
-        pdb.set_trace()
         order_lines = connection_pool.call_endpoint(
             cr, uid, [endpoint_id], context=ctx)
 
@@ -635,7 +634,9 @@ class EdiCompany(orm.Model):
             return False
         _logger.info('Order confirmed to portal!')
 
-        # todo export dump file as order
+        # Export dump file as order (all not exported!)
+        order_pool.export_order_to_folder(
+            cr, uid, False, context=context)
         return True
 
     def import_platform_supplier_order(self, cr, uid, ids, context=None):
@@ -1039,6 +1040,44 @@ class EdiDropshipOrder(orm.Model):
     _rec_name = 'name'
     _order = 'order_date desc'
 
+    def export_order_to_folder(self, cr, uid, ids, context=None):
+        """ Export order from dump pickle field
+            Saved in load folder
+        """
+        if ids:
+            order_ids = ids
+        else:
+            order_ids = self.browse(cr, uid, [
+                ('exported', '=', False),
+            ], context=context)
+
+        for order in self.browse(cr, uid, order_ids, context=context):
+            name = order.name
+            try:
+                order_line = pickle.load(order.dump)
+
+                # Header:
+                connection = order.connection_id
+                order_date = order.order_date
+                deadline_date = order.deadline_date
+
+                # End operation, mark as exported:
+                self.write(cr, uid, {
+                    'exported': True,
+                }, context=context)
+            except:
+                _logger.error('Error exporting: %s' % name)
+        return True
+
+    def _get_order_detail_html(
+            self, cr, uid, ids, args=None, fields=None, context=None):
+        """ Return number of active order if is a destination
+        """
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            res[order.id] = False  # todo write in HTML
+        return res
+
     _columns = {
         'company_id': fields.many2one(
             'edi.company', 'Company'),
@@ -1050,7 +1089,14 @@ class EdiDropshipOrder(orm.Model):
         'name': fields.char('Numero ordine', size=30, required=True),
         'order_date': fields.char('Data ordine', size=20),
         'deadline_date': fields.char('Data consegna richiesta', size=20),
+        'exported': fields.boolean(
+            'Esportato',
+            help='L\'ordine è stato inviato nella cartella di transito'),
+
         'dump': fields.text('Dump'),  # todo or pickle
+        'order_html': fields.function(
+            _get_order_detail_html, method=True,
+            type='text', string='Dettaglio'),
     }
 
 
