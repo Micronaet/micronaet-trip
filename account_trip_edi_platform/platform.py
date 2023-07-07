@@ -654,7 +654,6 @@ class EdiCompany(orm.Model):
             'from_date': company.force_from_date or from_date,
             'to_date': company.force_to_date or to_date,
         }
-        pdb.set_trace()
         connection_id = company.connection_id.id
         endpoint_id = company.endpoint_id.id
         company_id = company.id
@@ -1137,8 +1136,8 @@ class EdiSupplierOrder(orm.Model):
                 'sent_error': sent_error,
             }, context=context)
 
-            # C=Errore critico, E = Errore generico, A = Avviso, N = Nota)
-            return True
+        # C=Errore critico, E = Errore generico, A = Avviso, N = Nota)
+        return True
 
     def extract_supplier_order(self, cr, uid, ids, context=None):
         """ Extract order to file CSV
