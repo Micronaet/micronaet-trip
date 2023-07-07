@@ -518,7 +518,8 @@ class EdiCompany(orm.Model):
         ctx = context.copy()
         from_date = str(datetime.now() - timedelta(days=1))[:10].replace(
             '-', '')
-        to_date = str(datetime.now())[:10].replace('-', '')
+        to_date = str(datetime.now() + timedelta(days=20))[:10].replace(
+            '-', '')
         ctx['endpoint_params'] = {
             'from_date': company.force_dropship_from_date or from_date,
             'to_date': company.force_dropship_to_date or to_date,
