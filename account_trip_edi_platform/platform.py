@@ -521,7 +521,7 @@ class EdiCompany(orm.Model):
         to_date = str(datetime.now())[:10].replace('-', '')
         ctx['endpoint_params'] = {
             'from_date': company.force_dropship_from_date or from_date,
-            'to_date': company.force_dropship_from_date or to_date,
+            'to_date': company.force_dropship_to_date or to_date,
         }
 
         connection_id = company.connection_id.id
