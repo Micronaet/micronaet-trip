@@ -532,6 +532,7 @@ class EdiCompany(orm.Model):
             cr, uid, [endpoint_id], context=ctx)
 
         order_db = {}
+        _logger.info('Found dropship lines: %s' % len(order_lines))
         pdb.set_trace()
         for line in order_lines:
             name = line['NUMERO_ORDINE']
