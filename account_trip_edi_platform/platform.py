@@ -654,7 +654,7 @@ class EdiCompany(orm.Model):
             'from_date': company.force_from_date or from_date,
             'to_date': company.force_to_date or to_date,
         }
-
+        pdb.set_trace()
         connection_id = company.connection_id.id
         endpoint_id = company.endpoint_id.id
         company_id = company.id
