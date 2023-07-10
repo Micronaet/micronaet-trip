@@ -207,6 +207,12 @@ if out_check:
 log_on_file(
     'Start import order mode: %s' % company, mode='INFO', file_list=[
         f_in_schedule, f_out_schedule])
+
+line_mask = '%-3s|%-10s|%-10s|%-10s|%-8s|' \
+            '%-13s|%4s|%-16s|%-60s|%-2s|%15s|' \
+            '%-16s|%-60s|%-2s|%15s|' \
+            '%-8s|%-40s|%-40s|%-15s|%-40s|%-2s|%-11s\r\n'
+
 for root, dirs, files in os.walk(in_path):
     log_on_file(
         'Read root folder: %s [%s]' % (root, company),
@@ -233,7 +239,7 @@ for root, dirs, files in os.walk(in_path):
         # Read input file:
         # ---------------------------------------------------------------------
         error = []
-        data = {}  # Order splitted at the end of procedure
+        data = {}  # Order split at the end of procedure
 
         f_in = open(file_in, 'r')
         log_on_file(
@@ -275,6 +281,7 @@ for root, dirs, files in os.walk(in_path):
                     'file_out': os.path.join(
                         out_path, order_file),
 
+                    'description': '',
                     'header': {
                         # todo clean list (will be updated every header line!)
                         'type': '',  # used?
@@ -352,11 +359,16 @@ for root, dirs, files in os.walk(in_path):
                 alternative_code = \
                     data[order_file]['header']['destination_code']
 
+                # Append description for sale order (code and destination)
+                if not data[order_file]['description']:
+                    data[order_file]['description'] = '%s\n%s' % (
+                        'Centro di costo: %s' % alternative_code,
+                        data[order_file]['header'][
+                            'destination_description'],
+                    )
+
                 data[order_file]['line'].append(
-                    '%-3s|%-10s|%-10s|%-10s|%-8s|'
-                    '%-13s|%4s|%-16s|%-60s|%-2s|%15s|'
-                    '%-16s|%-60s|%-2s|%15s|'
-                    '%-8s|%-40s|%-40s|%-15s|%-40s|%-2s|%-11s\r\n' % (
+                    line_mask % (
                         # Header:
                         clean_text(company, 3, error=error, truncate=True),
 
@@ -440,6 +452,21 @@ for root, dirs, files in os.walk(in_path):
             # for line in sorted(data, key=lambda x: sort_line(x)):  todo sort?
             for line in data[order_name]['line']:
                 f_out.write(line)
+
+            # -----------------------------------------------------------------
+            # Append description:
+            # -----------------------------------------------------------------
+            for comment in data[order_name]['description'].split('\n'):
+                while comment:
+                    description = comment[:60]  # left 60 char
+                    comment = comment[60:]
+                    f_out.write(line_mask % (
+                        clean_text(company, 3, error=error, truncate=True),
+                        '', '', '', '',
+                        '', '', '', description, '', '',
+                        '', '', '', '',
+                        '', '', '', '', '', '', '',
+                    ))
             f_out.close()
 
             if error:

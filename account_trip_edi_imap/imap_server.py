@@ -110,7 +110,7 @@ class ImapServer(orm.Model):
                         # imap.store(msg_uid, '+FLAGS', '(\Deleted)')
                     break  # Check only first attachment
 
-            else:  # Only if not break for attachment fount:
+            else:  # Only if not break for attachment found:
                 _logger.error('No attachment in %s format %s' % (
                     content_type,
                     attach_fullname,
