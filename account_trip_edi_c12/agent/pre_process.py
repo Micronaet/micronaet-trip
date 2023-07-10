@@ -450,23 +450,25 @@ for root, dirs, files in os.walk(in_path):
             f_out = open(file_out, 'w')  # if present override!
 
             # for line in sorted(data, key=lambda x: sort_line(x)):  todo sort?
+            last_line = ''
             for line in data[order_name]['line']:
                 f_out.write(line)
+                last_line = line
 
             # -----------------------------------------------------------------
             # Append description:
             # -----------------------------------------------------------------
-            for comment in data[order_name]['description'].split('\n'):
-                while comment:
-                    description = comment[:60]  # left 60 char
-                    comment = comment[60:]
-                    f_out.write(line_mask % (
-                        clean_text(company, 3, error=error, truncate=True),
-                        '', '', '', '',
-                        '', '', '', description, '', '',
-                        '', '', '', '',
-                        '', '', '', '', '', '', '',
-                    ))
+            if last_line:
+                description_mask = '%s                |%%-60s%s' % (
+                    last_line[:65],
+                    # 16 code | 60 desciption
+                    last_line[142:],
+                    )
+                for comment in data[order_name]['description'].split('\n'):
+                    while comment:
+                        description = comment[:60]  # left 60 char
+                        comment = comment[60:]
+                        f_out.write(description_mask % description)
             f_out.close()
 
             if error:
