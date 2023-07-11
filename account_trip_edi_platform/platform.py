@@ -1058,7 +1058,7 @@ class EdiDropshipOrder(orm.Model):
 
             name = order.name
             try:
-                order_line = pickle.load(order.dump)
+                order_line = pickle.loads(order.dump)
 
                 # Header:
                 connection = order.connection_id
