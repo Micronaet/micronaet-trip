@@ -375,7 +375,7 @@
                     <field name="order_date" />
                     <field name="deadline_date" />
                     <field name="exported" invisible="1"/>
-                    <button name="export_order_to_folder" string="Estrai ordine" type="object" icon="gtk-save" attrs="{'invisible': [('extracted', '=', True)]}"/>
+                    <button name="export_order_to_folder" string="Estrai ordine" type="object" icon="gtk-save" attrs="{'invisible': [('exported', '=', True)]}"/>
                     <!--
                     <button name="send_ddt_order" string="Invia DDT" type="object" icon="gtk-save" attrs="{'invisible': [('sent', '=', True)]}"/>-->
                 </tree>
@@ -387,7 +387,7 @@
             <field name="arch" type="xml">
                 <form string="Ordine" version="7.0">
                     <header>
-                        <button name="export_order_to_folder" string="Estrai ordine" type="object" icon="gtk-save" attrs="{'invisible': [('extracted', '=', True)]}"/>
+                        <button name="export_order_to_folder" string="Estrai ordine" type="object" icon="gtk-save" attrs="{'invisible': [('exported', '=', True)]}"/>
                         <!--<button name="extract_dropship_order" string="Estrai ordine" type="object" icon="gtk-save" attrs="{'invisible': [('extracted', '=', True)]}"/>
                         <button name="send_ddt_order" string="Invia DDT" type="object" icon="gtk-connect" attrs="{'invisible': [('sent', '=', True)]}"/>-->
                     </header>
