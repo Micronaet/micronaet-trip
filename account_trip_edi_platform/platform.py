@@ -1065,6 +1065,12 @@ class EdiDropshipOrder(orm.Model):
                 order_date = order.order_date
                 deadline_date = order.deadline_date
 
+                filename = ''
+                # todo check filename before export?
+                for line in order_line:
+                    for k in line:
+                        _logger.info('%s >> %s' % (k, line[k]))
+
                 # End operation, mark as exported:
                 self.write(cr, uid, [order.id], {
                     'exported': True,
