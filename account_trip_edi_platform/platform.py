@@ -1066,7 +1066,7 @@ class EdiDropshipOrder(orm.Model):
                 deadline_date = order.deadline_date
 
                 # End operation, mark as exported:
-                self.write(cr, uid, {
+                self.write(cr, uid, [order.id], {
                     'exported': True,
                 }, context=context)
             except:
