@@ -5,4 +5,5 @@ access_edi_supplier_order_line_user,edi.supplier.order.line,model_edi_supplier_o
 access_edi_supplier_order_ddt_line_user,edi.supplier.order.ddt.line,model_edi_supplier_order_ddt_line,base.group_user,1,1,1,1
 access_edi_customer_ddt_line_user,edi.customer.ddt.line,model_edi_customer_ddt_line,base.group_user,1,1,1,1
 access_edi_platform_log_user,edi.platform.log,model_edi_platform_log,base.group_user,1,1,1,1
-access_edi_platform_product_lot,access_edi_platform_product_lot,model_edi_platform_product_lot,base.group_user,1,1,1,1
+access_edi_platform_product,edi.platform.product,model_edi_platform_product,base.group_user,1,1,1,1
+access_edi_platform_product_lot,edi.platform.product.lot,model_edi_platform_product_lot,base.group_user,1,1,1,1
