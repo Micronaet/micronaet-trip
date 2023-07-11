@@ -350,11 +350,14 @@
                     <field name="name" />
                     <field name="company_id" filter_domain="[('company_id','=',self)]"/>
                     <field name="connection_id" filter_domain="[('connection_id','=',self)]"/>
-                    <!--<filter name="sent_yes" string="Spedito" domain="[('sent', '=', True)]"/>
+
+                    <filter name="exported_on" string="Esportato" domain="[('exported', '=', True)]"/>
+                    <filter name="exported_off" string="Non esportato" domain="[('exported', '=', False)]"/>
+                    <!--
                     <filter name="sent_no" string="Non spedito" domain="[('sent', '=', False)]"/>-->
                     <group expand="0" string="Group By...">
                         <filter name="group_date" string="Data ordine" context="{'group_by': 'order_date'}"/>
-                        <filter name="group_deadlie" string="Scadenza" context="{'group_by': 'deadline_date'}"/>
+                        <filter name="group_deadline" string="Scadenza" context="{'group_by': 'deadline_date'}"/>
                         <filter name="group_connector" string="Connettore" context="{'group_by': 'connection_id'}"/>
                         <filter name="group_company" string="Azienda" context="{'group_by': 'company_id'}"/>
                     </group>
