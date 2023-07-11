@@ -377,7 +377,7 @@
 
     <!--MENUITEM-->
     <menuitem parent="account_trip.menu_trip_root" id="menu_trip_trip" name="EDI" sequence="20" groups="group_edi_manager,group_edi_operator"/>
-         <menuitem parent="menu_trip_trip" id="menu_trip_view" name="View" sequence="20" action="action_trip_edi_line_view" />
+         <menuitem parent="menu_trip_trip" id="menu_trip_view" name="Ordini EDI" sequence="20" action="action_trip_edi_line_view" />
              <menuitem parent="menu_trip_trip" id="menu_trip_trip_wizard" name="Refresh EDI order" sequence="10" action="ir_trip_edi_line_reload_server_action"/>
              <menuitem parent="menu_trip_trip" id="menu_trip_stock_progression_wizard" name="Progressivi magazzino" sequence="10" action="ir_trip_stock_status_server_action"/>
 
