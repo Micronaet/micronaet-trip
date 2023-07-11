@@ -461,7 +461,7 @@ for root, dirs, files in os.walk(in_path):
             if last_line:
                 description_mask = '%s                |%%-60s%s' % (
                     last_line[:65],
-                    # 16 code | 60 desciption
+                    # 16 code | 60 description
                     last_line[142:],
                     )
                 for comment in data[order_name]['description'].split('\n'):

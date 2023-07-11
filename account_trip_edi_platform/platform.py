@@ -1050,8 +1050,12 @@ class EdiDropshipOrder(orm.Model):
             order_ids = self.browse(cr, uid, [
                 ('exported', '=', False),
             ], context=context)
-
+        pdb.set_trace()
         for order in self.browse(cr, uid, order_ids, context=context):
+            if order.exported:
+                _logger.error('Order yet exported! [%s]' % order.name)
+                continue
+
             name = order.name
             try:
                 order_line = pickle.load(order.dump)
