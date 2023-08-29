@@ -654,8 +654,8 @@ class EdiCompany(orm.Model):
         # 20210101 data format
         connection_pool = self.pool.get('http.request.endpoint')
         ctx = context.copy()
-        from_date = str(datetime.now() - timedelta(days=1))[:10].replace(
-            '-', '')
+        from_date = str(
+            datetime.now() - timedelta(days=1))[:10].replace('-', '')
         to_date = str(datetime.now())[:10].replace('-', '')
         ctx['endpoint_params'] = {
             'from_date': company.force_from_date or from_date,
@@ -701,7 +701,6 @@ class EdiCompany(orm.Model):
             customer_uom = line['UM_ARTICOLO']
             lines.append({
                 'order_id': order_id,
-
                 'sequence': line['RIGA_ORDINE'],
                 'name': customer_name,
                 'supplier_name': line['DESCRIZIONE_ARTICOLO_PRODUTTORE'],
@@ -713,14 +712,16 @@ class EdiCompany(orm.Model):
                 # todo change in float
                 'order_product_qty': line['QTA_ORDINE_PRODUTTORE'],
                 'note': line['NOTA_RIGA'],
-            })
+                })
+
             # Update also platform product
             platform_product_ids = product_pool.search(cr, uid, [
                 ('company_id', '=', company_id),
                 ('customer_code', '=', customer_code),
             ], context=context)
+
             if not platform_product_ids:
-                _logger.info('Create plaform product: %s' % customer_code)
+                _logger.info('Create platform product: %s' % customer_code)
                 product_pool.create(cr, uid, {
                     'company_id': company_id,
                     # 'product_id': False,
@@ -998,6 +999,10 @@ class EdiCompany(orm.Model):
             'Cartella ordini produttore', size=50,
             help='Cartella dove vengono depositati gli ordini produttore da '
                  'importare nel gestionale'),
+        'edi_code_preformat': fields.char(
+            'Preformat codice OF', size=50,
+            help='Formula python che deve essere valutata con il codice '
+                 '"code" al suo interno, es.: "%10s" % code.'),
         'edi_supplier_in_path': fields.char(
             'Cartella DDT produttore', size=50,
             help='Cartella dove vengono prelevati i DDT del produttore da '
@@ -1155,7 +1160,7 @@ class EdiSupplierOrder(orm.Model):
                     'DATA_ENTRATA_MERCE': ddt_line.date,
                     # ddt_line.date_received,
                     'NUMERO_ORDINE': order.name,
-                })
+                    })
 
             ctx = context.copy()
             ctx['payload'] = payload
@@ -1223,6 +1228,7 @@ class EdiSupplierOrder(orm.Model):
 
             # Read parameter for export:
             company = order.company_id
+            edi_code_preformat = company.edi_code_preformat
             separator = company.separator or '|'
             out_path = os.path.expanduser(company.edi_supplier_out_path)
             out_filename = os.path.join(out_path, '%s.csv' % name)
@@ -1240,12 +1246,20 @@ class EdiSupplierOrder(orm.Model):
                 ]
             header_part = separator.join(header)
             for line in order.line_ids:
+                code = clean_ascii(line.code)
+                if edi_code_preformat:
+                    try:
+                        code = eval(edi_code_preformat)
+                    except:
+                        _logger.error(
+                            'Error evaluating code in formula: %s' %
+                            edi_code_preformat)
                 data = [
                     clean_ascii(line.sequence),
                     # clean_ascii(line.name),
                     # clean_ascii(line.supplier_name),
                     # clean_ascii(line.supplier_code),
-                    clean_ascii(line.code),  # AV000
+                    code,  # clean_ascii(line.code),  # AV000
                     # clean_ascii(line.uom_supplier),
                     # clean_ascii(line.uom_product),
                     clean_ascii(line.product_qty),  # 12345678901234 (10+4)

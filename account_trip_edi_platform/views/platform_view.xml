@@ -132,6 +132,8 @@
                                 <field name="edi_supplier_out_path" />
                                 <field name="separator" />
                                 <button name="export_all_supplier_order" type="object" string="Esporta tutti" icon="gtk-refresh" colspan="2" />
+                                <field name="edi_code_preformat" />
+                                <newline/>
 
                                 <separator string="Importazione DDT produttore in ERP e invio al portale:" colspan="6" />
                                 <field name="edi_supplier_in_path" />
