@@ -58,7 +58,7 @@ def write_log(log_f, message, mode='INFO', verbose=True):
 # todo change when Token / Secret is refresh
 message_mask = 'GET+/users/%s/account+%s+%s'
 username = bytes('GENERALFOOD')
-secret = bytes('5BC478474HD65798A4420F3FB19EF68E96ECFPO3')
+secret = bytes('B1CE9C52A3734B1D4A5A4A22A62DA')
 namespace = bytes('{it.niuma.mscsoapws.ws}MscWsPortSoap11')
 wsdl_root = bytes('https://layer7prod.msccruises.com/pep/wsdl')
 
