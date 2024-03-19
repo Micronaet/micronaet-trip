@@ -59,7 +59,6 @@ def write_log(log_f, message, mode='INFO', verbose=True):
 message_mask = 'GET+/users/%s/account+%s+%s'
 username = bytes('GENERALFOOD')
 secret = bytes('mMVhPeXjgu18FnMreNm3mtFpZDqhsrjy')
-# secret = bytes('B1CE9C52A3734B1D4A5A4A22A62DA')
 namespace = bytes('{it.niuma.mscsoapws.ws}MscWsPortSoap11')
 wsdl_root = bytes('https://layer7prod.msccruises.com/pep/wsdl')
 
