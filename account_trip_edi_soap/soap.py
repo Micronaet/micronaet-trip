@@ -1250,7 +1250,7 @@ class EdiSoapOrder(orm.Model):
                 'description': self._safe_get(
                     line, 'itemDescription'),  # 'CORN KERNEL WHOLE FRZ',
                 'item_price': self._safe_get(
-                    line, 'itemPrice'), # Decimal('0.93000'),
+                    line, 'itemPrice'),  # Decimal('0.93000'),
                 'uom': uom,
                 'ordered_qty': float(self._safe_get(
                     line, 'quantityOrdered', 0.0)),  # Decimal('230.00000'),
@@ -1277,8 +1277,9 @@ class EdiSoapOrder(orm.Model):
         if weight:
             self.write(cr, uid, [order_id], {
                 'total_weight': weight,
-                'total_pallet': pallet_extra + (weight / pallet_weight) + \
-                                1 if weight % pallet_weight > 0 else 0
+                'total_pallet':
+                    pallet_extra + (weight / pallet_weight) +
+                    1 if weight % pallet_weight > 0 else 0
                 }, context=context)
 
         if destination_id:
