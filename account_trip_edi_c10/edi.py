@@ -64,11 +64,11 @@ class edi_company_c10(orm.Model):
 
     def get_timestamp_from_file(self, file_in, path=None):
         """ Get timestamp value from file name
-            File is: ELIORD20141103091707.ASC
+            File is: HOSORD20141103091707.ASC
                      ------YYYYMMGGhhmmss----
             Millisecond are
-                00 for create order ELIORD
-                10 for delete order ELICHG
+                00 for create order HOSORD
+                10 for delete order HOSCHG
         """
         return '%s-%s-%s %s:%s:%s.%s' % (
             file_in[6:10],  # Year
@@ -77,7 +77,7 @@ class edi_company_c10(orm.Model):
             file_in[14:16],  # Hour
             file_in[16:18],  # Minute
             file_in[18:20],  # Second
-            '00' if file_in.startswith('ELIORD') else '10'  # Millisecond
+            '00' if file_in.startswith('HOSORD') else '10'  # Millisecond
             )
 
     def get_state_of_file(self, file_in, forced_list):
@@ -85,7 +85,7 @@ class edi_company_c10(orm.Model):
         """
         if file_in in forced_list:  # Forced (pickle file)
             return 'forced'
-        elif file_in.startswith('ELIORD') or file_in.startswith('ELIURG'):
+        elif file_in.startswith('HOSORD') or file_in.startswith('HOSURG'):
             return 'create'
         else:
             return 'delete'  # Update file
@@ -106,7 +106,7 @@ class edi_company_c10(orm.Model):
     def get_priority(self, cr, uid, file_in):
         """ Return priority value depend on file name
         """
-        if file_in.startswith('ELIURG'):
+        if file_in.startswith('HOSURG'):
             return 'high'
         return 'normal'
 
