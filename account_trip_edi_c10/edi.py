@@ -25,13 +25,13 @@ from openerp.osv import fields, osv, expression, orm
 _logger = logging.getLogger(__name__)
 
 
-class edi_company_c1(orm.Model):
-    """ Add model for parametrize function for Company 1
+class edi_company_c10(orm.Model):
+    """ Add model for parametrize function for Company 10
         Model has only function for a sort of abstract class
     """
 
-    _name = 'edi.company.c1'
-    _description = 'EDI Company 1'
+    _name = 'edi.company.c10'
+    _description = 'EDI Company 10'
 
     # -------------------------------------------------------------------------
     #                     Abstract function and property:
