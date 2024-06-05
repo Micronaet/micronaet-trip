@@ -19,133 +19,114 @@
 #
 ###############################################################################
 
-import os
-import sys
 import logging
 from openerp.osv import fields, osv, expression, orm
-from datetime import datetime, timedelta
-from openerp.tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
 
-class edi_company_c10(orm.Model):
-    """ Add model for parametrize function for Company 10
+class edi_company_c1(orm.Model):
+    """ Add model for parametrize function for Company 1
         Model has only function for a sort of abstract class
     """
 
-    _name = 'edi.company.c10'
-    _description = 'EDI Company 10'
+    _name = 'edi.company.c1'
+    _description = 'EDI Company 1'
 
     # -------------------------------------------------------------------------
     #                     Abstract function and property:
     # -------------------------------------------------------------------------
-    # todo align in correct new format for 10:
     trace = {
-        'number': (46, 59),
-        'date': (259, 267),  # Insert with parser function
-        'deadline': (37, 45),
-        'customer': (0, 0),  # Not present
-        'detail_code': (162, 178),
-        'detail_description': (179, 239),
-        'detail_um': (240, 242),
-        'detail_quantity': (243, 258),
-        'detail_price': (0, 0),  # Not present
-        'detail_total': (0, 0),  # Not present
+        'number': (19, 28),
+        'date': (29, 37),  # 8
+        'deadline': (45, 53),  # 8
+        'customer': (1545, 1645),  # 100
+        'detail_code': (2356, 2391),  # 35
+        'detail_description': (2531, 2631),  # 100
+        'detail_um': (2641, 2644),  # 3
+        'detail_quantity': (2631, 2641),  # 10
+        'detail_price': (2877, 2887),  # 10
+        'detail_total': (2907, 2917),  # 10
 
         # Destination blocks:
-        'destination_facility': (4, 14),
-        'destination_cost': (15, 25),
-        'destination_site': (26, 36),
-        'destination_description': (0, 0),  # Not present
+        'destination_facility': (871, 906),  # 35 facility
+        'destination_cost': (253, 283),  # 30 cost
+        'destination_site': (1189, 1224),  # 35 site
+        'destination_description': (1259, 1359)  # 100 description
         }
 
-    # todo align in correct new format for 10:
-    def get_timestamp_from_file(self, file_in, path_in=None):
-        """ Get timestamp value from file name
-            File is: 20151231_120000_NAME.ASC
-                     Date Time Filename
-        """
-        # TODO better is manage data in file instead change name!!
-        date_block = file_in[:15]
-        return "%s/%s/%s %s:%s:%s" % (
-            date_block[:4],
-            date_block[4:6],
-            date_block[6:8],
-
-            date_block[9:11],
-            date_block[11:13],
-            date_block[13:15],
-            )
-
-    # todo allign in correct new format for 10:
     def is_an_invalid_row(self, row):
-        """ Always valid
+        """ Check if the row is not (A) = Cancel
         """
+        if row[2644:2645] == 'A':
+            return True
         return False
 
-    # todo allign in correct new format for 10:
+    def get_timestamp_from_file(self, file_in, path=None):
+        """ Get timestamp value from file name
+            File is: ELIORD20141103091707.ASC
+                     ------YYYYMMGGhhmmss----
+            Millisecond are
+                00 for create order ELIORD
+                10 for delete order ELICHG
+        """
+        return '%s-%s-%s %s:%s:%s.%s' % (
+            file_in[6:10],  # Year
+            file_in[10:12],  # Month
+            file_in[12:14],  # Day
+            file_in[14:16],  # Hour
+            file_in[16:18],  # Minute
+            file_in[18:20],  # Second
+            '00' if file_in.startswith('ELIORD') else '10'  # Millisecond
+            )
+
     def get_state_of_file(self, file_in, forced_list):
         """ Test state of file depend on name and forced presence
         """
-        # Always create (no modify management)
-        try:
-            if file_in in forced_list:  # Forced (pickle file)
-                return 'forced'
-            else:
-                file_part = file_in.split('_')
-                command = file_part[3][:3].upper()
-                if command == 'NEW':
-                    return 'create'
-                # todo not used:
-                elif command == 'CAN':
-                    return 'deleting'  # TODO delete?
-                else:  # UPD
-                    return 'change'
-        except:
-            return 'anomaly'
+        if file_in in forced_list:  # Forced (pickle file)
+            return 'forced'
+        elif file_in.startswith('ELIORD') or file_in.startswith('ELIURG'):
+            return 'create'
+        else:
+            return 'delete'  # Update file
 
-    # todo allign in correct new format for 10:
     def get_destination(self, facility, cost, site):
-        """ Mask for code destination (only the last: site is used)
+        """ Mask for code destination
         """
-        return "[H%s]" % cost
+        return '[%s|%s|%s]' % (facility, cost, site)
 
-    # todo allign in correct new format for 10:
     def get_destination_id(self, cr, uid, facility, cost, site, context=None):
         """ Get 3 parameters for destination and return ID get from res.partner
             generated during importation
         """
+        # The 3 part of destination, in importation, are stored in 2 fields
         return self.pool.get('res.partner').search_supplier_destination(
-            cr, uid, '', 'H' + cost, context=context)
+            cr, uid, facility, '%s%s' % (cost, site), context=context)
 
-    # todo allign in correct new format for 10:
     def get_priority(self, cr, uid, file_in):
-        """ Always normal (no priority management)
+        """ Return priority value depend on file name
         """
+        if file_in.startswith('ELIURG'):
+            return 'high'
         return 'normal'
 
     # Format:
-    # todo allign in correct new format for 10:
     def format_int(self, value):
         """ EDI integer format
         """
         return value
 
-    # todo allign in correct new format for 10:
     def format_float(
             self, value, decimal=3, with_separator=False, separator='.'):
         """ EDI float format
         """
         return value
 
-    # todo allign in correct new format for 10:
     def format_date(self, value, date_format='ISO'):
         """ EDI file date format YYYYMMDD
         """
-        return "%s-%s-%s" % (value[:4], value[4:6], value[6:8])
+        return '%s-%s-%s' % (value[:4], value[4:6], value[6:8])
 
-    # todo allign in correct new format for 10:
     def format_string(self, value):
         """ EDI file string
         """
